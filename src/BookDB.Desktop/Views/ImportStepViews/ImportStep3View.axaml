@@ -1,0 +1,30 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:BookDB.Desktop.ViewModels"
+             xmlns:res="using:BookDB.Desktop.Localization"
+             x:Class="BookDB.Desktop.Views.ImportStepViews.ImportStep3View"
+             x:DataType="vm:ImportStep3ViewModel">
+
+    <StackPanel Margin="16" Spacing="16" VerticalAlignment="Center">
+
+        <TextBlock Text="{x:Static res:Resources.Import_Step3_ReviewLabel}"
+                   FontSize="14"
+                   FontWeight="SemiBold"/>
+
+        <Border Padding="16"
+                BorderThickness="1"
+                BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                CornerRadius="4">
+            <TextBlock Text="{Binding Summary}"
+                       FontFamily="Consolas, Courier New"
+                       FontSize="13"
+                       TextWrapping="Wrap"/>
+        </Border>
+
+        <TextBlock Text="{x:Static res:Resources.Import_Step3_HelpText}"
+                   FontSize="12"
+                   Opacity="0.7"
+                   TextWrapping="Wrap"/>
+
+    </StackPanel>
+</UserControl>

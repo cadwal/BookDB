@@ -1,0 +1,34 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <SolidColorBrush x:Key="BrushPrimaryBlue" Color="#1976d2" />
+    <SolidColorBrush x:Key="BrushPrimaryBlueDark" Color="#1565c0" />
+    <SolidColorBrush x:Key="BrushTextPrimary" Color="#333333" />
+    <SolidColorBrush x:Key="BrushTextSecondary" Color="#666666" />
+    <SolidColorBrush x:Key="BrushTextTertiary" Color="#999999" />
+    <SolidColorBrush x:Key="BrushTextOnDark" Color="#555555" />
+    <SolidColorBrush x:Key="BrushBackground" Color="#ffffff" />
+    <SolidColorBrush x:Key="BrushBackgroundAlt" Color="#f9f9f9" />
+    <SolidColorBrush x:Key="BrushBorder" Color="#e0e0e0" />
+    <SolidColorBrush x:Key="BrushBorderLight" Color="#f0f0f0" />
+    <SolidColorBrush x:Key="BrushBorderInput" Color="#d0d0d0" />
+    <SolidColorBrush x:Key="BrushRowHover" Color="#e3f2fd" />
+    <SolidColorBrush x:Key="BrushRowSelected" Color="#1976d2" />
+    <SolidColorBrush x:Key="BrushRowSelectedText" Color="#ffffff" />
+    <!-- Overdue loan row tint (Material Orange 100 — per D-06, darkened for contrast) -->
+    <SolidColorBrush x:Key="BrushRowOverdue" Color="#ffe0b2" />
+    <SolidColorBrush x:Key="BrushIconHover" Color="#f0f0f0" />
+    <SolidColorBrush x:Key="BrushIconActive" Color="#e0e0e0" />
+    <SolidColorBrush x:Key="BrushStatusRead" Color="#4caf50" />
+    <SolidColorBrush x:Key="BrushStatusReading" Color="#2196f3" />
+    <SolidColorBrush x:Key="BrushStatusUnread" Color="#f44336" />
+    <SolidColorBrush x:Key="BrushStatusArchive" Color="#9e9e9e" />
+    <SolidColorBrush x:Key="BrushStatusWishlist" Color="#9c27b0" />
+    <SolidColorBrush x:Key="BrushBadgeText" Color="#ffffff" />
+    <SolidColorBrush x:Key="BrushStarFull" Color="#fbc02d" />
+    <SolidColorBrush x:Key="BrushStarEmpty" Color="#e0e0e0" />
+    <SolidColorBrush x:Key="BrushWarning" Color="#ff9800" />
+    <SolidColorBrush x:Key="BrushDestructive" Color="#f44336" />
+    <SolidColorBrush x:Key="BrushDestructiveHover" Color="#d32f2f" />
+    <SolidColorBrush x:Key="BrushDisabledText" Color="#999999" />
+    <SolidColorBrush x:Key="BrushDisabledBackground" Color="#ffffff" />
+</ResourceDictionary>

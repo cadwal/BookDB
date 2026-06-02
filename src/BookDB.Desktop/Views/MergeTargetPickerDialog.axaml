@@ -1,0 +1,42 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:BookDB.Desktop.ViewModels"
+        xmlns:res="using:BookDB.Desktop.Localization"
+        x:Class="BookDB.Desktop.Views.MergeTargetPickerDialog"
+        x:DataType="vm:MergeTargetPickerViewModel"
+        Title="{Binding Title}"
+        SizeToContent="WidthAndHeight"
+        MinWidth="300"
+        MaxHeight="600"
+        CanResize="False"
+        WindowStartupLocation="CenterOwner"
+        ShowInTaskbar="False">
+  <Border Padding="16">
+    <StackPanel Spacing="8" MinWidth="280">
+      <ListBox ItemsSource="{Binding Candidates}"
+               SelectedItem="{Binding SelectedTarget}"
+               MinHeight="160"
+               MaxHeight="380">
+        <ListBox.ItemTemplate>
+          <DataTemplate x:DataType="vm:LookupEntryRow">
+            <TextBlock Text="{Binding Name}" FontSize="13" Padding="4,2"/>
+          </DataTemplate>
+        </ListBox.ItemTemplate>
+      </ListBox>
+      <TextBlock Text="{Binding ConfirmHint}"
+                 FontSize="12"
+                 Foreground="{DynamicResource BrushTextSecondary}"
+                 TextWrapping="Wrap"
+                 MaxWidth="360"/>
+      <StackPanel Orientation="Horizontal"
+                  Spacing="8"
+                  HorizontalAlignment="Right">
+        <Button Classes="accent"
+                Content="{x:Static res:Resources.ManageLookups_ConfirmMerge}"
+                Command="{Binding ConfirmCommand}"/>
+        <Button Content="{x:Static res:Resources.ManageLookups_CancelMerge}"
+                Command="{Binding CancelCommand}"/>
+      </StackPanel>
+    </StackPanel>
+  </Border>
+</Window>

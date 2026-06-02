@@ -1,0 +1,200 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:BookDB.Desktop.ViewModels"
+        xmlns:entities="using:BookDB.Models.Entities"
+        xmlns:res="using:BookDB.Desktop.Localization"
+        xmlns:behaviors="using:BookDB.Desktop.Behaviors"
+        xmlns:i="using:Avalonia.Xaml.Interactivity"
+        x:Class="BookDB.Desktop.Views.ManageBorrowersWindow"
+        x:DataType="vm:ManageBorrowersViewModel"
+        Title="{x:Static res:Resources.ManageBorrowers_Title}"
+        Width="960" MinWidth="800"
+        Height="680" MinHeight="540"
+        WindowStartupLocation="CenterScreen"
+        CanResize="True">
+
+    <Grid ColumnDefinitions="220,*">
+
+        <!-- Left pane: filter + add + list -->
+        <DockPanel Grid.Column="0" Background="{DynamicResource BrushBackgroundAlt}">
+            <TextBox DockPanel.Dock="Top"
+                     Margin="8,8,8,4"
+                     Watermark="{x:Static res:Resources.ManageBorrowers_Filter_Watermark}"
+                     Text="{Binding FilterText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+            <Button DockPanel.Dock="Bottom"
+                    Margin="8,4,8,8"
+                    HorizontalAlignment="Left"
+                    Content="{x:Static res:Resources.ManageBorrowers_Add}"
+                    Command="{Binding AddCommand}" />
+            <TextBlock DockPanel.Dock="Bottom"
+                       FontSize="12"
+                       Margin="8,4,8,0"
+                       Foreground="{DynamicResource BrushDestructive}"
+                       TextWrapping="Wrap"
+                       Text="{Binding StatusMessage}"
+                       IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+            <ListBox ItemsSource="{Binding FilteredBorrowers}"
+                     SelectedItem="{Binding SelectedBorrower, Mode=TwoWay}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate x:DataType="entities:Borrower">
+                        <TextBlock Text="{Binding DisplayName}" FontSize="13" Padding="8,4" />
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </DockPanel>
+
+        <!-- Vertical border divider -->
+        <Border Grid.Column="0" Width="1" HorizontalAlignment="Right"
+                Background="{DynamicResource BrushBorder}" />
+
+        <!-- Right pane: editor (visible when selection active) -->
+        <DockPanel Grid.Column="1" IsVisible="{Binding HasSelection}">
+
+            <!-- Pinned status bar at bottom — always visible within MinHeight -->
+            <TextBlock DockPanel.Dock="Bottom"
+                       FontSize="12"
+                       Margin="16,4,16,8"
+                       Foreground="{DynamicResource BrushDestructive}"
+                       Text="{Binding Editor.StatusMessage}"
+                       IsVisible="{Binding Editor.StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+
+            <!-- Scrollable form area fills remaining space -->
+            <ScrollViewer>
+                <StackPanel Margin="16" Spacing="8">
+
+                    <!-- Section: Name -->
+                    <TextBlock Text="{x:Static res:Resources.ManageBorrowers_Section_Name}"
+                               FontSize="12" FontWeight="SemiBold"
+                               Foreground="{DynamicResource BrushTextSecondary}" />
+                    <Grid ColumnDefinitions="100,*" RowDefinitions="Auto,Auto">
+                        <TextBlock Grid.Row="0" Grid.Column="0"
+                                   Text="{x:Static res:Resources.ManageBorrowers_Label_FirstName}"
+                                   FontSize="12" VerticalAlignment="Center" Margin="0,0,8,4" />
+                        <TextBox Grid.Row="0" Grid.Column="1" Margin="0,0,0,4"
+                                 Text="{Binding Editor.FirstName, Mode=TwoWay}" FontSize="13">
+                            <i:Interaction.Behaviors>
+                                <behaviors:FocusWhenChangedBehavior Sequence="{Binding AddFocusSequence}"/>
+                            </i:Interaction.Behaviors>
+                        </TextBox>
+                        <TextBlock Grid.Row="1" Grid.Column="0"
+                                   Text="{x:Static res:Resources.ManageBorrowers_Label_LastName}"
+                                   FontSize="12" VerticalAlignment="Center" Margin="0,0,8,0" />
+                        <TextBox Grid.Row="1" Grid.Column="1"
+                                 Text="{Binding Editor.LastName, Mode=TwoWay}" FontSize="13" />
+                    </Grid>
+
+                    <!-- Section: Contact -->
+                    <TextBlock Text="{x:Static res:Resources.ManageBorrowers_Section_Contact}"
+                               FontSize="12" FontWeight="SemiBold"
+                               Foreground="{DynamicResource BrushTextSecondary}"
+                               Margin="0,8,0,0" />
+                    <Grid ColumnDefinitions="100,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto">
+                        <TextBlock Grid.Row="0" Grid.Column="0"
+                                   Text="{x:Static res:Resources.ManageBorrowers_Label_Organization}"
+                                   FontSize="12" VerticalAlignment="Center" Margin="0,0,8,4" />
+                        <TextBox Grid.Row="0" Grid.Column="1" Margin="0,0,0,4"
+                                 Text="{Binding Editor.Organization, Mode=TwoWay}" FontSize="13" />
+                        <TextBlock Grid.Row="1" Grid.Column="0"
+                                   Text="{x:Static res:Resources.ManageBorrowers_Label_Phone}"
+                                   FontSize="12" VerticalAlignment="Center" Margin="0,0,8,4" />
+                        <TextBox Grid.Row="1" Grid.Column="1" Margin="0,0,0,4"
+                                 Text="{Binding Editor.Phone1, Mode=TwoWay}" FontSize="13" />
+                        <TextBlock Grid.Row="2" Grid.Column="0"
+                                   Text="{x:Static res:Resources.ManageBorrowers_Label_AltPhone}"
+                                   FontSize="12" VerticalAlignment="Center" Margin="0,0,8,4" />
+                        <TextBox Grid.Row="2" Grid.Column="1" Margin="0,0,0,4"
+                                 Text="{Binding Editor.Phone2, Mode=TwoWay}" FontSize="13" />
+                        <TextBlock Grid.Row="3" Grid.Column="0"
+                                   Text="{x:Static res:Resources.ManageBorrowers_Label_Email}"
+                                   FontSize="12" VerticalAlignment="Center" Margin="0,0,8,4" />
+                        <TextBox Grid.Row="3" Grid.Column="1" Margin="0,0,0,4"
+                                 Text="{Binding Editor.Email, Mode=TwoWay}" FontSize="13" />
+                        <TextBlock Grid.Row="4" Grid.Column="0"
+                                   Text="{x:Static res:Resources.ManageBorrowers_Label_Fax}"
+                                   FontSize="12" VerticalAlignment="Center" Margin="0,0,8,0" />
+                        <TextBox Grid.Row="4" Grid.Column="1"
+                                 Text="{Binding Editor.Fax, Mode=TwoWay}" FontSize="13" />
+                    </Grid>
+
+                    <!-- Section: Address -->
+                    <TextBlock Text="{x:Static res:Resources.ManageBorrowers_Section_Address}"
+                               FontSize="12" FontWeight="SemiBold"
+                               Foreground="{DynamicResource BrushTextSecondary}"
+                               Margin="0,8,0,0" />
+                    <Grid ColumnDefinitions="100,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto">
+                        <TextBlock Grid.Row="0" Grid.Column="0"
+                                   Text="{x:Static res:Resources.ManageBorrowers_Label_Address1}"
+                                   FontSize="12" VerticalAlignment="Center" Margin="0,0,8,4" />
+                        <TextBox Grid.Row="0" Grid.Column="1" Margin="0,0,0,4"
+                                 Text="{Binding Editor.Address1, Mode=TwoWay}" FontSize="13" />
+                        <TextBlock Grid.Row="1" Grid.Column="0"
+                                   Text="{x:Static res:Resources.ManageBorrowers_Label_Address2}"
+                                   FontSize="12" VerticalAlignment="Center" Margin="0,0,8,4" />
+                        <TextBox Grid.Row="1" Grid.Column="1" Margin="0,0,0,4"
+                                 Text="{Binding Editor.Address2, Mode=TwoWay}" FontSize="13" />
+                        <!-- Postal code + city on the same row, postal on left -->
+                        <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,0,0,4"
+                              ColumnDefinitions="100,120,12,Auto,*">
+                            <TextBlock Grid.Column="0"
+                                       Text="{x:Static res:Resources.ManageBorrowers_Label_PostalCode}"
+                                       FontSize="12" VerticalAlignment="Center" Margin="0,0,8,0" />
+                            <TextBox Grid.Column="1"
+                                     Text="{Binding Editor.PostalCode, Mode=TwoWay}" FontSize="13" />
+                            <TextBlock Grid.Column="3"
+                                       Text="{x:Static res:Resources.ManageBorrowers_Label_City}"
+                                       FontSize="12" VerticalAlignment="Center" Margin="0,0,8,0" />
+                            <TextBox Grid.Column="4"
+                                     Text="{Binding Editor.City, Mode=TwoWay}" FontSize="13" />
+                        </Grid>
+                        <TextBlock Grid.Row="3" Grid.Column="0"
+                                   Text="{x:Static res:Resources.ManageBorrowers_Label_State}"
+                                   FontSize="12" VerticalAlignment="Center" Margin="0,0,8,4" />
+                        <TextBox Grid.Row="3" Grid.Column="1" Margin="0,0,0,4"
+                                 Text="{Binding Editor.State, Mode=TwoWay}" FontSize="13" />
+                        <TextBlock Grid.Row="4" Grid.Column="0"
+                                   Text="{x:Static res:Resources.ManageBorrowers_Label_Country}"
+                                   FontSize="12" VerticalAlignment="Center" Margin="0,0,8,0" />
+                        <TextBox Grid.Row="4" Grid.Column="1"
+                                 Text="{Binding Editor.Country, Mode=TwoWay}" FontSize="13" />
+                    </Grid>
+
+                    <!-- Section: Status -->
+                    <TextBlock Text="{x:Static res:Resources.ManageBorrowers_Label_Status}"
+                               FontSize="12" FontWeight="SemiBold"
+                               Foreground="{DynamicResource BrushTextSecondary}"
+                               Margin="0,8,0,0" />
+                    <ComboBox SelectedIndex="{Binding Editor.BorrowerStatusId, Mode=TwoWay}"
+                              HorizontalAlignment="Left" MinWidth="160">
+                        <ComboBoxItem Content="{x:Static res:Resources.BorrowerStatus_Active}" />
+                        <ComboBoxItem Content="{x:Static res:Resources.BorrowerStatus_Inactive}" />
+                    </ComboBox>
+
+                    <!-- Action row -->
+                    <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,16,0,0">
+                        <Button Classes="accent"
+                                Content="{x:Static res:Resources.Common_Save}"
+                                Command="{Binding Editor.SaveCommand}" />
+                        <Button Content="{x:Static res:Resources.Common_Discard}"
+                                Command="{Binding Editor.CancelChangesCommand}" />
+                        <Button Content="{x:Static res:Resources.ManageBorrowers_Delete}"
+                                Foreground="{DynamicResource BrushDestructive}"
+                                Command="{Binding DeleteCommand}"
+                                IsVisible="{Binding Editor.HasBorrower}" />
+                    </StackPanel>
+
+                </StackPanel>
+            </ScrollViewer>
+
+        </DockPanel>
+
+        <!-- Placeholder when no borrower selected -->
+        <TextBlock Grid.Column="1"
+                   Text="{x:Static res:Resources.ManageBorrowers_SelectPrompt}"
+                   FontSize="13"
+                   Foreground="{DynamicResource BrushTextSecondary}"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   IsVisible="{Binding !HasSelection}" />
+
+    </Grid>
+</Window>

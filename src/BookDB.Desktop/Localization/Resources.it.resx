@@ -1,0 +1,2417 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!--
+    Microsoft ResX Schema
+
+    Version 2.0
+
+    The primary goals of this format is to allow a simple XML format
+    that is mostly human readable. The generation and parsing of the
+    various data types is done through the TypeConverter classes
+    associated with the data types.
+
+    Example:
+
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+
+    There are any number of "resheader" rows that contain simple
+    name/value pairs.
+
+    Each data row contains a name, and value. The row also contains a
+    type or mimetype. Type corresponds to a .NET class that support
+    text/value conversion through the TypeConverter architecture.
+    Mimetype is used for serialized objects, and tells the
+    ResXResourceReader how to depersist the object.
+
+    This is essentially the inverse of a
+
+    ClientTypeConverter.ConvertTo(obj, targetType);
+
+    call.
+
+    The Xml Relation of the data element:
+    <data name="Name1">
+      <value>Value1</value>
+      <comment>User comment</comment>
+    </data>
+
+    The type attribute indicates the type of the serialized object.
+    The mimetype attribute indicates the serialized encoding.
+
+    The value of the type attribute is specified as follows:
+
+       type = "typename, assemblyname"
+
+    The type of the resource value is specified as follows:
+
+       type = System.ResourceObject, System.Windows.Forms
+
+    The mimetype attribute is used to indicate the .NET binary
+    encoding of a data entry.  The following table shows the supported
+    mime types:
+
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized with
+            : System.ComponentModel.TypeConverter.ConvertTo(obj, typeof(byte[]))
+            : and then encoded with base64 encoding.
+  -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="StatusBar_CollectionSelector_Label" xml:space="preserve">
+    <value>Raccolte:</value>
+  </data>
+  <data name="CollectionSelector_AllSelected" xml:space="preserve">
+    <value>Tutte le raccolte</value>
+  </data>
+  <data name="FilterPanel_EmptyState" xml:space="preserve">
+    <value>Nessun filtro disponibile</value>
+  </data>
+  <data name="BookList_EmptyState" xml:space="preserve">
+    <value>Nessun libro da visualizzare</value>
+  </data>
+  <data name="DetailPanel_EmptyState" xml:space="preserve">
+    <value>Selezionare un libro per visualizzare i dettagli</value>
+  </data>
+  <data name="FilterPanel_ClearFilters" xml:space="preserve">
+    <value>Cancella filtri</value>
+  </data>
+  <data name="FilterPanel_DeleteSavedSearch_Tooltip" xml:space="preserve">
+    <value>Elimina questa ricerca</value>
+  </data>
+  <data name="FilterPanel_EditSavedSearch_Tooltip" xml:space="preserve">
+    <value>Modifica questa ricerca</value>
+  </data>
+  <data name="FilterPanel_SavedSearches_Header" xml:space="preserve">
+    <value>Ricerche salvate</value>
+  </data>
+  <data name="FilterPanel_SavedSearches_Empty" xml:space="preserve">
+    <value>Nessuna ricerca salvata. Utilizzare la ricerca avanzata per crearne una.</value>
+  </data>
+  <data name="AdvancedSearch_Title" xml:space="preserve">
+    <value>Ricerca avanzata</value>
+  </data>
+  <data name="AdvancedSearch_SaveSearch" xml:space="preserve">
+    <value>Salva come ricerca...</value>
+  </data>
+  <data name="Delete_SingleBook_Message" xml:space="preserve">
+    <value>Eliminare "{0}"? L'operazione non può essere annullata.</value>
+  </data>
+  <data name="Delete_MultipleBooks_Message" xml:space="preserve">
+    <value>Eliminare {0} libri? L'operazione non può essere annullata.</value>
+  </data>
+  <data name="Delete_Confirm_Button" xml:space="preserve">
+    <value>Elimina</value>
+  </data>
+  <data name="Delete_Cancel_Button" xml:space="preserve">
+    <value>Mantieni libro</value>
+  </data>
+  <data name="UnsavedChanges_Title" xml:space="preserve">
+    <value>Modifiche non salvate</value>
+  </data>
+  <data name="UnsavedChanges_Body" xml:space="preserve">
+    <value>Ci sono modifiche non salvate per "{0}". Come si desidera procedere?</value>
+  </data>
+  <data name="UnsavedChanges_Cancel" xml:space="preserve">
+    <value>Continua a modificare</value>
+  </data>
+  <data name="AddBookDialog_Title" xml:space="preserve">
+    <value>Aggiungi libro</value>
+  </data>
+  <data name="AddBookDialog_AddButton" xml:space="preserve">
+    <value>Aggiungi libro</value>
+  </data>
+  <data name="Toolbar_AddBook" xml:space="preserve">
+    <value>Aggiungi libro</value>
+  </data>
+  <data name="Toolbar_Edit" xml:space="preserve">
+    <value>Modifica</value>
+  </data>
+  <data name="Toolbar_Delete" xml:space="preserve">
+    <value>Elimina</value>
+  </data>
+  <data name="Toolbar_FullDetails" xml:space="preserve">
+    <value>Dettagli completi</value>
+  </data>
+  <data name="Toolbar_OpenInWindow" xml:space="preserve">
+    <value>Apri in finestra</value>
+  </data>
+  <data name="Toolbar_Search_Placeholder" xml:space="preserve">
+    <value>Cerca libri...</value>
+  </data>
+  <data name="Toolbar_Search_Clear" xml:space="preserve">
+    <value>Cancella ricerca</value>
+  </data>
+  <data name="BookList_NoResults" xml:space="preserve">
+    <value>Nessun libro corrisponde alla ricerca. Provare a cancellare i filtri o modificare i termini di ricerca.</value>
+  </data>
+  <data name="BulkEdit_Apply_Button" xml:space="preserve">
+    <value>Applica a {0} libri</value>
+  </data>
+  <data name="BulkEdit_Cancel_Button" xml:space="preserve">
+    <value>Mantieni i valori correnti</value>
+  </data>
+  <data name="BulkEdit_Title" xml:space="preserve">
+    <value>Modifica in blocco</value>
+  </data>
+  <data name="Cover_Placeholder_Tooltip" xml:space="preserve">
+    <value>Trascinare un'immagine qui, oppure utilizzare i pulsanti in basso per allegare una copertina</value>
+  </data>
+  <data name="Cover_AttachFile" xml:space="preserve">
+    <value>Aggiungi</value>
+  </data>
+  <data name="Cover_AttachUrl" xml:space="preserve">
+    <value>Da URL...</value>
+  </data>
+  <data name="Cover_NoImage" xml:space="preserve">
+    <value>Nessuna immagine di copertina</value>
+  </data>
+  <data name="Tab_BasicInfo" xml:space="preserve">
+    <value>Informazioni base</value>
+  </data>
+  <data name="Tab_Details" xml:space="preserve">
+    <value>Dettagli</value>
+  </data>
+  <data name="Tab_Acquisition" xml:space="preserve">
+    <value>Acquisizione</value>
+  </data>
+  <data name="Tab_Contributors" xml:space="preserve">
+    <value>Collaboratori</value>
+  </data>
+  <data name="Tab_ContributorsAdmin" xml:space="preserve">
+    <value>Collaboratori &amp; Admin</value>
+  </data>
+  <data name="Button_AddContributor" xml:space="preserve">
+    <value>+ Aggiungi collaboratore</value>
+  </data>
+  <data name="Section_Contributors" xml:space="preserve">
+    <value>Collaboratori</value>
+  </data>
+  <data name="Label_VisibleInCatalog" xml:space="preserve">
+    <value>Visibile nel catalogo</value>
+  </data>
+  <data name="Tooltip_VisibleInCatalog" xml:space="preserve">
+    <value>Se deselezionato, il libro è nascosto dalla navigazione del catalogo (ma rimane nel database).</value>
+  </data>
+  <data name="Tab_AdditionalInfo" xml:space="preserve">
+    <value>Informazioni aggiuntive</value>
+  </data>
+  <data name="FullDetails_WindowTitle" xml:space="preserve">
+    <value>Dettagli libro — {0}</value>
+  </data>
+  <data name="Error_SaveFailed" xml:space="preserve">
+    <value>Impossibile salvare le modifiche. Verificare che il database sia accessibile e riprovare.</value>
+  </data>
+  <data name="Error_CoverLoadFailed" xml:space="preserve">
+    <value>Impossibile caricare l'immagine di copertina. Allegare nuovamente tramite Sfoglia o trascina e rilascia.</value>
+  </data>
+  <data name="Error_SearchFailed" xml:space="preserve">
+    <value>Ricerca non riuscita. Riprovare o riavviare l'applicazione.</value>
+  </data>
+  <data name="LookupWizard_Title" xml:space="preserve">
+    <value>Cataloga per ISBN</value>
+  </data>
+  <data name="LookupWizard_StartButton" xml:space="preserve">
+    <value>Avvia ricerca</value>
+  </data>
+  <data name="LookupWizard_IsbnBox_Placeholder" xml:space="preserve">
+    <value>Inserire ISBN, uno per riga...</value>
+  </data>
+  <data name="LookupWizard_DropArea_Label" xml:space="preserve">
+    <value>Trascinare il file .txt qui oppure</value>
+  </data>
+  <data name="LookupWizard_BrowseLink" xml:space="preserve">
+    <value>Sfoglia...</value>
+  </data>
+  <data name="LookupWizard_IsbnCount" xml:space="preserve">
+    <value>{0} ISBN pronti</value>
+  </data>
+  <data name="LookupWizard_NoResults" xml:space="preserve">
+    <value>Nessun risultato trovato per questo ISBN. Verificare il numero e riprovare, oppure inserire i dettagli del libro manualmente.</value>
+  </data>
+  <data name="LookupWizard_ManualEntryButton" xml:space="preserve">
+    <value>Inserisci dettagli manualmente</value>
+  </data>
+  <data name="LookupWizard_Error_EnterIsbn" xml:space="preserve">
+    <value>Inserire almeno un ISBN.</value>
+  </data>
+  <data name="MergeReview_Title_New" xml:space="preserve">
+    <value>Revisione metadati - nuovo libro</value>
+  </data>
+  <data name="MergeReview_Title_Recatalog" xml:space="preserve">
+    <value>Revisione metadati - {0}</value>
+  </data>
+  <data name="MergeReview_AcceptAllFromSource" xml:space="preserve">
+    <value>Accetta tutto da {0}</value>
+  </data>
+  <data name="MergeReview_NoConflicts" xml:space="preserve">
+    <value>Nessun conflitto tra i campi — tutte le fonti concordano.</value>
+  </data>
+  <data name="MergeReview_Field_Authors" xml:space="preserve">
+    <value>Autori</value>
+  </data>
+  <data name="MergeReview_Field_Description" xml:space="preserve">
+    <value>Descrizione</value>
+  </data>
+  <data name="MergeReview_Field_Language" xml:space="preserve">
+    <value>Lingua</value>
+  </data>
+  <data name="MergeReview_Field_Pages" xml:space="preserve">
+    <value>Pagine</value>
+  </data>
+  <data name="MergeReview_Field_PubDate" xml:space="preserve">
+    <value>Data di pubblicazione</value>
+  </data>
+  <data name="MergeReview_Field_Publisher" xml:space="preserve">
+    <value>Editore</value>
+  </data>
+  <data name="MergeReview_Field_Series" xml:space="preserve">
+    <value>Serie</value>
+  </data>
+  <data name="MergeReview_Field_SeriesNumber" xml:space="preserve">
+    <value>Numero di serie</value>
+  </data>
+  <data name="MergeReview_Field_Subtitle" xml:space="preserve">
+    <value>Sottotitolo</value>
+  </data>
+  <data name="MergeReview_Field_Title" xml:space="preserve">
+    <value>Titolo</value>
+  </data>
+  <data name="BatchQueue_WindowTitle" xml:space="preserve">
+    <value>Ricerca ISBN in blocco</value>
+  </data>
+  <data name="BatchQueue_RunningHeader" xml:space="preserve">
+    <value>Ricerca libri in corso...</value>
+  </data>
+  <data name="BatchQueue_CompleteHeader" xml:space="preserve">
+    <value>Ricerca completata</value>
+  </data>
+  <data name="BatchQueue_CurrentItem" xml:space="preserve">
+    <value>Ricerca in corso: {0}</value>
+  </data>
+  <data name="BatchQueue_ProgressCounts" xml:space="preserve">
+    <value>{0} di {1}</value>
+  </data>
+  <data name="BatchQueue_StatusComplete" xml:space="preserve">
+    <value>Elaborazione completata</value>
+  </data>
+  <data name="BatchQueue_StatusProcessing" xml:space="preserve">
+    <value>Elaborazione di {0} risultati dalla fonte…</value>
+  </data>
+  <data name="BatchQueue_StatusQuerying" xml:space="preserve">
+    <value>Interrogazione fonti per {0}…</value>
+  </data>
+  <data name="BatchQueue_StatusSaving" xml:space="preserve">
+    <value>Salvataggio…</value>
+  </data>
+  <data name="BatchQueue_StartReviewButton" xml:space="preserve">
+    <value>Revisiona risultati</value>
+  </data>
+  <data name="BatchQueue_Summary_Saved" xml:space="preserve">
+    <value>Salvati: {0}</value>
+  </data>
+  <data name="BatchQueue_Summary_AutoAccepted" xml:space="preserve">
+    <value>Accettati automaticamente: {0}</value>
+  </data>
+  <data name="BatchQueue_Summary_NotFound" xml:space="preserve">
+    <value>Non trovati: {0}</value>
+  </data>
+  <data name="BatchQueue_Summary_PendingReview" xml:space="preserve">
+    <value>In attesa di revisione: {0}</value>
+  </data>
+  <data name="BatchQueue_Summary_Skipped" xml:space="preserve">
+    <value>Ignorati: {0}</value>
+  </data>
+  <data name="BatchQueue_ShutdownWarning_Title" xml:space="preserve">
+    <value>Ricerca in blocco in corso</value>
+  </data>
+  <data name="BatchQueue_ShutdownWarning_Body" xml:space="preserve">
+    <value>Una ricerca in blocco è ancora in esecuzione. La chiusura interromperà la ricerca. Continuare?</value>
+  </data>
+  <data name="StatusBar_BatchQueue_Progress" xml:space="preserve">
+    <value>Ricerca: {0} di {1}</value>
+  </data>
+  <data name="Recatalog_NoIsbn_Title" xml:space="preserve">
+    <value>Nessun ISBN</value>
+  </data>
+  <data name="Recatalog_NoIsbn_Body" xml:space="preserve">
+    <value>Questo libro non ha un ISBN. Inserirne uno per cercare i metadati.</value>
+  </data>
+  <data name="EditForm_RecatalogButton" xml:space="preserve">
+    <value>Ricataloga</value>
+  </data>
+  <data name="CoverPopup_SourceOnly" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="CoverPopup_WithMetadata" xml:space="preserve">
+    <value>{0} — {1}×{2} {3}</value>
+  </data>
+  <data name="Label_ISSN" xml:space="preserve">
+    <value>ISSN</value>
+  </data>
+  <data name="Label_LCCN" xml:space="preserve">
+    <value>LCCN</value>
+  </data>
+  <data name="Label_DeweyDecimal" xml:space="preserve">
+    <value>Classificazione Dewey</value>
+  </data>
+  <data name="Label_CallNumber" xml:space="preserve">
+    <value>Numero di collocazione</value>
+  </data>
+  <data name="Label_Dimensions" xml:space="preserve">
+    <value>Dimensioni</value>
+  </data>
+  <data name="Label_Weight" xml:space="preserve">
+    <value>Peso</value>
+  </data>
+  <data name="Label_ItemValue" xml:space="preserve">
+    <value>Valore dell'articolo</value>
+  </data>
+  <data name="Label_ValuationDate" xml:space="preserve">
+    <value>Data di valutazione</value>
+  </data>
+  <data name="Label_AmazonNew" xml:space="preserve">
+    <value>Amazon nuovo</value>
+  </data>
+  <data name="Label_AmazonUsed" xml:space="preserve">
+    <value>Amazon usato</value>
+  </data>
+  <data name="Label_AmazonCollectible" xml:space="preserve">
+    <value>Amazon da collezione</value>
+  </data>
+  <data name="Label_SalesRank" xml:space="preserve">
+    <value>Classifica vendite</value>
+  </data>
+  <data name="Label_LexileLevel" xml:space="preserve">
+    <value>Livello Lexile</value>
+  </data>
+  <data name="ManageLookups_Add" xml:space="preserve">
+    <value>+ Aggiungi</value>
+  </data>
+  <data name="ManageLookups_CancelMerge" xml:space="preserve">
+    <value>Annulla unione</value>
+  </data>
+  <data name="ManageLookups_CannotDelete" xml:space="preserve">
+    <value>Impossibile eliminare — utilizzato da {0} libri</value>
+  </data>
+  <data name="ManageLookups_ConfirmMerge" xml:space="preserve">
+    <value>Conferma unione</value>
+  </data>
+  <data name="ManageLookups_DataCleanup" xml:space="preserve">
+    <value>Pulizia dati...</value>
+  </data>
+  <data name="ManageLookups_DataCleanupDesc" xml:space="preserve">
+    <value>I seguenti nomi sono stati proposti per la correzione. Modificare il nome di ordinamento suggerito se necessario. Deselezionare le righe per ignorarle. Le righe senza modifiche non sono mostrate.</value>
+  </data>
+  <data name="ManageLookups_DataCleanupTitle" xml:space="preserve">
+    <value>Anteprima pulizia dati</value>
+  </data>
+  <data name="ManageLookups_Delete" xml:space="preserve">
+    <value>Elimina</value>
+  </data>
+  <data name="ManageLookups_DeleteConfirm" xml:space="preserve">
+    <value>Eliminare '{0}'? L'operazione non può essere annullata.</value>
+  </data>
+  <data name="ManageLookups_DeselectAll" xml:space="preserve">
+    <value>Deseleziona tutto</value>
+  </data>
+  <data name="ManageLookups_DisplayName" xml:space="preserve">
+    <value>Nome visualizzato</value>
+  </data>
+  <data name="ManageLookups_ErrorDuplicateName" xml:space="preserve">
+    <value>Esiste già un elemento {0} con questo nome.</value>
+  </data>
+  <data name="ManageLookups_ErrorEmptyName" xml:space="preserve">
+    <value>Il nome non può essere vuoto.</value>
+  </data>
+  <data name="ManageLookups_ErrorSaveFailed" xml:space="preserve">
+    <value>Salvataggio non riuscito — vedere il registro.</value>
+  </data>
+  <data name="ManageLookups_ErrorDeleteFailed" xml:space="preserve">
+    <value>Eliminazione non riuscita — vedere il registro.</value>
+  </data>
+  <data name="ManageLookups_ErrorMergeFailed" xml:space="preserve">
+    <value>Unione non riuscita — vedere il registro.</value>
+  </data>
+  <data name="ManageLookups_ErrorCleanupScanFailed" xml:space="preserve">
+    <value>Cleanup scan failed — see log.</value>
+  </data>
+  <data name="ManageLookups_ErrorApplyCleanupFailed" xml:space="preserve">
+    <value>Apply cleanup failed — see log.</value>
+  </data>
+  <data name="ManageLookups_Filter_Watermark" xml:space="preserve">
+    <value>Filtra...</value>
+  </data>
+  <data name="ManageLookups_FilterToAuthor" xml:space="preserve">
+    <value>Filtra libri per autore</value>
+  </data>
+  <data name="ManageLookups_Gear_Category" xml:space="preserve">
+    <value>Gestisci categorie</value>
+  </data>
+  <data name="ManageLookups_Gear_Language" xml:space="preserve">
+    <value>Gestisci lingue</value>
+  </data>
+  <data name="ManageLookups_Gear_Location" xml:space="preserve">
+    <value>Gestisci collocazioni</value>
+  </data>
+  <data name="ManageLookups_Gear_Owner" xml:space="preserve">
+    <value>Gestisci proprietari</value>
+  </data>
+  <data name="ManageLookups_Gear_PurchasePlace" xml:space="preserve">
+    <value>Gestisci luoghi di acquisto</value>
+  </data>
+  <data name="ManageLookups_Gear_Publisher" xml:space="preserve">
+    <value>Gestisci editori</value>
+  </data>
+  <data name="ManageLookups_Gear_Series" xml:space="preserve">
+    <value>Gestisci serie</value>
+  </data>
+  <data name="ManageLookups_KeepingThis" xml:space="preserve">
+    <value>Mantengo questo ✓</value>
+  </data>
+  <data name="ManageLookups_KeepThis" xml:space="preserve">
+    <value>Mantieni questo</value>
+  </data>
+  <data name="ManageLookups_Merge" xml:space="preserve">
+    <value>Unisci con...</value>
+  </data>
+  <data name="ManageLookups_MergeConfirmBody" xml:space="preserve">
+    <value>I libri della persona non mantenuta verranno riassegnati alla persona mantenuta.</value>
+  </data>
+  <data name="ManageLookups_MergePickerConfirmHint" xml:space="preserve">
+    <value>'{0}' verrà unito a '{1}' e rimosso.</value>
+  </data>
+  <data name="ManageLookups_MergePickerTitle" xml:space="preserve">
+    <value>Unisci '{0}' con...</value>
+  </data>
+  <data name="ManageLookups_Name" xml:space="preserve">
+    <value>Nome</value>
+  </data>
+  <data name="ManageLookups_NoCleanup" xml:space="preserve">
+    <value>Nessuna pulizia necessaria.</value>
+  </data>
+  <data name="ManageLookups_Scanning" xml:space="preserve">
+    <value>Scansione in corso...</value>
+  </data>
+  <data name="ManageLookups_SelectAll" xml:space="preserve">
+    <value>Seleziona tutto</value>
+  </data>
+  <data name="ManageLookups_SelectEntry" xml:space="preserve">
+    <value>Selezionare una voce da modificare</value>
+  </data>
+  <data name="ManageLookups_SelectPerson" xml:space="preserve">
+    <value>Selezionare una persona da modificare</value>
+  </data>
+  <data name="ManageLookups_SortName" xml:space="preserve">
+    <value>Nome di ordinamento</value>
+  </data>
+  <data name="ManageLookups_SuspectedDuplicates" xml:space="preserve">
+    <value>Duplicati presunti</value>
+  </data>
+  <data name="ManageLookups_Tab_Category" xml:space="preserve">
+    <value>Categoria</value>
+  </data>
+  <data name="ManageLookups_Tab_Language" xml:space="preserve">
+    <value>Lingua</value>
+  </data>
+  <data name="ManageLookups_Tab_Location" xml:space="preserve">
+    <value>Collocazione</value>
+  </data>
+  <data name="ManageLookups_Tab_Owner" xml:space="preserve">
+    <value>Proprietario</value>
+  </data>
+  <data name="ManageLookups_Tab_Person" xml:space="preserve">
+    <value>Persona</value>
+  </data>
+  <data name="ManageLookups_Tab_PurchasePlace" xml:space="preserve">
+    <value>Luogo di acquisto</value>
+  </data>
+  <data name="ManageLookups_Tab_Publisher" xml:space="preserve">
+    <value>Editore</value>
+  </data>
+  <data name="ManageLookups_Tab_Series" xml:space="preserve">
+    <value>Serie</value>
+  </data>
+  <data name="ManageLookups_Title" xml:space="preserve">
+    <value>Gestisci elenchi</value>
+  </data>
+  <data name="ManageLookups_UsedByBooks" xml:space="preserve">
+    <value>Utilizzato da {0} libri</value>
+  </data>
+  <data name="ManageLookups_UsedInBooks" xml:space="preserve">
+    <value>Utilizzato in {0} libri</value>
+  </data>
+  <data name="ManageLookups_UseSuggested" xml:space="preserve">
+    <value>Usa suggerito</value>
+  </data>
+  <data name="ManageLookups_SortNameSuggestionHint" xml:space="preserve">
+    <value>Suggerito: {0}</value>
+  </data>
+  <data name="MainWindow_StatusBar_Show" xml:space="preserve">
+    <value>Mostra</value>
+  </data>
+  <data name="Backup_Header_Sqlite" xml:space="preserve">
+    <value>Backup della libreria…</value>
+  </data>
+  <data name="Backup_Header_CsvArchive" xml:space="preserve">
+    <value>Backup della libreria (archivio CSV)…</value>
+  </data>
+  <data name="Restore_Header" xml:space="preserve">
+    <value>Ripristino della libreria…</value>
+  </data>
+  <data name="Backup_Status_FlushingLog" xml:space="preserve">
+    <value>Svuotamento del write-ahead log…</value>
+  </data>
+  <data name="Backup_Status_CopyingDatabase" xml:space="preserve">
+    <value>Copia del database…</value>
+  </data>
+  <data name="Backup_Status_CreatingArchive" xml:space="preserve">
+    <value>Creazione dell’archivio…</value>
+  </data>
+  <data name="Backup_Status_ExportingBooks" xml:space="preserve">
+    <value>Esportazione dei libri…</value>
+  </data>
+  <data name="Backup_Status_ExportingPeople" xml:space="preserve">
+    <value>Esportazione delle persone…</value>
+  </data>
+  <data name="Backup_Status_ExportingPublishers" xml:space="preserve">
+    <value>Esportazione degli editori…</value>
+  </data>
+  <data name="Backup_Status_ExportingSeries" xml:space="preserve">
+    <value>Esportazione delle serie…</value>
+  </data>
+  <data name="Backup_Status_ExportingCollections" xml:space="preserve">
+    <value>Esportazione delle raccolte…</value>
+  </data>
+  <data name="Backup_Status_ExportingCategories" xml:space="preserve">
+    <value>Esportazione delle categorie…</value>
+  </data>
+  <data name="Backup_Status_ExportingFormats" xml:space="preserve">
+    <value>Esportazione dei formati…</value>
+  </data>
+  <data name="Backup_Status_ExportingLanguages" xml:space="preserve">
+    <value>Esportazione delle lingue…</value>
+  </data>
+  <data name="Backup_Status_ExportingLocations" xml:space="preserve">
+    <value>Esportazione delle posizioni…</value>
+  </data>
+  <data name="Backup_Status_ExportingOwners" xml:space="preserve">
+    <value>Esportazione dei proprietari…</value>
+  </data>
+  <data name="Backup_Status_ExportingRelationships" xml:space="preserve">
+    <value>Esportazione delle relazioni dei libri…</value>
+  </data>
+  <data name="Backup_Status_ExportingCoverImages" xml:space="preserve">
+    <value>Esportazione delle immagini di copertina…</value>
+  </data>
+  <data name="Backup_Status_ExportingCoverImagesCount" xml:space="preserve">
+    <value>Esportazione delle immagini di copertina ({0}/{1})…</value>
+  </data>
+  <data name="Restore_Status_SavingSafetyBackup" xml:space="preserve">
+    <value>Salvataggio del backup di sicurezza…</value>
+  </data>
+  <data name="Restore_Status_ExtractingArchive" xml:space="preserve">
+    <value>Estrazione dell’archivio di backup…</value>
+  </data>
+  <data name="Restore_Status_ReplacingLibrary" xml:space="preserve">
+    <value>Sostituzione della libreria attiva…</value>
+  </data>
+  <data name="Shutdown_BackupInProgress" xml:space="preserve">
+    <value>Backup della libreria prima della chiusura…</value>
+  </data>
+  <data name="MainWindow_Toolbar_CatalogByIsbn" xml:space="preserve">
+    <value>Cataloga per ISBN</value>
+  </data>
+  <data name="Menu_AdvancedSearch" xml:space="preserve">
+    <value>_Ricerca avanzata...</value>
+  </data>
+  <data name="Menu_BackupCsv" xml:space="preserve">
+    <value>Backup (archivio CSV)...</value>
+  </data>
+  <data name="Menu_BackupSqlite" xml:space="preserve">
+    <value>Backup (SQLite)...</value>
+  </data>
+  <data name="Menu_BulkEdit" xml:space="preserve">
+    <value>_Modifica in blocco la selezione...</value>
+  </data>
+  <data name="Menu_CatalogByIsbn" xml:space="preserve">
+    <value>Cataloga per _ISBN...</value>
+  </data>
+  <data name="Menu_DeleteBooks" xml:space="preserve">
+    <value>_Elimina libro/libri...</value>
+  </data>
+  <data name="Menu_DetailPanel" xml:space="preserve">
+    <value>_Pannello dettagli</value>
+  </data>
+  <data name="Menu_DuplicateBook" xml:space="preserve">
+    <value>_Duplica libro</value>
+  </data>
+  <data name="Menu_Edit" xml:space="preserve">
+    <value>_Modifica</value>
+  </data>
+  <data name="Menu_EditBook" xml:space="preserve">
+    <value>_Modifica libro</value>
+  </data>
+  <data name="Menu_Exit" xml:space="preserve">
+    <value>E_sci</value>
+  </data>
+  <data name="Menu_ExportCsv" xml:space="preserve">
+    <value>Esporta...</value>
+  </data>
+  <data name="Menu_File" xml:space="preserve">
+    <value>_File</value>
+  </data>
+  <data name="Menu_FullDetails" xml:space="preserve">
+    <value>_Dettagli completi</value>
+  </data>
+  <data name="Menu_ImportReaderware" xml:space="preserve">
+    <value>Importa backup di Readerware…</value>
+  </data>
+  <data name="Menu_ImportReaderwareDatabase" xml:space="preserve">
+    <value>Importa database di Readerware…</value>
+  </data>
+  <data name="Menu_ManageLookups" xml:space="preserve">
+    <value>Gestisci elenchi...</value>
+  </data>
+  <data name="Menu_NewBook" xml:space="preserve">
+    <value>_Nuovo libro</value>
+  </data>
+  <data name="Menu_PrintList" xml:space="preserve">
+    <value>Stampa lista...</value>
+  </data>
+  <data name="Menu_RecatalogAll" xml:space="preserve">
+    <value>Ricataloga _tutti</value>
+  </data>
+  <data name="Menu_RecatalogSelected" xml:space="preserve">
+    <value>Ricataloga _selezionati</value>
+  </data>
+  <data name="Menu_RestoreBackup" xml:space="preserve">
+    <value>Ripristina da backup...</value>
+  </data>
+  <data name="Menu_Settings" xml:space="preserve">
+    <value>Impostazioni...</value>
+  </data>
+  <data name="Menu_ShowAuthor" xml:space="preserve">
+    <value>Mostra colonna _Autore</value>
+  </data>
+  <data name="Menu_ShowFormat" xml:space="preserve">
+    <value>Mostra colonna _Formato</value>
+  </data>
+  <data name="Menu_ShowPublisher" xml:space="preserve">
+    <value>Mostra colonna _Editore</value>
+  </data>
+  <data name="Menu_ShowRating" xml:space="preserve">
+    <value>Mostra colonna _Valutazione</value>
+  </data>
+  <data name="Menu_ShowSeries" xml:space="preserve">
+    <value>Mostra colonna _Serie</value>
+  </data>
+  <data name="Menu_ShowStatus" xml:space="preserve">
+    <value>Mostra colonna _Stato</value>
+  </data>
+  <data name="Menu_ShowThumbnail" xml:space="preserve">
+    <value>Mostra colonna _Miniatura</value>
+  </data>
+  <data name="Menu_ShowYear" xml:space="preserve">
+    <value>Mostra colonna _Anno</value>
+  </data>
+  <data name="Menu_Statistics" xml:space="preserve">
+    <value>Statistiche</value>
+  </data>
+  <data name="Menu_Tools" xml:space="preserve">
+    <value>_Strumenti</value>
+  </data>
+  <data name="Menu_View" xml:space="preserve">
+    <value>_Visualizza</value>
+  </data>
+  <data name="Menu_Window" xml:space="preserve">
+    <value>_Finestra</value>
+  </data>
+  <data name="BookDetail_Label_Category" xml:space="preserve">
+    <value>Categoria:</value>
+  </data>
+  <data name="BookDetail_Label_Condition" xml:space="preserve">
+    <value>Condizione:</value>
+  </data>
+  <data name="BookDetail_Label_Edition" xml:space="preserve">
+    <value>Edizione:</value>
+  </data>
+  <data name="BookDetail_Label_Format" xml:space="preserve">
+    <value>Formato:</value>
+  </data>
+  <data name="BookDetail_Label_Isbn" xml:space="preserve">
+    <value>ISBN:</value>
+  </data>
+  <data name="BookDetail_Label_Language" xml:space="preserve">
+    <value>Lingua:</value>
+  </data>
+  <data name="BookDetail_Label_Location" xml:space="preserve">
+    <value>Collocazione:</value>
+  </data>
+  <data name="BookDetail_Label_Owner" xml:space="preserve">
+    <value>Proprietario:</value>
+  </data>
+  <data name="BookDetail_Label_Pages" xml:space="preserve">
+    <value>Pagine:</value>
+  </data>
+  <data name="BookDetail_Label_Published" xml:space="preserve">
+    <value>Pubblicato:</value>
+  </data>
+  <data name="BookDetail_Label_Rating" xml:space="preserve">
+    <value>Valutazione:</value>
+  </data>
+  <data name="BookDetail_Label_Status" xml:space="preserve">
+    <value>Stato:</value>
+  </data>
+  <data name="BookDetail_Section_BookInfo" xml:space="preserve">
+    <value>Informazioni libro</value>
+  </data>
+  <data name="BookEditForm_Button_Remove" xml:space="preserve">
+    <value>Rimuovi</value>
+  </data>
+  <data name="BookEditForm_Flag_Favorite" xml:space="preserve">
+    <value>Preferito</value>
+  </data>
+  <data name="BookEditForm_Flag_OutOfPrint" xml:space="preserve">
+    <value>Fuori catalogo</value>
+  </data>
+  <data name="BookEditForm_Flag_Signed" xml:space="preserve">
+    <value>Autografato</value>
+  </data>
+  <data name="BookEditForm_Label_AltTitle" xml:space="preserve">
+    <value>Titolo alternativo</value>
+  </data>
+  <data name="BookEditForm_Label_BookInfo" xml:space="preserve">
+    <value>Informazioni libro</value>
+  </data>
+  <data name="BookEditForm_Label_Category" xml:space="preserve">
+    <value>Categoria</value>
+  </data>
+  <data name="BookEditForm_Label_Comments" xml:space="preserve">
+    <value>Commenti</value>
+  </data>
+  <data name="BookEditForm_Label_Condition" xml:space="preserve">
+    <value>Condizione</value>
+  </data>
+  <data name="BookEditForm_Label_Copies" xml:space="preserve">
+    <value>Copie</value>
+  </data>
+  <data name="BookEditForm_Label_CopyrightDate" xml:space="preserve">
+    <value>Data copyright</value>
+  </data>
+  <data name="BookEditForm_Label_Edition" xml:space="preserve">
+    <value>Edizione</value>
+  </data>
+  <data name="BookEditForm_Label_ExtId" xml:space="preserve">
+    <value>EAN / Ext ID</value>
+  </data>
+  <data name="BookEditForm_Label_Flags" xml:space="preserve">
+    <value>Indicatori</value>
+  </data>
+  <data name="BookEditForm_Label_Format" xml:space="preserve">
+    <value>Formato</value>
+  </data>
+  <data name="BookEditForm_Label_Isbn" xml:space="preserve">
+    <value>ISBN</value>
+  </data>
+  <data name="BookEditForm_Label_Keywords" xml:space="preserve">
+    <value>Parole chiave</value>
+  </data>
+  <data name="BookEditForm_Label_Language" xml:space="preserve">
+    <value>Lingua</value>
+  </data>
+  <data name="BookEditForm_Label_ListPrice" xml:space="preserve">
+    <value>Prezzo di listino</value>
+  </data>
+  <data name="BookEditForm_Label_Location" xml:space="preserve">
+    <value>Collocazione</value>
+  </data>
+  <data name="BookEditForm_Label_MediaLink" xml:space="preserve">
+    <value>Collegamento multimediale</value>
+  </data>
+  <data name="BookEditForm_Label_Owner" xml:space="preserve">
+    <value>Proprietario</value>
+  </data>
+  <data name="BookEditForm_Label_Pages" xml:space="preserve">
+    <value>Pagine</value>
+  </data>
+  <data name="BookEditForm_Label_PubPlace" xml:space="preserve">
+    <value>Luogo di pubblicazione</value>
+  </data>
+  <data name="BookEditForm_Label_Publisher" xml:space="preserve">
+    <value>Editore</value>
+  </data>
+  <data name="BookEditForm_Label_PurchaseDate" xml:space="preserve">
+    <value>Data di acquisto</value>
+  </data>
+  <data name="BookEditForm_Label_PurchasePlace" xml:space="preserve">
+    <value>Luogo di acquisto</value>
+  </data>
+  <data name="BookEditForm_Label_PurchasePrice" xml:space="preserve">
+    <value>Prezzo di acquisto</value>
+  </data>
+  <data name="BookEditForm_Label_Qty" xml:space="preserve">
+    <value>qtà:</value>
+  </data>
+  <data name="BookEditForm_Label_Rating" xml:space="preserve">
+    <value>Valutazione</value>
+  </data>
+  <data name="BookEditForm_Label_ReadingLevel" xml:space="preserve">
+    <value>Livello di lettura</value>
+  </data>
+  <data name="BookEditForm_Label_Series" xml:space="preserve">
+    <value>Serie</value>
+  </data>
+  <data name="BookEditForm_Label_SeriesNumber" xml:space="preserve">
+    <value>Serie #</value>
+  </data>
+  <data name="BookEditForm_Label_Source" xml:space="preserve">
+    <value>Fonte</value>
+  </data>
+  <data name="BookEditForm_Label_Status" xml:space="preserve">
+    <value>Stato</value>
+  </data>
+  <data name="BookEditForm_Label_Subtitle" xml:space="preserve">
+    <value>Sottotitolo</value>
+  </data>
+  <data name="BookEditForm_Label_TimesRead" xml:space="preserve">
+    <value>Volte letto</value>
+  </data>
+  <data name="BookEditForm_Label_Title" xml:space="preserve">
+    <value>Titolo *</value>
+  </data>
+  <data name="BookEditForm_Label_Year" xml:space="preserve">
+    <value>Anno</value>
+  </data>
+  <data name="BookEditForm_Tab_Images" xml:space="preserve">
+    <value>Immagini</value>
+  </data>
+  <data name="BookEditForm_Watermark_Usd" xml:space="preserve">
+    <value>USD</value>
+  </data>
+  <data name="BookList_AdvancedSearch_Button" xml:space="preserve">
+    <value>Ricerca avanzata</value>
+  </data>
+  <data name="BookList_AdvancedSearch_Label" xml:space="preserve">
+    <value>Avanzata</value>
+  </data>
+  <data name="BookList_ClearSearch_Label" xml:space="preserve">
+    <value>Cancella</value>
+  </data>
+  <data name="BookList_Column_Authors" xml:space="preserve">
+    <value>Autore/i</value>
+  </data>
+  <data name="BookList_Column_Cover" xml:space="preserve">
+    <value>Copertina</value>
+  </data>
+  <data name="BookList_Column_Format" xml:space="preserve">
+    <value>Formato</value>
+  </data>
+  <data name="BookList_Column_Publisher" xml:space="preserve">
+    <value>Editore</value>
+  </data>
+  <data name="BookList_Column_Rating" xml:space="preserve">
+    <value>Valutazione</value>
+  </data>
+  <data name="BookList_Column_Series" xml:space="preserve">
+    <value>Serie</value>
+  </data>
+  <data name="BookList_Column_Status" xml:space="preserve">
+    <value>Stato</value>
+  </data>
+  <data name="BookList_Column_Title" xml:space="preserve">
+    <value>Titolo</value>
+  </data>
+  <data name="BookList_Column_Year" xml:space="preserve">
+    <value>Anno</value>
+  </data>
+  <data name="BookList_ContextMenu_Recatalog" xml:space="preserve">
+    <value>Ricataloga selezionati</value>
+  </data>
+  <data name="BookList_Loading" xml:space="preserve">
+    <value>Caricamento...</value>
+  </data>
+  <data name="BookImageType_BackCover" xml:space="preserve">
+    <value>Quarta di copertina</value>
+  </data>
+  <data name="BookImageType_Cover" xml:space="preserve">
+    <value>Prima di copertina</value>
+  </data>
+  <data name="BookImageType_DustJacket" xml:space="preserve">
+    <value>Sovraccoperta</value>
+  </data>
+  <data name="BookImageType_Spine" xml:space="preserve">
+    <value>Dorso</value>
+  </data>
+  <data name="BookImageType_Thumbnail" xml:space="preserve">
+    <value>Miniatura</value>
+  </data>
+  <data name="BorrowerStatus_Active" xml:space="preserve">
+    <value>Attivo</value>
+  </data>
+  <data name="BorrowerStatus_Inactive" xml:space="preserve">
+    <value>Inattivo</value>
+  </data>
+  <data name="Condition_Fair" xml:space="preserve">
+    <value>Accettabile</value>
+  </data>
+  <data name="Condition_Good" xml:space="preserve">
+    <value>Buono</value>
+  </data>
+  <data name="Condition_LikeNew" xml:space="preserve">
+    <value>Come nuovo</value>
+  </data>
+  <data name="Condition_New" xml:space="preserve">
+    <value>Nuovo</value>
+  </data>
+  <data name="Condition_Poor" xml:space="preserve">
+    <value>Scadente</value>
+  </data>
+  <data name="Condition_VeryGood" xml:space="preserve">
+    <value>Molto buono</value>
+  </data>
+  <data name="ContributorRole_Author" xml:space="preserve">
+    <value>Autore</value>
+  </data>
+  <data name="ContributorRole_Colorist" xml:space="preserve">
+    <value>Colorista</value>
+  </data>
+  <data name="ContributorRole_CoverArtist" xml:space="preserve">
+    <value>Illustratore di copertina</value>
+  </data>
+  <data name="ContributorRole_Designer" xml:space="preserve">
+    <value>Designer</value>
+  </data>
+  <data name="ContributorRole_Editor" xml:space="preserve">
+    <value>Redattore</value>
+  </data>
+  <data name="ContributorRole_Foreword" xml:space="preserve">
+    <value>Prefazione</value>
+  </data>
+  <data name="ContributorRole_Illustrator" xml:space="preserve">
+    <value>Illustratore</value>
+  </data>
+  <data name="ContributorRole_Introduction" xml:space="preserve">
+    <value>Introduzione</value>
+  </data>
+  <data name="ContributorRole_Inker" xml:space="preserve">
+    <value>Inchiostratore</value>
+  </data>
+  <data name="ContributorRole_Letterer" xml:space="preserve">
+    <value>Lettering</value>
+  </data>
+  <data name="ContributorRole_Penciller" xml:space="preserve">
+    <value>Disegnatore a matita</value>
+  </data>
+  <data name="ContributorRole_Translator" xml:space="preserve">
+    <value>Traduttore</value>
+  </data>
+  <data name="ContributorRole_Writer" xml:space="preserve">
+    <value>Sceneggiatore</value>
+  </data>
+  <data name="Edition_1stEdition" xml:space="preserve">
+    <value>1ª edizione</value>
+  </data>
+  <data name="Edition_2ndEdition" xml:space="preserve">
+    <value>2ª edizione</value>
+  </data>
+  <data name="Edition_3rdEdition" xml:space="preserve">
+    <value>3ª edizione</value>
+  </data>
+  <data name="Edition_CollectorsEdition" xml:space="preserve">
+    <value>Edizione da collezione</value>
+  </data>
+  <data name="Edition_LimitedEdition" xml:space="preserve">
+    <value>Edizione limitata</value>
+  </data>
+  <data name="Edition_RevisedEdition" xml:space="preserve">
+    <value>Edizione riveduta</value>
+  </data>
+  <data name="Edition_SignedEdition" xml:space="preserve">
+    <value>Edizione autografata</value>
+  </data>
+  <data name="ImageEditor_NoImage_Back" xml:space="preserve">
+    <value>Nessuna immagine di quarta di copertina</value>
+  </data>
+  <data name="ImageEditor_NoImage_DustJacket" xml:space="preserve">
+    <value>Nessuna immagine di sovraccoperta</value>
+  </data>
+  <data name="ImageEditor_NoImage_Front" xml:space="preserve">
+    <value>Nessuna immagine di copertina anteriore</value>
+  </data>
+  <data name="ImageEditor_NoImage_Generic" xml:space="preserve">
+    <value>Nessuna immagine</value>
+  </data>
+  <data name="ImageEditor_NoImage_Spine" xml:space="preserve">
+    <value>Nessuna immagine del dorso</value>
+  </data>
+  <data name="ImageEditor_NoImage_Thumb" xml:space="preserve">
+    <value>Nessuna miniatura</value>
+  </data>
+  <data name="ImageEditor_TypeButton_Back" xml:space="preserve">
+    <value>Retro</value>
+  </data>
+  <data name="ImageEditor_TypeButton_Front" xml:space="preserve">
+    <value>Fronte</value>
+  </data>
+  <data name="ImageEditor_TypeButton_Jacket" xml:space="preserve">
+    <value>Sovraccoperta</value>
+  </data>
+  <data name="ImageEditor_TypeButton_Spine" xml:space="preserve">
+    <value>Dorso</value>
+  </data>
+  <data name="ImageEditor_TypeButton_Thumb" xml:space="preserve">
+    <value>Miniatura</value>
+  </data>
+  <data name="ImageEditor_ManageSection_Heading" xml:space="preserve">
+    <value>Gestisci tutte le immagini</value>
+  </data>
+  <data name="ImageEditor_ManageItem_MoveUp_Tooltip" xml:space="preserve">
+    <value>Sposta su nel tipo</value>
+  </data>
+  <data name="ImageEditor_ManageItem_MoveDown_Tooltip" xml:space="preserve">
+    <value>Sposta giù nel tipo</value>
+  </data>
+  <data name="ImageEditor_ManageItem_TypePicker_Tooltip" xml:space="preserve">
+    <value>Riassegna a un tipo di immagine diverso</value>
+  </data>
+  <data name="ImageEditor_ManageItem_Remove_Tooltip" xml:space="preserve">
+    <value>Rimuovi immagine</value>
+  </data>
+  <data name="BookList_Thumbnail_Badge_Tooltip" xml:space="preserve">
+    <value>Tipi di immagine duplicati — controlla la scheda Immagini</value>
+  </data>
+  <data name="Import_Ask_Body" xml:space="preserve">
+    <value>Esiste già un libro con lo stesso ISBN:
+
+"{0}"
+
+Sovrascriverlo con i dati di importazione?</value>
+  </data>
+  <data name="Import_Ask_Title" xml:space="preserve">
+    <value>Libro duplicato — Sovrascrivere?</value>
+  </data>
+  <data name="Import_BackButton" xml:space="preserve">
+    <value>Indietro</value>
+  </data>
+  <data name="Import_ImportButton" xml:space="preserve">
+    <value>Importa</value>
+  </data>
+  <data name="Import_NextButton" xml:space="preserve">
+    <value>Avanti</value>
+  </data>
+  <data name="Import_Step1_BrowseFolder" xml:space="preserve">
+    <value>Seleziona cartella di backup…</value>
+  </data>
+  <data name="Import_Step1_BrowseZip" xml:space="preserve">
+    <value>Sfoglia per il file zip di backup…</value>
+  </data>
+  <data name="Import_Step1_CollectionLabel" xml:space="preserve">
+    <value>Importa nella raccolta:</value>
+  </data>
+  <data name="Import_Step1_CollectionWatermark" xml:space="preserve">
+    <value>Selezionare una raccolta...</value>
+  </data>
+  <data name="Import_Step1_FileLabel" xml:space="preserve">
+    <value>File o cartella di backup:</value>
+  </data>
+  <data name="Import_Step1_FileWatermark" xml:space="preserve">
+    <value>Percorso al file .zip di backup o alla cartella...</value>
+  </data>
+  <data name="Import_Step1_HelpText" xml:space="preserve">
+    <value>Selezionare un backup .zip creato dalla funzione Backup di Readerware, oppure la cartella di backup estratta.</value>
+  </data>
+  <data name="Import_Step2_Analyzing" xml:space="preserve">
+    <value>Analisi del file di backup in corso...</value>
+  </data>
+  <data name="Import_Step2_Column_Author" xml:space="preserve">
+    <value>Autore</value>
+  </data>
+  <data name="Import_Step2_Column_Cover" xml:space="preserve">
+    <value>Copertina</value>
+  </data>
+  <data name="Import_Step2_Column_Isbn" xml:space="preserve">
+    <value>ISBN</value>
+  </data>
+  <data name="Import_Step2_Column_Note" xml:space="preserve">
+    <value>Nota</value>
+  </data>
+  <data name="Import_Step2_Column_RowNumber" xml:space="preserve">
+    <value>#</value>
+  </data>
+  <data name="Import_Step2_Column_Title" xml:space="preserve">
+    <value>Titolo</value>
+  </data>
+  <data name="Import_Step2_WarningsHeader" xml:space="preserve">
+    <value>{0} elemento/i segnalato/i durante l'analisi — fai clic per i dettagli</value>
+  </data>
+  <data name="Import_Step2_PotentialDuplicates" xml:space="preserve">
+    <value>Potenziali duplicati:</value>
+  </data>
+  <data name="Import_Step2_TotalRecords" xml:space="preserve">
+    <value>Record totali:</value>
+  </data>
+  <data name="Import_Step2_WithCovers" xml:space="preserve">
+    <value>Con copertine:</value>
+  </data>
+  <data name="Import_Step2_WithIsbn" xml:space="preserve">
+    <value>Con ISBN:</value>
+  </data>
+  <data name="Import_Step2_WithoutIsbn" xml:space="preserve">
+    <value>Senza ISBN:</value>
+  </data>
+  <data name="Import_Step3_HelpText" xml:space="preserve">
+    <value>Fare clic su Importa per iniziare. L'operazione può essere annullata in qualsiasi momento.</value>
+  </data>
+  <data name="Import_Step3_ReviewLabel" xml:space="preserve">
+    <value>Rivedere e confermare l'importazione:</value>
+  </data>
+  <data name="Import_Step3_Summary" xml:space="preserve">
+    <value>Pronti per importare {0} record
+Con ISBN: {1}  |  Senza ISBN: {2}
+Potenziali duplicati: {3}  |  Con copertine: {4}</value>
+  </data>
+  <data name="Import_Step4_CancelButton" xml:space="preserve">
+    <value>Annulla importazione</value>
+  </data>
+  <data name="Import_Step4_Cancelling" xml:space="preserve">
+    <value>Annullamento dell'importazione in corso...</value>
+  </data>
+  <data name="Import_Step4_Importing" xml:space="preserve">
+    <value>Importazione record in corso...</value>
+  </data>
+  <data name="Import_Step4_Progress" xml:space="preserve">
+    <value>{0} di {1} record</value>
+  </data>
+  <data name="Import_Step5_Cancelled" xml:space="preserve">
+    <value>L'importazione è stata annullata. I record parziali sono stati salvati.</value>
+  </data>
+  <data name="Import_Step5_ErrorsLabel" xml:space="preserve">
+    <value>Errori:</value>
+  </data>
+  <data name="Import_Step5_FlaggedNoIsbn" xml:space="preserve">
+    <value>Segnalati (nessun ISBN):</value>
+  </data>
+  <data name="Import_Step5_Heading" xml:space="preserve">
+    <value>Risultati importazione</value>
+  </data>
+  <data name="Import_Step5_Imported" xml:space="preserve">
+    <value>Importati:</value>
+  </data>
+  <data name="Import_Step5_Skipped" xml:space="preserve">
+    <value>Ignorati:</value>
+  </data>
+  <data name="Import_Step5_Updated" xml:space="preserve">
+    <value>Aggiornati:</value>
+  </data>
+  <data name="Import_StepIndicator" xml:space="preserve">
+    <value>Passaggio {0} di {1}</value>
+  </data>
+  <data name="Import_StepTitle_Complete" xml:space="preserve">
+    <value>Importazione completata</value>
+  </data>
+  <data name="Import_StepTitle_Confirm" xml:space="preserve">
+    <value>Conferma importazione</value>
+  </data>
+  <data name="Import_StepTitle_Default" xml:space="preserve">
+    <value>Importa da Readerware</value>
+  </data>
+  <data name="Import_StepTitle_FileSelect" xml:space="preserve">
+    <value>Seleziona file di backup</value>
+  </data>
+  <data name="Import_StepTitle_Preview" xml:space="preserve">
+    <value>Anteprima importazione</value>
+  </data>
+  <data name="Import_StepTitle_Progress" xml:space="preserve">
+    <value>Importazione in corso...</value>
+  </data>
+  <data name="Import_WindowTitle" xml:space="preserve">
+    <value>Importa da Readerware</value>
+  </data>
+  <data name="Format_Audiobook" xml:space="preserve">
+    <value>Audiolibro</value>
+  </data>
+  <data name="Format_Comic" xml:space="preserve">
+    <value>Fumetto</value>
+  </data>
+  <data name="Format_Ebook" xml:space="preserve">
+    <value>E-book</value>
+  </data>
+  <data name="Format_GraphicNovel" xml:space="preserve">
+    <value>Romanzo grafico</value>
+  </data>
+  <data name="Format_Hardcover" xml:space="preserve">
+    <value>Copertina rigida</value>
+  </data>
+  <data name="Format_Magazine" xml:space="preserve">
+    <value>Rivista</value>
+  </data>
+  <data name="Format_MassMarketPaperback" xml:space="preserve">
+    <value>Brossura economica</value>
+  </data>
+  <data name="Format_Paperback" xml:space="preserve">
+    <value>Brossura</value>
+  </data>
+  <data name="Format_TradePaperback" xml:space="preserve">
+    <value>Trade Paperback</value>
+  </data>
+  <data name="Language_Danish" xml:space="preserve">
+    <value>Danese</value>
+  </data>
+
+  <data name="Language_Finnish" xml:space="preserve">
+    <value>Finlandese</value>
+  </data>
+  <data name="Language_French" xml:space="preserve">
+    <value>Francese</value>
+  </data>
+  <data name="Language_German" xml:space="preserve">
+    <value>Tedesco</value>
+  </data>
+  <data name="Language_Italian" xml:space="preserve">
+    <value>Italiano</value>
+  </data>
+  <data name="Language_Japanese" xml:space="preserve">
+    <value>Giapponese</value>
+  </data>
+  <data name="Language_Norwegian" xml:space="preserve">
+    <value>Norvegese</value>
+  </data>
+  <data name="Language_Spanish" xml:space="preserve">
+    <value>Spagnolo</value>
+  </data>
+  <data name="Language_Swedish" xml:space="preserve">
+    <value>Svedese</value>
+  </data>
+  <data name="Rating_1Star" xml:space="preserve">
+    <value>1 stella</value>
+  </data>
+  <data name="Rating_2Stars" xml:space="preserve">
+    <value>2 stelle</value>
+  </data>
+  <data name="Rating_3Stars" xml:space="preserve">
+    <value>3 stelle</value>
+  </data>
+  <data name="Rating_4Stars" xml:space="preserve">
+    <value>4 stelle</value>
+  </data>
+  <data name="Rating_5Stars" xml:space="preserve">
+    <value>5 stelle</value>
+  </data>
+  <data name="ReadingLevel_Adult" xml:space="preserve">
+    <value>Adulti</value>
+  </data>
+  <data name="ReadingLevel_EasyReader" xml:space="preserve">
+    <value>Lettura facile</value>
+  </data>
+  <data name="ReadingLevel_MiddleGrade" xml:space="preserve">
+    <value>Scuola media</value>
+  </data>
+  <data name="ReadingLevel_YoungAdult" xml:space="preserve">
+    <value>Giovani adulti</value>
+  </data>
+  <data name="Print_ClearAll" xml:space="preserve">
+    <value>Cancella tutto</value>
+  </data>
+  <data name="Print_ColumnsHeading" xml:space="preserve">
+    <value>Colonne da includere:</value>
+  </data>
+  <data name="Print_ConfirmDeletePreset" xml:space="preserve">
+    <value>Elimina preset</value>
+  </data>
+  <data name="Print_DeletePreset" xml:space="preserve">
+    <value>Elimina</value>
+  </data>
+  <data name="Print_DeletePresetConfirm" xml:space="preserve">
+    <value>Eliminare '{0}'? L'operazione non può essere annullata.</value>
+  </data>
+  <data name="Print_FontSizeLabel" xml:space="preserve">
+    <value>Dimensione carattere:</value>
+  </data>
+  <data name="Print_FooterLabel" xml:space="preserve">
+    <value>Piè di pagina:</value>
+  </data>
+  <data name="Print_FooterWatermark" xml:space="preserve">
+    <value>Numeri di pagina aggiunti automaticamente</value>
+  </data>
+  <data name="Print_HeaderLabel" xml:space="preserve">
+    <value>Intestazione:</value>
+  </data>
+  <data name="Print_Heading" xml:space="preserve">
+    <value>Stampa lista</value>
+  </data>
+  <data name="Print_MarginH" xml:space="preserve">
+    <value>O:</value>
+  </data>
+  <data name="Print_MarginsLabel" xml:space="preserve">
+    <value>Margini (mm):</value>
+  </data>
+  <data name="Print_MarginV" xml:space="preserve">
+    <value>V:</value>
+  </data>
+  <data name="Print_NewPreset" xml:space="preserve">
+    <value>Nuovo…</value>
+  </data>
+  <data name="Print_OrientationLabel" xml:space="preserve">
+    <value>Orientamento:</value>
+  </data>
+  <data name="Print_OrientationLandscape" xml:space="preserve">
+    <value>Orizzontale</value>
+  </data>
+  <data name="Print_OrientationPortrait" xml:space="preserve">
+    <value>Verticale</value>
+  </data>
+  <data name="Print_PresetLabel" xml:space="preserve">
+    <value>Preset:</value>
+  </data>
+  <data name="Print_PresetNameLabel" xml:space="preserve">
+    <value>Nome:</value>
+  </data>
+  <data name="Print_PreviewButton" xml:space="preserve">
+    <value>Anteprima / Stampa</value>
+  </data>
+  <data name="Print_RenamePreset" xml:space="preserve">
+    <value>Rinomina…</value>
+  </data>
+  <data name="Print_SaveAsPdfButton" xml:space="preserve">
+    <value>Salva come PDF…</value>
+  </data>
+  <data name="Print_SelectAll" xml:space="preserve">
+    <value>Seleziona tutto</value>
+  </data>
+  <data name="Print_WindowTitle" xml:space="preserve">
+    <value>Stampa lista</value>
+  </data>
+  <data name="Print_Column_Added" xml:space="preserve">
+    <value>Aggiunto</value>
+  </data>
+  <data name="Print_Column_AltTitle" xml:space="preserve">
+    <value>Titolo alt.</value>
+  </data>
+  <data name="Print_Column_Authors" xml:space="preserve">
+    <value>Autore</value>
+  </data>
+  <data name="Print_Column_Collection" xml:space="preserve">
+    <value>Raccolta</value>
+  </data>
+  <data name="Print_Column_Comments" xml:space="preserve">
+    <value>Commenti</value>
+  </data>
+  <data name="Print_Column_Condition" xml:space="preserve">
+    <value>Condizione</value>
+  </data>
+  <data name="Print_Column_Copies" xml:space="preserve">
+    <value>Copie</value>
+  </data>
+  <data name="Print_Column_Edition" xml:space="preserve">
+    <value>Edizione</value>
+  </data>
+  <data name="Print_Column_Favorite" xml:space="preserve">
+    <value>Preferito</value>
+  </data>
+  <data name="Print_Column_Format" xml:space="preserve">
+    <value>Formato</value>
+  </data>
+  <data name="Print_Column_ISBN" xml:space="preserve">
+    <value>ISBN</value>
+  </data>
+  <data name="Print_Column_Keywords" xml:space="preserve">
+    <value>Parole chiave</value>
+  </data>
+  <data name="Print_Column_Language" xml:space="preserve">
+    <value>Lingua</value>
+  </data>
+  <data name="Print_Column_Location" xml:space="preserve">
+    <value>Collocazione</value>
+  </data>
+  <data name="Print_Column_OutOfPrint" xml:space="preserve">
+    <value>Fuori catalogo</value>
+  </data>
+  <data name="Print_Column_Owner" xml:space="preserve">
+    <value>Proprietario</value>
+  </data>
+  <data name="Print_Column_Pages" xml:space="preserve">
+    <value>Pagine</value>
+  </data>
+  <data name="Print_Column_PubDate" xml:space="preserve">
+    <value>Anno</value>
+  </data>
+  <data name="Print_Column_PubPlace" xml:space="preserve">
+    <value>Luogo pubbl.</value>
+  </data>
+  <data name="Print_Column_Publisher" xml:space="preserve">
+    <value>Editore</value>
+  </data>
+  <data name="Print_Column_PurchaseCurrency" xml:space="preserve">
+    <value>Valuta</value>
+  </data>
+  <data name="Print_Column_PurchasePrice" xml:space="preserve">
+    <value>Prezzo di acquisto</value>
+  </data>
+  <data name="Print_Column_Rating" xml:space="preserve">
+    <value>Valutazione</value>
+  </data>
+  <data name="Print_Column_ReadCount" xml:space="preserve">
+    <value>Volte letto</value>
+  </data>
+  <data name="Print_Column_Series" xml:space="preserve">
+    <value>Serie</value>
+  </data>
+  <data name="Print_Column_SeriesNumber" xml:space="preserve">
+    <value>Serie #</value>
+  </data>
+  <data name="Print_Column_Signed" xml:space="preserve">
+    <value>Autografato</value>
+  </data>
+  <data name="Print_Column_Status" xml:space="preserve">
+    <value>Stato</value>
+  </data>
+  <data name="Print_Column_Subtitle" xml:space="preserve">
+    <value>Sottotitolo</value>
+  </data>
+  <data name="Print_Column_Title" xml:space="preserve">
+    <value>Titolo</value>
+  </data>
+  <data name="Print_Column_Updated" xml:space="preserve">
+    <value>Aggiornato</value>
+  </data>
+  <data name="Print_DefaultHeaderTitle" xml:space="preserve">
+    <value>Lista libri</value>
+  </data>
+  <data name="Print_Error_PresetNameDuplicate" xml:space="preserve">
+    <value>Esiste già un preset con questo nome.</value>
+  </data>
+  <data name="Print_Error_PresetNameEmpty" xml:space="preserve">
+    <value>Il nome del preset non può essere vuoto.</value>
+  </data>
+  <data name="Print_Error_PresetSaveFailed" xml:space="preserve">
+    <value>Salvataggio non riuscito. Le modifiche potrebbero non essere mantenute dopo il riavvio.</value>
+  </data>
+  <data name="Print_Footer_PageFormat" xml:space="preserve">
+    <value>Pagina {0} di {1}</value>
+  </data>
+  <data name="Print_ScopeSummary_Multiple" xml:space="preserve">
+    <value>Stampa di {0} libri dal filtro corrente.</value>
+  </data>
+  <data name="Print_ScopeSummary_None" xml:space="preserve">
+    <value>Nessun libro corrisponde al filtro corrente. Niente da stampare.</value>
+  </data>
+  <data name="Print_ScopeSummary_Single" xml:space="preserve">
+    <value>Stampa di {0} libro dal filtro corrente.</value>
+  </data>
+  <data name="Print_StandardPresetDisplayName" xml:space="preserve">
+    <value>Standard</value>
+  </data>
+  <data name="Settings_Advanced_AutoBackup" xml:space="preserve">
+    <value>Backup automatico alla chiusura</value>
+  </data>
+  <data name="Settings_Advanced_BackupFolder" xml:space="preserve">
+    <value>Cartella backup automatico</value>
+  </data>
+  <data name="Settings_Advanced_BackupFolderWatermark" xml:space="preserve">
+    <value>(non impostata — fare clic su Sfoglia)</value>
+  </data>
+  <data name="Settings_Advanced_BackupFormat" xml:space="preserve">
+    <value>Formato backup automatico</value>
+  </data>
+  <data name="Settings_Advanced_Browse" xml:space="preserve">
+    <value>Sfoglia…</value>
+  </data>
+  <data name="Settings_Advanced_Logging_Label" xml:space="preserve">
+    <value>Registrazione</value>
+  </data>
+  <data name="Settings_Advanced_Logging_Level_Label" xml:space="preserve">
+    <value>Livello di registrazione</value>
+  </data>
+  <data name="Settings_Advanced_Logging_Level_Normal" xml:space="preserve">
+    <value>Normale (errori e avvisi)</value>
+  </data>
+  <data name="Settings_Advanced_Logging_Level_Verbose" xml:space="preserve">
+    <value>Dettagliato (tutti i messaggi)</value>
+  </data>
+  <data name="Settings_Advanced_Logging_OpenLogFile" xml:space="preserve">
+    <value>Apri file di registro…</value>
+  </data>
+  <data name="Settings_Advanced_Logging_RestartNote" xml:space="preserve">
+    <value>La modifica del livello di registrazione avrà effetto al prossimo avvio.</value>
+  </data>
+  <data name="Settings_Browse_AuthorFacetLabel" xml:space="preserve">
+    <value>Etichetta autori nel pannello filtri</value>
+  </data>
+  <data name="Settings_Browse_DisplayName" xml:space="preserve">
+    <value>Nome visualizzato (Mario Rossi)</value>
+  </data>
+  <data name="Settings_Browse_SortName" xml:space="preserve">
+    <value>Nome di ordinamento (Rossi, Mario)</value>
+  </data>
+  <data name="Settings_General_Language" xml:space="preserve">
+    <value>Lingua</value>
+  </data>
+  <data name="Settings_General_LanguageRestartNote" xml:space="preserve">
+    <value>La modifica della lingua avrà effetto al prossimo avvio.</value>
+  </data>
+  <data name="Settings_General_DefaultCollection" xml:space="preserve">
+    <value>Raccolta predefinita</value>
+  </data>
+  <data name="Settings_Import_OverwritePolicy" xml:space="preserve">
+    <value>Criterio di sovrascrittura</value>
+  </data>
+  <data name="Settings_Import_ReaderwareToolPath" xml:space="preserve">
+    <value>Cartella degli strumenti Readerware</value>
+  </data>
+  <data name="Settings_Import_ReaderwareToolPathWatermark" xml:space="preserve">
+    <value>Percorso della cartella degli strumenti HSQLDB + Java</value>
+  </data>
+  <data name="Settings_Import_ReaderwareToolPathHint" xml:space="preserve">
+    <value>Cartella contenente il runtime HSQLDB (jre\bin\java.exe e lib\hsqldb.jar) usato per leggere direttamente un database Readerware attivo.</value>
+  </data>
+  <data name="Settings_Lookup_LibrisKB" xml:space="preserve">
+    <value>Libris KB</value>
+  </data>
+  <data name="Settings_Lookup_GoogleBooks" xml:space="preserve">
+    <value>Google Books</value>
+  </data>
+  <data name="Settings_Lookup_OpenLibrary" xml:space="preserve">
+    <value>Open Library</value>
+  </data>
+  <data name="Settings_Lookup_IsbnSearchOrg" xml:space="preserve">
+    <value>IsbnSearch.org</value>
+  </data>
+  <data name="Settings_Lookup_Enabled" xml:space="preserve">
+    <value>Abilitato</value>
+  </data>
+  <data name="Settings_Tab_Advanced" xml:space="preserve">
+    <value>Avanzate</value>
+  </data>
+  <data name="Settings_Tab_Browse" xml:space="preserve">
+    <value>Sfoglia</value>
+  </data>
+  <data name="Settings_Tab_General" xml:space="preserve">
+    <value>Generale</value>
+  </data>
+  <data name="Settings_Tab_Import" xml:space="preserve">
+    <value>Importa</value>
+  </data>
+  <data name="Settings_Tab_Lookup" xml:space="preserve">
+    <value>Ricerca</value>
+  </data>
+  <data name="Settings_WindowTitle" xml:space="preserve">
+    <value>Impostazioni</value>
+  </data>
+  <data name="Statistics_Column_Collection" xml:space="preserve">
+    <value>Raccolta</value>
+  </data>
+  <data name="Statistics_Column_Count" xml:space="preserve">
+    <value>Conteggio (%)</value>
+  </data>
+  <data name="Statistics_Column_Format" xml:space="preserve">
+    <value>Formato</value>
+  </data>
+  <data name="Statistics_Column_Language" xml:space="preserve">
+    <value>Lingua</value>
+  </data>
+  <data name="Statistics_Column_Year" xml:space="preserve">
+    <value>Anno</value>
+  </data>
+  <data name="Statistics_Label_TotalBooks" xml:space="preserve">
+    <value>Totale libri</value>
+  </data>
+  <data name="Statistics_RefreshButton" xml:space="preserve">
+    <value>Aggiorna</value>
+  </data>
+  <data name="Statistics_Section_ByCollection" xml:space="preserve">
+    <value>Per raccolta</value>
+  </data>
+  <data name="Statistics_Section_ByFormat" xml:space="preserve">
+    <value>Per formato</value>
+  </data>
+  <data name="Statistics_Section_ByLanguage" xml:space="preserve">
+    <value>Per lingua</value>
+  </data>
+  <data name="Statistics_Section_BooksPerYear" xml:space="preserve">
+    <value>Libri aggiunti per anno</value>
+  </data>
+  <data name="Statistics_Section_ByYear" xml:space="preserve">
+    <value>Per anno di pubblicazione</value>
+  </data>
+  <data name="Statistics_Section_Summary" xml:space="preserve">
+    <value>Riepilogo</value>
+  </data>
+  <data name="Statistics_WindowTitle" xml:space="preserve">
+    <value>Statistiche</value>
+  </data>
+  <data name="Status_Borrowed" xml:space="preserve">
+    <value>In prestito</value>
+  </data>
+  <data name="Status_GivenAway" xml:space="preserve">
+    <value>Regalato</value>
+  </data>
+  <data name="Status_OnOrder" xml:space="preserve">
+    <value>In ordine</value>
+  </data>
+  <data name="Status_Owned" xml:space="preserve">
+    <value>Posseduto</value>
+  </data>
+  <data name="Status_Sold" xml:space="preserve">
+    <value>Venduto</value>
+  </data>
+  <data name="Status_Wishlist" xml:space="preserve">
+    <value>Lista desideri</value>
+  </data>
+  <data name="AddBook_Label_Author" xml:space="preserve">
+    <value>Autore</value>
+  </data>
+  <data name="AddBook_Label_Isbn" xml:space="preserve">
+    <value>ISBN</value>
+  </data>
+  <data name="AddBook_Label_Title" xml:space="preserve">
+    <value>Titolo *</value>
+  </data>
+  <data name="AddBook_Label_Collection" xml:space="preserve">
+    <value>Raccolta</value>
+  </data>
+  <data name="AddBook_Label_Year" xml:space="preserve">
+    <value>Anno</value>
+  </data>
+  <data name="AdvancedSearch_AddCondition" xml:space="preserve">
+    <value>+ Aggiungi condizione</value>
+  </data>
+  <data name="AdvancedSearch_ConditionsLabel" xml:space="preserve">
+    <value>delle seguenti condizioni:</value>
+  </data>
+  <data name="AdvancedSearch_EditTitle" xml:space="preserve">
+    <value>Modifica ricerca</value>
+  </data>
+  <data name="AdvancedSearch_MatchCountFormat" xml:space="preserve">
+    <value>{0} libri corrispondenti</value>
+  </data>
+  <data name="AdvancedSearch_TestButton" xml:space="preserve">
+    <value>Prova</value>
+  </data>
+  <data name="AdvancedSearch_MatchLabel" xml:space="preserve">
+    <value>Corrispondi</value>
+  </data>
+  <data name="AdvancedSearch_SearchButton" xml:space="preserve">
+    <value>Cerca</value>
+  </data>
+  <data name="BatchQueue_Idle" xml:space="preserve">
+    <value>Nessuna elaborazione in blocco in corso</value>
+  </data>
+  <data name="BatchQueue_Label_AutoAccepted" xml:space="preserve">
+    <value>Accettati automaticamente (nessun conflitto):</value>
+  </data>
+  <data name="BatchQueue_Label_NotFound" xml:space="preserve">
+    <value>Non trovati:</value>
+  </data>
+  <data name="BatchQueue_Label_PendingReview" xml:space="preserve">
+    <value>In attesa di revisione:</value>
+  </data>
+  <data name="BatchQueue_Label_Saved" xml:space="preserve">
+    <value>Salvati:</value>
+  </data>
+  <data name="BatchQueue_Label_Skipped" xml:space="preserve">
+    <value>Nessun dato nuovo (ignorati):</value>
+  </data>
+  <data name="BatchQueue_Minimize" xml:space="preserve">
+    <value>Riduci a icona</value>
+  </data>
+  <data name="BatchQueue_Pause" xml:space="preserve">
+    <value>Pausa</value>
+  </data>
+  <data name="BatchQueue_Paused" xml:space="preserve">
+    <value>In pausa — fare clic su Riprendi per continuare</value>
+  </data>
+  <data name="BatchQueue_Processing" xml:space="preserve">
+    <value>Elaborazione: {0}</value>
+  </data>
+  <data name="BatchQueue_Resume" xml:space="preserve">
+    <value>Riprendi</value>
+  </data>
+  <data name="BulkEdit_ConfirmSummary" xml:space="preserve">
+    <value>Modificare {0} in "{1}" per {2} libri.</value>
+  </data>
+  <data name="BulkEdit_FieldLabel" xml:space="preserve">
+    <value>Campo da modificare:</value>
+  </data>
+  <data name="BulkEdit_Header" xml:space="preserve">
+    <value>Modifica in blocco {0} libri</value>
+  </data>
+  <data name="BulkEdit_ValueLabel" xml:space="preserve">
+    <value>Nuovo valore:</value>
+  </data>
+  <data name="BulkEditField_Format" xml:space="preserve">
+    <value>Formato</value>
+  </data>
+  <data name="BulkEditField_Language" xml:space="preserve">
+    <value>Lingua</value>
+  </data>
+  <data name="BulkEditField_Location" xml:space="preserve">
+    <value>Collocazione</value>
+  </data>
+  <data name="BulkEditField_Owner" xml:space="preserve">
+    <value>Proprietario</value>
+  </data>
+  <data name="BulkEditField_Rating" xml:space="preserve">
+    <value>Valutazione</value>
+  </data>
+  <data name="BulkEditField_Status" xml:space="preserve">
+    <value>Stato</value>
+  </data>
+  <data name="CsvPicker_ClearAll" xml:space="preserve">
+    <value>Cancella tutto</value>
+  </data>
+  <data name="CsvPicker_ExportButton" xml:space="preserve">
+    <value>Esporta CSV</value>
+  </data>
+  <data name="CsvPicker_Heading" xml:space="preserve">
+    <value>Selezionare le colonne da includere nell'esportazione:</value>
+  </data>
+  <data name="CsvPicker_SelectAll" xml:space="preserve">
+    <value>Seleziona tutto</value>
+  </data>
+  <data name="CsvPicker_WindowTitle" xml:space="preserve">
+    <value>Seleziona colonne da esportare</value>
+  </data>
+  <data name="LookupWizard_LookingUp" xml:space="preserve">
+    <value>Ricerca in corso…</value>
+  </data>
+  <data name="Merge_Column_Field" xml:space="preserve">
+    <value>Campo</value>
+  </data>
+  <data name="Merge_Cover_Label" xml:space="preserve">
+    <value>Copertina</value>
+  </data>
+  <data name="Person_Column_Apply" xml:space="preserve">
+    <value>Applica</value>
+  </data>
+  <data name="Person_Column_CurrentName" xml:space="preserve">
+    <value>Nome corrente</value>
+  </data>
+  <data name="Person_Column_ProposedName" xml:space="preserve">
+    <value>Nome proposto</value>
+  </data>
+  <data name="Person_Column_SortName" xml:space="preserve">
+    <value>Nome di ordinamento</value>
+  </data>
+  <data name="Person_Label_Bio" xml:space="preserve">
+    <value>Biografia:</value>
+  </data>
+  <data name="Person_Label_Birthplace" xml:space="preserve">
+    <value>Luogo di nascita:</value>
+  </data>
+  <data name="Person_Label_Born" xml:space="preserve">
+    <value>Nato:</value>
+  </data>
+  <data name="Person_Label_DeathPlace" xml:space="preserve">
+    <value>Luogo di morte:</value>
+  </data>
+  <data name="Person_Label_Died" xml:space="preserve">
+    <value>Morto:</value>
+  </data>
+  <data name="Person_Label_Website" xml:space="preserve">
+    <value>Sito web:</value>
+  </data>
+  <data name="Person_Merge_Arrow" xml:space="preserve">
+    <value>→</value>
+  </data>
+  <data name="Person_Merge_Heading" xml:space="preserve">
+    <value>Unisci persone</value>
+  </data>
+  <data name="Person_Section_Bio" xml:space="preserve">
+    <value>Dati biografici</value>
+  </data>
+  <data name="Person_Bio_SaveButton" xml:space="preserve">
+    <value>Salva biografia</value>
+  </data>
+  <data name="Person_ErrorBioSaveFailed" xml:space="preserve">
+    <value>Bio save failed — see log.</value>
+  </data>
+  <data name="SearchCombinator_And" xml:space="preserve">
+    <value>E</value>
+  </data>
+  <data name="SearchCombinator_Or" xml:space="preserve">
+    <value>O</value>
+  </data>
+  <data name="SearchField_Author" xml:space="preserve">
+    <value>Autore</value>
+  </data>
+  <data name="SearchField_Category" xml:space="preserve">
+    <value>Categoria</value>
+  </data>
+  <data name="SearchField_Comments" xml:space="preserve">
+    <value>Commenti</value>
+  </data>
+  <data name="SearchField_Format" xml:space="preserve">
+    <value>Formato</value>
+  </data>
+  <data name="SearchField_Isbn" xml:space="preserve">
+    <value>ISBN</value>
+  </data>
+  <data name="SearchField_Keywords" xml:space="preserve">
+    <value>Parole chiave</value>
+  </data>
+  <data name="SearchField_Language" xml:space="preserve">
+    <value>Lingua</value>
+  </data>
+  <data name="SearchField_Location" xml:space="preserve">
+    <value>Collocazione</value>
+  </data>
+  <data name="SearchField_Owner" xml:space="preserve">
+    <value>Proprietario</value>
+  </data>
+  <data name="SearchField_Publisher" xml:space="preserve">
+    <value>Editore</value>
+  </data>
+  <data name="SearchField_Rating" xml:space="preserve">
+    <value>Valutazione</value>
+  </data>
+  <data name="SearchField_Series" xml:space="preserve">
+    <value>Serie</value>
+  </data>
+  <data name="SearchField_Status" xml:space="preserve">
+    <value>Stato</value>
+  </data>
+  <data name="SearchField_Title" xml:space="preserve">
+    <value>Titolo</value>
+  </data>
+  <data name="SearchField_Year" xml:space="preserve">
+    <value>Anno</value>
+  </data>
+  <data name="SearchOperator_NotContains" xml:space="preserve">
+    <value>Non contiene</value>
+  </data>
+  <data name="SearchOperator_NotEquals" xml:space="preserve">
+    <value>Non uguale a</value>
+  </data>
+  <data name="SearchOperator_Contains" xml:space="preserve">
+    <value>Contiene</value>
+  </data>
+  <data name="SearchOperator_EndsWith" xml:space="preserve">
+    <value>Termina con</value>
+  </data>
+  <data name="SearchOperator_Equals" xml:space="preserve">
+    <value>Uguale a</value>
+  </data>
+  <data name="SearchOperator_IsEmpty" xml:space="preserve">
+    <value>È vuoto</value>
+  </data>
+  <data name="SearchOperator_IsNotEmpty" xml:space="preserve">
+    <value>Non è vuoto</value>
+  </data>
+  <data name="SearchOperator_StartsWith" xml:space="preserve">
+    <value>Inizia con</value>
+  </data>
+  <data name="ContextMenu_Edit" xml:space="preserve">
+    <value>Modifica</value>
+  </data>
+  <data name="ContextMenu_OpenInWindow" xml:space="preserve">
+    <value>Apri in finestra</value>
+  </data>
+  <data name="ContextMenu_Duplicate" xml:space="preserve">
+    <value>Duplica</value>
+  </data>
+  <data name="DuplicateBook_TitlePrefix" xml:space="preserve">
+    <value>Copia: </value>
+  </data>
+  <data name="ContextMenu_Delete" xml:space="preserve">
+    <value>Elimina</value>
+  </data>
+  <data name="ContextMenu_BulkEdit" xml:space="preserve">
+    <value>Modifica in blocco</value>
+  </data>
+  <data name="ContextMenu_MoveToCollection" xml:space="preserve">
+    <value>Sposta nella raccolta</value>
+  </data>
+  <data name="ContextMenu_CopyIsbn" xml:space="preserve">
+    <value>Copia ISBN</value>
+  </data>
+  <data name="ContextMenu_CopyTitle" xml:space="preserve">
+    <value>Copia titolo</value>
+  </data>
+  <data name="MainWindow_Toolbar_NewBook" xml:space="preserve">
+    <value>Nuovo libro</value>
+  </data>
+  <data name="Menu_Help" xml:space="preserve">
+    <value>_Guida</value>
+  </data>
+  <data name="Menu_AboutBookDB" xml:space="preserve">
+    <value>_Informazioni su BookDB…</value>
+  </data>
+  <data name="About_Title" xml:space="preserve">
+    <value>Informazioni su BookDB</value>
+  </data>
+  <data name="About_Copyright" xml:space="preserve">
+    <value>© 2026 Ulf Axelsson</value>
+  </data>
+  <data name="About_AppName" xml:space="preserve">
+    <value>BookDB</value>
+  </data>
+  <data name="Splash_Status_Initializing" xml:space="preserve">
+    <value>Avvio in corso…</value>
+  </data>
+  <data name="Splash_Status_ApplyingMigrations" xml:space="preserve">
+    <value>Aggiornamento del database…</value>
+  </data>
+  <data name="Splash_Status_ApplyingMigrationsCount" xml:space="preserve">
+    <value>Aggiornamento del database… ({0} di {1})</value>
+  </data>
+  <data name="Splash_Status_LoadingLibrary" xml:space="preserve">
+    <value>Caricamento della libreria…</value>
+  </data>
+  <data name="Splash_Status_RestoringSession" xml:space="preserve">
+    <value>Ripristino della sessione…</value>
+  </data>
+  <data name="Splash_Status_Finishing" xml:space="preserve">
+    <value>Quasi pronto…</value>
+  </data>
+  <data name="AppDialog_Info_Title" xml:space="preserve">
+    <value>BookDB</value>
+  </data>
+  <data name="AppDialog_Yes_Button" xml:space="preserve">
+    <value>Sì</value>
+  </data>
+  <data name="AppDialog_No_Button" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="AppDialog_BackupConflict_Title" xml:space="preserve">
+    <value>File già esistente</value>
+  </data>
+  <data name="AppDialog_BackupConflict_Overwrite" xml:space="preserve">
+    <value>Sovrascrivi</value>
+  </data>
+  <data name="AppDialog_BackupConflict_SaveAs" xml:space="preserve">
+    <value>Salva come {0}</value>
+  </data>
+  <data name="AppDialog_BackupConflict_Body" xml:space="preserve">
+    <value>{0} esiste già nella cartella di backup.</value>
+  </data>
+  <data name="AppDialog_Progress_Title" xml:space="preserve">
+    <value>BookDB</value>
+  </data>
+  <data name="AppDialog_Progress_PleaseWait" xml:space="preserve">
+    <value>Attendere prego...</value>
+  </data>
+  <data name="DuplicateIsbn_Title" xml:space="preserve">
+    <value>ISBN duplicato</value>
+  </data>
+  <data name="DuplicateIsbn_UpdateExisting" xml:space="preserve">
+    <value>Aggiorna esistente</value>
+  </data>
+  <data name="DuplicateIsbn_AddAsNew" xml:space="preserve">
+    <value>Aggiungi come nuovo</value>
+  </data>
+  <data name="DuplicateIsbn_Body" xml:space="preserve">
+    <value>Esiste già un libro con ISBN {0} ({1}). Aggiornare il libro esistente o aggiungere come nuovo?</value>
+  </data>
+  <data name="Delete_Dialog_Title" xml:space="preserve">
+    <value>Conferma eliminazione</value>
+  </data>
+  <data name="Recatalog_NoIsbn_Watermark" xml:space="preserve">
+    <value>Inserire ISBN...</value>
+  </data>
+  <data name="Recatalog_NoIsbn_LookUp" xml:space="preserve">
+    <value>Cerca</value>
+  </data>
+  <data name="StatusBar_BookCount_All" xml:space="preserve">
+    <value>{0:N0} libri</value>
+  </data>
+  <data name="StatusBar_BookCount_Filtered" xml:space="preserve">
+    <value>{0:N0} libri (di {1:N0})</value>
+  </data>
+  <data name="RecatalogAll_Confirm" xml:space="preserve">
+    <value>Ricatalogare tutti i {0} libri? L'operazione potrebbe richiedere del tempo.</value>
+  </data>
+  <data name="Backup_Saved" xml:space="preserve">
+    <value>Backup salvato in {0}</value>
+  </data>
+  <data name="Backup_Failed" xml:space="preserve">
+    <value>Backup non riuscito: {0}. Verificare la cartella di destinazione e riprovare.</value>
+  </data>
+  <data name="Restore_Confirm_Title" xml:space="preserve">
+    <value>Salvare un backup di sicurezza prima del ripristino?</value>
+  </data>
+  <data name="Restore_Confirm_Body" xml:space="preserve">
+    <value>La libreria corrente verrà sostituita. Scegliere una posizione per salvare prima una copia di sicurezza.</value>
+  </data>
+  <data name="Restore_Replace_Title" xml:space="preserve">
+    <value>Sostituire la libreria corrente?</value>
+  </data>
+  <data name="Restore_Replace_Body" xml:space="preserve">
+    <value>Questa operazione sovrascriverà la libreria corrente con il backup selezionato. L'operazione non può essere annullata.</value>
+  </data>
+  <data name="Restore_Complete_Title" xml:space="preserve">
+    <value>Ripristino completato</value>
+  </data>
+  <data name="Restore_Complete_Body" xml:space="preserve">
+    <value>L'applicazione si chiuderà ora. Riaprirla per utilizzare la libreria ripristinata.</value>
+  </data>
+  <data name="Restore_Failed" xml:space="preserve">
+    <value>Ripristino non riuscito: {0}. La libreria originale non è stata modificata.</value>
+  </data>
+  <data name="PrintList_Failed" xml:space="preserve">
+    <value>Impossibile generare il report PDF: {0}</value>
+  </data>
+  <data name="BookList_AdvancedSearch_ActiveStatus" xml:space="preserve">
+    <value>Ricerca avanzata attiva</value>
+  </data>
+  <data name="CheckOut_Title" xml:space="preserve">
+    <value>Prestare libro</value>
+  </data>
+  <data name="CheckOut_Label_Borrower" xml:space="preserve">
+    <value>Prestatore</value>
+  </data>
+  <data name="CheckOut_Label_DueDate" xml:space="preserve">
+    <value>Data di restituzione</value>
+  </data>
+  <data name="CheckOut_Borrower_Watermark" xml:space="preserve">
+    <value>Cerca prestatore...</value>
+  </data>
+  <data name="CheckOut_NewBorrower_Format" xml:space="preserve">
+    <value>Aggiungi nuovo prestatore: {0}</value>
+  </data>
+  <data name="CheckOut_Confirm" xml:space="preserve">
+    <value>Presta</value>
+  </data>
+  <data name="ManageBorrowers_Title" xml:space="preserve">
+    <value>Gestisci prestatori</value>
+  </data>
+  <data name="ManageBorrowers_Filter_Watermark" xml:space="preserve">
+    <value>Filtra prestatori...</value>
+  </data>
+  <data name="ManageBorrowers_Add" xml:space="preserve">
+    <value>Aggiungi prestatore</value>
+  </data>
+  <data name="ManageBorrowers_Section_Name" xml:space="preserve">
+    <value>Nome</value>
+  </data>
+  <data name="ManageBorrowers_Section_Contact" xml:space="preserve">
+    <value>Contatto</value>
+  </data>
+  <data name="ManageBorrowers_Section_Address" xml:space="preserve">
+    <value>Indirizzo</value>
+  </data>
+  <data name="ManageBorrowers_Label_FirstName" xml:space="preserve">
+    <value>Nome</value>
+  </data>
+  <data name="ManageBorrowers_Label_LastName" xml:space="preserve">
+    <value>Cognome</value>
+  </data>
+  <data name="ManageBorrowers_Label_Organization" xml:space="preserve">
+    <value>Organizzazione</value>
+  </data>
+  <data name="ManageBorrowers_Label_Phone" xml:space="preserve">
+    <value>Telefono</value>
+  </data>
+  <data name="ManageBorrowers_Label_AltPhone" xml:space="preserve">
+    <value>Tel. alternativo</value>
+  </data>
+  <data name="ManageBorrowers_Label_Email" xml:space="preserve">
+    <value>E-mail</value>
+  </data>
+  <data name="ManageBorrowers_Label_Fax" xml:space="preserve">
+    <value>Fax</value>
+  </data>
+  <data name="ManageBorrowers_Label_Address1" xml:space="preserve">
+    <value>Indirizzo 1</value>
+  </data>
+  <data name="ManageBorrowers_Label_Address2" xml:space="preserve">
+    <value>Indirizzo 2</value>
+  </data>
+  <data name="ManageBorrowers_Label_City" xml:space="preserve">
+    <value>Città</value>
+  </data>
+  <data name="ManageBorrowers_Label_State" xml:space="preserve">
+    <value>Stato / Provincia</value>
+  </data>
+  <data name="ManageBorrowers_Label_PostalCode" xml:space="preserve">
+    <value>CAP</value>
+  </data>
+  <data name="ManageBorrowers_Label_Country" xml:space="preserve">
+    <value>Paese</value>
+  </data>
+  <data name="ManageBorrowers_Label_Status" xml:space="preserve">
+    <value>Stato</value>
+  </data>
+  <data name="ManageBorrowers_Delete" xml:space="preserve">
+    <value>Elimina prestatore</value>
+  </data>
+  <data name="ManageBorrowers_DeleteBlocked" xml:space="preserve">
+    <value>Eliminazione impossibile: il prestatore ha uno storico prestiti.</value>
+  </data>
+  <data name="ManageBorrowers_SelectPrompt" xml:space="preserve">
+    <value>Selezionare un prestatore da modificare</value>
+  </data>
+  <data name="Tab_LoanHistory" xml:space="preserve">
+    <value>Storico prestiti</value>
+  </data>
+  <data name="LoanHistory_EmptyState" xml:space="preserve">
+    <value>Nessuno storico prestiti per questo libro.</value>
+  </data>
+  <data name="LoanHistory_Column_Borrower" xml:space="preserve">
+    <value>Prestatore</value>
+  </data>
+  <data name="LoanHistory_Column_Loaned" xml:space="preserve">
+    <value>Prestato</value>
+  </data>
+  <data name="LoanHistory_Column_Due" xml:space="preserve">
+    <value>Scadenza</value>
+  </data>
+  <data name="LoanHistory_Column_Returned" xml:space="preserve">
+    <value>Restituito</value>
+  </data>
+  <data name="LoanHistory_Column_Status" xml:space="preserve">
+    <value>Stato</value>
+  </data>
+  <data name="LoanHistory_Status_Active" xml:space="preserve">
+    <value>Attivo</value>
+  </data>
+  <data name="LoanHistory_Status_Overdue" xml:space="preserve">
+    <value>Scaduto</value>
+  </data>
+  <data name="LoanHistory_Status_Returned" xml:space="preserve">
+    <value>Restituito</value>
+  </data>
+  <data name="BookDetail_Label_Loan" xml:space="preserve">
+    <value>Prestito</value>
+  </data>
+  <data name="BookDetail_LoanStatus_Format" xml:space="preserve">
+    <value>Prestato a {0}</value>
+  </data>
+  <data name="BookDetail_OverdueStatus_Format" xml:space="preserve">
+    <value>Scaduto – prestato a {0}</value>
+  </data>
+  <data name="Filter_LoanedOut" xml:space="preserve">
+    <value>Prestato</value>
+  </data>
+  <data name="BookList_Column_LoanedTo" xml:space="preserve">
+    <value>Prestato a</value>
+  </data>
+  <data name="ContextMenu_CheckOut" xml:space="preserve">
+    <value>Presta...</value>
+  </data>
+  <data name="ContextMenu_CheckIn" xml:space="preserve">
+    <value>Restituisci</value>
+  </data>
+  <data name="Menu_ManageBorrowers" xml:space="preserve">
+    <value>Gestisci prestatori...</value>
+  </data>
+  <data name="Menu_View_LoanedToColumn" xml:space="preserve">
+    <value>Mostra colonna _Prestato a</value>
+  </data>
+  <data name="Common_Save" xml:space="preserve">
+    <value>Salva</value>
+  </data>
+  <data name="Common_Cancel" xml:space="preserve">
+    <value>Annulla</value>
+  </data>
+  <data name="Common_Discard" xml:space="preserve">
+    <value>Scarta</value>
+  </data>
+  <data name="Common_Close" xml:space="preserve">
+    <value>Chiudi</value>
+  </data>
+  <data name="Common_Apply" xml:space="preserve">
+    <value>Applica</value>
+  </data>
+  <data name="Common_OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="Export_Header" xml:space="preserve">
+    <value>Esportazione dei libri…</value>
+  </data>
+  <data name="Export_Status_WritingBooks" xml:space="preserve">
+    <value>Scrittura di {0:N0} libri…</value>
+  </data>
+  <data name="Export_Status_WritingRow" xml:space="preserve">
+    <value>Scrittura della riga {0:N0} di {1:N0}…</value>
+  </data>
+  <data name="FilePicker_SelectCoverImage" xml:space="preserve">
+    <value>Seleziona immagine di copertina</value>
+  </data>
+  <data name="FilePicker_SelectReaderwareBackup" xml:space="preserve">
+    <value>Seleziona backup di Readerware</value>
+  </data>
+  <data name="FilePicker_SelectReaderwareFolder" xml:space="preserve">
+    <value>Seleziona cartella di backup di Readerware</value>
+  </data>
+  <data name="FilePicker_OpenIsbnList" xml:space="preserve">
+    <value>Apri elenco ISBN</value>
+  </data>
+  <data name="FilePicker_ChooseBackupDestination" xml:space="preserve">
+    <value>Scegli destinazione del backup</value>
+  </data>
+  <data name="FilePicker_SelectBackupFile" xml:space="preserve">
+    <value>Seleziona file di backup</value>
+  </data>
+  <data name="FilePicker_ChooseSafetyBackupLocation" xml:space="preserve">
+    <value>Scegli posizione del backup di sicurezza</value>
+  </data>
+  <data name="FilePicker_ExportBooks" xml:space="preserve">
+    <value>Esporta libri</value>
+  </data>
+  <data name="FilePicker_SavePdfReport" xml:space="preserve">
+    <value>Salva report PDF</value>
+  </data>
+  <data name="FilePicker_ChooseAutoBackupDestination" xml:space="preserve">
+    <value>Scegli destinazione del backup automatico</value>
+  </data>
+  <data name="FilePicker_ChooseReaderwareToolFolder" xml:space="preserve">
+    <value>Scegli la cartella degli strumenti Readerware</value>
+  </data>
+  <data name="ManageLookups_Tab_Collection" xml:space="preserve">
+    <value>Raccolte</value>
+  </data>
+  <data name="ManageLookups_MoveUp" xml:space="preserve">
+    <value>Sposta su</value>
+  </data>
+  <data name="ManageLookups_MoveDown" xml:space="preserve">
+    <value>Sposta giù</value>
+  </data>
+  <data name="ReaderwareImport_WindowTitle" xml:space="preserve">
+    <value>Importa da un database Readerware</value>
+  </data>
+  <data name="ReaderwareImport_Intro" xml:space="preserve">
+    <value>Converti una cartella di database Readerware attiva (la cartella .rw4) in un backup che BookDB può importare. Il database originale viene copiato prima e non viene mai modificato.</value>
+  </data>
+  <data name="ReaderwareImport_DatabaseLabel" xml:space="preserve">
+    <value>Cartella del database Readerware</value>
+  </data>
+  <data name="ReaderwareImport_DatabaseWatermark" xml:space="preserve">
+    <value>Seleziona la cartella del database .rw4</value>
+  </data>
+  <data name="ReaderwareImport_ToolPathLabel" xml:space="preserve">
+    <value>Strumento di conversione</value>
+  </data>
+  <data name="ReaderwareImport_ToolPathNote" xml:space="preserve">
+    <value>Imposta la cartella degli strumenti HSQLDB + Java in Impostazioni > Importazione.</value>
+  </data>
+  <data name="ReaderwareImport_Convert" xml:space="preserve">
+    <value>Converti</value>
+  </data>
+  <data name="ReaderwareImport_Continue" xml:space="preserve">
+    <value>Apri la procedura guidata di importazione</value>
+  </data>
+  <data name="ReaderwareImport_ProgressHeader" xml:space="preserve">
+    <value>Avanzamento</value>
+  </data>
+  <data name="ReaderwareImport_Success" xml:space="preserve">
+    <value>Conversione completata: {0} tabelle esportate. Continua per aprire la procedura guidata di importazione.</value>
+  </data>
+  <data name="ReaderwareImport_Error_ToolPathInvalid" xml:space="preserve">
+    <value>Strumento di conversione non trovato. Controlla la cartella degli strumenti in Impostazioni > Importazione (deve contenere jre\bin\java.exe e lib\hsqldb.jar).</value>
+  </data>
+  <data name="ReaderwareImport_Error_DatabaseInvalid" xml:space="preserve">
+    <value>Questa cartella non è un database Readerware valido. Seleziona la cartella .rw4 che contiene i file del database.</value>
+  </data>
+  <data name="ReaderwareImport_Error_MainTableMissing" xml:space="preserve">
+    <value>Il database non contiene una tabella dei libri Readerware, quindi non può essere importato.</value>
+  </data>
+  <data name="ReaderwareImport_Error_ProcessFailed" xml:space="preserve">
+    <value>La conversione non è riuscita. Consulta il registro di avanzamento per i dettagli.</value>
+  </data>
+  <data name="FilePicker_ChooseReaderwareDatabase" xml:space="preserve">
+    <value>Scegli la cartella del database Readerware</value>
+  </data>
+  <data name="Import_Step1_NewCollectionWatermark" xml:space="preserve">
+    <value>Nome della nuova raccolta</value>
+  </data>
+  <data name="Import_Step1_CreateCollection" xml:space="preserve">
+    <value>Crea</value>
+  </data>
+  <data name="Import_Step1_CollectionCreateFailed" xml:space="preserve">
+    <value>Impossibile creare la raccolta. Il nome potrebbe essere già in uso.</value>
+  </data>
+  <data name="Import_Duplicate_Overwrite" xml:space="preserve">
+    <value>Sovrascrivi</value>
+  </data>
+  <data name="Import_Duplicate_OverwriteAll" xml:space="preserve">
+    <value>Sovrascrivi tutto</value>
+  </data>
+  <data name="Import_Duplicate_Skip" xml:space="preserve">
+    <value>Salta</value>
+  </data>
+  <data name="Import_Duplicate_SkipAll" xml:space="preserve">
+    <value>Salta tutto</value>
+  </data>
+  <data name="Import_Duplicate_CancelImport" xml:space="preserve">
+    <value>Annulla importazione</value>
+  </data>
+</root>

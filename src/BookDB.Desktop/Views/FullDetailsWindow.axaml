@@ -1,0 +1,40 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:BookDB.Desktop.ViewModels"
+        xmlns:res="using:BookDB.Desktop.Localization"
+        xmlns:i="using:Avalonia.Xaml.Interactivity"
+        xmlns:behaviors="using:BookDB.Desktop.Behaviors"
+        xmlns:views="using:BookDB.Desktop.Views"
+        x:Class="BookDB.Desktop.Views.FullDetailsWindow"
+        x:DataType="vm:FullDetailsWindowViewModel"
+        Title="{Binding WindowTitle}"
+        Width="820"
+        Height="720"
+        MinWidth="600"
+        MinHeight="500"
+        WindowStartupLocation="CenterScreen">
+    <i:Interaction.Behaviors>
+        <behaviors:WindowCloseGuardBehavior />
+    </i:Interaction.Behaviors>
+
+    <DockPanel Margin="8" LastChildFill="True">
+
+        <!-- Footer buttons -->
+        <StackPanel DockPanel.Dock="Bottom"
+                    Orientation="Horizontal"
+                    Spacing="8"
+                    Margin="0,8,0,0">
+            <Button Content="{x:Static res:Resources.Common_Save}"
+                    Command="{Binding SaveCommand}"
+                    Classes="accent"
+                    FontSize="13" />
+            <Button Content="{x:Static res:Resources.Common_Cancel}"
+                    Command="{Binding CancelEditCommand}"
+                    FontSize="13" />
+        </StackPanel>
+
+        <!-- Shared edit form (cover area + all tabs) -->
+        <views:BookEditForm />
+
+    </DockPanel>
+</Window>

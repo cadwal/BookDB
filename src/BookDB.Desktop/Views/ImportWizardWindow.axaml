@@ -1,0 +1,67 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:BookDB.Desktop.ViewModels"
+        xmlns:res="using:BookDB.Desktop.Localization"
+        x:Class="BookDB.Desktop.Views.ImportWizardWindow"
+        x:DataType="vm:ImportWizardViewModel"
+        Title="{x:Static res:Resources.Import_WindowTitle}"
+        Width="700" MinWidth="600"
+        Height="580" MinHeight="500"
+        WindowStartupLocation="CenterOwner"
+        ShowInTaskbar="False"
+        CanResize="True">
+
+    <DockPanel Margin="0">
+        <!-- Step title bar -->
+        <Border DockPanel.Dock="Top"
+                Background="{DynamicResource SystemControlBackgroundChromeMediumBrush}"
+                Padding="16,12">
+            <TextBlock Text="{Binding StepTitle}"
+                       FontSize="16"
+                       FontWeight="SemiBold"/>
+        </Border>
+
+        <!-- Step indicator -->
+        <Border DockPanel.Dock="Top"
+                Padding="16,6"
+                BorderThickness="0,0,0,1"
+                BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}">
+            <TextBlock Text="{Binding StepIndicator}"
+                       FontSize="12"
+                       Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"/>
+        </Border>
+
+        <!-- Navigation buttons -->
+        <Border DockPanel.Dock="Bottom"
+                Padding="16,12"
+                BorderThickness="0,1,0,0"
+                BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}">
+            <StackPanel Orientation="Horizontal"
+                        HorizontalAlignment="Right"
+                        Spacing="8">
+                <Button Content="{x:Static res:Resources.Common_Cancel}"
+                        IsVisible="{Binding ShowCancelButton}"
+                        Command="{Binding CancelCommand}"/>
+                <Button Content="{x:Static res:Resources.Import_BackButton}"
+                        IsVisible="{Binding ShowBackButton}"
+                        IsEnabled="{Binding CanGoBack}"
+                        Command="{Binding BackCommand}"/>
+                <Button Content="{x:Static res:Resources.Import_NextButton}"
+                        IsVisible="{Binding ShowNextButton}"
+                        IsEnabled="{Binding CanGoNext}"
+                        Command="{Binding NextCommand}"
+                        Classes="accent"/>
+                <Button Content="{x:Static res:Resources.Import_ImportButton}"
+                        IsVisible="{Binding ShowImportButton}"
+                        Command="{Binding StartImportCommand}"
+                        Classes="accent"/>
+                <Button Content="{x:Static res:Resources.Common_Close}"
+                        IsVisible="{Binding ShowCloseButton}"
+                        Command="{Binding CloseCommand}"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Current step content -->
+        <ContentControl Content="{Binding CurrentStepView}" Margin="0"/>
+    </DockPanel>
+</Window>

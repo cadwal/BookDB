@@ -1,0 +1,76 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:BookDB.Desktop.ViewModels"
+             xmlns:res="using:BookDB.Desktop.Localization"
+             x:Class="BookDB.Desktop.Views.ImportStepViews.ImportStep2View"
+             x:DataType="vm:ImportStep2ViewModel">
+
+    <Grid RowDefinitions="Auto,Auto,*,Auto">
+
+        <!-- Loading indicator -->
+        <StackPanel Grid.Row="0"
+                    IsVisible="{Binding IsLoading}"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Margin="16,24"
+                    Spacing="12">
+            <ProgressBar IsIndeterminate="True" Width="300"/>
+            <TextBlock Text="{x:Static res:Resources.Import_Step2_Analyzing}" HorizontalAlignment="Center"/>
+        </StackPanel>
+
+        <!-- Summary stats -->
+        <Border Grid.Row="0"
+                Margin="16,12,16,0"
+                IsVisible="{Binding !IsLoading}"
+                Padding="12"
+                BorderThickness="1"
+                BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                CornerRadius="4">
+            <Grid ColumnDefinitions="Auto,*,Auto,*" RowDefinitions="Auto,Auto,Auto" RowSpacing="4" ColumnSpacing="16">
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="{x:Static res:Resources.Import_Step2_TotalRecords}" FontWeight="SemiBold"/>
+                <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding TotalRecords}"/>
+                <TextBlock Grid.Row="0" Grid.Column="2" Text="{x:Static res:Resources.Import_Step2_WithCovers}" FontWeight="SemiBold"/>
+                <TextBlock Grid.Row="0" Grid.Column="3" Text="{Binding RecordsWithCovers}"/>
+
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="{x:Static res:Resources.Import_Step2_WithIsbn}" FontWeight="SemiBold"/>
+                <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding RecordsWithIsbn}"/>
+                <TextBlock Grid.Row="1" Grid.Column="2" Text="{x:Static res:Resources.Import_Step2_WithoutIsbn}" FontWeight="SemiBold"/>
+                <TextBlock Grid.Row="1" Grid.Column="3" Text="{Binding RecordsWithoutIsbn}"/>
+
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="{x:Static res:Resources.Import_Step2_PotentialDuplicates}" FontWeight="SemiBold"/>
+                <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding DuplicateIsbnCount}"/>
+            </Grid>
+        </Border>
+
+        <!-- Sample DataGrid -->
+        <Border Grid.Row="2" Margin="16,8">
+            <DataGrid ItemsSource="{Binding SampleRows}"
+                      IsReadOnly="True"
+                      CanUserReorderColumns="False"
+                      AutoGenerateColumns="False">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="{x:Static res:Resources.Import_Step2_Column_RowNumber}" Binding="{Binding RowNumber}" Width="50"/>
+                    <DataGridTextColumn Header="{x:Static res:Resources.Import_Step2_Column_Title}" Binding="{Binding Title}" Width="*"/>
+                    <DataGridTextColumn Header="{x:Static res:Resources.Import_Step2_Column_Isbn}" Binding="{Binding Isbn}" Width="130"/>
+                    <DataGridTextColumn Header="{x:Static res:Resources.Import_Step2_Column_Author}" Binding="{Binding AuthorDisplay}" Width="150"/>
+                    <DataGridCheckBoxColumn Header="{x:Static res:Resources.Import_Step2_Column_Cover}" Binding="{Binding HasCover}" Width="60"/>
+                    <DataGridTextColumn Header="{x:Static res:Resources.Import_Step2_Column_Note}" Binding="{Binding DuplicateNote}" Width="100"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Border>
+
+        <!-- Analysis notices (e.g. images skipped) — collapsed by default, shows actual messages -->
+        <Expander Grid.Row="3"
+                  Margin="16,0,16,8"
+                  IsVisible="{Binding HasWarnings}"
+                  Header="{Binding WarningHeader}">
+            <ItemsControl ItemsSource="{Binding Warnings}" Margin="0,4,0,0">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding}" FontSize="11" TextWrapping="Wrap" Margin="0,1"/>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </Expander>
+    </Grid>
+</UserControl>

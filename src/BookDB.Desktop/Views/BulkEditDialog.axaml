@@ -1,0 +1,73 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:BookDB.Desktop.ViewModels"
+        xmlns:res="using:BookDB.Desktop.Localization"
+        x:Class="BookDB.Desktop.Views.BulkEditDialog"
+        x:DataType="vm:BulkEditViewModel"
+        Title="{x:Static res:Resources.BulkEdit_Title}"
+        SizeToContent="WidthAndHeight"
+        MinWidth="420"
+        CanResize="False"
+        WindowStartupLocation="CenterOwner">
+
+    <StackPanel Margin="24" Spacing="16">
+
+        <!-- Header: book count -->
+        <TextBlock FontSize="14"
+                   FontWeight="SemiBold">
+            <TextBlock.Text>
+                <MultiBinding StringFormat="{x:Static res:Resources.BulkEdit_Header}">
+                    <Binding Path="BookCount" />
+                </MultiBinding>
+            </TextBlock.Text>
+        </TextBlock>
+
+        <!-- Field selector -->
+        <StackPanel Spacing="4">
+            <TextBlock Text="{x:Static res:Resources.BulkEdit_FieldLabel}" FontSize="12" />
+            <ComboBox ItemsSource="{Binding EditableFields}"
+                      SelectedItem="{Binding SelectedField}"
+                      MinWidth="300"
+                      FontSize="13" />
+        </StackPanel>
+
+        <!-- Value selector (shown when a field is selected) -->
+        <StackPanel Spacing="4"
+                    IsVisible="{Binding SelectedField, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+            <TextBlock Text="{x:Static res:Resources.BulkEdit_ValueLabel}" FontSize="12" />
+            <ComboBox ItemsSource="{Binding Values}"
+                      SelectedItem="{Binding SelectedValue}"
+                      DisplayMemberBinding="{Binding Name}"
+                      MinWidth="300"
+                      FontSize="13" />
+        </StackPanel>
+
+        <!-- Confirmation summary -->
+        <TextBlock FontSize="12"
+                   TextWrapping="Wrap"
+                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                   IsVisible="{Binding SelectedValue, Converter={x:Static ObjectConverters.IsNotNull}}">
+            <TextBlock.Text>
+                <MultiBinding StringFormat="{x:Static res:Resources.BulkEdit_ConfirmSummary}">
+                    <Binding Path="SelectedField" />
+                    <Binding Path="SelectedValue.Name" />
+                    <Binding Path="BookCount" />
+                </MultiBinding>
+            </TextBlock.Text>
+        </TextBlock>
+
+        <!-- Footer buttons -->
+        <StackPanel Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Spacing="8">
+            <Button Content="{Binding ApplyButtonLabel}"
+                    Command="{Binding ApplyCommand}"
+                    Classes="accent"
+                    FontSize="13" />
+            <Button Content="{x:Static res:Resources.BulkEdit_Cancel_Button}"
+                    Command="{Binding CancelCommand}"
+                    FontSize="13" />
+        </StackPanel>
+
+    </StackPanel>
+</Window>

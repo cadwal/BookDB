@@ -1,0 +1,189 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  DOTNET_VERSION: "10.x"
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+
+      - name: Validate tag format
+        shell: pwsh
+        run: |
+          if ('${{ github.ref }}' -notmatch '^refs/tags/v\d+\.\d+\.\d+$') {
+            Write-Error "This workflow must be triggered from a version tag (v*.*.*), not a branch. Got: ${{ github.ref }}"
+            exit 1
+          }
+
+      - uses: actions/setup-dotnet@3e891b0cb619bf60e2c25674b222b8940e2c1c25  # v4.1.0
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Get version from tag
+        id: version
+        shell: pwsh
+        run: echo "version=$('${{ github.ref_name }}'.TrimStart('v'))" >> $env:GITHUB_OUTPUT
+
+      - name: Publish win-x64
+        shell: pwsh
+        run: |
+          dotnet publish src/BookDB.Desktop/BookDB.Desktop.csproj `
+            -c Release -r win-x64 --self-contained `
+            -o publish/win-x64
+
+      - name: Create portable zip
+        shell: pwsh
+        run: |
+          $ver = "${{ steps.version.outputs.version }}"
+          Compress-Archive -Path publish/win-x64/* `
+            -DestinationPath "BookDB-v$ver-win-x64.zip"
+
+      - uses: actions/upload-artifact@6f51ac03b9356f520e9adb1b1b7802705f340c2b  # v4.5.0
+        with:
+          name: win-x64
+          path: BookDB-v*-win-x64.zip
+
+      - name: Publish win-x64 FDD
+        shell: pwsh
+        run: |
+          dotnet publish src/BookDB.Desktop/BookDB.Desktop.csproj `
+            -c Release -r win-x64 --no-self-contained `
+            -o publish/win-x64-fdd
+
+      - name: Create FDD zip
+        shell: pwsh
+        run: |
+          $ver = "${{ steps.version.outputs.version }}"
+          Compress-Archive -Path publish/win-x64-fdd/* `
+            -DestinationPath "BookDB-v$ver-win-x64-fdd.zip"
+
+      - uses: actions/upload-artifact@6f51ac03b9356f520e9adb1b1b7802705f340c2b  # v4.5.0
+        with:
+          name: win-x64-fdd
+          path: BookDB-v*-win-x64-fdd.zip
+
+  build-linux:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+
+      - name: Validate tag format
+        env:
+          GH_REF: ${{ github.ref }}
+        run: |
+          if [[ "${GH_REF}" != refs/tags/v[0-9]*.[0-9]*.[0-9]* ]]; then
+            echo "Error: This workflow must be triggered from a version tag (v*.*.*). Got: ${GH_REF}"
+            exit 1
+          fi
+
+      - uses: actions/setup-dotnet@3e891b0cb619bf60e2c25674b222b8940e2c1c25  # v4.1.0
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Get version from tag
+        id: version
+        run: echo "version=${GITHUB_REF_NAME#v}" >> $GITHUB_OUTPUT
+
+      - name: Publish linux-x64
+        run: |
+          dotnet publish src/BookDB.Desktop/BookDB.Desktop.csproj \
+            -c Release -r linux-x64 --self-contained \
+            -o publish/linux-x64
+
+      - name: Create tar.gz
+        run: |
+          ver="${{ steps.version.outputs.version }}"
+          tar -czf "BookDB-v${ver}-linux-x64.tar.gz" -C publish/linux-x64 .
+
+      - name: Build AppImage
+        run: bash scripts/make-appimage.sh "${{ steps.version.outputs.version }}"
+
+      - uses: actions/upload-artifact@6f51ac03b9356f520e9adb1b1b7802705f340c2b  # v4.5.0
+        if: always()
+        with:
+          name: linux-x64
+          path: |
+            BookDB-v*-linux-x64.tar.gz
+            BookDB-v*-linux-x64.AppImage
+
+  build-macos:
+    runs-on: macos-latest
+    continue-on-error: true
+    strategy:
+      matrix:
+        include:
+          - arch: x64
+            rid: osx-x64
+          - arch: arm64
+            rid: osx-arm64
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+
+      - name: Validate tag format
+        env:
+          GH_REF: ${{ github.ref }}
+        run: |
+          if [[ "${GH_REF}" != refs/tags/v[0-9]*.[0-9]*.[0-9]* ]]; then
+            echo "Error: This workflow must be triggered from a version tag (v*.*.*). Got: ${GH_REF}"
+            exit 1
+          fi
+
+      - uses: actions/setup-dotnet@3e891b0cb619bf60e2c25674b222b8940e2c1c25  # v4.1.0
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Get version from tag
+        id: version
+        run: echo "version=${GITHUB_REF_NAME#v}" >> $GITHUB_OUTPUT
+
+      - name: Publish ${{ matrix.rid }}
+        run: |
+          dotnet publish src/BookDB.Desktop/BookDB.Desktop.csproj \
+            -c Release -r ${{ matrix.rid }} --self-contained \
+            -o publish/${{ matrix.rid }}
+
+      - name: Build App Bundle and DMG
+        run: bash scripts/make-appbundle.sh "${{ matrix.arch }}" "${{ steps.version.outputs.version }}"
+
+      - uses: actions/upload-artifact@6f51ac03b9356f520e9adb1b1b7802705f340c2b  # v4.5.0
+        if: always()
+        with:
+          name: osx-${{ matrix.arch }}
+          path: BookDB-v*-osx-${{ matrix.arch }}.dmg
+
+  release:
+    needs: [build-windows, build-linux, build-macos]
+    if: always() && needs.build-windows.result == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate tag format
+        env:
+          GH_REF: ${{ github.ref }}
+        run: |
+          if [[ "${GH_REF}" != refs/tags/v[0-9]*.[0-9]*.[0-9]* ]]; then
+            echo "Error: This workflow must be triggered from a version tag (v*.*.*). Got: ${GH_REF}"
+            exit 1
+          fi
+
+      - uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16  # v4.1.8
+        with:
+          merge-multiple: true
+          path: artifacts/
+
+      - uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65  # v2.6.2
+        with:
+          draft: true
+          fail_on_unmatched_files: false
+          files: artifacts/**/*

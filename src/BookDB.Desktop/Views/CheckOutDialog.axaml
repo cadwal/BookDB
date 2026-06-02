@@ -1,0 +1,53 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:BookDB.Desktop.ViewModels"
+        xmlns:res="using:BookDB.Desktop.Localization"
+        x:Class="BookDB.Desktop.Views.CheckOutDialog"
+        x:DataType="vm:CheckOutDialogViewModel"
+        Title="{x:Static res:Resources.CheckOut_Title}"
+        Width="440" MinWidth="440"
+        Height="260" MinHeight="260"
+        CanResize="False"
+        WindowStartupLocation="CenterOwner">
+    <StackPanel Margin="16" Spacing="16">
+        <!-- Borrower -->
+        <StackPanel Spacing="4">
+            <TextBlock Text="{x:Static res:Resources.CheckOut_Label_Borrower}"
+                       FontSize="14" FontWeight="SemiBold" />
+            <AutoCompleteBox Watermark="{x:Static res:Resources.CheckOut_Borrower_Watermark}"
+                             MinimumPrefixLength="1"
+                             FilterMode="None"
+                             ValueMemberBinding="{ReflectionBinding ValueText}"
+                             AsyncPopulator="{Binding BorrowerPopulator}"
+                             Text="{Binding SearchText, Mode=TwoWay}"
+                             SelectedItem="{Binding SelectedBorrower, Mode=TwoWay}">
+                <AutoCompleteBox.ItemTemplate>
+                    <DataTemplate x:DataType="vm:IBorrowerSuggestion">
+                        <TextBlock Text="{Binding DisplayText}" />
+                    </DataTemplate>
+                </AutoCompleteBox.ItemTemplate>
+            </AutoCompleteBox>
+        </StackPanel>
+        <!-- Due Date -->
+        <StackPanel Spacing="4">
+            <TextBlock Text="{x:Static res:Resources.CheckOut_Label_DueDate}"
+                       FontSize="14" FontWeight="SemiBold" />
+            <DatePicker SelectedDate="{Binding DueDate, Mode=TwoWay}" />
+        </StackPanel>
+        <!-- Status message -->
+        <TextBlock FontSize="12"
+                   Foreground="{DynamicResource BrushDestructive}"
+                   Text="{Binding StatusMessage}"
+                   IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+        <!-- Buttons -->
+        <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+            <Button Classes="accent"
+                    Content="{x:Static res:Resources.CheckOut_Confirm}"
+                    Command="{Binding ConfirmCommand}"
+                    IsDefault="True" />
+            <Button Content="{x:Static res:Resources.Common_Cancel}"
+                    Command="{Binding CancelCommand}"
+                    IsCancel="True" />
+        </StackPanel>
+    </StackPanel>
+</Window>

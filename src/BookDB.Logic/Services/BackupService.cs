@@ -1,0 +1,284 @@
+using System;
+using System.Globalization;
+using System.IO;
+using System.IO.Compression;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using BookDB.Data.DbContexts;
+using BookDB.Models;
+using CsvHelper;
+using CsvHelper.Configuration;
+using Microsoft.EntityFrameworkCore;
+using Serilog;
+
+namespace BookDB.Logic.Services;
+
+public sealed class BackupService : IBackupService
+{
+    private readonly IDbContextFactory<BookDbContext> _factory;
+    private readonly AppSettings _appSettings;
+    private readonly ISettingsService _settingsService;
+    private readonly IResourceProvider _resources;
+
+    public BackupService(
+        IDbContextFactory<BookDbContext> factory,
+        AppSettings appSettings,
+        ISettingsService settingsService,
+        IResourceProvider resources)
+    {
+        _factory = factory;
+        _appSettings = appSettings;
+        _settingsService = settingsService;
+        _resources = resources;
+    }
+
+    // Localised status text for user-facing progress windows. Log messages stay in English.
+    private string L(string key) => _resources.GetString(key) ?? key;
+    private string L(string key, params object[] args)
+        => string.Format(_resources.GetString(key) ?? key, args);
+
+    public string GetCandidateSqlitePath(string destFolder)
+    {
+        var date = DateTime.Now.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+        return Path.Combine(Path.GetFullPath(destFolder), $"bookdb-{date}.zip");
+    }
+
+    public string GetCandidateCsvArchivePath(string destFolder)
+    {
+        var date = DateTime.Now.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+        return Path.Combine(Path.GetFullPath(destFolder), $"bookdb-csv-{date}.zip");
+    }
+
+    public async Task<string> BackupSqliteAsync(string destFolder, CancellationToken ct = default, string? explicitFileName = null, IProgress<string>? progress = null)
+    {
+        destFolder = Path.GetFullPath(destFolder);
+
+        progress?.Report(L("Backup_Status_FlushingLog"));
+        await using var dbContext = await _factory.CreateDbContextAsync(ct);
+        await dbContext.Database.ExecuteSqlRawAsync("PRAGMA wal_checkpoint(FULL)", ct);
+
+        var zipPath = explicitFileName != null
+            ? Path.Combine(destFolder, explicitFileName)
+            : ResolvePath(GetCandidateSqlitePath(destFolder));
+
+        progress?.Report(L("Backup_Status_CopyingDatabase"));
+        var tempCopy = Path.Combine(Path.GetTempPath(), $"bookdb_sqlitecopy_{Guid.NewGuid():N}.db");
+        try
+        {
+            await using (var src = new FileStream(
+                _appSettings.ActiveLibraryPath,
+                FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            await using (var dst = new FileStream(tempCopy, FileMode.Create, FileAccess.Write, FileShare.None))
+            {
+                await src.CopyToAsync(dst, ct);
+            }
+
+            progress?.Report(L("Backup_Status_CreatingArchive"));
+            using var archive = ZipFile.Open(zipPath, ZipArchiveMode.Create);
+            archive.CreateEntryFromFile(tempCopy, "library.db");
+        }
+        finally
+        {
+            try { File.Delete(tempCopy); } catch { /* best effort */ }
+        }
+
+        Log.Information("BackupService: SQLite backup written to {ZipPath}", zipPath);
+        return zipPath;
+    }
+
+    public async Task<string> BackupCsvArchiveAsync(string destFolder, CancellationToken ct = default, string? explicitFileName = null, IProgress<string>? progress = null)
+    {
+        destFolder = Path.GetFullPath(destFolder);
+
+        var zipPath = explicitFileName != null
+            ? Path.Combine(destFolder, explicitFileName)
+            : ResolvePath(GetCandidateCsvArchivePath(destFolder));
+
+        var tempDir = Path.Combine(Path.GetTempPath(), $"bookdb_csvarchive_{Guid.NewGuid():N}");
+        Directory.CreateDirectory(tempDir);
+
+        try
+        {
+            await using var dbContext = await _factory.CreateDbContextAsync(ct);
+
+            progress?.Report(L("Backup_Status_ExportingBooks"));
+            await WriteCsvAsync(tempDir, "Books.csv",
+                await dbContext.Books.AsNoTracking().ToListAsync(ct));
+
+            progress?.Report(L("Backup_Status_ExportingPeople"));
+            await WriteCsvAsync(tempDir, "People.csv",
+                await dbContext.People.AsNoTracking().ToListAsync(ct));
+
+            progress?.Report(L("Backup_Status_ExportingPublishers"));
+            await WriteCsvAsync(tempDir, "Publishers.csv",
+                await dbContext.Publishers.AsNoTracking().ToListAsync(ct));
+
+            progress?.Report(L("Backup_Status_ExportingSeries"));
+            await WriteCsvAsync(tempDir, "Series.csv",
+                await dbContext.Series.AsNoTracking().ToListAsync(ct));
+
+            progress?.Report(L("Backup_Status_ExportingCollections"));
+            await WriteCsvAsync(tempDir, "Collections.csv",
+                await dbContext.Collections.AsNoTracking().ToListAsync(ct));
+
+            progress?.Report(L("Backup_Status_ExportingCategories"));
+            await WriteCsvAsync(tempDir, "Categories.csv",
+                await dbContext.Categories.AsNoTracking().ToListAsync(ct));
+
+            progress?.Report(L("Backup_Status_ExportingFormats"));
+            await WriteCsvAsync(tempDir, "Formats.csv",
+                await dbContext.Formats.AsNoTracking().ToListAsync(ct));
+
+            progress?.Report(L("Backup_Status_ExportingLanguages"));
+            await WriteCsvAsync(tempDir, "Languages.csv",
+                await dbContext.Languages.AsNoTracking().ToListAsync(ct));
+
+            progress?.Report(L("Backup_Status_ExportingLocations"));
+            await WriteCsvAsync(tempDir, "Locations.csv",
+                await dbContext.Locations.AsNoTracking().ToListAsync(ct));
+
+            progress?.Report(L("Backup_Status_ExportingOwners"));
+            await WriteCsvAsync(tempDir, "Owners.csv",
+                await dbContext.Owners.AsNoTracking().ToListAsync(ct));
+
+            progress?.Report(L("Backup_Status_ExportingRelationships"));
+            await WriteCsvAsync(tempDir, "BookContributors.csv",
+                await dbContext.BookContributors.AsNoTracking().ToListAsync(ct));
+            await WriteCsvAsync(tempDir, "BookCategories.csv",
+                await dbContext.BookCategories.AsNoTracking().ToListAsync(ct));
+
+            progress?.Report(L("Backup_Status_ExportingCoverImages"));
+            var imagesDir = Path.Combine(tempDir, "images");
+            Directory.CreateDirectory(imagesDir);
+            var images = await dbContext.BookImages.AsNoTracking().ToListAsync(ct);
+            var imageIndex = 0;
+            foreach (var image in images)
+            {
+                if (image.ImageData is { Length: > 0 })
+                {
+                    var imagePath = Path.Combine(imagesDir, $"{image.BookImageId}.jpg");
+                    await File.WriteAllBytesAsync(imagePath, image.ImageData, ct);
+                }
+                imageIndex++;
+                if (imageIndex % 50 == 0)
+                    progress?.Report(L("Backup_Status_ExportingCoverImagesCount", imageIndex, images.Count));
+            }
+
+            progress?.Report(L("Backup_Status_CreatingArchive"));
+            ZipFile.CreateFromDirectory(tempDir, zipPath);
+
+            Log.Information("BackupService: CSV archive backup written to {ZipPath}", zipPath);
+        }
+        finally
+        {
+            if (Directory.Exists(tempDir))
+            {
+                try { Directory.Delete(tempDir, recursive: true); }
+                catch (Exception ex) { Log.Error(ex, "BackupService: failed to delete temp dir {TempDir}", tempDir); }
+            }
+        }
+
+        return zipPath;
+    }
+
+    public async Task RestoreAsync(string backupZipPath, string safetyBackupPath, CancellationToken ct = default, IProgress<string>? progress = null)
+    {
+        if (string.IsNullOrWhiteSpace(safetyBackupPath))
+            throw new ArgumentNullException(nameof(safetyBackupPath), "Safety backup is required before restore.");
+
+        backupZipPath = Path.GetFullPath(backupZipPath);
+        safetyBackupPath = Path.GetFullPath(safetyBackupPath);
+
+        progress?.Report(L("Restore_Status_SavingSafetyBackup"));
+        var safetyFolder = Path.GetDirectoryName(safetyBackupPath)
+            ?? throw new InvalidOperationException("Could not determine safety backup folder.");
+        var safetyFileName = Path.GetFileName(safetyBackupPath);
+        await BackupSqliteAsync(safetyFolder, ct, explicitFileName: safetyFileName);
+
+        progress?.Report(L("Restore_Status_ExtractingArchive"));
+        var tempDir = Path.Combine(Path.GetTempPath(), $"bookdb_restore_{Guid.NewGuid():N}");
+        try
+        {
+            await Task.Run(() => ZipFile.ExtractToDirectory(backupZipPath, tempDir), ct);
+
+            var extractedDb = Path.Combine(tempDir, "library.db");
+            if (!File.Exists(extractedDb))
+                throw new InvalidOperationException("The backup zip does not contain library.db.");
+
+            progress?.Report(L("Restore_Status_ReplacingLibrary"));
+            var activeLibraryPath = Path.GetFullPath(_appSettings.ActiveLibraryPath);
+            File.Copy(extractedDb, activeLibraryPath, overwrite: true);
+
+            Log.Information("BackupService: Restore complete — active library replaced from {BackupZipPath}", backupZipPath);
+        }
+        finally
+        {
+            if (Directory.Exists(tempDir))
+            {
+                try { Directory.Delete(tempDir, recursive: true); }
+                catch (Exception ex) { Log.Error(ex, "BackupService: failed to delete temp dir {TempDir}", tempDir); }
+            }
+        }
+    }
+
+    public async Task<bool> IsAutoBackupEnabledAsync(CancellationToken ct = default)
+    {
+        var enabled = await _settingsService.GetAsync("AutoBackup.Enabled", ct);
+        if (enabled != "true")
+            return false;
+
+        var folder = await _settingsService.GetAsync("LastBackupFolder", ct);
+        return !string.IsNullOrWhiteSpace(folder);
+    }
+
+    public async Task AutoBackupIfEnabledAsync(CancellationToken ct = default, IProgress<string>? progress = null)
+    {
+        if (!await IsAutoBackupEnabledAsync(ct))
+            return;
+
+        var folder = await _settingsService.GetAsync("LastBackupFolder", ct);
+        if (string.IsNullOrWhiteSpace(folder))
+            return;
+
+        var format = await _settingsService.GetAsync("AutoBackup.Format", ct) ?? "SQLite";
+
+        try
+        {
+            if (format == "CsvArchive")
+                await BackupCsvArchiveAsync(folder, ct, progress: progress);
+            else
+                await BackupSqliteAsync(folder, ct, progress: progress);
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "BackupService: AutoBackupIfEnabledAsync failed");
+        }
+    }
+
+    // Generates a suffix path if the candidate already exists: bookdb-2026-04-19-1.zip, -2.zip, etc.
+    private static string ResolvePath(string candidatePath)
+    {
+        if (!File.Exists(candidatePath))
+            return candidatePath;
+
+        var dir = Path.GetDirectoryName(candidatePath)!;
+        var nameNoExt = Path.GetFileNameWithoutExtension(candidatePath);
+        var ext = Path.GetExtension(candidatePath);
+        for (var i = 1; i < 1000; i++)
+        {
+            var suffixed = Path.Combine(dir, $"{nameNoExt}-{i}{ext}");
+            if (!File.Exists(suffixed))
+                return suffixed;
+        }
+        return candidatePath; // fallback: overwrite
+    }
+
+    private static async Task WriteCsvAsync<T>(string folder, string fileName, System.Collections.Generic.IEnumerable<T> records)
+    {
+        var path = Path.Combine(folder, fileName);
+        await using var writer = new StreamWriter(path, false, System.Text.Encoding.UTF8);
+        await using var csv = new CsvWriter(writer, new CsvConfiguration(System.Globalization.CultureInfo.InvariantCulture));
+        csv.WriteRecords(records);
+    }
+}

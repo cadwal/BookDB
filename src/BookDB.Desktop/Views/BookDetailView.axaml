@@ -1,0 +1,254 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:BookDB.Desktop.ViewModels"
+             xmlns:res="using:BookDB.Desktop.Localization"
+             xmlns:entities="using:BookDB.Models.Entities"
+             xmlns:i="using:Avalonia.Xaml.Interactivity"
+             xmlns:behaviors="using:BookDB.Desktop.Behaviors"
+             xmlns:views="using:BookDB.Desktop.Views"
+             x:Class="BookDB.Desktop.Views.BookDetailView"
+             x:DataType="vm:BookDetailViewModel">
+
+    <Panel>
+
+        <!-- State 1: Empty (no book selected) -->
+        <TextBlock Text="{x:Static res:Resources.DetailPanel_EmptyState}"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   FontSize="13"
+                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                   IsVisible="{Binding CurrentBook, Converter={x:Static ObjectConverters.IsNull}}" />
+
+        <!-- State 2: Read-only panel (book selected, not in edit mode) -->
+        <ScrollViewer IsVisible="{Binding CurrentBook, Converter={x:Static ObjectConverters.IsNotNull}}">
+            <StackPanel Margin="12"
+                        Spacing="0"
+                        IsVisible="{Binding !IsEditMode}">
+
+                <!-- Section 1: Title block -->
+                <StackPanel Spacing="6" Margin="0,0,0,12">
+                    <TextBlock Text="{Binding BookTitle}"
+                               FontSize="20"
+                               FontWeight="SemiBold"
+                               TextWrapping="Wrap" />
+                    <TextBlock Text="{Binding AltTitleDisplay}"
+                               FontSize="15"
+                               FontStyle="Italic"
+                               TextWrapping="Wrap"
+                               IsVisible="{Binding AltTitleDisplay, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                    <TextBlock Text="{Binding AuthorDisplay}"
+                               FontSize="15"
+                               TextWrapping="Wrap"
+                               IsVisible="{Binding AuthorDisplay, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                    <TextBlock Text="{Binding SeriesWithNumberDisplay}"
+                               FontSize="14"
+                               TextWrapping="Wrap"
+                               IsVisible="{Binding SeriesWithNumberDisplay, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                </StackPanel>
+
+                <!-- Action buttons: Edit + Open in Window (below Section 1, above first separator) -->
+                <StackPanel Orientation="Horizontal"
+                            Spacing="8"
+                            Margin="0,0,0,8">
+                    <Button Content="{x:Static res:Resources.Toolbar_Edit}"
+                            Command="{Binding EnterEditModeCommand}"
+                            FontSize="13" />
+                    <Button Content="{x:Static res:Resources.Toolbar_OpenInWindow}"
+                            Command="{Binding OpenFullDetailsCommand}"
+                            FontSize="13" />
+                </StackPanel>
+
+                <!-- Separator 1 -->
+                <Rectangle Height="1"
+                           Fill="{StaticResource BrushBorder}"
+                           Margin="0,0,0,8" />
+
+                <!-- Section 2: Publication info -->
+                <StackPanel Spacing="4" Margin="0,0,0,8">
+                    <Grid ColumnDefinitions="90,*" Margin="0,0,0,2"
+                          IsVisible="{Binding IsLoanVisible}">
+                        <TextBlock Grid.Column="0"
+                                   Text="{x:Static res:Resources.BookDetail_Label_Loan}"
+                                   FontSize="12"
+                                   VerticalAlignment="Top"
+                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                        <TextBlock Grid.Column="1"
+                                   Text="{Binding LoanStatusDisplay}"
+                                   FontSize="13"
+                                   TextWrapping="Wrap"
+                                   Foreground="{Binding LoanStatusForeground}" />
+                    </Grid>
+                    <Grid ColumnDefinitions="90,*" Margin="0,0,0,2"
+                          IsVisible="{Binding PublisherYearDisplay, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                        <TextBlock Grid.Column="0" Text="{x:Static res:Resources.BookDetail_Label_Published}" FontSize="12" VerticalAlignment="Top"
+                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                        <TextBlock Grid.Column="1" Text="{Binding PublisherYearDisplay}" FontSize="13" TextWrapping="Wrap" />
+                    </Grid>
+                    <Grid ColumnDefinitions="90,*" Margin="0,0,0,2"
+                          IsVisible="{Binding FormatDisplay, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                        <TextBlock Grid.Column="0" Text="{x:Static res:Resources.BookDetail_Label_Format}" FontSize="12" VerticalAlignment="Top"
+                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                        <TextBlock Grid.Column="1" Text="{Binding FormatDisplay}" FontSize="13" TextWrapping="Wrap" />
+                    </Grid>
+                    <Grid ColumnDefinitions="90,*" Margin="0,0,0,2"
+                          IsVisible="{Binding PagesDisplay, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                        <TextBlock Grid.Column="0" Text="{x:Static res:Resources.BookDetail_Label_Pages}" FontSize="12" VerticalAlignment="Top"
+                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                        <TextBlock Grid.Column="1" Text="{Binding PagesDisplay}" FontSize="13" TextWrapping="Wrap" />
+                    </Grid>
+                    <Grid ColumnDefinitions="90,*" Margin="0,0,0,2"
+                          IsVisible="{Binding EditionDisplay, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                        <TextBlock Grid.Column="0" Text="{x:Static res:Resources.BookDetail_Label_Edition}" FontSize="12" VerticalAlignment="Top"
+                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                        <TextBlock Grid.Column="1" Text="{Binding EditionDisplay}" FontSize="13" TextWrapping="Wrap" />
+                    </Grid>
+                    <Grid ColumnDefinitions="90,*" Margin="0,0,0,2"
+                          IsVisible="{Binding LanguageDisplay, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                        <TextBlock Grid.Column="0" Text="{x:Static res:Resources.BookDetail_Label_Language}" FontSize="12" VerticalAlignment="Top"
+                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                        <TextBlock Grid.Column="1" Text="{Binding LanguageDisplay}" FontSize="13" TextWrapping="Wrap" />
+                    </Grid>
+                </StackPanel>
+
+                <!-- Separator 2 -->
+                <Rectangle Height="1"
+                           Fill="{StaticResource BrushBorder}"
+                           Margin="0,0,0,8" />
+
+                <!-- Section 3: Classification and Identifiers -->
+                <StackPanel Spacing="4" Margin="0,0,0,8">
+                    <Grid ColumnDefinitions="90,*" Margin="0,0,0,2"
+                          IsVisible="{Binding CategoryDisplay, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                        <TextBlock Grid.Column="0" Text="{x:Static res:Resources.BookDetail_Label_Category}" FontSize="12" VerticalAlignment="Top"
+                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                        <TextBlock Grid.Column="1" Text="{Binding CategoryDisplay}" FontSize="13" TextWrapping="Wrap" />
+                    </Grid>
+                    <Grid ColumnDefinitions="90,*" Margin="0,0,0,2"
+                          IsVisible="{Binding StatusDisplay, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                        <TextBlock Grid.Column="0" Text="{x:Static res:Resources.BookDetail_Label_Status}" FontSize="12" VerticalAlignment="Top"
+                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                        <TextBlock Grid.Column="1" Text="{Binding StatusDisplay}" FontSize="13" TextWrapping="Wrap" />
+                    </Grid>
+                    <Grid ColumnDefinitions="90,*" Margin="0,0,0,2"
+                          IsVisible="{Binding RatingDisplay, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                        <TextBlock Grid.Column="0" Text="{x:Static res:Resources.BookDetail_Label_Rating}" FontSize="12" VerticalAlignment="Top"
+                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                        <TextBlock Grid.Column="1" Text="{Binding RatingDisplay}" FontSize="13" TextWrapping="Wrap" />
+                    </Grid>
+                    <Grid ColumnDefinitions="90,*" Margin="0,0,0,2"
+                          IsVisible="{Binding ConditionDisplay, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                        <TextBlock Grid.Column="0" Text="{x:Static res:Resources.BookDetail_Label_Condition}" FontSize="12" VerticalAlignment="Top"
+                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                        <TextBlock Grid.Column="1" Text="{Binding ConditionDisplay}" FontSize="13" TextWrapping="Wrap" />
+                    </Grid>
+                    <Grid ColumnDefinitions="90,*" Margin="0,0,0,2"
+                          IsVisible="{Binding IsbnDisplay, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                        <TextBlock Grid.Column="0" Text="{x:Static res:Resources.BookDetail_Label_Isbn}" FontSize="12" VerticalAlignment="Top"
+                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                        <TextBlock Grid.Column="1" Text="{Binding IsbnDisplay}" FontSize="13" TextWrapping="Wrap" />
+                    </Grid>
+                    <Grid ColumnDefinitions="90,*" Margin="0,0,0,2"
+                          IsVisible="{Binding LocationDisplay, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                        <TextBlock Grid.Column="0" Text="{x:Static res:Resources.BookDetail_Label_Location}" FontSize="12" VerticalAlignment="Top"
+                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                        <TextBlock Grid.Column="1" Text="{Binding LocationDisplay}" FontSize="13" TextWrapping="Wrap" />
+                    </Grid>
+                    <Grid ColumnDefinitions="90,*" Margin="0,0,0,2"
+                          IsVisible="{Binding OwnerDisplay, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                        <TextBlock Grid.Column="0" Text="{x:Static res:Resources.BookDetail_Label_Owner}" FontSize="12" VerticalAlignment="Top"
+                                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                        <TextBlock Grid.Column="1" Text="{Binding OwnerDisplay}" FontSize="13" TextWrapping="Wrap" />
+                    </Grid>
+                </StackPanel>
+
+                <!-- Separator before thumbnail strip: only visible when thumbnail strip is visible -->
+                <Rectangle Height="1"
+                           Fill="{StaticResource BrushBorder}"
+                           Margin="0,0,0,8"
+                           IsVisible="{Binding HasAnyImage}" />
+
+                <!-- Thumbnail strip: one button per loaded image type, hidden if no images -->
+                <ItemsControl ItemsSource="{Binding ImageEditor.ImageTypeButtons}"
+                              IsVisible="{Binding HasAnyImage}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:ImageTypeButtonViewModel">
+                            <Button Width="150"
+                                    Height="200"
+                                    Padding="4"
+                                    Margin="0,0,8,8"
+                                    Classes.accent="{Binding IsSelected}"
+                                    Command="{Binding $parent[ItemsControl].((vm:BookDetailViewModel)DataContext).ImageEditor.SelectImageTypeCommand}"
+                                    CommandParameter="{Binding BookImageTypeId}"
+                                    IsVisible="{Binding Bitmap, Converter={x:Static ObjectConverters.IsNotNull}}">
+                                <i:Interaction.Behaviors>
+                                    <behaviors:CoverHoverPopupBehavior ImagePropertyName="Bitmap" />
+                                </i:Interaction.Behaviors>
+                                <StackPanel Spacing="4">
+                                    <Image Source="{Binding Bitmap}"
+                                           MaxHeight="168"
+                                           Stretch="Uniform"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Top" />
+                                    <TextBlock Text="{Binding Label}"
+                                               FontSize="11"
+                                               HorizontalAlignment="Center"
+                                               TextWrapping="NoWrap" />
+                                </StackPanel>
+                            </Button>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <!-- Separator before Book Info: only visible when book info exists -->
+                <Rectangle Height="1"
+                           Fill="{StaticResource BrushBorder}"
+                           Margin="0,0,0,8"
+                           IsVisible="{Binding BookInfoDisplay, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+
+                <!-- Book Info section -->
+                <StackPanel Spacing="4" Margin="0,0,0,8"
+                            IsVisible="{Binding BookInfoDisplay, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                    <TextBlock Text="{x:Static res:Resources.BookDetail_Section_BookInfo}" FontSize="12" FontWeight="SemiBold"
+                               Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                    <TextBlock Text="{Binding BookInfoDisplay}" FontSize="13" TextWrapping="Wrap" />
+                </StackPanel>
+
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- State 3: Tabbed edit mode -->
+        <DockPanel IsVisible="{Binding IsEditMode}"
+                   LastChildFill="True"
+                   Margin="8">
+
+            <!-- Cover area + bottom buttons are docked; TabControl fills remaining space -->
+
+            <!-- Save/Cancel/Full Details buttons at bottom -->
+            <StackPanel DockPanel.Dock="Bottom"
+                        Orientation="Horizontal"
+                        Spacing="8"
+                        Margin="0,8,0,0">
+                <Button Content="{x:Static res:Resources.Common_Save}"
+                        Command="{Binding SaveCommand}"
+                        Classes="accent"
+                        FontSize="13" />
+                <Button Content="{x:Static res:Resources.Common_Cancel}"
+                        Command="{Binding CancelEditCommand}"
+                        FontSize="13" />
+                <Button Content="{x:Static res:Resources.Toolbar_OpenInWindow}"
+                        Command="{Binding OpenFullDetailsCommand}"
+                        FontSize="13" />
+            </StackPanel>
+
+            <!-- Shared edit form (cover area + all tabs) -->
+            <views:BookEditForm />
+
+        </DockPanel>
+
+    </Panel>
+</UserControl>

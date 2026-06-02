@@ -1,0 +1,231 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:BookDB.Desktop.ViewModels"
+        xmlns:res="using:BookDB.Desktop.Localization"
+        xmlns:views="using:BookDB.Desktop.Views"
+        xmlns:behaviors="using:BookDB.Desktop.Behaviors"
+        xmlns:i="using:Avalonia.Xaml.Interactivity"
+        x:Class="BookDB.Desktop.Views.ManageLookupsWindow"
+        x:DataType="vm:ManageLookupsViewModel"
+        Title="{x:Static res:Resources.ManageLookups_Title}"
+        Width="860" MinWidth="720"
+        Height="620" MinHeight="520"
+        WindowStartupLocation="CenterScreen"
+        CanResize="True">
+
+  <Window.Resources>
+    <!-- Shared DataTemplate for Location/Owner/Language/Publisher/Series tabs -->
+    <DataTemplate x:Key="SimpleLookupTabTemplate" x:DataType="vm:LookupTabViewModel">
+      <Grid ColumnDefinitions="200,*">
+        <!-- Left: filter + add + list -->
+        <DockPanel Grid.Column="0" Background="{DynamicResource BrushBackgroundAlt}">
+          <TextBox DockPanel.Dock="Top"
+                   Margin="8,8,8,4"
+                   Watermark="{x:Static res:Resources.ManageLookups_Filter_Watermark}"
+                   Text="{Binding FilterText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+          <Button DockPanel.Dock="Bottom"
+                  Margin="8,4,8,8"
+                  HorizontalAlignment="Left"
+                  Content="{x:Static res:Resources.ManageLookups_Add}"
+                  Command="{Binding AddCommand}"/>
+          <ListBox ItemsSource="{Binding FilteredEntries}"
+                   SelectedItem="{Binding SelectedEntry}">
+            <ListBox.ItemTemplate>
+              <DataTemplate x:DataType="vm:LookupEntryRow">
+                <TextBlock Text="{Binding Name}" FontSize="13" Padding="8,4"/>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+        </DockPanel>
+
+        <Border Grid.Column="0" Width="1" HorizontalAlignment="Right"
+                Background="{DynamicResource BrushBorder}"/>
+
+        <!-- Right: editor (visible when selection active) -->
+        <StackPanel Grid.Column="1" Margin="16" Spacing="8"
+                    IsVisible="{Binding HasSelection}">
+          <TextBlock Text="{x:Static res:Resources.ManageLookups_Name}" FontSize="12"/>
+          <TextBox Text="{Binding EditName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                   FontSize="13" MinWidth="200">
+            <i:Interaction.Behaviors>
+              <behaviors:FocusWhenChangedBehavior Sequence="{Binding AddFocusSequence}"/>
+            </i:Interaction.Behaviors>
+          </TextBox>
+          <TextBlock FontSize="12"
+                     Foreground="{DynamicResource BrushTextSecondary}"
+                     Text="{Binding UsedByCount, StringFormat={x:Static res:Resources.ManageLookups_UsedByBooks}}"/>
+          <TextBlock FontSize="12"
+                     Foreground="{DynamicResource BrushDestructive}"
+                     Text="{Binding StatusMessage}"
+                     IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <Button Classes="accent"
+                    Content="{x:Static res:Resources.Common_Save}"
+                    Command="{Binding SaveCommand}"/>
+            <Button Content="{x:Static res:Resources.Common_Discard}"
+                    Command="{Binding CancelCommand}"/>
+            <Button Content="{x:Static res:Resources.ManageLookups_Delete}"
+                    Command="{Binding DeleteCommand}"/>
+            <Button Content="{x:Static res:Resources.ManageLookups_Merge}"
+                    Command="{Binding MergeIntoCommand}"
+                    IsVisible="{Binding SupportsMerge}"/>
+          </StackPanel>
+        </StackPanel>
+
+        <TextBlock Grid.Column="1"
+                   Text="{x:Static res:Resources.ManageLookups_SelectEntry}"
+                   FontSize="13"
+                   Foreground="{DynamicResource BrushTextSecondary}"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   IsVisible="{Binding !HasSelection}"/>
+      </Grid>
+    </DataTemplate>
+
+    <!-- Collections tab — like the simple lookups, plus up/down reordering -->
+    <DataTemplate x:Key="CollectionTabTemplate" x:DataType="vm:CollectionTabViewModel">
+      <Grid ColumnDefinitions="200,*">
+        <DockPanel Grid.Column="0" Background="{DynamicResource BrushBackgroundAlt}">
+          <TextBox DockPanel.Dock="Top"
+                   Margin="8,8,8,4"
+                   Watermark="{x:Static res:Resources.ManageLookups_Filter_Watermark}"
+                   Text="{Binding FilterText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+          <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Spacing="4" Margin="8,4,8,8">
+            <Button Content="{x:Static res:Resources.ManageLookups_Add}"
+                    Command="{Binding AddCommand}"/>
+            <Button Content="&#x25B2;"
+                    ToolTip.Tip="{x:Static res:Resources.ManageLookups_MoveUp}"
+                    Command="{Binding MoveUpCommand}"/>
+            <Button Content="&#x25BC;"
+                    ToolTip.Tip="{x:Static res:Resources.ManageLookups_MoveDown}"
+                    Command="{Binding MoveDownCommand}"/>
+          </StackPanel>
+          <ListBox ItemsSource="{Binding FilteredEntries}"
+                   SelectedItem="{Binding SelectedEntry}">
+            <ListBox.ItemTemplate>
+              <DataTemplate x:DataType="vm:LookupEntryRow">
+                <TextBlock Text="{Binding Name}" FontSize="13" Padding="8,4"/>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+        </DockPanel>
+
+        <Border Grid.Column="0" Width="1" HorizontalAlignment="Right"
+                Background="{DynamicResource BrushBorder}"/>
+
+        <StackPanel Grid.Column="1" Margin="16" Spacing="8"
+                    IsVisible="{Binding HasSelection}">
+          <TextBlock Text="{x:Static res:Resources.ManageLookups_Name}" FontSize="12"/>
+          <TextBox Text="{Binding EditName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                   FontSize="13" MinWidth="200">
+            <i:Interaction.Behaviors>
+              <behaviors:FocusWhenChangedBehavior Sequence="{Binding AddFocusSequence}"/>
+            </i:Interaction.Behaviors>
+          </TextBox>
+          <TextBlock FontSize="12"
+                     Foreground="{DynamicResource BrushTextSecondary}"
+                     Text="{Binding UsedByCount, StringFormat={x:Static res:Resources.ManageLookups_UsedByBooks}}"/>
+          <TextBlock FontSize="12"
+                     Foreground="{DynamicResource BrushDestructive}"
+                     Text="{Binding StatusMessage}"
+                     IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <Button Classes="accent"
+                    Content="{x:Static res:Resources.Common_Save}"
+                    Command="{Binding SaveCommand}"/>
+            <Button Content="{x:Static res:Resources.Common_Discard}"
+                    Command="{Binding CancelCommand}"/>
+            <Button Content="{x:Static res:Resources.ManageLookups_Delete}"
+                    Command="{Binding DeleteCommand}"/>
+            <Button Content="{x:Static res:Resources.ManageLookups_Merge}"
+                    Command="{Binding MergeIntoCommand}"
+                    IsVisible="{Binding SupportsMerge}"/>
+          </StackPanel>
+        </StackPanel>
+
+        <TextBlock Grid.Column="1"
+                   Text="{x:Static res:Resources.ManageLookups_SelectEntry}"
+                   FontSize="13"
+                   Foreground="{DynamicResource BrushTextSecondary}"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   IsVisible="{Binding !HasSelection}"/>
+      </Grid>
+    </DataTemplate>
+  </Window.Resources>
+
+  <DockPanel Margin="0">
+    <!-- Title bar -->
+    <Border DockPanel.Dock="Top"
+            Background="{DynamicResource BrushBackgroundAlt}"
+            Padding="16,12"
+            BorderThickness="0,0,0,1"
+            BorderBrush="{DynamicResource BrushBorder}">
+      <TextBlock Text="{x:Static res:Resources.ManageLookups_Title}"
+                 FontSize="14"
+                 FontWeight="SemiBold"/>
+    </Border>
+
+    <!-- Footer -->
+    <Border DockPanel.Dock="Bottom"
+            Padding="16,12"
+            BorderThickness="0,1,0,0"
+            BorderBrush="{DynamicResource BrushBorder}">
+      <Button Content="{x:Static res:Resources.Common_Close}"
+              Command="{Binding CloseCommand}"
+              HorizontalAlignment="Right"/>
+    </Border>
+
+    <TabControl TabStripPlacement="Left"
+                SelectedIndex="{Binding SelectedTabIndex}">
+
+      <!-- Person tab — dedicated UserControl with compiled bindings against PersonTabViewModel -->
+      <TabItem Header="{x:Static res:Resources.ManageLookups_Tab_Person}">
+        <views:PersonTabView DataContext="{Binding PersonTab}"/>
+      </TabItem>
+
+      <!-- Simple tabs: Content bound directly from parent VM so compiled bindings stay typed -->
+      <TabItem Header="{x:Static res:Resources.ManageLookups_Tab_Publisher}">
+        <ContentControl ContentTemplate="{StaticResource SimpleLookupTabTemplate}"
+                        Content="{Binding PublisherTab}"/>
+      </TabItem>
+
+      <TabItem Header="{x:Static res:Resources.ManageLookups_Tab_Series}">
+        <ContentControl ContentTemplate="{StaticResource SimpleLookupTabTemplate}"
+                        Content="{Binding SeriesTab}"/>
+      </TabItem>
+
+      <TabItem Header="{x:Static res:Resources.ManageLookups_Tab_Location}">
+        <ContentControl ContentTemplate="{StaticResource SimpleLookupTabTemplate}"
+                        Content="{Binding LocationTab}"/>
+      </TabItem>
+
+      <TabItem Header="{x:Static res:Resources.ManageLookups_Tab_Owner}">
+        <ContentControl ContentTemplate="{StaticResource SimpleLookupTabTemplate}"
+                        Content="{Binding OwnerTab}"/>
+      </TabItem>
+
+      <TabItem Header="{x:Static res:Resources.ManageLookups_Tab_Language}">
+        <ContentControl ContentTemplate="{StaticResource SimpleLookupTabTemplate}"
+                        Content="{Binding LanguageTab}"/>
+      </TabItem>
+
+      <TabItem Header="{x:Static res:Resources.ManageLookups_Tab_Category}">
+        <ContentControl ContentTemplate="{StaticResource SimpleLookupTabTemplate}"
+                        Content="{Binding CategoryTab}"/>
+      </TabItem>
+
+      <TabItem Header="{x:Static res:Resources.ManageLookups_Tab_PurchasePlace}">
+        <ContentControl ContentTemplate="{StaticResource SimpleLookupTabTemplate}"
+                        Content="{Binding PurchasePlaceTab}"/>
+      </TabItem>
+
+      <TabItem Header="{x:Static res:Resources.ManageLookups_Tab_Collection}">
+        <ContentControl ContentTemplate="{StaticResource CollectionTabTemplate}"
+                        Content="{Binding CollectionTab}"/>
+      </TabItem>
+
+    </TabControl>
+  </DockPanel>
+
+</Window>

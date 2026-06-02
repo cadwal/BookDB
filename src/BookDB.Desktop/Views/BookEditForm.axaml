@@ -1,0 +1,732 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:BookDB.Desktop.ViewModels"
+             xmlns:res="using:BookDB.Desktop.Localization"
+             xmlns:entities="using:BookDB.Models.Entities"
+             xmlns:i="using:Avalonia.Xaml.Interactivity"
+             xmlns:behaviors="using:BookDB.Desktop.Behaviors"
+             xmlns:cvt="using:BookDB.Desktop.Converters"
+             x:Class="BookDB.Desktop.Views.BookEditForm"
+             x:DataType="vm:BookEditViewModelBase">
+
+    <DockPanel LastChildFill="True" Margin="8">
+
+        <!-- TabControl with five tabs -->
+        <TabControl FontSize="13">
+            <i:Interaction.Behaviors>
+                <behaviors:ContributorsTabActivationBehavior />
+                <behaviors:LoanHistoryTabActivationBehavior />
+            </i:Interaction.Behaviors>
+
+            <!-- Basic Info tab -->
+            <TabItem Header="{x:Static res:Resources.Tab_BasicInfo}">
+                <ScrollViewer>
+                    <Grid Margin="8"
+                          ColumnDefinitions="Auto,*,Auto"
+                          RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
+
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="{x:Static res:Resources.BookEditForm_Label_Title}" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,4" />
+                        <TextBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding EditTitle}" FontSize="13" Margin="0,0,0,4" />
+
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="{x:Static res:Resources.BookEditForm_Label_Subtitle}" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,4" />
+                        <TextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding EditSubtitle}" FontSize="13" Margin="0,0,0,4" />
+
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="{x:Static res:Resources.BookEditForm_Label_AltTitle}" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,4" />
+                        <TextBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding EditAltTitle}" FontSize="13" Margin="0,0,0,4" />
+
+                        <TextBlock Grid.Row="3" Grid.Column="0" Text="{x:Static res:Resources.BookEditForm_Label_Isbn}" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,4" />
+                        <TextBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding EditIsbn}" FontSize="13" Margin="0,0,0,4" />
+
+                        <TextBlock Grid.Row="4" Grid.Column="0" Text="{x:Static res:Resources.BookEditForm_Label_ExtId}" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,4" />
+                        <TextBox Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding EditExternalId}" FontSize="13" Margin="0,0,0,4" />
+
+                        <TextBlock Grid.Row="5" Grid.Column="0" Text="{x:Static res:Resources.BookEditForm_Label_Series}" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,4" />
+                        <ComboBox Grid.Row="5" Grid.Column="1"
+                                  ItemsSource="{Binding SeriesList}"
+                                  SelectedValueBinding="{Binding SeriesId}"
+                                  SelectedValue="{Binding EditSeriesId}"
+                                  DisplayMemberBinding="{Binding Name}"
+                                  FontSize="13"
+                                  HorizontalAlignment="Stretch"
+                                  Margin="0,0,0,4" />
+                        <Button Grid.Row="5" Grid.Column="2"
+                                Content="&#x2699;"
+                                FontSize="11"
+                                Padding="4,2"
+                                Margin="4,0,0,4"
+                                ToolTip.Tip="{x:Static res:Resources.ManageLookups_Gear_Series}"
+                                Command="{Binding OpenManageLookupsCommand}"
+                                CommandParameter="Series"
+                                VerticalAlignment="Center"/>
+
+                        <TextBlock Grid.Row="6" Grid.Column="0" Text="{x:Static res:Resources.BookEditForm_Label_SeriesNumber}" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,4" />
+                        <TextBox Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding EditSeriesNumber}" FontSize="13" Margin="0,0,0,4" />
+
+                        <TextBlock Grid.Row="7" Grid.Column="0" Text="{x:Static res:Resources.BookEditForm_Label_Publisher}" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,4" />
+                        <ComboBox Grid.Row="7" Grid.Column="1"
+                                  ItemsSource="{Binding Publishers}"
+                                  SelectedValueBinding="{Binding PublisherId}"
+                                  SelectedValue="{Binding EditPublisherId}"
+                                  DisplayMemberBinding="{Binding Name}"
+                                  FontSize="13"
+                                  HorizontalAlignment="Stretch"
+                                  Margin="0,0,0,4" />
+                        <Button Grid.Row="7" Grid.Column="2"
+                                Content="&#x2699;"
+                                FontSize="11"
+                                Padding="4,2"
+                                Margin="4,0,0,4"
+                                ToolTip.Tip="{x:Static res:Resources.ManageLookups_Gear_Publisher}"
+                                Command="{Binding OpenManageLookupsCommand}"
+                                CommandParameter="Publisher"
+                                VerticalAlignment="Center"/>
+
+                        <TextBlock Grid.Row="8" Grid.Column="0" Text="{x:Static res:Resources.BookEditForm_Label_Year}" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,4" />
+                        <TextBox Grid.Row="8" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding EditPubDate}" FontSize="13" Margin="0,0,0,4" />
+
+                        <TextBlock Grid.Row="9" Grid.Column="0" Text="{x:Static res:Resources.BookEditForm_Label_Format}" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,4" />
+                        <ComboBox Grid.Row="9" Grid.Column="1" Grid.ColumnSpan="2"
+                                  ItemsSource="{Binding Formats}"
+                                  SelectedValueBinding="{Binding FormatId}"
+                                  SelectedValue="{Binding EditFormatId}"
+                                  DisplayMemberBinding="{Binding Name}"
+                                  FontSize="13"
+                                  HorizontalAlignment="Stretch"
+                                  Margin="0,0,0,4" />
+
+                        <TextBlock Grid.Row="10" Grid.Column="0" Text="{x:Static res:Resources.BookEditForm_Label_Edition}" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,4" />
+                        <ComboBox Grid.Row="10" Grid.Column="1" Grid.ColumnSpan="2"
+                                  ItemsSource="{Binding Editions}"
+                                  SelectedValueBinding="{Binding EditionId}"
+                                  SelectedValue="{Binding EditEditionId}"
+                                  DisplayMemberBinding="{Binding Name}"
+                                  FontSize="13"
+                                  HorizontalAlignment="Stretch"
+                                  Margin="0,0,0,4" />
+
+                        <TextBlock Grid.Row="11" Grid.Column="0" Text="{x:Static res:Resources.BookEditForm_Label_Language}" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,4" />
+                        <ComboBox Grid.Row="11" Grid.Column="1"
+                                  ItemsSource="{Binding Languages}"
+                                  SelectedValueBinding="{Binding LanguageId}"
+                                  SelectedValue="{Binding EditLanguageId}"
+                                  DisplayMemberBinding="{Binding Name}"
+                                  FontSize="13"
+                                  HorizontalAlignment="Stretch"
+                                  Margin="0,0,0,4" />
+                        <Button Grid.Row="11" Grid.Column="2"
+                                Content="&#x2699;"
+                                FontSize="11"
+                                Padding="4,2"
+                                Margin="4,0,0,4"
+                                ToolTip.Tip="{x:Static res:Resources.ManageLookups_Gear_Language}"
+                                Command="{Binding OpenManageLookupsCommand}"
+                                CommandParameter="Language"
+                                VerticalAlignment="Center"/>
+
+                    </Grid>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- Details tab — 12 rows (0-11): includes Times Read from FDW -->
+            <TabItem Header="{x:Static res:Resources.Tab_Details}">
+                <ScrollViewer>
+                    <Grid Margin="8"
+                          ColumnDefinitions="Auto,*,Auto"
+                          RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
+
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="{x:Static res:Resources.BookEditForm_Label_Pages}" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,4" />
+                        <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding EditPages}" FontSize="13" Margin="0,0,0,4" />
+
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="{x:Static res:Resources.BookEditForm_Label_Copies}" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,4" />
+                        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding EditCopies}" FontSize="13" Margin="0,0,0,4" />
+
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="{x:Static res:Resources.BookEditForm_Label_TimesRead}" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,4" />
+                        <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding EditReadCount}" FontSize="13" Margin="0,0,0,4" />
+
+                        <TextBlock Grid.Row="3" Grid.Column="0" Text="{x:Static res:Resources.BookEditForm_Label_Rating}" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,4" />
+                        <ComboBox Grid.Row="3" Grid.Column="1"
+                                  ItemsSource="{Binding Ratings}"
+                                  SelectedValueBinding="{Binding RatingId}"
+                                  SelectedValue="{Binding EditRatingId}"
+                                  DisplayMemberBinding="{Binding Name}"
+                                  FontSize="13"
+                                  HorizontalAlignment="Stretch"
+                                  Margin="0,0,0,4" />
+
+                        <TextBlock Grid.Row="4" Grid.Column="0" Text="{x:Static res:Resources.BookEditForm_Label_Condition}" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,4" />
+                        <ComboBox Grid.Row="4" Grid.Column="1"
+                                  ItemsSource="{Binding Conditions}"
+                                  SelectedValueBinding="{Binding ConditionId}"
+                                  SelectedValue="{Binding EditConditionId}"
+                                  DisplayMemberBinding="{Binding Name}"
+                                  FontSize="13"
+                                  HorizontalAlignment="Stretch"
+                                  Margin="0,0,0,4" />
+
+                        <TextBlock Grid.Row="5" Grid.Column="0" Text="{x:Static res:Resources.BookEditForm_Label_Status}" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,4" />
+                        <ComboBox Grid.Row="5" Grid.Column="1"
+                                  ItemsSource="{Binding Statuses}"
+                                  SelectedValueBinding="{Binding StatusId}"
+                                  SelectedValue="{Binding EditStatusId}"
+                                  DisplayMemberBinding="{Binding Name}"
+                                  FontSize="13"
+                                  HorizontalAlignment="Stretch"
+                                  Margin="0,0,0,4" />
+
+                        <TextBlock Grid.Row="6" Grid.Column="0" Text="{x:Static res:Resources.BookEditForm_Label_ReadingLevel}" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,4" />
+                        <ComboBox Grid.Row="6" Grid.Column="1"
+                                  ItemsSource="{Binding ReadingLevels}"
+                                  SelectedValueBinding="{Binding ReadingLevelId}"
+                                  SelectedValue="{Binding EditReadingLevelId}"
+                                  DisplayMemberBinding="{Binding Name}"
+                                  FontSize="13"
+                                  HorizontalAlignment="Stretch"
+                                  Margin="0,0,0,4" />
+
+                        <TextBlock Grid.Row="7" Grid.Column="0" Text="{x:Static res:Resources.BookEditForm_Label_Category}"
+                                   FontSize="12" VerticalAlignment="Top" Margin="0,4,8,4" />
+                        <Border Grid.Row="7" Grid.Column="1"
+                                BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
+                                BorderThickness="1"
+                                Height="120"
+                                Margin="0,0,0,4">
+                          <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+                            <ItemsControl ItemsSource="{Binding CategoryRows}">
+                              <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                  <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                            Content="{Binding Name}"
+                                            FontSize="11"
+                                            Padding="6,2"
+                                            MinHeight="0"/>
+                                </DataTemplate>
+                              </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                          </ScrollViewer>
+                        </Border>
+                        <!-- VerticalAlignment="Top" is intentional: the adjacent Category ListBox is
+                             multi-row (Height=60), so Top-aligning the gear keeps it next to the
+                             label rather than centred in the tall row. Do not change to Center. -->
+                        <Button Grid.Row="7" Grid.Column="2"
+                                Content="&#x2699;"
+                                FontSize="11"
+                                Padding="4,2"
+                                Margin="4,0,0,4"
+                                ToolTip.Tip="{x:Static res:Resources.ManageLookups_Gear_Category}"
+                                Command="{Binding OpenManageLookupsCommand}"
+                                CommandParameter="Category"
+                                VerticalAlignment="Top"/>
+
+                        <TextBlock Grid.Row="8" Grid.Column="0" Text="{x:Static res:Resources.BookEditForm_Label_Keywords}" FontSize="12" VerticalAlignment="Top" Margin="0,4,8,4" />
+                        <TextBox Grid.Row="8" Grid.Column="1"
+                                 Text="{Binding EditKeywords}"
+                                 FontSize="13"
+                                 Height="60"
+                                 TextWrapping="Wrap"
+                                 AcceptsReturn="True"
+                                 Margin="0,0,0,4" />
+
+                        <TextBlock Grid.Row="9" Grid.Column="0" Text="{x:Static res:Resources.BookEditForm_Label_Comments}" FontSize="12" VerticalAlignment="Top" Margin="0,4,8,4" />
+                        <TextBox Grid.Row="9" Grid.Column="1"
+                                 Text="{Binding EditComments}"
+                                 FontSize="13"
+                                 Height="60"
+                                 TextWrapping="Wrap"
+                                 AcceptsReturn="True"
+                                 Margin="0,0,0,4" />
+
+                        <TextBlock Grid.Row="10" Grid.Column="0" Text="{x:Static res:Resources.BookEditForm_Label_BookInfo}" FontSize="12" VerticalAlignment="Top" Margin="0,4,8,4" />
+                        <TextBox Grid.Row="10" Grid.Column="1"
+                                 Text="{Binding EditBookInfo}"
+                                 FontSize="13"
+                                 Height="60"
+                                 TextWrapping="Wrap"
+                                 AcceptsReturn="True"
+                                 Margin="0,0,0,4" />
+
+                        <TextBlock Grid.Row="11" Grid.Column="0" Text="{x:Static res:Resources.BookEditForm_Label_Flags}" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,4" />
+                        <StackPanel Grid.Row="11" Grid.Column="1" Orientation="Horizontal" Spacing="12" Margin="0,0,0,4">
+                            <CheckBox Content="{x:Static res:Resources.BookEditForm_Flag_Favorite}" IsChecked="{Binding EditFavorite}" FontSize="13" />
+                            <CheckBox Content="{x:Static res:Resources.BookEditForm_Flag_Signed}" IsChecked="{Binding EditSigned}" FontSize="13" />
+                            <CheckBox Content="{x:Static res:Resources.BookEditForm_Flag_OutOfPrint}" IsChecked="{Binding EditOutOfPrint}" FontSize="13" />
+                        </StackPanel>
+
+                    </Grid>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- Acquisition tab — 7 rows (0-6): BDV canonical version with Purchase Date -->
+            <TabItem Header="{x:Static res:Resources.Tab_Acquisition}">
+                <ScrollViewer>
+                    <Grid Margin="8"
+                          ColumnDefinitions="Auto,*,Auto"
+                          RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto">
+
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="{x:Static res:Resources.BookEditForm_Label_PurchasePrice}" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,4" />
+                        <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" Spacing="4" Margin="0,0,0,4">
+                            <TextBox Text="{Binding EditPurchasePrice}" FontSize="13" Width="100" />
+                            <TextBox Text="{Binding EditPurchaseCurrency}" FontSize="13" Width="60" Watermark="{x:Static res:Resources.BookEditForm_Watermark_Usd}" />
+                        </StackPanel>
+
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="{x:Static res:Resources.BookEditForm_Label_ListPrice}" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,4" />
+                        <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" Spacing="4" Margin="0,0,0,4">
+                            <TextBox Text="{Binding EditListPrice}" FontSize="13" Width="100" />
+                            <TextBox Text="{Binding EditListPriceCurrency}" FontSize="13" Width="60" Watermark="{x:Static res:Resources.BookEditForm_Watermark_Usd}" />
+                        </StackPanel>
+
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="{x:Static res:Resources.BookEditForm_Label_PurchasePlace}" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,4" />
+                        <ComboBox Grid.Row="2" Grid.Column="1"
+                                  ItemsSource="{Binding PurchasePlaces}"
+                                  SelectedValueBinding="{Binding PurchasePlaceId}"
+                                  SelectedValue="{Binding EditPurchasePlaceId}"
+                                  DisplayMemberBinding="{Binding Name}"
+                                  FontSize="13"
+                                  HorizontalAlignment="Stretch"
+                                  Margin="0,0,0,4" />
+                        <Button Grid.Row="2" Grid.Column="2"
+                                Content="&#x2699;"
+                                FontSize="11"
+                                Padding="4,2"
+                                Margin="4,0,0,4"
+                                ToolTip.Tip="{x:Static res:Resources.ManageLookups_Gear_PurchasePlace}"
+                                Command="{Binding OpenManageLookupsCommand}"
+                                CommandParameter="PurchasePlace"
+                                VerticalAlignment="Center"/>
+
+                        <TextBlock Grid.Row="3" Grid.Column="0" Text="{x:Static res:Resources.BookEditForm_Label_PurchaseDate}" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,4" />
+                        <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding EditPurchaseDate}" FontSize="13" Margin="0,0,0,4" />
+
+                        <TextBlock Grid.Row="4" Grid.Column="0" Text="{x:Static res:Resources.BookEditForm_Label_CopyrightDate}" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,4" />
+                        <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding EditCopyrightDate}" FontSize="13" Margin="0,0,0,4" />
+
+                        <TextBlock Grid.Row="5" Grid.Column="0" Text="{x:Static res:Resources.BookEditForm_Label_PubPlace}" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,4" />
+                        <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding EditPubPlace}" FontSize="13" Margin="0,0,0,4" />
+
+                        <TextBlock Grid.Row="6" Grid.Column="0" Text="{x:Static res:Resources.BookEditForm_Label_Source}" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,4" />
+                        <ComboBox Grid.Row="6" Grid.Column="1"
+                                  ItemsSource="{Binding Sources}"
+                                  SelectedValueBinding="{Binding SourceId}"
+                                  SelectedValue="{Binding EditSourceId}"
+                                  DisplayMemberBinding="{Binding Name}"
+                                  FontSize="13"
+                                  HorizontalAlignment="Stretch"
+                                  Margin="0,0,0,4" />
+
+                    </Grid>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- Contributors & Admin tab -->
+            <TabItem Header="{x:Static res:Resources.Tab_ContributorsAdmin}">
+                <ScrollViewer>
+                    <StackPanel Margin="8" Spacing="0">
+
+                        <TextBlock Text="{x:Static res:Resources.Section_Contributors}"
+                                   FontSize="12" FontWeight="SemiBold"
+                                   Foreground="{StaticResource BrushPrimaryBlue}"
+                                   Margin="0,0,0,8" />
+
+                        <ItemsControl ItemsSource="{Binding Contributors}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="vm:ContributorRowViewModel">
+                                    <DockPanel LastChildFill="True" Margin="0,0,0,4">
+                                        <Button DockPanel.Dock="Right"
+                                                Width="28" Height="28"
+                                                Classes="iconButton"
+                                                Content="×"
+                                                AutomationProperties.Name="Remove contributor"
+                                                Command="{Binding $parent[ItemsControl].((vm:BookEditViewModelBase)DataContext).RemoveContributorCommand}"
+                                                CommandParameter="{Binding}" />
+                                        <ComboBox DockPanel.Dock="Right"
+                                                  Width="140"
+                                                  Margin="4,0,4,0"
+                                                  ItemsSource="{Binding $parent[ItemsControl].((vm:BookEditViewModelBase)DataContext).ContributorRoles}"
+                                                  SelectedValue="{Binding RoleId}"
+                                                  SelectedValueBinding="{Binding ContributorRoleId}"
+                                                  DisplayMemberBinding="{Binding ResourceKey, Converter={x:Static cvt:ResourceKeyConverter.Instance}}"
+                                                  FontSize="13" />
+                                        <AutoCompleteBox Text="{Binding PersonName}"
+                                                         MinimumPrefixLength="2"
+                                                         FilterMode="Contains"
+                                                         ItemsSource="{Binding $parent[ItemsControl].((vm:BookEditViewModelBase)DataContext).AvailablePersonNames}"
+                                                         MinWidth="100"
+                                                         FontSize="13" />
+                                    </DockPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <Button Content="{x:Static res:Resources.Button_AddContributor}"
+                                Command="{Binding AddContributorCommand}"
+                                Classes="secondaryButton"
+                                HorizontalAlignment="Left"
+                                Margin="0,8,0,0"
+                                FontSize="13" />
+
+                        <Rectangle Height="1"
+                                   Fill="{StaticResource BrushBorder}"
+                                   Margin="0,12,0,12" />
+
+                        <Grid ColumnDefinitions="Auto,*,Auto"
+                              RowDefinitions="Auto,Auto,Auto,Auto">
+
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="{x:Static res:Resources.BookEditForm_Label_Owner}"
+                                       FontSize="12" VerticalAlignment="Center" Margin="0,0,8,4" />
+                            <ComboBox Grid.Row="0" Grid.Column="1"
+                                      ItemsSource="{Binding Owners}"
+                                      SelectedValueBinding="{Binding OwnerId}"
+                                      SelectedValue="{Binding EditOwnerId}"
+                                      DisplayMemberBinding="{Binding Name}"
+                                      FontSize="13"
+                                      HorizontalAlignment="Stretch"
+                                      Margin="0,0,0,4" />
+                            <Button Grid.Row="0" Grid.Column="2"
+                                    Content="&#x2699;"
+                                    FontSize="11"
+                                    Padding="4,2"
+                                    Margin="4,0,0,4"
+                                    ToolTip.Tip="{x:Static res:Resources.ManageLookups_Gear_Owner}"
+                                    Command="{Binding OpenManageLookupsCommand}"
+                                    CommandParameter="Owner"
+                                    VerticalAlignment="Center"/>
+
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="{x:Static res:Resources.BookEditForm_Label_Location}"
+                                       FontSize="12" VerticalAlignment="Center" Margin="0,0,8,4" />
+                            <ComboBox Grid.Row="1" Grid.Column="1"
+                                      ItemsSource="{Binding Locations}"
+                                      SelectedValueBinding="{Binding LocationId}"
+                                      SelectedValue="{Binding EditLocationId}"
+                                      DisplayMemberBinding="{Binding Name}"
+                                      FontSize="13"
+                                      HorizontalAlignment="Stretch"
+                                      Margin="0,0,0,4" />
+                            <Button Grid.Row="1" Grid.Column="2"
+                                    Content="&#x2699;"
+                                    FontSize="11"
+                                    Padding="4,2"
+                                    Margin="4,0,0,4"
+                                    ToolTip.Tip="{x:Static res:Resources.ManageLookups_Gear_Location}"
+                                    Command="{Binding OpenManageLookupsCommand}"
+                                    CommandParameter="Location"
+                                    VerticalAlignment="Center"/>
+
+                            <TextBlock Grid.Row="2" Grid.Column="0"
+                                       Text="{x:Static res:Resources.Label_VisibleInCatalog}"
+                                       FontSize="12" VerticalAlignment="Center" Margin="0,0,8,4" />
+                            <CheckBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2"
+                                      IsChecked="{Binding EditDisplay}"
+                                      AutomationProperties.Name="Visible in catalog"
+                                      ToolTip.Tip="{x:Static res:Resources.Tooltip_VisibleInCatalog}"
+                                      FontSize="13"
+                                      Margin="0,0,0,4" />
+
+                            <TextBlock Grid.Row="3" Grid.Column="0" Text="{x:Static res:Resources.BookEditForm_Label_MediaLink}"
+                                       FontSize="12" VerticalAlignment="Center" Margin="0,0,8,4" />
+                            <TextBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2"
+                                     Text="{Binding EditMediaLink}"
+                                     FontSize="13" Margin="0,0,0,4" />
+
+                        </Grid>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- Additional Info tab -->
+            <TabItem Header="{x:Static res:Resources.Tab_AdditionalInfo}">
+                <ScrollViewer>
+                    <Grid Margin="8"
+                          ColumnDefinitions="Auto,*"
+                          RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto">
+
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="{x:Static res:Resources.Label_ISSN}" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,4" />
+                        <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Issn}" FontSize="13" Margin="0,0,0,4" />
+
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="{x:Static res:Resources.Label_LCCN}" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,4" />
+                        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Lccn}" FontSize="13" Margin="0,0,0,4" />
+
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="{x:Static res:Resources.Label_DeweyDecimal}" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,4" />
+                        <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding DeweyDecimal}" FontSize="13" Margin="0,0,0,4" />
+
+                        <TextBlock Grid.Row="3" Grid.Column="0" Text="{x:Static res:Resources.Label_CallNumber}" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,4" />
+                        <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding CallNumber}" FontSize="13" Margin="0,0,0,4" />
+
+                        <TextBlock Grid.Row="4" Grid.Column="0" Text="{x:Static res:Resources.Label_Dimensions}" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,4" />
+                        <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding Dimensions}" FontSize="13" Margin="0,0,0,4" />
+
+                        <TextBlock Grid.Row="5" Grid.Column="0" Text="{x:Static res:Resources.Label_Weight}" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,4" />
+                        <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding Weight}" FontSize="13" Margin="0,0,0,4" />
+
+                        <TextBlock Grid.Row="6" Grid.Column="0" Text="{x:Static res:Resources.Label_ItemValue}" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,4" />
+                        <TextBox Grid.Row="6" Grid.Column="1" Text="{Binding ItemValue}" FontSize="13" Margin="0,0,0,4" />
+
+                        <TextBlock Grid.Row="7" Grid.Column="0" Text="{x:Static res:Resources.Label_ValuationDate}" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,4" />
+                        <TextBox Grid.Row="7" Grid.Column="1" Text="{Binding ValuationDate}" FontSize="13" Margin="0,0,0,4" />
+
+                        <TextBlock Grid.Row="8" Grid.Column="0" Text="{x:Static res:Resources.Label_AmazonNew}" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,4" />
+                        <StackPanel Grid.Row="8" Grid.Column="1" Orientation="Horizontal" Spacing="4" Margin="0,0,0,4">
+                            <TextBox Text="{Binding AmazonNewValue}" FontSize="13" Width="80" />
+                            <TextBlock Text="{x:Static res:Resources.BookEditForm_Label_Qty}" VerticalAlignment="Center" FontSize="12" />
+                            <TextBox Text="{Binding AmazonNewCount}" FontSize="13" Width="60" />
+                        </StackPanel>
+
+                        <TextBlock Grid.Row="9" Grid.Column="0" Text="{x:Static res:Resources.Label_AmazonUsed}" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,4" />
+                        <StackPanel Grid.Row="9" Grid.Column="1" Orientation="Horizontal" Spacing="4" Margin="0,0,0,4">
+                            <TextBox Text="{Binding AmazonUsedValue}" FontSize="13" Width="80" />
+                            <TextBlock Text="{x:Static res:Resources.BookEditForm_Label_Qty}" VerticalAlignment="Center" FontSize="12" />
+                            <TextBox Text="{Binding AmazonUsedCount}" FontSize="13" Width="60" />
+                        </StackPanel>
+
+                        <TextBlock Grid.Row="10" Grid.Column="0" Text="{x:Static res:Resources.Label_AmazonCollectible}" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,4" />
+                        <StackPanel Grid.Row="10" Grid.Column="1" Orientation="Horizontal" Spacing="4" Margin="0,0,0,4">
+                            <TextBox Text="{Binding AmazonCollectibleValue}" FontSize="13" Width="80" />
+                            <TextBlock Text="{x:Static res:Resources.BookEditForm_Label_Qty}" VerticalAlignment="Center" FontSize="12" />
+                            <TextBox Text="{Binding AmazonCollectibleCount}" FontSize="13" Width="60" />
+                        </StackPanel>
+
+                        <TextBlock Grid.Row="11" Grid.Column="0" Text="{x:Static res:Resources.Label_SalesRank}" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,4" />
+                        <TextBox Grid.Row="11" Grid.Column="1" Text="{Binding SalesRank}" FontSize="13" Margin="0,0,0,4" />
+
+                        <TextBlock Grid.Row="12" Grid.Column="0" Text="{x:Static res:Resources.Label_LexileLevel}" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,4" />
+                        <TextBox Grid.Row="12" Grid.Column="1" Text="{Binding LexileLevel}" FontSize="13" Margin="0,0,0,4" />
+
+                    </Grid>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- Images tab (last tab) -->
+            <TabItem Header="{x:Static res:Resources.BookEditForm_Tab_Images}">
+                <DockPanel LastChildFill="True">
+
+                    <!-- Top zone: thumbnail row — all 5 types always visible -->
+                    <Border DockPanel.Dock="Top"
+                            BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
+                            BorderThickness="0,0,0,1"
+                            Padding="4">
+                        <ItemsControl ItemsSource="{Binding ImageEditor.ImageTypeButtons}"
+                                      HorizontalAlignment="Center">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel Orientation="Horizontal" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="vm:ImageTypeButtonViewModel">
+                                    <Button Width="80"
+                                            Height="100"
+                                            Padding="4"
+                                            Margin="4"
+                                            Classes.accent="{Binding IsSelected}"
+                                            Command="{Binding $parent[ItemsControl].((vm:BookEditViewModelBase)DataContext).ImageEditor.SelectImageTypeCommand}"
+                                            CommandParameter="{Binding BookImageTypeId}">
+                                        <DockPanel LastChildFill="True">
+                                            <TextBlock DockPanel.Dock="Bottom"
+                                                       Text="{Binding Label}"
+                                                       FontSize="10"
+                                                       HorizontalAlignment="Center"
+                                                       TextAlignment="Center"
+                                                       Margin="0,2,0,0" />
+                                            <Panel>
+                                                <Image Source="{Binding Bitmap}"
+                                                       Stretch="Uniform"
+                                                       IsVisible="{Binding Bitmap, Converter={x:Static ObjectConverters.IsNotNull}}" />
+                                                <TextBlock Text="&#x2014;"
+                                                           HorizontalAlignment="Center"
+                                                           VerticalAlignment="Center"
+                                                           FontSize="10"
+                                                           Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                                           IsVisible="{Binding Bitmap, Converter={x:Static ObjectConverters.IsNull}}" />
+                                            </Panel>
+                                        </DockPanel>
+                                    </Button>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Border>
+
+                    <!-- Bottom zone: edit controls — Add / URL / Fetch / Remove -->
+                    <StackPanel DockPanel.Dock="Bottom"
+                                Orientation="Horizontal"
+                                HorizontalAlignment="Center"
+                                Spacing="6"
+                                Margin="8,6,8,8">
+                        <Button Content="{x:Static res:Resources.Cover_AttachFile}"
+                                Command="{Binding ImageEditor.AttachCoverFromFileCommand}"
+                                FontSize="12" />
+                        <TextBox x:Name="ImagesTabUrlInputBox"
+                                 FontSize="12"
+                                 Width="180"
+                                 Watermark="https://..." />
+                        <Button Content="{x:Static res:Resources.Cover_AttachUrl}"
+                                Command="{Binding ImageEditor.AttachCoverFromUrlCommand}"
+                                CommandParameter="{Binding #ImagesTabUrlInputBox.Text}"
+                                FontSize="12" />
+                        <Button Content="{x:Static res:Resources.BookEditForm_Button_Remove}"
+                                Command="{Binding ImageEditor.RemoveCoverForSelectedTypeCommand}"
+                                FontSize="12"
+                                IsVisible="{Binding ImageEditor.CoverBitmap, Converter={x:Static ObjectConverters.IsNotNull}}" />
+                    </StackPanel>
+
+                    <!-- Manage all images section — visible only when 2+ images exist -->
+                    <Border DockPanel.Dock="Bottom"
+                            Padding="8,8,8,0"
+                            BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
+                            BorderThickness="0,1,0,0"
+                            IsVisible="{Binding ImageEditor.HasMultipleImages}">
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="{x:Static res:Resources.ImageEditor_ManageSection_Heading}"
+                                       FontSize="12"
+                                       FontWeight="SemiBold"
+                                       Foreground="{StaticResource BrushPrimaryBlue}" />
+                            <ItemsControl ItemsSource="{Binding ImageEditor.ImageItems}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="vm:ManageImageItemViewModel">
+                                        <Grid ColumnDefinitions="Auto,*,Auto" Height="40" Margin="0,0,0,4">
+                                            <Border Grid.Column="0" Width="30" Height="36" Margin="0,0,8,0">
+                                                <i:Interaction.Behaviors>
+                                                    <!-- Side placement (not Pointer): the preview must not open under the
+                                                         cursor, or it steals pointer-over from this tiny cell and the
+                                                         tooltip flickers open/closed. -->
+                                                    <behaviors:CoverHoverPopupBehavior ImagePropertyName="Thumbnail" Placement="Right" />
+                                                </i:Interaction.Behaviors>
+                                                <Image Source="{Binding Thumbnail}" Stretch="Uniform" />
+                                            </Border>
+                                            <StackPanel Grid.Column="1" Orientation="Vertical" Spacing="2"
+                                                        VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding TypeName}" FontSize="12" />
+                                                <TextBlock Text="{Binding OrderLabel}" FontSize="12"
+                                                           Foreground="{StaticResource BrushTextTertiary}" />
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="4"
+                                                        VerticalAlignment="Center">
+                                                <Button Width="28" Height="28"
+                                                        Classes="iconButton"
+                                                        Content="&#x2191;"
+                                                        Command="{Binding $parent[ItemsControl].((vm:BookEditViewModelBase)DataContext).ImageEditor.MoveUpCommand}"
+                                                        CommandParameter="{Binding}"
+                                                        IsEnabled="{Binding CanMoveUp}">
+                                                    <ToolTip.Tip>
+                                                        <TextBlock Text="{x:Static res:Resources.ImageEditor_ManageItem_MoveUp_Tooltip}" />
+                                                    </ToolTip.Tip>
+                                                </Button>
+                                                <Button Width="28" Height="28"
+                                                        Classes="iconButton"
+                                                        Content="&#x2193;"
+                                                        Command="{Binding $parent[ItemsControl].((vm:BookEditViewModelBase)DataContext).ImageEditor.MoveDownCommand}"
+                                                        CommandParameter="{Binding}"
+                                                        IsEnabled="{Binding CanMoveDown}">
+                                                    <ToolTip.Tip>
+                                                        <TextBlock Text="{x:Static res:Resources.ImageEditor_ManageItem_MoveDown_Tooltip}" />
+                                                    </ToolTip.Tip>
+                                                </Button>
+                                                <ComboBox Width="120" FontSize="13"
+                                                          IsVisible="{Binding !IsThumbnailType}"
+                                                          ItemsSource="{Binding $parent[ItemsControl].((vm:BookEditViewModelBase)DataContext).ImageEditor.AvailableImageTypes}"
+                                                          SelectedValue="{Binding SelectedTypeId, Mode=TwoWay}"
+                                                          SelectedValueBinding="{Binding BookImageTypeId}"
+                                                          DisplayMemberBinding="{Binding Name}">
+                                                    <ToolTip.Tip>
+                                                        <TextBlock Text="{x:Static res:Resources.ImageEditor_ManageItem_TypePicker_Tooltip}" />
+                                                    </ToolTip.Tip>
+                                                </ComboBox>
+                                                <Button Width="28" Height="28"
+                                                        Classes="iconButton"
+                                                        Content="&#x2715;"
+                                                        Margin="4,0,0,0"
+                                                        Command="{Binding $parent[ItemsControl].((vm:BookEditViewModelBase)DataContext).ImageEditor.RemoveManageItemCommand}"
+                                                        CommandParameter="{Binding}">
+                                                    <ToolTip.Tip>
+                                                        <TextBlock Text="{x:Static res:Resources.ImageEditor_ManageItem_Remove_Tooltip}" />
+                                                    </ToolTip.Tip>
+                                                </Button>
+                                            </StackPanel>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Middle zone: large preview -->
+                    <Border x:Name="LargePreviewBorder"
+                            Background="White"
+                            CornerRadius="4"
+                            Margin="8,6,8,0"
+                            ToolTip.Tip="{x:Static res:Resources.Cover_Placeholder_Tooltip}">
+                        <i:Interaction.Behaviors>
+                            <behaviors:FileDropBehavior DropCommand="{Binding ImageEditor.AttachCoverFromPathCommand}" />
+                        </i:Interaction.Behaviors>
+                        <DockPanel LastChildFill="True">
+                            <TextBlock DockPanel.Dock="Bottom"
+                                       Text="{Binding ImageEditor.ImageInfoLabel}"
+                                       HorizontalAlignment="Center"
+                                       Margin="0,4,0,6"
+                                       FontSize="11"
+                                       Opacity="0.65"
+                                       IsVisible="{Binding ImageEditor.CoverBitmap, Converter={x:Static ObjectConverters.IsNotNull}}" />
+                            <Panel HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                <Image Source="{Binding ImageEditor.CoverBitmap}"
+                                       Stretch="Uniform"
+                                       MaxWidth="{Binding ImageEditor.NativeImageWidth}"
+                                       MaxHeight="{Binding ImageEditor.NativeImageHeight}"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       IsVisible="{Binding ImageEditor.CoverBitmap, Converter={x:Static ObjectConverters.IsNotNull}}" />
+                                <TextBlock Text="{Binding ImageEditor.SelectedTypeEmptyLabel}"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           FontSize="14"
+                                           TextWrapping="Wrap"
+                                           TextAlignment="Center"
+                                           Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                           IsVisible="{Binding ImageEditor.CoverBitmap, Converter={x:Static ObjectConverters.IsNull}}" />
+                            </Panel>
+                        </DockPanel>
+                    </Border>
+
+                </DockPanel>
+            </TabItem>
+
+            <!-- Loan History tab (7th tab) -->
+            <TabItem Header="{x:Static res:Resources.Tab_LoanHistory}">
+                <Border Margin="4">
+                    <Grid>
+                        <TextBlock Text="{x:Static res:Resources.LoanHistory_EmptyState}"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   FontSize="13"
+                                   Foreground="{DynamicResource BrushTextSecondary}"
+                                   IsVisible="{Binding LoanHistoryIsEmpty}" />
+                        <DataGrid ItemsSource="{Binding LoanHistory}"
+                                  IsReadOnly="True"
+                                  AutoGenerateColumns="False"
+                                  CanUserReorderColumns="False"
+                                  CanUserResizeColumns="True"
+                                  GridLinesVisibility="Horizontal"
+                                  FontSize="13"
+                                  IsVisible="{Binding !LoanHistoryIsEmpty}">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="{x:Static res:Resources.LoanHistory_Column_Borrower}"
+                                                    Binding="{Binding BorrowerDisplayName}"
+                                                    Width="*" />
+                                <DataGridTextColumn Header="{x:Static res:Resources.LoanHistory_Column_Loaned}"
+                                                    Binding="{Binding LoanedDate}"
+                                                    Width="100" />
+                                <DataGridTextColumn Header="{x:Static res:Resources.LoanHistory_Column_Due}"
+                                                    Binding="{Binding DueDateDisplay}"
+                                                    Width="100" />
+                                <DataGridTextColumn Header="{x:Static res:Resources.LoanHistory_Column_Returned}"
+                                                    Binding="{Binding ReturnedDateDisplay}"
+                                                    Width="100" />
+                                <DataGridTextColumn Header="{x:Static res:Resources.LoanHistory_Column_Status}"
+                                                    Binding="{Binding StatusDisplay}"
+                                                    Width="120" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
+                </Border>
+            </TabItem>
+
+        </TabControl>
+
+    </DockPanel>
+</UserControl>

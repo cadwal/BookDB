@@ -1,0 +1,339 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:BookDB.Desktop.ViewModels"
+             xmlns:res="using:BookDB.Desktop.Localization"
+             xmlns:behaviors="using:BookDB.Desktop.Behaviors"
+             xmlns:i="using:Avalonia.Xaml.Interactivity"
+             x:Class="BookDB.Desktop.Views.PersonTabView"
+             x:DataType="vm:PersonTabViewModel"
+             x:Name="Root">
+  <Grid ColumnDefinitions="200,*">
+
+    <!-- LEFT PANEL: filter + add + suspected duplicates + list -->
+    <DockPanel Grid.Column="0" Background="{DynamicResource BrushBackgroundAlt}">
+      <TextBox DockPanel.Dock="Top"
+               Margin="8,8,8,4"
+               Watermark="{x:Static res:Resources.ManageLookups_Filter_Watermark}"
+               Text="{Binding FilterText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+      <Button DockPanel.Dock="Bottom"
+              Margin="8,4,8,8"
+              HorizontalAlignment="Left"
+              Content="{x:Static res:Resources.ManageLookups_Add}"
+              Command="{Binding AddCommand}"/>
+      <ScrollViewer>
+        <StackPanel Spacing="0">
+          <!-- Suspected duplicates section -->
+          <Border Background="{DynamicResource BrushBackgroundAlt}"
+                  BorderBrush="{DynamicResource BrushBorder}"
+                  BorderThickness="1"
+                  CornerRadius="4"
+                  Margin="8,4,8,0"
+                  Padding="8"
+                  IsVisible="{Binding HasSuspectedDuplicates}">
+            <StackPanel Spacing="4">
+              <TextBlock Text="{x:Static res:Resources.ManageLookups_SuspectedDuplicates}"
+                         FontSize="12" FontWeight="SemiBold"
+                         Foreground="{DynamicResource BrushPrimaryBlue}"
+                         Margin="0,0,0,4"/>
+              <ItemsControl ItemsSource="{Binding SuspectedDuplicates}">
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate x:DataType="vm:SuspectedDuplicatePair">
+                    <Button Padding="0,4"
+                            Background="Transparent"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Left"
+                            Command="{Binding #Root.((vm:PersonTabViewModel)DataContext).SelectDuplicatePairCommand}"
+                            CommandParameter="{Binding}"
+                            Cursor="Hand">
+                      <TextBlock Text="{Binding DisplayText}" FontSize="12"/>
+                    </Button>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </StackPanel>
+          </Border>
+
+          <!-- Scanning indicator -->
+          <TextBlock Text="{x:Static res:Resources.ManageLookups_Scanning}"
+                     FontSize="11"
+                     Foreground="{DynamicResource BrushTextSecondary}"
+                     Margin="8,4,8,0"
+                     IsVisible="{Binding IsScanningDuplicates}"/>
+
+          <!-- Main persons list -->
+          <ListBox ItemsSource="{Binding FilteredPersons}"
+                   SelectedItem="{Binding SelectedPerson}"
+                   Margin="0,4,0,0"
+                   MinHeight="200">
+            <ListBox.ItemTemplate>
+              <DataTemplate x:DataType="vm:PersonRow">
+                <StackPanel Spacing="0" Margin="8,4">
+                  <TextBlock Text="{Binding DisplayName}" FontSize="13"/>
+                  <TextBlock Text="{Binding SortName}" FontSize="11"
+                             Foreground="{DynamicResource BrushTextSecondary}"/>
+                </StackPanel>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+        </StackPanel>
+      </ScrollViewer>
+    </DockPanel>
+
+    <Border Grid.Column="0" Width="1" HorizontalAlignment="Right"
+            Background="{DynamicResource BrushBorder}"/>
+
+    <!-- RIGHT PANEL: state A / B / C / D -->
+    <Panel Grid.Column="1">
+
+      <!-- State A: no selection, no merge, no cleanup -->
+      <TextBlock Text="{x:Static res:Resources.ManageLookups_SelectPerson}"
+                 FontSize="13"
+                 Foreground="{DynamicResource BrushTextSecondary}"
+                 HorizontalAlignment="Center"
+                 VerticalAlignment="Center"
+                 IsVisible="{Binding IsPlaceholderVisible}"/>
+
+      <!-- State B: editor -->
+      <ScrollViewer IsVisible="{Binding IsEditorVisible}">
+        <StackPanel Margin="16" Spacing="8">
+          <TextBlock Text="{x:Static res:Resources.ManageLookups_DisplayName}" FontSize="12"/>
+          <TextBox Text="{Binding EditDisplayName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                   FontSize="13">
+            <i:Interaction.Behaviors>
+              <behaviors:FocusWhenChangedBehavior Sequence="{Binding AddFocusSequence}"/>
+            </i:Interaction.Behaviors>
+          </TextBox>
+          <TextBlock Text="{x:Static res:Resources.ManageLookups_SortName}" FontSize="12"/>
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <TextBox Text="{Binding EditSortName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                     FontSize="13" MinWidth="180"/>
+            <Button Content="{x:Static res:Resources.ManageLookups_UseSuggested}"
+                    FontSize="11" Padding="4,4"
+                    Command="{Binding AcceptSortNameSuggestionCommand}"
+                    IsVisible="{Binding HasSortNameSuggestion}"/>
+          </StackPanel>
+          <TextBlock FontSize="11"
+                     Foreground="{DynamicResource BrushTextSecondary}"
+                     TextWrapping="Wrap"
+                     IsVisible="{Binding HasSortNameSuggestion}"
+                     Text="{Binding SuggestedSortName, StringFormat={x:Static res:Resources.ManageLookups_SortNameSuggestionHint}}"/>
+          <TextBlock FontSize="12"
+                     Foreground="{DynamicResource BrushTextSecondary}"
+                     Text="{Binding UsedByCount, StringFormat={x:Static res:Resources.ManageLookups_UsedInBooks}}"/>
+          <TextBlock FontSize="12"
+                     Foreground="{DynamicResource BrushDestructive}"
+                     Text="{Binding StatusMessage}"
+                     IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <Button Classes="accent"
+                    Content="{x:Static res:Resources.Common_Save}"
+                    Command="{Binding SaveCommand}"/>
+            <Button Content="{x:Static res:Resources.Common_Discard}"
+                    Command="{Binding CancelCommand}"/>
+            <Button Content="{x:Static res:Resources.ManageLookups_Delete}"
+                    Command="{Binding DeleteCommand}"/>
+            <Button Content="{x:Static res:Resources.ManageLookups_Merge}"
+                    Command="{Binding MergePersonCommand}"/>
+          </StackPanel>
+          <Rectangle Height="1" Fill="{DynamicResource BrushBorder}" Margin="0,8,0,8"/>
+          <Button Content="{x:Static res:Resources.ManageLookups_FilterToAuthor}"
+                  Classes="accent"
+                  Command="{Binding FilterToAuthorCommand}"
+                  HorizontalAlignment="Left"
+                  IsVisible="{Binding HasSelection}"/>
+          <Button Content="{x:Static res:Resources.ManageLookups_DataCleanup}"
+                  Command="{Binding OpenDataCleanupCommand}"
+                  HorizontalAlignment="Left"/>
+          <!-- Bio section — editable (PersonId > 0 only) -->
+          <Border IsVisible="{Binding IsBioSectionVisible}"
+                  BorderBrush="{DynamicResource BrushBorder}"
+                  BorderThickness="0,1,0,0"
+                  Padding="0,8,0,0"
+                  Margin="0,4,0,0">
+            <StackPanel Spacing="4">
+              <TextBlock Text="{x:Static res:Resources.Person_Section_Bio}"
+                         FontSize="12"
+                         FontWeight="SemiBold"
+                         Foreground="{DynamicResource BrushTextSecondary}"/>
+              <!-- Bio (multiline) -->
+              <TextBlock Text="{x:Static res:Resources.Person_Label_Bio}" FontSize="12"/>
+              <TextBox Text="{Binding EditBio, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                       FontSize="13"
+                       AcceptsReturn="True"
+                       Height="80"
+                       TextWrapping="Wrap"/>
+              <!-- Born -->
+              <TextBlock Text="{x:Static res:Resources.Person_Label_Born}" FontSize="12"/>
+              <TextBox Text="{Binding EditBirthDate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                       FontSize="13"/>
+              <!-- Birthplace -->
+              <TextBlock Text="{x:Static res:Resources.Person_Label_Birthplace}" FontSize="12"/>
+              <TextBox Text="{Binding EditBirthPlace, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                       FontSize="13"/>
+              <!-- Died -->
+              <TextBlock Text="{x:Static res:Resources.Person_Label_Died}" FontSize="12"/>
+              <TextBox Text="{Binding EditDeathDate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                       FontSize="13"/>
+              <!-- Death place -->
+              <TextBlock Text="{x:Static res:Resources.Person_Label_DeathPlace}" FontSize="12"/>
+              <TextBox Text="{Binding EditDeathPlace, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                       FontSize="13"/>
+              <!-- Website -->
+              <TextBlock Text="{x:Static res:Resources.Person_Label_Website}" FontSize="12"/>
+              <TextBox Text="{Binding EditWebsite, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                       FontSize="13"/>
+              <!-- Save bio button -->
+              <Button Classes="accent"
+                      Content="{x:Static res:Resources.Person_Bio_SaveButton}"
+                      Command="{Binding SaveBioCommand}"
+                      HorizontalAlignment="Left"
+                      Margin="0,4,0,0"/>
+            </StackPanel>
+          </Border>
+        </StackPanel>
+      </ScrollViewer>
+
+      <!-- State C: merge confirmation -->
+      <ScrollViewer IsVisible="{Binding IsMergePanelVisible}">
+        <StackPanel Margin="16" Spacing="8">
+          <TextBlock Text="{x:Static res:Resources.Person_Merge_Heading}" FontSize="14" FontWeight="SemiBold" Margin="0,0,0,8"/>
+          <Grid ColumnDefinitions="*,Auto,*" RowDefinitions="Auto">
+            <!-- Source card -->
+            <Border Grid.Column="0"
+                    BorderBrush="{DynamicResource BrushBorder}"
+                    BorderThickness="1"
+                    CornerRadius="4"
+                    Padding="8">
+              <ContentControl Content="{Binding MergeSource}">
+                <ContentControl.ContentTemplate>
+                  <DataTemplate x:DataType="vm:PersonRow">
+                    <StackPanel Spacing="4">
+                      <TextBlock Text="{Binding DisplayName}" FontSize="13" FontWeight="SemiBold"/>
+                      <TextBlock Text="{Binding SortName}" FontSize="12"
+                                 Foreground="{DynamicResource BrushTextSecondary}"/>
+                      <Button Content="{x:Static res:Resources.ManageLookups_KeepThis}"
+                              Command="{Binding #Root.((vm:PersonTabViewModel)DataContext).SetAsCanonicalCommand}"
+                              CommandParameter="source"
+                              HorizontalAlignment="Left"/>
+                    </StackPanel>
+                  </DataTemplate>
+                </ContentControl.ContentTemplate>
+              </ContentControl>
+            </Border>
+
+            <TextBlock Grid.Column="1" Text="{x:Static res:Resources.Person_Merge_Arrow}"
+                       FontSize="14"
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Center"
+                       Margin="8,0"/>
+
+            <!-- Target card -->
+            <Border Grid.Column="2"
+                    BorderBrush="{DynamicResource BrushBorder}"
+                    BorderThickness="1"
+                    CornerRadius="4"
+                    Padding="8">
+              <ContentControl Content="{Binding MergeTarget}">
+                <ContentControl.ContentTemplate>
+                  <DataTemplate x:DataType="vm:PersonRow">
+                    <StackPanel Spacing="4">
+                      <TextBlock Text="{Binding DisplayName}" FontSize="13" FontWeight="SemiBold"/>
+                      <TextBlock Text="{Binding SortName}" FontSize="12"
+                                 Foreground="{DynamicResource BrushTextSecondary}"/>
+                      <Button Content="{x:Static res:Resources.ManageLookups_KeepThis}"
+                              Command="{Binding #Root.((vm:PersonTabViewModel)DataContext).SetAsCanonicalCommand}"
+                              CommandParameter="target"
+                              HorizontalAlignment="Left"/>
+                    </StackPanel>
+                  </DataTemplate>
+                </ContentControl.ContentTemplate>
+              </ContentControl>
+            </Border>
+          </Grid>
+
+          <TextBlock Text="{x:Static res:Resources.ManageLookups_MergeConfirmBody}"
+                     FontSize="12"
+                     Foreground="{DynamicResource BrushTextSecondary}"
+                     TextWrapping="Wrap"
+                     Margin="0,8,0,0"/>
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <Button Classes="accent"
+                    Content="{x:Static res:Resources.ManageLookups_ConfirmMerge}"
+                    Command="{Binding ConfirmMergeCommand}"/>
+            <Button Content="{x:Static res:Resources.ManageLookups_CancelMerge}"
+                    Command="{Binding CancelMergeCommand}"/>
+          </StackPanel>
+        </StackPanel>
+      </ScrollViewer>
+
+      <!-- State D: data cleanup -->
+      <DockPanel IsVisible="{Binding IsCleanupPanelVisible}">
+        <StackPanel DockPanel.Dock="Top" Margin="16,16,16,8" Spacing="8">
+          <TextBlock Text="{x:Static res:Resources.ManageLookups_DataCleanupTitle}"
+                     FontSize="14" FontWeight="SemiBold"/>
+          <TextBlock Text="{x:Static res:Resources.ManageLookups_DataCleanupDesc}"
+                     FontSize="12"
+                     Foreground="{DynamicResource BrushTextSecondary}"
+                     TextWrapping="Wrap"/>
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <Button Content="{x:Static res:Resources.ManageLookups_SelectAll}"
+                    Command="{Binding SelectAllCleanupCommand}"/>
+            <Button Content="{x:Static res:Resources.ManageLookups_DeselectAll}"
+                    Command="{Binding DeselectAllCleanupCommand}"/>
+          </StackPanel>
+          <TextBlock Text="{x:Static res:Resources.ManageLookups_NoCleanup}"
+                     FontSize="13"
+                     Foreground="{DynamicResource BrushTextSecondary}"
+                     IsVisible="{Binding HasNoCleanup}"/>
+        </StackPanel>
+
+        <StackPanel DockPanel.Dock="Bottom"
+                    Orientation="Horizontal"
+                    Spacing="8"
+                    Margin="16,8,16,16"
+                    HorizontalAlignment="Right">
+          <Button Classes="accent"
+                  Content="{x:Static res:Resources.Common_Apply}"
+                  Command="{Binding ApplyCleanupCommand}"/>
+          <Button Content="{x:Static res:Resources.Common_Close}"
+                  Command="{Binding CloseDataCleanupCommand}"/>
+        </StackPanel>
+
+        <DataGrid ItemsSource="{Binding CleanupProposals}"
+                  Margin="16,0,16,0"
+                  IsReadOnly="False"
+                  CanUserResizeColumns="True"
+                  CanUserReorderColumns="False"
+                  GridLinesVisibility="Horizontal"
+                  SelectionMode="Single"
+                  AutoGenerateColumns="False">
+          <DataGrid.Columns>
+            <DataGridTextColumn Header="{x:Static res:Resources.Person_Column_CurrentName}"
+                                Binding="{Binding CurrentDisplayName}"
+                                IsReadOnly="True"
+                                Width="*"/>
+            <DataGridTextColumn Header="{x:Static res:Resources.Person_Column_ProposedName}"
+                                Binding="{Binding ProposedDisplayName}"
+                                IsReadOnly="True"
+                                Width="*"/>
+            <DataGridTextColumn Header="{x:Static res:Resources.Person_Column_SortName}"
+                                Binding="{Binding SuggestedSortName, Mode=TwoWay}"
+                                IsReadOnly="False"
+                                Width="*"/>
+            <DataGridTemplateColumn Header="{x:Static res:Resources.Person_Column_Apply}"
+                                    Width="80"
+                                    SortMemberPath="ApplyChecked">
+              <DataGridTemplateColumn.CellTemplate>
+                <DataTemplate x:DataType="vm:CleanupProposalRow">
+                  <CheckBox IsChecked="{Binding ApplyChecked, Mode=TwoWay}"
+                            HorizontalAlignment="Center"/>
+                </DataTemplate>
+              </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+          </DataGrid.Columns>
+        </DataGrid>
+      </DockPanel>
+
+    </Panel>
+  </Grid>
+</UserControl>

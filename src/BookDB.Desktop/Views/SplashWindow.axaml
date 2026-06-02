@@ -1,0 +1,61 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:BookDB.Desktop.ViewModels"
+        xmlns:svg="using:Avalonia.Svg.Skia"
+        x:Class="BookDB.Desktop.Views.SplashWindow"
+        x:DataType="vm:SplashViewModel"
+        Title="BookDB"
+        Width="420"
+        Height="240"
+        SystemDecorations="None"
+        CanResize="False"
+        ShowInTaskbar="False"
+        Topmost="True"
+        Background="Transparent"
+        TransparencyLevelHint="Transparent"
+        WindowStartupLocation="CenterScreen">
+
+    <Border Background="{StaticResource BrushBackground}"
+            BorderBrush="{StaticResource BrushPrimaryBlue}"
+            BorderThickness="1"
+            CornerRadius="8"
+            Padding="32,28">
+        <Grid RowDefinitions="Auto,*,Auto">
+
+            <!-- Branding -->
+            <StackPanel Grid.Row="0"
+                        Orientation="Horizontal"
+                        Spacing="14"
+                        HorizontalAlignment="Center">
+                <Image Width="48" Height="48"
+                       VerticalAlignment="Center">
+                    <Image.Source>
+                        <svg:SvgImage Source="avares://BookDB.Desktop/Assets/Icons/book.svg" />
+                    </Image.Source>
+                </Image>
+                <StackPanel VerticalAlignment="Center" Spacing="2">
+                    <TextBlock Text="{Binding AppName}"
+                               FontSize="26"
+                               FontWeight="Bold"
+                               Foreground="{StaticResource BrushPrimaryBlue}" />
+                    <TextBlock Text="{Binding VersionText}"
+                               FontSize="12"
+                               Foreground="{StaticResource BrushTextTertiary}" />
+                </StackPanel>
+            </StackPanel>
+
+            <!-- Progress -->
+            <StackPanel Grid.Row="2" Spacing="8">
+                <ProgressBar Value="{Binding ProgressValue}"
+                             Minimum="0"
+                             Maximum="100"
+                             Height="6"
+                             AutomationProperties.Name="Startup progress" />
+                <TextBlock Text="{Binding StatusText}"
+                           FontSize="12"
+                           Foreground="{StaticResource BrushTextSecondary}"
+                           TextWrapping="Wrap" />
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>

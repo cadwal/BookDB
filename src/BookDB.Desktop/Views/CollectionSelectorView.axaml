@@ -1,0 +1,30 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:BookDB.Desktop.ViewModels"
+             x:Class="BookDB.Desktop.Views.CollectionSelectorView"
+             x:DataType="vm:CollectionSelectorViewModel">
+    <StackPanel Orientation="Horizontal" Spacing="4">
+        <ToggleButton x:Name="DropdownToggle"
+                      IsChecked="{Binding IsDropdownOpen}"
+                      Content="{Binding SelectionSummary}"
+                      AutomationProperties.Name="Open collection filter" />
+
+        <Popup PlacementTarget="{Binding #DropdownToggle}"
+               IsOpen="{Binding IsDropdownOpen}"
+               Placement="Bottom"
+               IsLightDismissEnabled="True">
+            <Border Background="{DynamicResource SystemControlBackgroundAltHighBrush}"
+                    BorderThickness="1"
+                    MaxHeight="200">
+                <ListBox ItemsSource="{Binding CollectionItems}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate x:DataType="vm:CollectionItemViewModel">
+                            <CheckBox IsChecked="{Binding IsSelected}"
+                                      Content="{Binding Name}" />
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Border>
+        </Popup>
+    </StackPanel>
+</UserControl>

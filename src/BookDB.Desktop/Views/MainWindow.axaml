@@ -1,0 +1,331 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:BookDB.Desktop.ViewModels"
+        xmlns:views="using:BookDB.Desktop.Views"
+        xmlns:converters="using:BookDB.Desktop.Converters"
+        xmlns:behaviors="using:BookDB.Desktop.Behaviors"
+        xmlns:res="using:BookDB.Desktop.Localization"
+        xmlns:svg="using:Avalonia.Svg.Skia"
+        x:Class="BookDB.Desktop.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="BookDB"
+        Width="{Binding WindowWidth, Mode=TwoWay}"
+        Height="{Binding WindowHeight, Mode=TwoWay}"
+        MinWidth="600"
+        MinHeight="400"
+        Icon="avares://BookDB.Desktop/Assets/book.ico"
+        WindowStartupLocation="CenterScreen">
+
+    <Window.Resources>
+        <converters:GridLengthConverter x:Key="GridLengthConverter" />
+    </Window.Resources>
+
+    <Window.KeyBindings>
+        <KeyBinding Gesture="Ctrl+N" Command="{Binding BookList.AddBookCommand}" />
+        <KeyBinding Gesture="F2" Command="{Binding BookList.EditBookCommand}" />
+        <KeyBinding Gesture="Ctrl+D" Command="{Binding BookList.DuplicateBookCommand}" />
+        <KeyBinding Gesture="Ctrl+Shift+F" Command="{Binding BookList.AdvancedSearchCommand}" />
+        <KeyBinding Gesture="Ctrl+Return" Command="{Binding BookList.OpenFullDetailsCommand}" />
+        <KeyBinding Gesture="Ctrl+I" Command="{Binding CatalogByIsbnCommand}" />
+    </Window.KeyBindings>
+
+    <DockPanel LastChildFill="True">
+
+        <!-- Menu bar — declared first so DockPanel docks it to top -->
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="{x:Static res:Resources.Menu_File}">
+                <MenuItem Header="{x:Static res:Resources.Menu_NewBook}"
+                          Command="{Binding BookList.AddBookCommand}"
+                          InputGesture="Ctrl+N" />
+                <Separator />
+                <MenuItem Header="{x:Static res:Resources.Menu_ImportReaderware}"
+                          Command="{Binding ImportFromReaderwareCommand}">
+                    <MenuItem.Icon>
+                        <Image Width="16" Height="16">
+                            <Image.Source>
+                                <svg:SvgImage Source="avares://BookDB.Desktop/Assets/Icons/arrow-download.svg" />
+                            </Image.Source>
+                        </Image>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <Separator />
+                <MenuItem Header="{x:Static res:Resources.Menu_BackupSqlite}"      Command="{Binding BackupSqliteCommand}"/>
+                <MenuItem Header="{x:Static res:Resources.Menu_BackupCsv}" Command="{Binding BackupCsvArchiveCommand}"/>
+                <MenuItem Header="{x:Static res:Resources.Menu_RestoreBackup}"  Command="{Binding RestoreCommand}"/>
+                <Separator />
+                <MenuItem Header="{x:Static res:Resources.Menu_ExportCsv}"               Command="{Binding ExportCsvCommand}"/>
+                <MenuItem Header="{x:Static res:Resources.Menu_PrintList}"           Command="{Binding PrintListCommand}"/>
+                <Separator />
+                <MenuItem Header="{x:Static res:Resources.Menu_Exit}"
+                          Command="{Binding ExitCommand}"
+                          InputGesture="Alt+F4" />
+            </MenuItem>
+            <MenuItem Header="{x:Static res:Resources.Menu_Edit}">
+                <MenuItem Header="{x:Static res:Resources.Menu_EditBook}"
+                          Command="{Binding BookList.EditBookCommand}"
+                          InputGesture="F2" />
+                <MenuItem Header="{x:Static res:Resources.Menu_DeleteBooks}"
+                          Command="{Binding BookList.DeleteBooksCommand}"
+                          InputGesture="Delete" />
+                <MenuItem Header="{x:Static res:Resources.Menu_DuplicateBook}"
+                          Command="{Binding BookList.DuplicateBookCommand}"
+                          InputGesture="Ctrl+D" />
+                <Separator />
+                <MenuItem Header="{x:Static res:Resources.Menu_BulkEdit}"
+                          Command="{Binding BookList.BulkEditCommand}" />
+                <Separator />
+                <MenuItem Header="{x:Static res:Resources.Menu_AdvancedSearch}"
+                          Command="{Binding BookList.AdvancedSearchCommand}"
+                          InputGesture="Ctrl+Shift+F" />
+            </MenuItem>
+            <MenuItem Header="{x:Static res:Resources.Menu_View}">
+                <MenuItem Header="{x:Static res:Resources.Menu_FullDetails}"
+                          Command="{Binding BookList.OpenFullDetailsCommand}"
+                          InputGesture="Ctrl+Return" />
+                <Separator />
+                <MenuItem Header="{x:Static res:Resources.Menu_ShowThumbnail}"
+                          ToggleType="CheckBox"
+                          IsChecked="{Binding BookList.ThumbnailColumnVisible, Mode=TwoWay}" />
+                <MenuItem Header="{x:Static res:Resources.Menu_ShowAuthor}"
+                          ToggleType="CheckBox"
+                          IsChecked="{Binding BookList.AuthorColumnVisible, Mode=TwoWay}" />
+                <MenuItem Header="{x:Static res:Resources.Menu_ShowSeries}"
+                          ToggleType="CheckBox"
+                          IsChecked="{Binding BookList.SeriesColumnVisible, Mode=TwoWay}" />
+                <MenuItem Header="{x:Static res:Resources.Menu_ShowPublisher}"
+                          ToggleType="CheckBox"
+                          IsChecked="{Binding BookList.PublisherColumnVisible, Mode=TwoWay}" />
+                <MenuItem Header="{x:Static res:Resources.Menu_ShowYear}"
+                          ToggleType="CheckBox"
+                          IsChecked="{Binding BookList.YearColumnVisible, Mode=TwoWay}" />
+                <MenuItem Header="{x:Static res:Resources.Menu_ShowFormat}"
+                          ToggleType="CheckBox"
+                          IsChecked="{Binding BookList.FormatColumnVisible, Mode=TwoWay}" />
+                <MenuItem Header="{x:Static res:Resources.Menu_ShowRating}"
+                          ToggleType="CheckBox"
+                          IsChecked="{Binding BookList.RatingColumnVisible, Mode=TwoWay}" />
+                <MenuItem Header="{x:Static res:Resources.Menu_ShowStatus}"
+                          ToggleType="CheckBox"
+                          IsChecked="{Binding BookList.StatusColumnVisible, Mode=TwoWay}" />
+                <MenuItem Header="{x:Static res:Resources.Menu_View_LoanedToColumn}"
+                          ToggleType="CheckBox"
+                          IsChecked="{Binding BookList.LoanedToColumnVisible, Mode=TwoWay}" />
+                <Separator />
+                <MenuItem Header="{x:Static res:Resources.Menu_DetailPanel}"
+                          ToggleType="CheckBox"
+                          IsChecked="{Binding DetailPanelVisible, Mode=TwoWay}" />
+            </MenuItem>
+            <MenuItem Header="{x:Static res:Resources.Menu_Tools}">
+                <MenuItem Header="{x:Static res:Resources.Menu_CatalogByIsbn}"
+                          Command="{Binding CatalogByIsbnCommand}"
+                          InputGesture="Ctrl+I" />
+                <Separator />
+                <MenuItem Header="{x:Static res:Resources.Menu_RecatalogSelected}"
+                          Command="{Binding RecatalogSelectedCommand}">
+                    <MenuItem.Icon>
+                        <Image Width="16" Height="16">
+                            <Image.Source>
+                                <svg:SvgImage Source="avares://BookDB.Desktop/Assets/Icons/arrow-sync.svg" />
+                            </Image.Source>
+                        </Image>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="{x:Static res:Resources.Menu_RecatalogAll}"
+                          Command="{Binding RecatalogAllCommand}">
+                    <MenuItem.Icon>
+                        <Image Width="16" Height="16">
+                            <Image.Source>
+                                <svg:SvgImage Source="avares://BookDB.Desktop/Assets/Icons/arrow-sync.svg" />
+                            </Image.Source>
+                        </Image>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <Separator/>
+                <MenuItem Header="{x:Static res:Resources.Menu_ImportReaderware}"
+                          Command="{Binding ImportFromReaderwareCommand}">
+                    <MenuItem.Icon>
+                        <Image Width="16" Height="16">
+                            <Image.Source>
+                                <svg:SvgImage Source="avares://BookDB.Desktop/Assets/Icons/arrow-download.svg" />
+                            </Image.Source>
+                        </Image>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="{x:Static res:Resources.Menu_ImportReaderwareDatabase}"
+                          Command="{Binding ImportFromReaderwareDatabaseCommand}">
+                    <MenuItem.Icon>
+                        <Image Width="16" Height="16">
+                            <Image.Source>
+                                <svg:SvgImage Source="avares://BookDB.Desktop/Assets/Icons/arrow-download.svg" />
+                            </Image.Source>
+                        </Image>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <Separator/>
+                <MenuItem Header="{x:Static res:Resources.Menu_ManageLookups}"
+                          Command="{Binding OpenManageLookupsCommand}"/>
+                <MenuItem Header="{x:Static res:Resources.Menu_ManageBorrowers}"
+                          Command="{Binding OpenManageBorrowersCommand}"/>
+                <Separator/>
+                <MenuItem Header="{x:Static res:Resources.Menu_Statistics}"  Command="{Binding OpenStatisticsCommand}"/>
+                <Separator/>
+                <MenuItem Header="{x:Static res:Resources.Menu_Settings}"  Command="{Binding OpenSettingsCommand}"/>
+            </MenuItem>
+            <MenuItem x:Name="WindowMenuParent"
+                      Header="{x:Static res:Resources.Menu_Window}"
+                      ItemsSource="{Binding OpenWindowEntries}">
+                <MenuItem.ItemContainerTheme>
+                    <ControlTheme TargetType="MenuItem"
+                                  BasedOn="{StaticResource {x:Type MenuItem}}">
+                        <Setter Property="Header" Value="{ReflectionBinding Title}"/>
+                        <Setter Property="Command" Value="{ReflectionBinding ActivateCommand}"/>
+                        <Setter Property="Tag" Value="{ReflectionBinding SeparatorTag}"/>
+                        <Style Selector="^[Tag=separator]">
+                            <Setter Property="IsHitTestVisible" Value="False"/>
+                            <Setter Property="IsEnabled" Value="False"/>
+                            <Setter Property="Height" Value="9"/>
+                            <Setter Property="Padding" Value="0"/>
+                            <Setter Property="Template">
+                                <ControlTemplate TargetType="MenuItem">
+                                    <Border Height="1"
+                                            Margin="8,4"
+                                            Background="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                            VerticalAlignment="Center"/>
+                                </ControlTemplate>
+                            </Setter>
+                        </Style>
+                    </ControlTheme>
+                </MenuItem.ItemContainerTheme>
+            </MenuItem>
+            <MenuItem Header="{x:Static res:Resources.Menu_Help}">
+                <MenuItem Header="{x:Static res:Resources.Menu_Help_KeyboardShortcuts}"
+                          Command="{Binding OpenHelpKeyboardShortcutsCommand}" />
+                <MenuItem Header="{x:Static res:Resources.Menu_Help_FieldGlossary}"
+                          Command="{Binding OpenHelpFieldGlossaryCommand}" />
+                <MenuItem Header="{x:Static res:Resources.Menu_Help_ImportGuide}"
+                          Command="{Binding OpenHelpImportGuideCommand}" />
+                <MenuItem Header="{x:Static res:Resources.Menu_Help_DataSources}"
+                          Command="{Binding OpenHelpDataSourcesCommand}" />
+                <Separator />
+                <MenuItem Header="{x:Static res:Resources.Menu_AboutBookDB}"
+                          Command="{Binding ShowAboutCommand}" />
+            </MenuItem>
+        </Menu>
+
+        <!-- Toolbar -->
+        <Border DockPanel.Dock="Top"
+                Height="36"
+                Background="{DynamicResource SystemControlBackgroundChromeMediumBrush}"
+                Padding="8,0">
+            <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
+                <Button Classes="iconButton"
+                        Command="{Binding BookList.AddBookCommand}"
+                        ToolTip.Tip="{x:Static res:Resources.MainWindow_Toolbar_NewBook}">
+                    <StackPanel Orientation="Horizontal" Spacing="4">
+                        <Image Width="20" Height="20">
+                            <Image.Source>
+                                <svg:SvgImage Source="avares://BookDB.Desktop/Assets/Icons/add.svg" />
+                            </Image.Source>
+                        </Image>
+                        <TextBlock Text="{x:Static res:Resources.MainWindow_Toolbar_NewBook}"
+                                   VerticalAlignment="Center"
+                                   FontSize="13" />
+                    </StackPanel>
+                </Button>
+                <Button Classes="iconButton"
+                        Command="{Binding CatalogByIsbnCommand}"
+                        ToolTip.Tip="{x:Static res:Resources.MainWindow_Toolbar_CatalogByIsbn}">
+                    <StackPanel Orientation="Horizontal" Spacing="4">
+                        <Image Width="20" Height="20">
+                            <Image.Source>
+                                <svg:SvgImage Source="avares://BookDB.Desktop/Assets/Icons/search.svg" />
+                            </Image.Source>
+                        </Image>
+                        <TextBlock Text="{x:Static res:Resources.MainWindow_Toolbar_CatalogByIsbn}"
+                                   VerticalAlignment="Center"
+                                   FontSize="13" />
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+        </Border>
+
+        <!-- Status bar — declared before main Grid so DockPanel docks it to bottom -->
+        <Border DockPanel.Dock="Bottom"
+                Height="28"
+                Background="{DynamicResource SystemControlBackgroundChromeMediumLowBrush}"
+                Padding="8,0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />     <!-- 0: collection selector -->
+                    <ColumnDefinition Width="Auto" />  <!-- 1: book count -->
+                    <ColumnDefinition Width="Auto" />  <!-- 2: batch queue -->
+                    <ColumnDefinition Width="Auto" />  <!-- 3: detail toggle -->
+                </Grid.ColumnDefinitions>
+
+                <!-- Left: collection selector -->
+                <StackPanel Grid.Column="0"
+                            Orientation="Horizontal"
+                            Spacing="4"
+                            VerticalAlignment="Center">
+                    <TextBlock Text="{x:Static res:Resources.StatusBar_CollectionSelector_Label}"
+                               VerticalAlignment="Center" />
+                    <views:CollectionSelectorView DataContext="{Binding CollectionSelector}" />
+                </StackPanel>
+
+                <!-- Book count -->
+                <TextBlock Grid.Column="1"
+                           Text="{Binding BookCountText}"
+                           FontSize="12"
+                           VerticalAlignment="Center"
+                           Margin="8,0" />
+
+                <!-- Center: batch queue progress (visible during batch lookup or when minimized) -->
+                <StackPanel Grid.Column="2"
+                            Orientation="Horizontal"
+                            Spacing="4"
+                            VerticalAlignment="Center"
+                            Margin="8,0"
+                            IsVisible="{Binding ShowBatchStatusBar}">
+                    <TextBlock Text="{Binding BatchQueueStatusText}"
+                               FontSize="12"
+                               VerticalAlignment="Center" />
+                    <Button Content="{x:Static res:Resources.MainWindow_StatusBar_Show}"
+                            FontSize="11"
+                            Padding="4,1"
+                            Command="{Binding ReopenBatchWindowCommand}"
+                            IsVisible="{Binding IsBatchWindowMinimized}"
+                            VerticalAlignment="Center" />
+                </StackPanel>
+
+                <!-- Right: detail panel toggle -->
+                <ToggleButton Grid.Column="3"
+                              IsChecked="{Binding DetailPanelVisible}"
+                              Content="{Binding DetailPanelToggleChevron}"
+                              VerticalAlignment="Center"
+                              AutomationProperties.Name="Toggle detail panel" />
+            </Grid>
+        </Border>
+
+        <!-- Main content: three-pane grid -->
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="{Binding FilterPanelWidth, Mode=TwoWay, Converter={StaticResource GridLengthConverter}}"
+                                  MinWidth="150" />
+                <ColumnDefinition Width="4" />
+                <ColumnDefinition Width="*"
+                                  MinWidth="300" />
+                <ColumnDefinition Width="4" />
+                <ColumnDefinition Width="{Binding DetailPanelWidth, Mode=TwoWay, Converter={StaticResource GridLengthConverter}}"
+                                  MinWidth="0"
+                                  behaviors:ColumnVisibility.IsVisible="{Binding DetailPanelVisible}" />
+            </Grid.ColumnDefinitions>
+
+            <views:FilterPanelView Grid.Column="0" DataContext="{Binding FilterPanel}" />
+            <GridSplitter Grid.Column="1" ResizeDirection="Columns" />
+            <views:BookListView Grid.Column="2" DataContext="{Binding BookList}" />
+            <GridSplitter Grid.Column="3" ResizeDirection="Columns" />
+            <views:BookDetailView Grid.Column="4" DataContext="{Binding BookDetail}" />
+        </Grid>
+
+    </DockPanel>
+</Window>

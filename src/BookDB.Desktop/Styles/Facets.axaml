@@ -1,0 +1,36 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Facet header: 15px, SemiBold, #333333 — root level, noticeably larger than letter-group (12px) -->
+    <Style Selector="TextBlock.facetHeader">
+        <Setter Property="FontSize" Value="15" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{StaticResource BrushTextPrimary}" />
+    </Style>
+
+    <!-- Facet value text: 13px, #555555 -->
+    <Style Selector="TextBlock.facetValue">
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="Foreground" Value="{StaticResource BrushTextOnDark}" />
+    </Style>
+
+    <!-- Facet count text: 12px, #666666 — same color as facetCountInline per user feedback -->
+    <Style Selector="TextBlock.facetCount">
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Foreground" Value="{StaticResource BrushTextSecondary}" />
+    </Style>
+
+    <!-- Facet count inline: 12px, #666666 — replaces Opacity="0.7" on checkbox item counts -->
+    <Style Selector="TextBlock.facetCountInline">
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Foreground" Value="{StaticResource BrushTextSecondary}" />
+    </Style>
+
+    <!-- Saved search empty hint: 12px, #999999 — replaces Opacity="0.6" -->
+    <Style Selector="TextBlock.facetHint">
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Foreground" Value="{StaticResource BrushTextTertiary}" />
+    </Style>
+
+
+</Styles>

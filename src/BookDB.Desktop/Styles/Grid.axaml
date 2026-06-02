@@ -1,0 +1,154 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:svg="using:Avalonia.Svg.Skia">
+
+    <!-- Alternating row backgrounds (per C-01) -->
+    <Style Selector="DataGridRow:nth-child(odd)">
+        <Setter Property="Background" Value="{StaticResource BrushBackground}" />
+    </Style>
+    <Style Selector="DataGridRow:nth-child(even)">
+        <Setter Property="Background" Value="{StaticResource BrushBackgroundAlt}" />
+    </Style>
+
+    <!-- Row hover (per C-02) — must override both odd and even backgrounds -->
+    <Style Selector="DataGridRow:pointerover">
+        <Setter Property="Background" Value="{StaticResource BrushRowHover}" />
+    </Style>
+    <Style Selector="DataGridRow:pointerover /template/ Border#BackgroundBorder">
+        <Setter Property="Background" Value="{StaticResource BrushRowHover}" />
+    </Style>
+
+    <!-- Row selection (per C-02) — blue background, white text -->
+    <Style Selector="DataGridRow:selected">
+        <Setter Property="Background" Value="{StaticResource BrushRowSelected}" />
+        <Setter Property="Foreground" Value="{StaticResource BrushRowSelectedText}" />
+    </Style>
+    <Style Selector="DataGridRow:selected /template/ Border#BackgroundBorder">
+        <Setter Property="Background" Value="{StaticResource BrushRowSelected}" />
+    </Style>
+    <Style Selector="DataGridRow:selected TextBlock">
+        <Setter Property="Foreground" Value="{StaticResource BrushRowSelectedText}" />
+    </Style>
+
+    <!-- Overdue loan row — amber tint (per D-06); CSS class set by OverdueRowHighlightBehavior -->
+    <Style Selector="DataGridRow.overdue">
+        <Setter Property="Background" Value="{StaticResource BrushRowOverdue}" />
+    </Style>
+    <Style Selector="DataGridRow.overdue /template/ Border#BackgroundBorder">
+        <Setter Property="Background" Value="{StaticResource BrushRowOverdue}" />
+    </Style>
+
+    <!-- Column header styling (per C-03) -->
+    <Style Selector="DataGridColumnHeader">
+        <Setter Property="Background" Value="{StaticResource BrushBackgroundAlt}" />
+        <Setter Property="Foreground" Value="{StaticResource BrushTextPrimary}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="BorderBrush" Value="{StaticResource BrushPrimaryBlue}" />
+        <Setter Property="BorderThickness" Value="0,0,0,2" />
+    </Style>
+
+    <!-- Row dividers — subtle 1px lines (per C-05) -->
+    <Style Selector="DataGridRow">
+        <Setter Property="MinHeight" Value="32" />
+    </Style>
+    <Style Selector="DataGridCell">
+        <Setter Property="Padding" Value="12,8" />
+        <Setter Property="FontSize" Value="13" />
+    </Style>
+
+    <!-- 09.1 D — Selection-aware TextBlock class styles. Replaces inline Foreground
+         attributes in BookListView.axaml. The class-based :selected overrides win over
+         the DataGridRow:selected TextBlock catch-all due to higher specificity. -->
+
+    <!-- Title: blue SemiBold normally, white when row selected -->
+    <Style Selector="TextBlock.titleText">
+        <Setter Property="Foreground" Value="{StaticResource BrushPrimaryBlue}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+    <Style Selector="DataGridRow:selected TextBlock.titleText">
+        <Setter Property="Foreground" Value="{StaticResource BrushRowSelectedText}" />
+    </Style>
+
+    <!-- Author: secondary grey normally, white when row selected -->
+    <Style Selector="TextBlock.authorText">
+        <Setter Property="Foreground" Value="{StaticResource BrushTextSecondary}" />
+    </Style>
+    <Style Selector="DataGridRow:selected TextBlock.authorText">
+        <Setter Property="Foreground" Value="{StaticResource BrushRowSelectedText}" />
+    </Style>
+
+    <!-- Year: tertiary grey normally, white when row selected -->
+    <Style Selector="TextBlock.yearText">
+        <Setter Property="Foreground" Value="{StaticResource BrushTextTertiary}" />
+    </Style>
+    <Style Selector="DataGridRow:selected TextBlock.yearText">
+        <Setter Property="Foreground" Value="{StaticResource BrushRowSelectedText}" />
+    </Style>
+
+    <!-- Rating: gold star color normally, white when row selected -->
+    <Style Selector="TextBlock.ratingText">
+        <Setter Property="Foreground" Value="{StaticResource BrushStarFull}" />
+    </Style>
+    <Style Selector="DataGridRow:selected TextBlock.ratingText">
+        <Setter Property="Foreground" Value="{StaticResource BrushRowSelectedText}" />
+    </Style>
+
+    <!-- 09.1 B — Sort indicator templates for sorted column headers.
+         DataGridSortIndicatorBehavior toggles sort-asc / sort-desc CSS classes.
+         Full Template override is used because the DataGrid infrastructure sets
+         ContentTemplate as a local value (nulling it), which beats style setters.
+         Avalonia's DataGridColumnHeader has no resize-grip PART_ elements in its
+         template, so replacing the template does not break column resizing. -->
+    <Style Selector="DataGridColumnHeader.sort-asc">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        Padding="{TemplateBinding Padding}">
+                    <DockPanel LastChildFill="True">
+                        <Image DockPanel.Dock="Right"
+                               Width="14" Height="14"
+                               Margin="6,0,0,0"
+                               VerticalAlignment="Center">
+                            <Image.Source>
+                                <svg:SvgImage Source="avares://BookDB.Desktop/Assets/Icons/arrow-up.svg" />
+                            </Image.Source>
+                        </Image>
+                        <ContentPresenter Content="{TemplateBinding Content}"
+                                          ContentTemplate="{TemplateBinding ContentTemplate}"
+                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalAlignment="Center" />
+                    </DockPanel>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+
+    <Style Selector="DataGridColumnHeader.sort-desc">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        Padding="{TemplateBinding Padding}">
+                    <DockPanel LastChildFill="True">
+                        <Image DockPanel.Dock="Right"
+                               Width="14" Height="14"
+                               Margin="6,0,0,0"
+                               VerticalAlignment="Center">
+                            <Image.Source>
+                                <svg:SvgImage Source="avares://BookDB.Desktop/Assets/Icons/arrow-down.svg" />
+                            </Image.Source>
+                        </Image>
+                        <ContentPresenter Content="{TemplateBinding Content}"
+                                          ContentTemplate="{TemplateBinding ContentTemplate}"
+                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalAlignment="Center" />
+                    </DockPanel>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+</Styles>

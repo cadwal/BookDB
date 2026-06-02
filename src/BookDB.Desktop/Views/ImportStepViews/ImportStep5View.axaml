@@ -1,0 +1,61 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:BookDB.Desktop.ViewModels"
+             xmlns:res="using:BookDB.Desktop.Localization"
+             x:Class="BookDB.Desktop.Views.ImportStepViews.ImportStep5View"
+             x:DataType="vm:ImportStep5ViewModel">
+
+    <StackPanel Margin="16" Spacing="12">
+
+        <!-- Cancellation notice -->
+        <Border Padding="10"
+                Background="#FFF3CD"
+                CornerRadius="4"
+                IsVisible="{Binding WasCancelled}">
+            <TextBlock Text="{x:Static res:Resources.Import_Step5_Cancelled}"
+                       TextWrapping="Wrap"/>
+        </Border>
+
+        <!-- Results grid -->
+        <TextBlock Text="{x:Static res:Resources.Import_Step5_Heading}" FontSize="14" FontWeight="SemiBold"/>
+
+        <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="8" ColumnSpacing="24">
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="{x:Static res:Resources.Import_Step5_Imported}" FontWeight="SemiBold"/>
+            <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Imported}"/>
+
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="{x:Static res:Resources.Import_Step5_Updated}" FontWeight="SemiBold"/>
+            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Updated}"/>
+
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="{x:Static res:Resources.Import_Step5_Skipped}" FontWeight="SemiBold"/>
+            <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Skipped}"/>
+
+            <TextBlock Grid.Row="3" Grid.Column="0" Text="{x:Static res:Resources.Import_Step5_FlaggedNoIsbn}" FontWeight="SemiBold"/>
+            <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding FlaggedNoIsbn}"/>
+        </Grid>
+
+        <!-- Errors -->
+        <Border IsVisible="{Binding Errors.Count}"
+                Padding="8"
+                BorderThickness="1"
+                BorderBrush="Red"
+                CornerRadius="4"
+                Margin="0,8,0,0">
+            <StackPanel Spacing="4">
+                <TextBlock Text="{x:Static res:Resources.Import_Step5_ErrorsLabel}" FontWeight="SemiBold" Foreground="Red"/>
+                <ScrollViewer MaxHeight="150">
+                    <ItemsControl ItemsSource="{Binding Errors}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <SelectableTextBlock Text="{Binding}"
+                                                     FontSize="11"
+                                                     TextWrapping="Wrap"
+                                                     Margin="0,1"/>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </StackPanel>
+        </Border>
+
+    </StackPanel>
+</UserControl>

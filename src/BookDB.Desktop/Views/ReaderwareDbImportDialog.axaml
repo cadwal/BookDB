@@ -1,0 +1,151 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:BookDB.Desktop.ViewModels"
+        xmlns:res="using:BookDB.Desktop.Localization"
+        x:Class="BookDB.Desktop.Views.ReaderwareDbImportDialog"
+        x:DataType="vm:ReaderwareDbImportViewModel"
+        Title="{x:Static res:Resources.ReaderwareImport_WindowTitle}"
+        Width="580" MinWidth="520"
+        Height="540" MinHeight="460"
+        WindowStartupLocation="CenterOwner"
+        ShowInTaskbar="False"
+        CanResize="True">
+
+  <DockPanel Margin="0">
+
+    <!-- Title bar -->
+    <Border DockPanel.Dock="Top"
+            Background="{DynamicResource BrushBackgroundAlt}"
+            Padding="16,12"
+            BorderThickness="0,0,0,1"
+            BorderBrush="{DynamicResource BrushBorder}">
+      <TextBlock Text="{x:Static res:Resources.ReaderwareImport_WindowTitle}" FontSize="14" FontWeight="SemiBold"/>
+    </Border>
+
+    <!-- Footer -->
+    <Border DockPanel.Dock="Bottom"
+            Padding="16,12"
+            BorderThickness="0,1,0,0"
+            BorderBrush="{DynamicResource BrushBorder}">
+      <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+        <Button Content="{x:Static res:Resources.ReaderwareImport_Convert}"
+                Classes="accent"
+                Command="{Binding ConvertCommand}"
+                IsVisible="{Binding !IsComplete}"/>
+        <Button Content="{x:Static res:Resources.Common_Cancel}"
+                Command="{Binding CancelCommand}"
+                IsVisible="{Binding IsRunning}"/>
+        <Button Content="{x:Static res:Resources.ReaderwareImport_Continue}"
+                Classes="accent"
+                Command="{Binding ContinueCommand}"
+                IsVisible="{Binding IsComplete}"/>
+        <Button Content="{x:Static res:Resources.Common_Close}"
+                Command="{Binding CloseCommand}"
+                IsVisible="{Binding !IsRunning}"/>
+      </StackPanel>
+    </Border>
+
+    <!-- Body: fixed-height inputs on top, the progress log fills the rest and grows on resize -->
+    <Grid Margin="16" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,*">
+
+      <TextBlock Grid.Row="0"
+                 Text="{x:Static res:Resources.ReaderwareImport_Intro}"
+                 FontSize="12"
+                 Opacity="0.8"
+                 TextWrapping="Wrap"
+                 Margin="0,0,0,12"/>
+
+      <!-- Database folder picker -->
+      <Grid Grid.Row="1" ColumnDefinitions="160,*,Auto" Margin="0,0,0,12">
+        <TextBlock Grid.Column="0"
+                   Text="{x:Static res:Resources.ReaderwareImport_DatabaseLabel}"
+                   FontSize="12"
+                   VerticalAlignment="Center"
+                   TextWrapping="Wrap"
+                   Margin="0,0,8,0"/>
+        <TextBox Grid.Column="1"
+                 Text="{Binding DatabasePath}"
+                 IsReadOnly="True"
+                 Watermark="{x:Static res:Resources.ReaderwareImport_DatabaseWatermark}"
+                 HorizontalAlignment="Stretch"
+                 Margin="0,0,4,0"/>
+        <Button Grid.Column="2"
+                Content="{x:Static res:Resources.Settings_Advanced_Browse}"
+                Command="{Binding PickDatabaseFolderCommand}"/>
+      </Grid>
+
+      <!-- Tool path (configured in Settings) -->
+      <Grid Grid.Row="2" ColumnDefinitions="160,*" RowDefinitions="Auto,Auto" Margin="0,0,0,12">
+        <TextBlock Grid.Row="0" Grid.Column="0"
+                   Text="{x:Static res:Resources.ReaderwareImport_ToolPathLabel}"
+                   FontSize="12"
+                   VerticalAlignment="Center"
+                   TextWrapping="Wrap"
+                   Margin="0,0,8,0"/>
+        <TextBox Grid.Row="0" Grid.Column="1"
+                 Text="{Binding ToolPath}"
+                 IsReadOnly="True"
+                 HorizontalAlignment="Stretch"/>
+        <TextBlock Grid.Row="1" Grid.Column="1"
+                   Text="{x:Static res:Resources.ReaderwareImport_ToolPathNote}"
+                   FontSize="11"
+                   Opacity="0.6"
+                   TextWrapping="Wrap"
+                   Margin="0,4,0,0"/>
+      </Grid>
+
+      <!-- Error -->
+      <Border Grid.Row="3"
+              IsVisible="{Binding HasError}"
+              Background="{DynamicResource BrushBackgroundAlt}"
+              BorderBrush="#C42B1C"
+              BorderThickness="1"
+              CornerRadius="4"
+              Padding="10,8"
+              Margin="0,0,0,12">
+        <TextBlock Text="{Binding ErrorMessage}"
+                   Foreground="#C42B1C"
+                   TextWrapping="Wrap"
+                   FontSize="12"/>
+      </Border>
+
+      <!-- Success note -->
+      <TextBlock Grid.Row="4"
+                 IsVisible="{Binding IsComplete}"
+                 Text="{Binding ExportedTableCount, StringFormat={x:Static res:Resources.ReaderwareImport_Success}}"
+                 FontSize="12"
+                 FontWeight="SemiBold"
+                 TextWrapping="Wrap"
+                 Margin="0,0,0,12"/>
+
+      <!-- Progress log header -->
+      <TextBlock Grid.Row="5"
+                 Text="{x:Static res:Resources.ReaderwareImport_ProgressHeader}"
+                 FontSize="12"
+                 FontWeight="SemiBold"
+                 Margin="0,0,0,4"/>
+
+      <!-- Progress log: fills the remaining space; wraps so long temp paths never widen the dialog -->
+      <Border Grid.Row="6"
+              BorderBrush="{DynamicResource BrushBorder}"
+              BorderThickness="1"
+              CornerRadius="4">
+        <TextBox Text="{Binding LogText}"
+                 IsReadOnly="True"
+                 AcceptsReturn="True"
+                 TextWrapping="Wrap"
+                 FontFamily="Consolas, monospace"
+                 FontSize="11"
+                 BorderThickness="0"
+                 Background="Transparent"
+                 VerticalAlignment="Stretch"
+                 HorizontalAlignment="Stretch"
+                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                 ScrollViewer.VerticalScrollBarVisibility="Auto"/>
+      </Border>
+
+    </Grid>
+
+  </DockPanel>
+
+</Window>

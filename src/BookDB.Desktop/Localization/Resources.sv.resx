@@ -1,0 +1,2444 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!--
+    Microsoft ResX Schema
+
+    Version 2.0
+
+    The primary goals of this format is to allow a simple XML format
+    that is mostly human readable. The generation and parsing of the
+    various data types is done through the TypeConverter classes
+    associated with the data types.
+
+    Example:
+
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+
+    There are any number of "resheader" rows that contain simple
+    name/value pairs.
+
+    Each data row contains a name, and value. The row also contains a
+    type or mimetype. Type corresponds to a .NET class that support
+    text/value conversion through the TypeConverter architecture.
+    Mimetype is used for serialized objects, and tells the
+    ResXResourceReader how to depersist the object.
+
+    This is essentially the inverse of a
+
+    ClientTypeConverter.ConvertTo(obj, targetType);
+
+    call.
+
+    The Xml Relation of the data element:
+    <data name="Name1">
+      <value>Value1</value>
+      <comment>User comment</comment>
+    </data>
+
+    The type attribute indicates the type of the serialized object.
+    The mimetype attribute indicates the serialized encoding.
+
+    The value of the type attribute is specified as follows:
+
+       type = "typename, assemblyname"
+
+    The type of the resource value is specified as follows:
+
+       type = System.ResourceObject, System.Windows.Forms
+
+    The mimetype attribute is used to indicate the .NET binary
+    encoding of a data entry.  The following table shows the supported
+    mime types:
+
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized with
+            : System.ComponentModel.TypeConverter.ConvertTo(obj, typeof(byte[]))
+            : and then encoded with base64 encoding.
+  -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="StatusBar_CollectionSelector_Label" xml:space="preserve">
+    <value>Samlingar:</value>
+  </data>
+  <data name="CollectionSelector_AllSelected" xml:space="preserve">
+    <value>Alla samlingar</value>
+  </data>
+  <data name="FilterPanel_EmptyState" xml:space="preserve">
+    <value>Inga filter tillgängliga</value>
+  </data>
+  <data name="BookList_EmptyState" xml:space="preserve">
+    <value>Inga böcker att visa</value>
+  </data>
+  <data name="DetailPanel_EmptyState" xml:space="preserve">
+    <value>Välj en bok för att se detaljer</value>
+  </data>
+  <data name="FilterPanel_ClearFilters" xml:space="preserve">
+    <value>Rensa filter</value>
+  </data>
+  <data name="FilterPanel_DeleteSavedSearch_Tooltip" xml:space="preserve">
+    <value>Ta bort den här sökningen</value>
+  </data>
+  <data name="FilterPanel_EditSavedSearch_Tooltip" xml:space="preserve">
+    <value>Redigera den här sökningen</value>
+  </data>
+  <data name="FilterPanel_SavedSearches_Header" xml:space="preserve">
+    <value>Sparade sökningar</value>
+  </data>
+  <data name="FilterPanel_SavedSearches_Empty" xml:space="preserve">
+    <value>Inga sparade sökningar ännu. Använd avancerad sökning för att skapa en.</value>
+  </data>
+  <data name="AdvancedSearch_Title" xml:space="preserve">
+    <value>Avancerad sökning</value>
+  </data>
+  <data name="AdvancedSearch_SaveSearch" xml:space="preserve">
+    <value>Spara som sökning...</value>
+  </data>
+  <data name="Delete_SingleBook_Message" xml:space="preserve">
+    <value>Ta bort "{0}"? Det går inte att ångra.</value>
+  </data>
+  <data name="Delete_MultipleBooks_Message" xml:space="preserve">
+    <value>Ta bort {0} böcker? Det går inte att ångra.</value>
+  </data>
+  <data name="Delete_Confirm_Button" xml:space="preserve">
+    <value>Ta bort</value>
+  </data>
+  <data name="Delete_Cancel_Button" xml:space="preserve">
+    <value>Behåll bok</value>
+  </data>
+  <data name="UnsavedChanges_Title" xml:space="preserve">
+    <value>Osparade ändringar</value>
+  </data>
+  <data name="UnsavedChanges_Body" xml:space="preserve">
+    <value>Du har osparade ändringar i "{0}". Vad vill du göra?</value>
+  </data>
+  <data name="UnsavedChanges_Cancel" xml:space="preserve">
+    <value>Fortsätt redigera</value>
+  </data>
+  <data name="AddBookDialog_Title" xml:space="preserve">
+    <value>Lägg till bok</value>
+  </data>
+  <data name="AddBookDialog_AddButton" xml:space="preserve">
+    <value>Lägg till bok</value>
+  </data>
+  <data name="Toolbar_AddBook" xml:space="preserve">
+    <value>Lägg till bok</value>
+  </data>
+  <data name="Toolbar_Edit" xml:space="preserve">
+    <value>Redigera</value>
+  </data>
+  <data name="Toolbar_Delete" xml:space="preserve">
+    <value>Ta bort</value>
+  </data>
+  <data name="Toolbar_FullDetails" xml:space="preserve">
+    <value>Fullständiga detaljer</value>
+  </data>
+  <data name="Toolbar_OpenInWindow" xml:space="preserve">
+    <value>Öppna i fönster</value>
+  </data>
+  <data name="Toolbar_Search_Placeholder" xml:space="preserve">
+    <value>Sök böcker...</value>
+  </data>
+  <data name="Toolbar_Search_Clear" xml:space="preserve">
+    <value>Rensa sökning</value>
+  </data>
+  <data name="BookList_NoResults" xml:space="preserve">
+    <value>Inga böcker matchar din sökning. Prova att rensa filter eller justera söktermerna.</value>
+  </data>
+  <data name="BulkEdit_Apply_Button" xml:space="preserve">
+    <value>Tillämpa på {0} böcker</value>
+  </data>
+  <data name="BulkEdit_Cancel_Button" xml:space="preserve">
+    <value>Behåll nuvarande värden</value>
+  </data>
+  <data name="BulkEdit_Title" xml:space="preserve">
+    <value>Massredigering</value>
+  </data>
+  <data name="Cover_Placeholder_Tooltip" xml:space="preserve">
+    <value>Släpp en bild här, eller använd knapparna nedan för att bifoga ett omslag</value>
+  </data>
+  <data name="Cover_AttachFile" xml:space="preserve">
+    <value>Lägg till</value>
+  </data>
+  <data name="Cover_AttachUrl" xml:space="preserve">
+    <value>Från URL...</value>
+  </data>
+  <data name="Cover_NoImage" xml:space="preserve">
+    <value>Inget omslagsbild</value>
+  </data>
+  <data name="Tab_BasicInfo" xml:space="preserve">
+    <value>Grundinfo</value>
+  </data>
+  <data name="Tab_Details" xml:space="preserve">
+    <value>Detaljer</value>
+  </data>
+  <data name="Tab_Acquisition" xml:space="preserve">
+    <value>Förvärv</value>
+  </data>
+  <data name="Tab_Contributors" xml:space="preserve">
+    <value>Medverkande</value>
+  </data>
+  <data name="Tab_ContributorsAdmin" xml:space="preserve">
+    <value>Medverkande &amp; Admin</value>
+  </data>
+  <data name="Button_AddContributor" xml:space="preserve">
+    <value>+ Lägg till medverkande</value>
+  </data>
+  <data name="Section_Contributors" xml:space="preserve">
+    <value>Medverkande</value>
+  </data>
+  <data name="Label_VisibleInCatalog" xml:space="preserve">
+    <value>Synlig i katalogen</value>
+  </data>
+  <data name="Tooltip_VisibleInCatalog" xml:space="preserve">
+    <value>När den är avmarkerad är boken dold från katalogbläddring (men finns fortfarande i databasen).</value>
+  </data>
+  <data name="Tab_AdditionalInfo" xml:space="preserve">
+    <value>Ytterligare info</value>
+  </data>
+  <data name="FullDetails_WindowTitle" xml:space="preserve">
+    <value>Bokdetaljer — {0}</value>
+  </data>
+  <data name="Error_SaveFailed" xml:space="preserve">
+    <value>Det gick inte att spara ändringar. Kontrollera att databasen är tillgänglig och försök igen.</value>
+  </data>
+  <data name="Error_CoverLoadFailed" xml:space="preserve">
+    <value>Det gick inte att läsa in omslagsbild. Bifoga igen med Bläddra eller dra-och-släpp.</value>
+  </data>
+  <data name="Error_SearchFailed" xml:space="preserve">
+    <value>Sökningen misslyckades. Försök igen eller starta om programmet.</value>
+  </data>
+  <data name="LookupWizard_Title" xml:space="preserve">
+    <value>Katalogisera med ISBN</value>
+  </data>
+  <data name="LookupWizard_StartButton" xml:space="preserve">
+    <value>Starta sökning</value>
+  </data>
+  <data name="LookupWizard_IsbnBox_Placeholder" xml:space="preserve">
+    <value>Ange ISBN, ett per rad...</value>
+  </data>
+  <data name="LookupWizard_DropArea_Label" xml:space="preserve">
+    <value>Släpp .txt-fil här eller</value>
+  </data>
+  <data name="LookupWizard_BrowseLink" xml:space="preserve">
+    <value>Bläddra...</value>
+  </data>
+  <data name="LookupWizard_IsbnCount" xml:space="preserve">
+    <value>{0} ISBN redo</value>
+  </data>
+  <data name="LookupWizard_NoResults" xml:space="preserve">
+    <value>Inga resultat hittades för detta ISBN. Kontrollera numret och försök igen, eller ange bokuppgifterna manuellt.</value>
+  </data>
+  <data name="LookupWizard_ManualEntryButton" xml:space="preserve">
+    <value>Ange detaljer manuellt</value>
+  </data>
+  <data name="LookupWizard_Error_EnterIsbn" xml:space="preserve">
+    <value>Ange minst ett ISBN.</value>
+  </data>
+  <data name="MergeReview_Title_New" xml:space="preserve">
+    <value>Granska metadata - ny bok</value>
+  </data>
+  <data name="MergeReview_Title_Recatalog" xml:space="preserve">
+    <value>Granska metadata - {0}</value>
+  </data>
+  <data name="MergeReview_AcceptAllFromSource" xml:space="preserve">
+    <value>Acceptera allt från {0}</value>
+  </data>
+  <data name="MergeReview_NoConflicts" xml:space="preserve">
+    <value>Inga fältkonflikter — alla källor stämmer överens.</value>
+  </data>
+  <data name="MergeReview_Field_Authors" xml:space="preserve">
+    <value>Upphovsmän</value>
+  </data>
+  <data name="MergeReview_Field_Description" xml:space="preserve">
+    <value>Beskrivning</value>
+  </data>
+  <data name="MergeReview_Field_Language" xml:space="preserve">
+    <value>Språk</value>
+  </data>
+  <data name="MergeReview_Field_Pages" xml:space="preserve">
+    <value>Sidor</value>
+  </data>
+  <data name="MergeReview_Field_PubDate" xml:space="preserve">
+    <value>Utgivningsdatum</value>
+  </data>
+  <data name="MergeReview_Field_Publisher" xml:space="preserve">
+    <value>Förlag</value>
+  </data>
+  <data name="MergeReview_Field_Series" xml:space="preserve">
+    <value>Serie</value>
+  </data>
+  <data name="MergeReview_Field_SeriesNumber" xml:space="preserve">
+    <value>Serienummer</value>
+  </data>
+  <data name="MergeReview_Field_Subtitle" xml:space="preserve">
+    <value>Undertitel</value>
+  </data>
+  <data name="MergeReview_Field_Title" xml:space="preserve">
+    <value>Titel</value>
+  </data>
+  <data name="BatchQueue_WindowTitle" xml:space="preserve">
+    <value>Batch-ISBN-sökning</value>
+  </data>
+  <data name="BatchQueue_RunningHeader" xml:space="preserve">
+    <value>Söker upp böcker...</value>
+  </data>
+  <data name="BatchQueue_CompleteHeader" xml:space="preserve">
+    <value>Sökning klar</value>
+  </data>
+  <data name="BatchQueue_CurrentItem" xml:space="preserve">
+    <value>Söker för tillfället upp: {0}</value>
+  </data>
+  <data name="BatchQueue_ProgressCounts" xml:space="preserve">
+    <value>{0} av {1}</value>
+  </data>
+  <data name="BatchQueue_StatusComplete" xml:space="preserve">
+    <value>Körning klar</value>
+  </data>
+  <data name="BatchQueue_StatusProcessing" xml:space="preserve">
+    <value>Bearbetar {0} källresultat…</value>
+  </data>
+  <data name="BatchQueue_StatusQuerying" xml:space="preserve">
+    <value>Söker källor för {0}…</value>
+  </data>
+  <data name="BatchQueue_StatusSaving" xml:space="preserve">
+    <value>Sparar…</value>
+  </data>
+  <data name="BatchQueue_StartReviewButton" xml:space="preserve">
+    <value>Granska resultat</value>
+  </data>
+  <data name="BatchQueue_Summary_Saved" xml:space="preserve">
+    <value>Sparade: {0}</value>
+  </data>
+  <data name="BatchQueue_Summary_AutoAccepted" xml:space="preserve">
+    <value>Automatiskt accepterade: {0}</value>
+  </data>
+  <data name="BatchQueue_Summary_NotFound" xml:space="preserve">
+    <value>Hittades inte: {0}</value>
+  </data>
+  <data name="BatchQueue_Summary_PendingReview" xml:space="preserve">
+    <value>Väntar på granskning: {0}</value>
+  </data>
+  <data name="BatchQueue_Summary_Skipped" xml:space="preserve">
+    <value>Hoppades över: {0}</value>
+  </data>
+  <data name="BatchQueue_ShutdownWarning_Title" xml:space="preserve">
+    <value>Batch-sökning pågår</value>
+  </data>
+  <data name="BatchQueue_ShutdownWarning_Body" xml:space="preserve">
+    <value>En batch-sökning körs fortfarande. Stängning nu stoppar sökningen. Fortsätta?</value>
+  </data>
+  <data name="StatusBar_BatchQueue_Progress" xml:space="preserve">
+    <value>Sökning: {0} av {1}</value>
+  </data>
+  <data name="Recatalog_NoIsbn_Title" xml:space="preserve">
+    <value>Inget ISBN</value>
+  </data>
+  <data name="Recatalog_NoIsbn_Body" xml:space="preserve">
+    <value>Den här boken saknar ISBN. Ange ett för att söka upp metadata.</value>
+  </data>
+  <data name="EditForm_RecatalogButton" xml:space="preserve">
+    <value>Omkatalogsera</value>
+  </data>
+  <data name="CoverPopup_SourceOnly" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="CoverPopup_WithMetadata" xml:space="preserve">
+    <value>{0} — {1}×{2} {3}</value>
+  </data>
+  <data name="Label_ISSN" xml:space="preserve">
+    <value>ISSN</value>
+  </data>
+  <data name="Label_LCCN" xml:space="preserve">
+    <value>LCCN</value>
+  </data>
+  <data name="Label_DeweyDecimal" xml:space="preserve">
+    <value>Deweys decimalsystem</value>
+  </data>
+  <data name="Label_CallNumber" xml:space="preserve">
+    <value>Hyllsignatur</value>
+  </data>
+  <data name="Label_Dimensions" xml:space="preserve">
+    <value>Mått</value>
+  </data>
+  <data name="Label_Weight" xml:space="preserve">
+    <value>Vikt</value>
+  </data>
+  <data name="Label_ItemValue" xml:space="preserve">
+    <value>Artikelvärde</value>
+  </data>
+  <data name="Label_ValuationDate" xml:space="preserve">
+    <value>Värderingsdatum</value>
+  </data>
+  <data name="Label_AmazonNew" xml:space="preserve">
+    <value>Amazon ny</value>
+  </data>
+  <data name="Label_AmazonUsed" xml:space="preserve">
+    <value>Amazon begagnad</value>
+  </data>
+  <data name="Label_AmazonCollectible" xml:space="preserve">
+    <value>Amazon samlare</value>
+  </data>
+  <data name="Label_SalesRank" xml:space="preserve">
+    <value>Försäljningsranking</value>
+  </data>
+  <data name="Label_LexileLevel" xml:space="preserve">
+    <value>Lexilenivå</value>
+  </data>
+  <data name="ManageLookups_Add" xml:space="preserve">
+    <value>+ Lägg till</value>
+  </data>
+  <data name="ManageLookups_CancelMerge" xml:space="preserve">
+    <value>Avbryt sammanslagning</value>
+  </data>
+  <data name="ManageLookups_CannotDelete" xml:space="preserve">
+    <value>Kan inte ta bort — används av {0} böcker</value>
+  </data>
+  <data name="ManageLookups_ConfirmMerge" xml:space="preserve">
+    <value>Bekräfta sammanslagning</value>
+  </data>
+  <data name="ManageLookups_DataCleanup" xml:space="preserve">
+    <value>Datarensning...</value>
+  </data>
+  <data name="ManageLookups_DataCleanupDesc" xml:space="preserve">
+    <value>Följande namn har föreslagits för korrigering. Redigera föreslagda sorteringsnamn vid behov. Avmarkera rader för att hoppa över. Rader utan ändringar visas inte.</value>
+  </data>
+  <data name="ManageLookups_DataCleanupTitle" xml:space="preserve">
+    <value>Förhandsvisning av datarensning</value>
+  </data>
+  <data name="ManageLookups_Delete" xml:space="preserve">
+    <value>Ta bort</value>
+  </data>
+  <data name="ManageLookups_DeleteConfirm" xml:space="preserve">
+    <value>Ta bort '{0}'? Det går inte att ångra.</value>
+  </data>
+  <data name="ManageLookups_DeselectAll" xml:space="preserve">
+    <value>Avmarkera alla</value>
+  </data>
+  <data name="ManageLookups_DisplayName" xml:space="preserve">
+    <value>Visningsnamn</value>
+  </data>
+  <data name="ManageLookups_ErrorDuplicateName" xml:space="preserve">
+    <value>En {0} med detta namn finns redan.</value>
+  </data>
+  <data name="ManageLookups_ErrorEmptyName" xml:space="preserve">
+    <value>Namnet får inte vara tomt.</value>
+  </data>
+  <data name="ManageLookups_ErrorSaveFailed" xml:space="preserve">
+    <value>Sparningen misslyckades — se logg.</value>
+  </data>
+  <data name="ManageLookups_ErrorDeleteFailed" xml:space="preserve">
+    <value>Borttagningen misslyckades — se logg.</value>
+  </data>
+  <data name="ManageLookups_ErrorMergeFailed" xml:space="preserve">
+    <value>Sammanslagningen misslyckades — se logg.</value>
+  </data>
+  <data name="ManageLookups_ErrorCleanupScanFailed" xml:space="preserve">
+    <value>Cleanup scan failed — see log.</value>
+  </data>
+  <data name="ManageLookups_ErrorApplyCleanupFailed" xml:space="preserve">
+    <value>Apply cleanup failed — see log.</value>
+  </data>
+  <data name="ManageLookups_Filter_Watermark" xml:space="preserve">
+    <value>Filtrera...</value>
+  </data>
+  <data name="ManageLookups_FilterToAuthor" xml:space="preserve">
+    <value>Filtrera böcker till författare</value>
+  </data>
+  <data name="ManageLookups_Gear_Category" xml:space="preserve">
+    <value>Hantera kategorier</value>
+  </data>
+  <data name="ManageLookups_Gear_Language" xml:space="preserve">
+    <value>Hantera språk</value>
+  </data>
+  <data name="ManageLookups_Gear_Location" xml:space="preserve">
+    <value>Hantera platser</value>
+  </data>
+  <data name="ManageLookups_Gear_Owner" xml:space="preserve">
+    <value>Hantera ägare</value>
+  </data>
+  <data name="ManageLookups_Gear_PurchasePlace" xml:space="preserve">
+    <value>Hantera inköpsplatser</value>
+  </data>
+  <data name="ManageLookups_Gear_Publisher" xml:space="preserve">
+    <value>Hantera förlag</value>
+  </data>
+  <data name="ManageLookups_Gear_Series" xml:space="preserve">
+    <value>Hantera serier</value>
+  </data>
+  <data name="ManageLookups_KeepingThis" xml:space="preserve">
+    <value>Behåller detta ✓</value>
+  </data>
+  <data name="ManageLookups_KeepThis" xml:space="preserve">
+    <value>Behåll detta</value>
+  </data>
+  <data name="ManageLookups_Merge" xml:space="preserve">
+    <value>Slå samman till...</value>
+  </data>
+  <data name="ManageLookups_MergeConfirmBody" xml:space="preserve">
+    <value>Den icke-behållna personens böcker tilldelas den behållna personen.</value>
+  </data>
+  <data name="ManageLookups_MergePickerConfirmHint" xml:space="preserve">
+    <value>'{0}' slås samman med '{1}' och tas bort.</value>
+  </data>
+  <data name="ManageLookups_MergePickerTitle" xml:space="preserve">
+    <value>Slå samman '{0}' med...</value>
+  </data>
+  <data name="ManageLookups_Name" xml:space="preserve">
+    <value>Namn</value>
+  </data>
+  <data name="ManageLookups_NoCleanup" xml:space="preserve">
+    <value>Ingen rensning behövs.</value>
+  </data>
+  <data name="ManageLookups_Scanning" xml:space="preserve">
+    <value>Söker...</value>
+  </data>
+  <data name="ManageLookups_SelectAll" xml:space="preserve">
+    <value>Markera alla</value>
+  </data>
+  <data name="ManageLookups_SelectEntry" xml:space="preserve">
+    <value>Välj en post för att redigera</value>
+  </data>
+  <data name="ManageLookups_SelectPerson" xml:space="preserve">
+    <value>Välj en person för att redigera</value>
+  </data>
+  <data name="ManageLookups_SortName" xml:space="preserve">
+    <value>Sorteringsnamn</value>
+  </data>
+  <data name="ManageLookups_SuspectedDuplicates" xml:space="preserve">
+    <value>Misstänkta dubbletter</value>
+  </data>
+  <data name="ManageLookups_Tab_Category" xml:space="preserve">
+    <value>Kategori</value>
+  </data>
+  <data name="ManageLookups_Tab_Language" xml:space="preserve">
+    <value>Språk</value>
+  </data>
+  <data name="ManageLookups_Tab_Location" xml:space="preserve">
+    <value>Plats</value>
+  </data>
+  <data name="ManageLookups_Tab_Owner" xml:space="preserve">
+    <value>Ägare</value>
+  </data>
+  <data name="ManageLookups_Tab_Person" xml:space="preserve">
+    <value>Person</value>
+  </data>
+  <data name="ManageLookups_Tab_PurchasePlace" xml:space="preserve">
+    <value>Inköpsplats</value>
+  </data>
+  <data name="ManageLookups_Tab_Publisher" xml:space="preserve">
+    <value>Förlag</value>
+  </data>
+  <data name="ManageLookups_Tab_Series" xml:space="preserve">
+    <value>Serie</value>
+  </data>
+  <data name="ManageLookups_Title" xml:space="preserve">
+    <value>Hantera listor</value>
+  </data>
+  <data name="ManageLookups_UsedByBooks" xml:space="preserve">
+    <value>Används av {0} böcker</value>
+  </data>
+  <data name="ManageLookups_UsedInBooks" xml:space="preserve">
+    <value>Används i {0} böcker</value>
+  </data>
+  <data name="ManageLookups_UseSuggested" xml:space="preserve">
+    <value>Använd föreslagen</value>
+  </data>
+  <data name="ManageLookups_SortNameSuggestionHint" xml:space="preserve">
+    <value>Förslag: {0}</value>
+  </data>
+  <data name="MainWindow_StatusBar_Show" xml:space="preserve">
+    <value>Visa</value>
+  </data>
+  <data name="Backup_Header_Sqlite" xml:space="preserve">
+    <value>Säkerhetskopierar biblioteket…</value>
+  </data>
+  <data name="Backup_Header_CsvArchive" xml:space="preserve">
+    <value>Säkerhetskopierar biblioteket (CSV-arkiv)…</value>
+  </data>
+  <data name="Restore_Header" xml:space="preserve">
+    <value>Återställer biblioteket…</value>
+  </data>
+  <data name="Backup_Status_FlushingLog" xml:space="preserve">
+    <value>Tömmer write-ahead-loggen…</value>
+  </data>
+  <data name="Backup_Status_CopyingDatabase" xml:space="preserve">
+    <value>Kopierar databasen…</value>
+  </data>
+  <data name="Backup_Status_CreatingArchive" xml:space="preserve">
+    <value>Skapar arkiv…</value>
+  </data>
+  <data name="Backup_Status_ExportingBooks" xml:space="preserve">
+    <value>Exporterar böcker…</value>
+  </data>
+  <data name="Backup_Status_ExportingPeople" xml:space="preserve">
+    <value>Exporterar personer…</value>
+  </data>
+  <data name="Backup_Status_ExportingPublishers" xml:space="preserve">
+    <value>Exporterar förlag…</value>
+  </data>
+  <data name="Backup_Status_ExportingSeries" xml:space="preserve">
+    <value>Exporterar serier…</value>
+  </data>
+  <data name="Backup_Status_ExportingCollections" xml:space="preserve">
+    <value>Exporterar samlingar…</value>
+  </data>
+  <data name="Backup_Status_ExportingCategories" xml:space="preserve">
+    <value>Exporterar kategorier…</value>
+  </data>
+  <data name="Backup_Status_ExportingFormats" xml:space="preserve">
+    <value>Exporterar format…</value>
+  </data>
+  <data name="Backup_Status_ExportingLanguages" xml:space="preserve">
+    <value>Exporterar språk…</value>
+  </data>
+  <data name="Backup_Status_ExportingLocations" xml:space="preserve">
+    <value>Exporterar platser…</value>
+  </data>
+  <data name="Backup_Status_ExportingOwners" xml:space="preserve">
+    <value>Exporterar ägare…</value>
+  </data>
+  <data name="Backup_Status_ExportingRelationships" xml:space="preserve">
+    <value>Exporterar bokrelationer…</value>
+  </data>
+  <data name="Backup_Status_ExportingCoverImages" xml:space="preserve">
+    <value>Exporterar omslagsbilder…</value>
+  </data>
+  <data name="Backup_Status_ExportingCoverImagesCount" xml:space="preserve">
+    <value>Exporterar omslagsbilder ({0}/{1})…</value>
+  </data>
+  <data name="Restore_Status_SavingSafetyBackup" xml:space="preserve">
+    <value>Sparar säkerhetskopia…</value>
+  </data>
+  <data name="Restore_Status_ExtractingArchive" xml:space="preserve">
+    <value>Packar upp säkerhetskopian…</value>
+  </data>
+  <data name="Restore_Status_ReplacingLibrary" xml:space="preserve">
+    <value>Ersätter det aktiva biblioteket…</value>
+  </data>
+  <data name="Shutdown_BackupInProgress" xml:space="preserve">
+    <value>Säkerhetskopierar biblioteket innan stängning…</value>
+  </data>
+  <data name="MainWindow_Toolbar_CatalogByIsbn" xml:space="preserve">
+    <value>Katalogisera med ISBN</value>
+  </data>
+  <data name="Menu_AdvancedSearch" xml:space="preserve">
+    <value>_Avancerad sökning...</value>
+  </data>
+  <data name="Menu_BackupCsv" xml:space="preserve">
+    <value>Säkerhetskopiering (CSV-arkiv)...</value>
+  </data>
+  <data name="Menu_BackupSqlite" xml:space="preserve">
+    <value>Säkerhetskopiering (SQLite)...</value>
+  </data>
+  <data name="Menu_BulkEdit" xml:space="preserve">
+    <value>_Massredigering av urval...</value>
+  </data>
+  <data name="Menu_CatalogByIsbn" xml:space="preserve">
+    <value>Katalogisera med _ISBN...</value>
+  </data>
+  <data name="Menu_DeleteBooks" xml:space="preserve">
+    <value>_Ta bort bok/böcker...</value>
+  </data>
+  <data name="Menu_DetailPanel" xml:space="preserve">
+    <value>_Detaljpanel</value>
+  </data>
+  <data name="Menu_DuplicateBook" xml:space="preserve">
+    <value>_Duplicera bok</value>
+  </data>
+  <data name="Menu_Edit" xml:space="preserve">
+    <value>_Redigera</value>
+  </data>
+  <data name="Menu_EditBook" xml:space="preserve">
+    <value>_Redigera bok</value>
+  </data>
+  <data name="Menu_Exit" xml:space="preserve">
+    <value>A_vsluta</value>
+  </data>
+  <data name="Menu_ExportCsv" xml:space="preserve">
+    <value>Exportera...</value>
+  </data>
+  <data name="Menu_File" xml:space="preserve">
+    <value>_Arkiv</value>
+  </data>
+  <data name="Menu_FullDetails" xml:space="preserve">
+    <value>_Fullständiga detaljer</value>
+  </data>
+  <data name="Menu_ImportReaderware" xml:space="preserve">
+    <value>Importera Readerware-säkerhetskopia…</value>
+  </data>
+  <data name="Menu_ImportReaderwareDatabase" xml:space="preserve">
+    <value>Importera Readerware-databas…</value>
+  </data>
+  <data name="Menu_ManageLookups" xml:space="preserve">
+    <value>Hantera listor...</value>
+  </data>
+  <data name="Menu_NewBook" xml:space="preserve">
+    <value>_Ny bok</value>
+  </data>
+  <data name="Menu_PrintList" xml:space="preserve">
+    <value>Skriv ut lista...</value>
+  </data>
+  <data name="Menu_RecatalogAll" xml:space="preserve">
+    <value>Omkatalogsera _alla</value>
+  </data>
+  <data name="Menu_RecatalogSelected" xml:space="preserve">
+    <value>Omkatalogsera _valda</value>
+  </data>
+  <data name="Menu_RestoreBackup" xml:space="preserve">
+    <value>Återställ från säkerhetskopia...</value>
+  </data>
+  <data name="Menu_Settings" xml:space="preserve">
+    <value>Inställningar...</value>
+  </data>
+  <data name="Menu_ShowAuthor" xml:space="preserve">
+    <value>Visa _författarkolumn</value>
+  </data>
+  <data name="Menu_ShowFormat" xml:space="preserve">
+    <value>Visa _formatkolumn</value>
+  </data>
+  <data name="Menu_ShowPublisher" xml:space="preserve">
+    <value>Visa _förlagskolumn</value>
+  </data>
+  <data name="Menu_ShowRating" xml:space="preserve">
+    <value>Visa _betygkolumn</value>
+  </data>
+  <data name="Menu_ShowSeries" xml:space="preserve">
+    <value>Visa s_eriekolumn</value>
+  </data>
+  <data name="Menu_ShowStatus" xml:space="preserve">
+    <value>Visa s_tatuskolumn</value>
+  </data>
+  <data name="Menu_ShowThumbnail" xml:space="preserve">
+    <value>Visa _miniatyrkolumn</value>
+  </data>
+  <data name="Menu_ShowYear" xml:space="preserve">
+    <value>Visa _årskolumn</value>
+  </data>
+  <data name="Menu_Statistics" xml:space="preserve">
+    <value>Statistik</value>
+  </data>
+  <data name="Menu_Tools" xml:space="preserve">
+    <value>_Verktyg</value>
+  </data>
+  <data name="Menu_View" xml:space="preserve">
+    <value>_Visa</value>
+  </data>
+  <data name="Menu_Window" xml:space="preserve">
+    <value>_Fönster</value>
+  </data>
+  <data name="BookDetail_Label_Category" xml:space="preserve">
+    <value>Kategori:</value>
+  </data>
+  <data name="BookDetail_Label_Condition" xml:space="preserve">
+    <value>Skick:</value>
+  </data>
+  <data name="BookDetail_Label_Edition" xml:space="preserve">
+    <value>Upplaga:</value>
+  </data>
+  <data name="BookDetail_Label_Format" xml:space="preserve">
+    <value>Format:</value>
+  </data>
+  <data name="BookDetail_Label_Isbn" xml:space="preserve">
+    <value>ISBN:</value>
+  </data>
+  <data name="BookDetail_Label_Language" xml:space="preserve">
+    <value>Språk:</value>
+  </data>
+  <data name="BookDetail_Label_Location" xml:space="preserve">
+    <value>Plats:</value>
+  </data>
+  <data name="BookDetail_Label_Owner" xml:space="preserve">
+    <value>Ägare:</value>
+  </data>
+  <data name="BookDetail_Label_Pages" xml:space="preserve">
+    <value>Sidor:</value>
+  </data>
+  <data name="BookDetail_Label_Published" xml:space="preserve">
+    <value>Utgiven:</value>
+  </data>
+  <data name="BookDetail_Label_Rating" xml:space="preserve">
+    <value>Betyg:</value>
+  </data>
+  <data name="BookDetail_Label_Status" xml:space="preserve">
+    <value>Status:</value>
+  </data>
+  <data name="BookDetail_Section_BookInfo" xml:space="preserve">
+    <value>Bokinfo</value>
+  </data>
+  <data name="BookEditForm_Button_Remove" xml:space="preserve">
+    <value>Ta bort</value>
+  </data>
+  <data name="BookEditForm_Flag_Favorite" xml:space="preserve">
+    <value>Favorit</value>
+  </data>
+  <data name="BookEditForm_Flag_OutOfPrint" xml:space="preserve">
+    <value>Utgången</value>
+  </data>
+  <data name="BookEditForm_Flag_Signed" xml:space="preserve">
+    <value>Signerad</value>
+  </data>
+  <data name="BookEditForm_Label_AltTitle" xml:space="preserve">
+    <value>Alt titel</value>
+  </data>
+  <data name="BookEditForm_Label_BookInfo" xml:space="preserve">
+    <value>Bokinfo</value>
+  </data>
+  <data name="BookEditForm_Label_Category" xml:space="preserve">
+    <value>Kategori</value>
+  </data>
+  <data name="BookEditForm_Label_Comments" xml:space="preserve">
+    <value>Kommentarer</value>
+  </data>
+  <data name="BookEditForm_Label_Condition" xml:space="preserve">
+    <value>Skick</value>
+  </data>
+  <data name="BookEditForm_Label_Copies" xml:space="preserve">
+    <value>Exemplar</value>
+  </data>
+  <data name="BookEditForm_Label_CopyrightDate" xml:space="preserve">
+    <value>Copyright-datum</value>
+  </data>
+  <data name="BookEditForm_Label_Edition" xml:space="preserve">
+    <value>Upplaga</value>
+  </data>
+  <data name="BookEditForm_Label_ExtId" xml:space="preserve">
+    <value>EAN / Ext ID</value>
+  </data>
+  <data name="BookEditForm_Label_Flags" xml:space="preserve">
+    <value>Flaggor</value>
+  </data>
+  <data name="BookEditForm_Label_Format" xml:space="preserve">
+    <value>Format</value>
+  </data>
+  <data name="BookEditForm_Label_Isbn" xml:space="preserve">
+    <value>ISBN</value>
+  </data>
+  <data name="BookEditForm_Label_Keywords" xml:space="preserve">
+    <value>Nyckelord</value>
+  </data>
+  <data name="BookEditForm_Label_Language" xml:space="preserve">
+    <value>Språk</value>
+  </data>
+  <data name="BookEditForm_Label_ListPrice" xml:space="preserve">
+    <value>Listpris</value>
+  </data>
+  <data name="BookEditForm_Label_Location" xml:space="preserve">
+    <value>Plats</value>
+  </data>
+  <data name="BookEditForm_Label_MediaLink" xml:space="preserve">
+    <value>Medielänk</value>
+  </data>
+  <data name="BookEditForm_Label_Owner" xml:space="preserve">
+    <value>Ägare</value>
+  </data>
+  <data name="BookEditForm_Label_Pages" xml:space="preserve">
+    <value>Sidor</value>
+  </data>
+  <data name="BookEditForm_Label_PubPlace" xml:space="preserve">
+    <value>Utgivningsort</value>
+  </data>
+  <data name="BookEditForm_Label_Publisher" xml:space="preserve">
+    <value>Förlag</value>
+  </data>
+  <data name="BookEditForm_Label_PurchaseDate" xml:space="preserve">
+    <value>Inköpsdatum</value>
+  </data>
+  <data name="BookEditForm_Label_PurchasePlace" xml:space="preserve">
+    <value>Inköpsplats</value>
+  </data>
+  <data name="BookEditForm_Label_PurchasePrice" xml:space="preserve">
+    <value>Inköpspris</value>
+  </data>
+  <data name="BookEditForm_Label_Qty" xml:space="preserve">
+    <value>ant:</value>
+  </data>
+  <data name="BookEditForm_Label_Rating" xml:space="preserve">
+    <value>Betyg</value>
+  </data>
+  <data name="BookEditForm_Label_ReadingLevel" xml:space="preserve">
+    <value>Läsnivå</value>
+  </data>
+  <data name="BookEditForm_Label_Series" xml:space="preserve">
+    <value>Serie</value>
+  </data>
+  <data name="BookEditForm_Label_SeriesNumber" xml:space="preserve">
+    <value>Serie #</value>
+  </data>
+  <data name="BookEditForm_Label_Source" xml:space="preserve">
+    <value>Källa</value>
+  </data>
+  <data name="BookEditForm_Label_Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="BookEditForm_Label_Subtitle" xml:space="preserve">
+    <value>Undertitel</value>
+  </data>
+  <data name="BookEditForm_Label_TimesRead" xml:space="preserve">
+    <value>Antal läsningar</value>
+  </data>
+  <data name="BookEditForm_Label_Title" xml:space="preserve">
+    <value>Titel *</value>
+  </data>
+  <data name="BookEditForm_Label_Year" xml:space="preserve">
+    <value>År</value>
+  </data>
+  <data name="BookEditForm_Tab_Images" xml:space="preserve">
+    <value>Bilder</value>
+  </data>
+  <data name="BookEditForm_Watermark_Usd" xml:space="preserve">
+    <value>USD</value>
+  </data>
+  <data name="BookList_AdvancedSearch_Button" xml:space="preserve">
+    <value>Avancerad sökning</value>
+  </data>
+  <data name="BookList_AdvancedSearch_Label" xml:space="preserve">
+    <value>Avancerad</value>
+  </data>
+  <data name="BookList_ClearSearch_Label" xml:space="preserve">
+    <value>Rensa</value>
+  </data>
+  <data name="BookList_Column_Authors" xml:space="preserve">
+    <value>Författare</value>
+  </data>
+  <data name="BookList_Column_Cover" xml:space="preserve">
+    <value>Omslag</value>
+  </data>
+  <data name="BookList_Column_Format" xml:space="preserve">
+    <value>Format</value>
+  </data>
+  <data name="BookList_Column_Publisher" xml:space="preserve">
+    <value>Förlag</value>
+  </data>
+  <data name="BookList_Column_Rating" xml:space="preserve">
+    <value>Betyg</value>
+  </data>
+  <data name="BookList_Column_Series" xml:space="preserve">
+    <value>Serie</value>
+  </data>
+  <data name="BookList_Column_Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="BookList_Column_Title" xml:space="preserve">
+    <value>Titel</value>
+  </data>
+  <data name="BookList_Column_Year" xml:space="preserve">
+    <value>År</value>
+  </data>
+  <data name="BookList_ContextMenu_Recatalog" xml:space="preserve">
+    <value>Omkatalogsera valda</value>
+  </data>
+  <data name="BookList_Loading" xml:space="preserve">
+    <value>Laddar...</value>
+  </data>
+  <data name="BookImageType_BackCover" xml:space="preserve">
+    <value>Baksida</value>
+  </data>
+  <data name="BookImageType_Cover" xml:space="preserve">
+    <value>Framsida</value>
+  </data>
+  <data name="BookImageType_DustJacket" xml:space="preserve">
+    <value>Skyddsomslag</value>
+  </data>
+  <data name="BookImageType_Spine" xml:space="preserve">
+    <value>Rygg</value>
+  </data>
+  <data name="BookImageType_Thumbnail" xml:space="preserve">
+    <value>Miniatyrbild</value>
+  </data>
+  <data name="BorrowerStatus_Active" xml:space="preserve">
+    <value>Aktiv</value>
+  </data>
+  <data name="BorrowerStatus_Inactive" xml:space="preserve">
+    <value>Inaktiv</value>
+  </data>
+  <data name="Condition_Fair" xml:space="preserve">
+    <value>Godtagbar</value>
+  </data>
+  <data name="Condition_Good" xml:space="preserve">
+    <value>Bra</value>
+  </data>
+  <data name="Condition_LikeNew" xml:space="preserve">
+    <value>Som ny</value>
+  </data>
+  <data name="Condition_New" xml:space="preserve">
+    <value>Ny</value>
+  </data>
+  <data name="Condition_Poor" xml:space="preserve">
+    <value>Dålig</value>
+  </data>
+  <data name="Condition_VeryGood" xml:space="preserve">
+    <value>Mycket bra</value>
+  </data>
+  <data name="ContributorRole_Author" xml:space="preserve">
+    <value>Författare</value>
+  </data>
+  <data name="ContributorRole_Colorist" xml:space="preserve">
+    <value>Kolorist</value>
+  </data>
+  <data name="ContributorRole_CoverArtist" xml:space="preserve">
+    <value>Omslags­artist</value>
+  </data>
+  <data name="ContributorRole_Designer" xml:space="preserve">
+    <value>Formgivare</value>
+  </data>
+  <data name="ContributorRole_Editor" xml:space="preserve">
+    <value>Redaktör</value>
+  </data>
+  <data name="ContributorRole_Foreword" xml:space="preserve">
+    <value>Förord</value>
+  </data>
+  <data name="ContributorRole_Illustrator" xml:space="preserve">
+    <value>Illustratör</value>
+  </data>
+  <data name="ContributorRole_Introduction" xml:space="preserve">
+    <value>Inledning</value>
+  </data>
+  <data name="ContributorRole_Inker" xml:space="preserve">
+    <value>Tuschtecknare</value>
+  </data>
+  <data name="ContributorRole_Letterer" xml:space="preserve">
+    <value>Textsättare</value>
+  </data>
+  <data name="ContributorRole_Penciller" xml:space="preserve">
+    <value>Penntecknare</value>
+  </data>
+  <data name="ContributorRole_Translator" xml:space="preserve">
+    <value>Översättare</value>
+  </data>
+  <data name="ContributorRole_Writer" xml:space="preserve">
+    <value>Skribent</value>
+  </data>
+  <data name="Edition_1stEdition" xml:space="preserve">
+    <value>1:a upplagan</value>
+  </data>
+  <data name="Edition_2ndEdition" xml:space="preserve">
+    <value>2:a upplagan</value>
+  </data>
+  <data name="Edition_3rdEdition" xml:space="preserve">
+    <value>3:e upplagan</value>
+  </data>
+  <data name="Edition_CollectorsEdition" xml:space="preserve">
+    <value>Samlaredition</value>
+  </data>
+  <data name="Edition_LimitedEdition" xml:space="preserve">
+    <value>Begränsad upplaga</value>
+  </data>
+  <data name="Edition_RevisedEdition" xml:space="preserve">
+    <value>Reviderad upplaga</value>
+  </data>
+  <data name="Edition_SignedEdition" xml:space="preserve">
+    <value>Signerad upplaga</value>
+  </data>
+  <data name="ImageEditor_NoImage_Back" xml:space="preserve">
+    <value>Ingen baksidebild</value>
+  </data>
+  <data name="ImageEditor_NoImage_DustJacket" xml:space="preserve">
+    <value>Ingen skyddsomslagsbild</value>
+  </data>
+  <data name="ImageEditor_NoImage_Front" xml:space="preserve">
+    <value>Ingen framsidebild</value>
+  </data>
+  <data name="ImageEditor_NoImage_Generic" xml:space="preserve">
+    <value>Ingen bild</value>
+  </data>
+  <data name="ImageEditor_NoImage_Spine" xml:space="preserve">
+    <value>Ingen ryggbild</value>
+  </data>
+  <data name="ImageEditor_NoImage_Thumb" xml:space="preserve">
+    <value>Ingen miniatyrbild</value>
+  </data>
+  <data name="ImageEditor_TypeButton_Back" xml:space="preserve">
+    <value>Baksida</value>
+  </data>
+  <data name="ImageEditor_TypeButton_Front" xml:space="preserve">
+    <value>Framsida</value>
+  </data>
+  <data name="ImageEditor_TypeButton_Jacket" xml:space="preserve">
+    <value>Skyddsomslag</value>
+  </data>
+  <data name="ImageEditor_TypeButton_Spine" xml:space="preserve">
+    <value>Rygg</value>
+  </data>
+  <data name="ImageEditor_TypeButton_Thumb" xml:space="preserve">
+    <value>Miniatyr</value>
+  </data>
+  <data name="ImageEditor_ManageSection_Heading" xml:space="preserve">
+    <value>Hantera alla bilder</value>
+  </data>
+  <data name="ImageEditor_ManageItem_MoveUp_Tooltip" xml:space="preserve">
+    <value>Flytta upp inom typ</value>
+  </data>
+  <data name="ImageEditor_ManageItem_MoveDown_Tooltip" xml:space="preserve">
+    <value>Flytta ned inom typ</value>
+  </data>
+  <data name="ImageEditor_ManageItem_TypePicker_Tooltip" xml:space="preserve">
+    <value>Tilldela en annan bildtyp</value>
+  </data>
+  <data name="ImageEditor_ManageItem_Remove_Tooltip" xml:space="preserve">
+    <value>Ta bort bild</value>
+  </data>
+  <data name="BookList_Thumbnail_Badge_Tooltip" xml:space="preserve">
+    <value>Duplicerade bildtyper — kontrollera fliken Bilder</value>
+  </data>
+  <data name="Import_Ask_Body" xml:space="preserve">
+    <value>En bok med samma ISBN finns redan:
+
+"{0}"
+
+Skriv över den med importdata?</value>
+  </data>
+  <data name="Import_Ask_Title" xml:space="preserve">
+    <value>Dubblett — Skriva över?</value>
+  </data>
+  <data name="Import_BackButton" xml:space="preserve">
+    <value>Tillbaka</value>
+  </data>
+  <data name="Import_ImportButton" xml:space="preserve">
+    <value>Importera</value>
+  </data>
+  <data name="Import_NextButton" xml:space="preserve">
+    <value>Nästa</value>
+  </data>
+  <data name="Import_Step1_BrowseFolder" xml:space="preserve">
+    <value>Välj säkerhetskopia-mapp…</value>
+  </data>
+  <data name="Import_Step1_BrowseZip" xml:space="preserve">
+    <value>Bläddra efter säkerhetskopia-zip…</value>
+  </data>
+  <data name="Import_Step1_CollectionLabel" xml:space="preserve">
+    <value>Importera till samling:</value>
+  </data>
+  <data name="Import_Step1_CollectionWatermark" xml:space="preserve">
+    <value>Välj en samling...</value>
+  </data>
+  <data name="Import_Step1_FileLabel" xml:space="preserve">
+    <value>Säkerhetskopie-fil eller mapp:</value>
+  </data>
+  <data name="Import_Step1_FileWatermark" xml:space="preserve">
+    <value>Sökväg till .zip-fil eller mapp...</value>
+  </data>
+  <data name="Import_Step1_HelpText" xml:space="preserve">
+    <value>Välj en .zip-säkerhetskopia skapad av Readerware, eller den extraherade säkerhetskopie-mappen.</value>
+  </data>
+  <data name="Import_Step2_Analyzing" xml:space="preserve">
+    <value>Analyserar säkerhetskopie-fil...</value>
+  </data>
+  <data name="Import_Step2_Column_Author" xml:space="preserve">
+    <value>Författare</value>
+  </data>
+  <data name="Import_Step2_Column_Cover" xml:space="preserve">
+    <value>Omslag</value>
+  </data>
+  <data name="Import_Step2_Column_Isbn" xml:space="preserve">
+    <value>ISBN</value>
+  </data>
+  <data name="Import_Step2_Column_Note" xml:space="preserve">
+    <value>Notering</value>
+  </data>
+  <data name="Import_Step2_Column_RowNumber" xml:space="preserve">
+    <value>#</value>
+  </data>
+  <data name="Import_Step2_Column_Title" xml:space="preserve">
+    <value>Titel</value>
+  </data>
+  <data name="Import_Step2_WarningsHeader" xml:space="preserve">
+    <value>{0} objekt flaggades vid analysen – klicka för detaljer</value>
+  </data>
+  <data name="Import_Step2_PotentialDuplicates" xml:space="preserve">
+    <value>Potentiella dubbletter:</value>
+  </data>
+  <data name="Import_Step2_TotalRecords" xml:space="preserve">
+    <value>Totalt antal poster:</value>
+  </data>
+  <data name="Import_Step2_WithCovers" xml:space="preserve">
+    <value>Med omslag:</value>
+  </data>
+  <data name="Import_Step2_WithIsbn" xml:space="preserve">
+    <value>Med ISBN:</value>
+  </data>
+  <data name="Import_Step2_WithoutIsbn" xml:space="preserve">
+    <value>Utan ISBN:</value>
+  </data>
+  <data name="Import_Step3_HelpText" xml:space="preserve">
+    <value>Klicka på Importera för att börja. Åtgärden kan avbrytas när som helst.</value>
+  </data>
+  <data name="Import_Step3_ReviewLabel" xml:space="preserve">
+    <value>Granska och bekräfta din import:</value>
+  </data>
+  <data name="Import_Step3_Summary" xml:space="preserve">
+    <value>Redo att importera {0} poster
+Med ISBN: {1}  |  Utan ISBN: {2}
+Möjliga dubletter: {3}  |  Med omslag: {4}</value>
+  </data>
+  <data name="Import_Step4_CancelButton" xml:space="preserve">
+    <value>Avbryt import</value>
+  </data>
+  <data name="Import_Step4_Cancelling" xml:space="preserve">
+    <value>Avbryter import...</value>
+  </data>
+  <data name="Import_Step4_Importing" xml:space="preserve">
+    <value>Importerar poster...</value>
+  </data>
+  <data name="Import_Step4_Progress" xml:space="preserve">
+    <value>{0} av {1} poster</value>
+  </data>
+  <data name="Import_Step5_Cancelled" xml:space="preserve">
+    <value>Importen avbröts. Delposter har sparats.</value>
+  </data>
+  <data name="Import_Step5_ErrorsLabel" xml:space="preserve">
+    <value>Fel:</value>
+  </data>
+  <data name="Import_Step5_FlaggedNoIsbn" xml:space="preserve">
+    <value>Flaggade (inget ISBN):</value>
+  </data>
+  <data name="Import_Step5_Heading" xml:space="preserve">
+    <value>Importresultat</value>
+  </data>
+  <data name="Import_Step5_Imported" xml:space="preserve">
+    <value>Importerade:</value>
+  </data>
+  <data name="Import_Step5_Skipped" xml:space="preserve">
+    <value>Hoppades över:</value>
+  </data>
+  <data name="Import_Step5_Updated" xml:space="preserve">
+    <value>Uppdaterade:</value>
+  </data>
+  <data name="Import_StepIndicator" xml:space="preserve">
+    <value>Steg {0} av {1}</value>
+  </data>
+  <data name="Import_StepTitle_Complete" xml:space="preserve">
+    <value>Import klar</value>
+  </data>
+  <data name="Import_StepTitle_Confirm" xml:space="preserve">
+    <value>Bekräfta import</value>
+  </data>
+  <data name="Import_StepTitle_Default" xml:space="preserve">
+    <value>Importera från Readerware</value>
+  </data>
+  <data name="Import_StepTitle_FileSelect" xml:space="preserve">
+    <value>Välj säkerhetskopieringsfil</value>
+  </data>
+  <data name="Import_StepTitle_Preview" xml:space="preserve">
+    <value>Förhandsgranska import</value>
+  </data>
+  <data name="Import_StepTitle_Progress" xml:space="preserve">
+    <value>Importerar...</value>
+  </data>
+  <data name="Import_WindowTitle" xml:space="preserve">
+    <value>Importera från Readerware</value>
+  </data>
+  <data name="Format_Audiobook" xml:space="preserve">
+    <value>Ljudbok</value>
+  </data>
+  <data name="Format_Comic" xml:space="preserve">
+    <value>Serietidning</value>
+  </data>
+  <data name="Format_Ebook" xml:space="preserve">
+    <value>E-bok</value>
+  </data>
+  <data name="Format_GraphicNovel" xml:space="preserve">
+    <value>Grafisk roman</value>
+  </data>
+  <data name="Format_Hardcover" xml:space="preserve">
+    <value>Inbunden</value>
+  </data>
+  <data name="Format_Magazine" xml:space="preserve">
+    <value>Tidskrift</value>
+  </data>
+  <data name="Format_MassMarketPaperback" xml:space="preserve">
+    <value>Pocket</value>
+  </data>
+  <data name="Format_Paperback" xml:space="preserve">
+    <value>Häftad</value>
+  </data>
+  <data name="Format_TradePaperback" xml:space="preserve">
+    <value>Trade paperback</value>
+  </data>
+  <data name="Language_Danish" xml:space="preserve">
+    <value>Danska</value>
+  </data>
+
+  <data name="Language_Finnish" xml:space="preserve">
+    <value>Finska</value>
+  </data>
+  <data name="Language_French" xml:space="preserve">
+    <value>Franska</value>
+  </data>
+  <data name="Language_German" xml:space="preserve">
+    <value>Tyska</value>
+  </data>
+  <data name="Language_Italian" xml:space="preserve">
+    <value>Italienska</value>
+  </data>
+  <data name="Language_Japanese" xml:space="preserve">
+    <value>Japanska</value>
+  </data>
+  <data name="Language_Norwegian" xml:space="preserve">
+    <value>Norska</value>
+  </data>
+  <data name="Language_Spanish" xml:space="preserve">
+    <value>Spanska</value>
+  </data>
+  <data name="Language_Swedish" xml:space="preserve">
+    <value>Svenska</value>
+  </data>
+  <data name="Rating_1Star" xml:space="preserve">
+    <value>1 stjärna</value>
+  </data>
+  <data name="Rating_2Stars" xml:space="preserve">
+    <value>2 stjärnor</value>
+  </data>
+  <data name="Rating_3Stars" xml:space="preserve">
+    <value>3 stjärnor</value>
+  </data>
+  <data name="Rating_4Stars" xml:space="preserve">
+    <value>4 stjärnor</value>
+  </data>
+  <data name="Rating_5Stars" xml:space="preserve">
+    <value>5 stjärnor</value>
+  </data>
+  <data name="ReadingLevel_Adult" xml:space="preserve">
+    <value>Vuxen</value>
+  </data>
+  <data name="ReadingLevel_EasyReader" xml:space="preserve">
+    <value>Lättläst</value>
+  </data>
+  <data name="ReadingLevel_MiddleGrade" xml:space="preserve">
+    <value>Mellanstadiet</value>
+  </data>
+  <data name="ReadingLevel_YoungAdult" xml:space="preserve">
+    <value>Ungdom</value>
+  </data>
+  <data name="Print_ClearAll" xml:space="preserve">
+    <value>Rensa allt</value>
+  </data>
+  <data name="Print_ColumnsHeading" xml:space="preserve">
+    <value>Kolumner att inkludera:</value>
+  </data>
+  <data name="Print_ConfirmDeletePreset" xml:space="preserve">
+    <value>Ta bort förinställning</value>
+  </data>
+  <data name="Print_DeletePreset" xml:space="preserve">
+    <value>Ta bort</value>
+  </data>
+  <data name="Print_DeletePresetConfirm" xml:space="preserve">
+    <value>Ta bort '{0}'? Det går inte att ångra.</value>
+  </data>
+  <data name="Print_FontSizeLabel" xml:space="preserve">
+    <value>Teckenstorlek:</value>
+  </data>
+  <data name="Print_FooterLabel" xml:space="preserve">
+    <value>Sidfot:</value>
+  </data>
+  <data name="Print_FooterWatermark" xml:space="preserve">
+    <value>Sidnummer läggs till automatiskt</value>
+  </data>
+  <data name="Print_HeaderLabel" xml:space="preserve">
+    <value>Sidhuvud:</value>
+  </data>
+  <data name="Print_Heading" xml:space="preserve">
+    <value>Skriv ut lista</value>
+  </data>
+  <data name="Print_MarginH" xml:space="preserve">
+    <value>H:</value>
+  </data>
+  <data name="Print_MarginsLabel" xml:space="preserve">
+    <value>Marginaler (mm):</value>
+  </data>
+  <data name="Print_MarginV" xml:space="preserve">
+    <value>V:</value>
+  </data>
+  <data name="Print_NewPreset" xml:space="preserve">
+    <value>Ny…</value>
+  </data>
+  <data name="Print_OrientationLabel" xml:space="preserve">
+    <value>Orientering:</value>
+  </data>
+  <data name="Print_OrientationLandscape" xml:space="preserve">
+    <value>Liggande</value>
+  </data>
+  <data name="Print_OrientationPortrait" xml:space="preserve">
+    <value>Stående</value>
+  </data>
+  <data name="Print_PresetLabel" xml:space="preserve">
+    <value>Förinställning:</value>
+  </data>
+  <data name="Print_PresetNameLabel" xml:space="preserve">
+    <value>Namn:</value>
+  </data>
+  <data name="Print_PreviewButton" xml:space="preserve">
+    <value>Förhandsgranska / Skriv ut</value>
+  </data>
+  <data name="Print_RenamePreset" xml:space="preserve">
+    <value>Byt namn…</value>
+  </data>
+  <data name="Print_SaveAsPdfButton" xml:space="preserve">
+    <value>Spara som PDF…</value>
+  </data>
+  <data name="Print_SelectAll" xml:space="preserve">
+    <value>Markera alla</value>
+  </data>
+  <data name="Print_WindowTitle" xml:space="preserve">
+    <value>Skriv ut lista</value>
+  </data>
+  <data name="Print_Column_Added" xml:space="preserve">
+    <value>Tillagd</value>
+  </data>
+  <data name="Print_Column_AltTitle" xml:space="preserve">
+    <value>Alt. titel</value>
+  </data>
+  <data name="Print_Column_Authors" xml:space="preserve">
+    <value>Författare</value>
+  </data>
+  <data name="Print_Column_Collection" xml:space="preserve">
+    <value>Samling</value>
+  </data>
+  <data name="Print_Column_Comments" xml:space="preserve">
+    <value>Kommentarer</value>
+  </data>
+  <data name="Print_Column_Condition" xml:space="preserve">
+    <value>Skick</value>
+  </data>
+  <data name="Print_Column_Copies" xml:space="preserve">
+    <value>Exemplar</value>
+  </data>
+  <data name="Print_Column_Edition" xml:space="preserve">
+    <value>Upplaga</value>
+  </data>
+  <data name="Print_Column_Favorite" xml:space="preserve">
+    <value>Favorit</value>
+  </data>
+  <data name="Print_Column_Format" xml:space="preserve">
+    <value>Format</value>
+  </data>
+  <data name="Print_Column_ISBN" xml:space="preserve">
+    <value>ISBN</value>
+  </data>
+  <data name="Print_Column_Keywords" xml:space="preserve">
+    <value>Nyckelord</value>
+  </data>
+  <data name="Print_Column_Language" xml:space="preserve">
+    <value>Språk</value>
+  </data>
+  <data name="Print_Column_Location" xml:space="preserve">
+    <value>Plats</value>
+  </data>
+  <data name="Print_Column_OutOfPrint" xml:space="preserve">
+    <value>Utgången</value>
+  </data>
+  <data name="Print_Column_Owner" xml:space="preserve">
+    <value>Ägare</value>
+  </data>
+  <data name="Print_Column_Pages" xml:space="preserve">
+    <value>Sidor</value>
+  </data>
+  <data name="Print_Column_PubDate" xml:space="preserve">
+    <value>År</value>
+  </data>
+  <data name="Print_Column_PubPlace" xml:space="preserve">
+    <value>Utgivningsort</value>
+  </data>
+  <data name="Print_Column_Publisher" xml:space="preserve">
+    <value>Förlag</value>
+  </data>
+  <data name="Print_Column_PurchaseCurrency" xml:space="preserve">
+    <value>Valuta</value>
+  </data>
+  <data name="Print_Column_PurchasePrice" xml:space="preserve">
+    <value>Inköpspris</value>
+  </data>
+  <data name="Print_Column_Rating" xml:space="preserve">
+    <value>Betyg</value>
+  </data>
+  <data name="Print_Column_ReadCount" xml:space="preserve">
+    <value>Läst antal</value>
+  </data>
+  <data name="Print_Column_Series" xml:space="preserve">
+    <value>Serie</value>
+  </data>
+  <data name="Print_Column_SeriesNumber" xml:space="preserve">
+    <value>Serie #</value>
+  </data>
+  <data name="Print_Column_Signed" xml:space="preserve">
+    <value>Signerad</value>
+  </data>
+  <data name="Print_Column_Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Print_Column_Subtitle" xml:space="preserve">
+    <value>Undertitel</value>
+  </data>
+  <data name="Print_Column_Title" xml:space="preserve">
+    <value>Titel</value>
+  </data>
+  <data name="Print_Column_Updated" xml:space="preserve">
+    <value>Uppdaterad</value>
+  </data>
+  <data name="Print_DefaultHeaderTitle" xml:space="preserve">
+    <value>Boklista</value>
+  </data>
+  <data name="Print_Error_PresetNameDuplicate" xml:space="preserve">
+    <value>En förinställning med det här namnet finns redan.</value>
+  </data>
+  <data name="Print_Error_PresetNameEmpty" xml:space="preserve">
+    <value>Förinställningsnamnet kan inte vara tomt.</value>
+  </data>
+  <data name="Print_Error_PresetSaveFailed" xml:space="preserve">
+    <value>Sparandet misslyckades. Ändringar kanske inte bevaras efter omstart.</value>
+  </data>
+  <data name="Print_Footer_PageFormat" xml:space="preserve">
+    <value>Sida {0} av {1}</value>
+  </data>
+  <data name="Print_ScopeSummary_Multiple" xml:space="preserve">
+    <value>Skriver ut {0} böcker från aktuellt filter.</value>
+  </data>
+  <data name="Print_ScopeSummary_None" xml:space="preserve">
+    <value>Inga böcker matchar aktuellt filter. Inget att skriva ut.</value>
+  </data>
+  <data name="Print_ScopeSummary_Single" xml:space="preserve">
+    <value>Skriver ut {0} bok från aktuellt filter.</value>
+  </data>
+  <data name="Print_StandardPresetDisplayName" xml:space="preserve">
+    <value>Standard</value>
+  </data>
+  <data name="Settings_Advanced_AutoBackup" xml:space="preserve">
+    <value>Auto-säkerhetskopiering vid stängning</value>
+  </data>
+  <data name="Settings_Advanced_BackupFolder" xml:space="preserve">
+    <value>Auto-säkerhetskopieringsmapp</value>
+  </data>
+  <data name="Settings_Advanced_BackupFolderWatermark" xml:space="preserve">
+    <value>(ej inställd — klicka Bläddra)</value>
+  </data>
+  <data name="Settings_Advanced_BackupFormat" xml:space="preserve">
+    <value>Auto-säkerhetskopieringsformat</value>
+  </data>
+  <data name="Settings_Advanced_Browse" xml:space="preserve">
+    <value>Bläddra…</value>
+  </data>
+  <data name="Settings_Advanced_Logging_Label" xml:space="preserve">
+    <value>Loggning</value>
+  </data>
+  <data name="Settings_Advanced_Logging_Level_Label" xml:space="preserve">
+    <value>Loggnivå</value>
+  </data>
+  <data name="Settings_Advanced_Logging_Level_Normal" xml:space="preserve">
+    <value>Normal (fel och varningar)</value>
+  </data>
+  <data name="Settings_Advanced_Logging_Level_Verbose" xml:space="preserve">
+    <value>Detaljerad (alla meddelanden)</value>
+  </data>
+  <data name="Settings_Advanced_Logging_OpenLogFile" xml:space="preserve">
+    <value>Öppna loggfil…</value>
+  </data>
+  <data name="Settings_Advanced_Logging_RestartNote" xml:space="preserve">
+    <value>Loggnivån träder i kraft vid nästa start.</value>
+  </data>
+  <data name="Settings_Browse_AuthorFacetLabel" xml:space="preserve">
+    <value>Visningsetikett för författare</value>
+  </data>
+  <data name="Settings_Browse_DisplayName" xml:space="preserve">
+    <value>Visningsnamn (Johan Svensson)</value>
+  </data>
+  <data name="Settings_Browse_SortName" xml:space="preserve">
+    <value>Sorteringsnamn (Svensson, Johan)</value>
+  </data>
+  <data name="Settings_General_Language" xml:space="preserve">
+    <value>Språk</value>
+  </data>
+  <data name="Settings_General_LanguageRestartNote" xml:space="preserve">
+    <value>Språkändringen träder i kraft vid nästa start.</value>
+  </data>
+  <data name="Settings_General_DefaultCollection" xml:space="preserve">
+    <value>Standardsamling</value>
+  </data>
+  <data name="Settings_Import_OverwritePolicy" xml:space="preserve">
+    <value>Skrivningspolicy</value>
+  </data>
+  <data name="Settings_Import_ReaderwareToolPath" xml:space="preserve">
+    <value>Readerware-verktygsmapp</value>
+  </data>
+  <data name="Settings_Import_ReaderwareToolPathWatermark" xml:space="preserve">
+    <value>Sökväg till mappen med HSQLDB- och Java-verktyg</value>
+  </data>
+  <data name="Settings_Import_ReaderwareToolPathHint" xml:space="preserve">
+    <value>Mapp som innehåller HSQLDB-runtime (jre\bin\java.exe och lib\hsqldb.jar) som används för att läsa en aktiv Readerware-databas direkt.</value>
+  </data>
+  <data name="Settings_Lookup_LibrisKB" xml:space="preserve">
+    <value>Libris KB</value>
+  </data>
+  <data name="Settings_Lookup_GoogleBooks" xml:space="preserve">
+    <value>Google Books</value>
+  </data>
+  <data name="Settings_Lookup_OpenLibrary" xml:space="preserve">
+    <value>Open Library</value>
+  </data>
+  <data name="Settings_Lookup_IsbnSearchOrg" xml:space="preserve">
+    <value>IsbnSearch.org</value>
+  </data>
+  <data name="Settings_Lookup_Enabled" xml:space="preserve">
+    <value>Aktiverad</value>
+  </data>
+  <data name="Settings_Tab_Advanced" xml:space="preserve">
+    <value>Avancerat</value>
+  </data>
+  <data name="Settings_Tab_Browse" xml:space="preserve">
+    <value>Bläddra</value>
+  </data>
+  <data name="Settings_Tab_General" xml:space="preserve">
+    <value>Allmänt</value>
+  </data>
+  <data name="Settings_Tab_Import" xml:space="preserve">
+    <value>Importera</value>
+  </data>
+  <data name="Settings_Tab_Lookup" xml:space="preserve">
+    <value>Sökning</value>
+  </data>
+  <data name="Settings_WindowTitle" xml:space="preserve">
+    <value>Inställningar</value>
+  </data>
+  <data name="Statistics_Column_Collection" xml:space="preserve">
+    <value>Samling</value>
+  </data>
+  <data name="Statistics_Column_Count" xml:space="preserve">
+    <value>Antal (%)</value>
+  </data>
+  <data name="Statistics_Column_Format" xml:space="preserve">
+    <value>Format</value>
+  </data>
+  <data name="Statistics_Column_Language" xml:space="preserve">
+    <value>Språk</value>
+  </data>
+  <data name="Statistics_Column_Year" xml:space="preserve">
+    <value>År</value>
+  </data>
+  <data name="Statistics_Label_TotalBooks" xml:space="preserve">
+    <value>Totalt antal böcker</value>
+  </data>
+  <data name="Statistics_RefreshButton" xml:space="preserve">
+    <value>Uppdatera</value>
+  </data>
+  <data name="Statistics_Section_ByCollection" xml:space="preserve">
+    <value>Per samling</value>
+  </data>
+  <data name="Statistics_Section_ByFormat" xml:space="preserve">
+    <value>Per format</value>
+  </data>
+  <data name="Statistics_Section_ByLanguage" xml:space="preserve">
+    <value>Per språk</value>
+  </data>
+  <data name="Statistics_Section_BooksPerYear" xml:space="preserve">
+    <value>Böcker tillagda per år</value>
+  </data>
+  <data name="Statistics_Section_ByYear" xml:space="preserve">
+    <value>Per utgivningsår</value>
+  </data>
+  <data name="Statistics_Section_Summary" xml:space="preserve">
+    <value>Sammanfattning</value>
+  </data>
+  <data name="Statistics_WindowTitle" xml:space="preserve">
+    <value>Statistik</value>
+  </data>
+  <data name="Status_Borrowed" xml:space="preserve">
+    <value>Utlånad</value>
+  </data>
+  <data name="Status_GivenAway" xml:space="preserve">
+    <value>Bortskänkt</value>
+  </data>
+  <data name="Status_OnOrder" xml:space="preserve">
+    <value>Beställd</value>
+  </data>
+  <data name="Status_Owned" xml:space="preserve">
+    <value>Ägd</value>
+  </data>
+  <data name="Status_Sold" xml:space="preserve">
+    <value>Såld</value>
+  </data>
+  <data name="Status_Wishlist" xml:space="preserve">
+    <value>Önskelista</value>
+  </data>
+  <data name="AddBook_Label_Author" xml:space="preserve">
+    <value>Författare</value>
+  </data>
+  <data name="AddBook_Label_Isbn" xml:space="preserve">
+    <value>ISBN</value>
+  </data>
+  <data name="AddBook_Label_Title" xml:space="preserve">
+    <value>Titel *</value>
+  </data>
+  <data name="AddBook_Label_Collection" xml:space="preserve">
+    <value>Samling</value>
+  </data>
+  <data name="AddBook_Label_Year" xml:space="preserve">
+    <value>År</value>
+  </data>
+  <data name="AdvancedSearch_AddCondition" xml:space="preserve">
+    <value>+ Lägg till villkor</value>
+  </data>
+  <data name="AdvancedSearch_ConditionsLabel" xml:space="preserve">
+    <value>av följande villkor:</value>
+  </data>
+  <data name="AdvancedSearch_EditTitle" xml:space="preserve">
+    <value>Redigera sökning</value>
+  </data>
+  <data name="AdvancedSearch_MatchCountFormat" xml:space="preserve">
+    <value>{0} matchande böcker</value>
+  </data>
+  <data name="AdvancedSearch_MatchLabel" xml:space="preserve">
+    <value>Matcha</value>
+  </data>
+  <data name="AdvancedSearch_SearchButton" xml:space="preserve">
+    <value>Sök</value>
+  </data>
+  <data name="AdvancedSearch_TestButton" xml:space="preserve">
+    <value>Testa</value>
+  </data>
+  <data name="BatchQueue_Idle" xml:space="preserve">
+    <value>Ingen batch pågår</value>
+  </data>
+  <data name="BatchQueue_Label_AutoAccepted" xml:space="preserve">
+    <value>Automatiskt accepterade (inga konflikter):</value>
+  </data>
+  <data name="BatchQueue_Label_NotFound" xml:space="preserve">
+    <value>Hittades inte:</value>
+  </data>
+  <data name="BatchQueue_Label_PendingReview" xml:space="preserve">
+    <value>Väntar på granskning:</value>
+  </data>
+  <data name="BatchQueue_Label_Saved" xml:space="preserve">
+    <value>Sparade:</value>
+  </data>
+  <data name="BatchQueue_Label_Skipped" xml:space="preserve">
+    <value>Inga nya data (hoppades över):</value>
+  </data>
+  <data name="BatchQueue_Minimize" xml:space="preserve">
+    <value>Minimera</value>
+  </data>
+  <data name="BatchQueue_Pause" xml:space="preserve">
+    <value>Pausa</value>
+  </data>
+  <data name="BatchQueue_Paused" xml:space="preserve">
+    <value>Pausad — klicka Återuppta för att fortsätta</value>
+  </data>
+  <data name="BatchQueue_Processing" xml:space="preserve">
+    <value>Bearbetar: {0}</value>
+  </data>
+  <data name="BatchQueue_Resume" xml:space="preserve">
+    <value>Återuppta</value>
+  </data>
+  <data name="BulkEdit_ConfirmSummary" xml:space="preserve">
+    <value>Ändra {0} till "{1}" för {2} böcker.</value>
+  </data>
+  <data name="BulkEdit_FieldLabel" xml:space="preserve">
+    <value>Fält att ändra:</value>
+  </data>
+  <data name="BulkEdit_Header" xml:space="preserve">
+    <value>Massredigera {0} böcker</value>
+  </data>
+  <data name="BulkEdit_ValueLabel" xml:space="preserve">
+    <value>Nytt värde:</value>
+  </data>
+  <data name="BulkEditField_Format" xml:space="preserve">
+    <value>Format</value>
+  </data>
+  <data name="BulkEditField_Language" xml:space="preserve">
+    <value>Språk</value>
+  </data>
+  <data name="BulkEditField_Location" xml:space="preserve">
+    <value>Plats</value>
+  </data>
+  <data name="BulkEditField_Owner" xml:space="preserve">
+    <value>Ägare</value>
+  </data>
+  <data name="BulkEditField_Rating" xml:space="preserve">
+    <value>Betyg</value>
+  </data>
+  <data name="BulkEditField_Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="CsvPicker_ClearAll" xml:space="preserve">
+    <value>Rensa allt</value>
+  </data>
+  <data name="CsvPicker_ExportButton" xml:space="preserve">
+    <value>Exportera CSV</value>
+  </data>
+  <data name="CsvPicker_Heading" xml:space="preserve">
+    <value>Välj kolumner att inkludera i exporten:</value>
+  </data>
+  <data name="CsvPicker_SelectAll" xml:space="preserve">
+    <value>Markera alla</value>
+  </data>
+  <data name="CsvPicker_WindowTitle" xml:space="preserve">
+    <value>Välj exportkolumner</value>
+  </data>
+  <data name="LookupWizard_LookingUp" xml:space="preserve">
+    <value>Söker upp…</value>
+  </data>
+  <data name="Merge_Column_Field" xml:space="preserve">
+    <value>Fält</value>
+  </data>
+  <data name="Merge_Cover_Label" xml:space="preserve">
+    <value>Omslag</value>
+  </data>
+  <data name="Person_Column_Apply" xml:space="preserve">
+    <value>Tillämpa</value>
+  </data>
+  <data name="Person_Column_CurrentName" xml:space="preserve">
+    <value>Nuvarande namn</value>
+  </data>
+  <data name="Person_Column_ProposedName" xml:space="preserve">
+    <value>Föreslagnet namn</value>
+  </data>
+  <data name="Person_Column_SortName" xml:space="preserve">
+    <value>Sorteringsnamn</value>
+  </data>
+  <data name="Person_Label_Bio" xml:space="preserve">
+    <value>Biografi:</value>
+  </data>
+  <data name="Person_Label_Birthplace" xml:space="preserve">
+    <value>Födelseort:</value>
+  </data>
+  <data name="Person_Label_Born" xml:space="preserve">
+    <value>Född:</value>
+  </data>
+  <data name="Person_Label_DeathPlace" xml:space="preserve">
+    <value>Dödsort:</value>
+  </data>
+  <data name="Person_Label_Died" xml:space="preserve">
+    <value>Död:</value>
+  </data>
+  <data name="Person_Label_Website" xml:space="preserve">
+    <value>Webbplats:</value>
+  </data>
+  <data name="Person_Merge_Arrow" xml:space="preserve">
+    <value>→</value>
+  </data>
+  <data name="Person_Merge_Heading" xml:space="preserve">
+    <value>Slå samman personer</value>
+  </data>
+  <data name="Person_Section_Bio" xml:space="preserve">
+    <value>Biografiska uppgifter</value>
+  </data>
+  <data name="Person_Bio_SaveButton" xml:space="preserve">
+    <value>Spara biografi</value>
+  </data>
+  <data name="Person_ErrorBioSaveFailed" xml:space="preserve">
+    <value>Bio save failed — see log.</value>
+  </data>
+  <data name="SearchCombinator_And" xml:space="preserve">
+    <value>OCH</value>
+  </data>
+  <data name="SearchCombinator_Or" xml:space="preserve">
+    <value>ELLER</value>
+  </data>
+  <data name="SearchField_Author" xml:space="preserve">
+    <value>Författare</value>
+  </data>
+  <data name="SearchField_Category" xml:space="preserve">
+    <value>Kategori</value>
+  </data>
+  <data name="SearchField_Comments" xml:space="preserve">
+    <value>Kommentarer</value>
+  </data>
+  <data name="SearchField_Format" xml:space="preserve">
+    <value>Format</value>
+  </data>
+  <data name="SearchField_Isbn" xml:space="preserve">
+    <value>ISBN</value>
+  </data>
+  <data name="SearchField_Keywords" xml:space="preserve">
+    <value>Nyckelord</value>
+  </data>
+  <data name="SearchField_Language" xml:space="preserve">
+    <value>Språk</value>
+  </data>
+  <data name="SearchField_Location" xml:space="preserve">
+    <value>Plats</value>
+  </data>
+  <data name="SearchField_Owner" xml:space="preserve">
+    <value>Ägare</value>
+  </data>
+  <data name="SearchField_Publisher" xml:space="preserve">
+    <value>Förlag</value>
+  </data>
+  <data name="SearchField_Rating" xml:space="preserve">
+    <value>Betyg</value>
+  </data>
+  <data name="SearchField_Series" xml:space="preserve">
+    <value>Serie</value>
+  </data>
+  <data name="SearchField_Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="SearchField_Title" xml:space="preserve">
+    <value>Titel</value>
+  </data>
+  <data name="SearchField_Year" xml:space="preserve">
+    <value>År</value>
+  </data>
+  <data name="SearchOperator_NotContains" xml:space="preserve">
+    <value>Innehåller inte</value>
+  </data>
+  <data name="SearchOperator_NotEquals" xml:space="preserve">
+    <value>Är inte lika med</value>
+  </data>
+  <data name="SearchOperator_Contains" xml:space="preserve">
+    <value>Innehåller</value>
+  </data>
+  <data name="SearchOperator_EndsWith" xml:space="preserve">
+    <value>Slutar med</value>
+  </data>
+  <data name="SearchOperator_Equals" xml:space="preserve">
+    <value>Är lika med</value>
+  </data>
+  <data name="SearchOperator_IsEmpty" xml:space="preserve">
+    <value>Är tom</value>
+  </data>
+  <data name="SearchOperator_IsNotEmpty" xml:space="preserve">
+    <value>Är inte tom</value>
+  </data>
+  <data name="SearchOperator_StartsWith" xml:space="preserve">
+    <value>Börjar med</value>
+  </data>
+  <data name="ContextMenu_Edit" xml:space="preserve">
+    <value>Redigera</value>
+  </data>
+  <data name="ContextMenu_OpenInWindow" xml:space="preserve">
+    <value>Öppna i fönster</value>
+  </data>
+  <data name="ContextMenu_Duplicate" xml:space="preserve">
+    <value>Duplicera</value>
+  </data>
+  <data name="DuplicateBook_TitlePrefix" xml:space="preserve">
+    <value>Kopia: </value>
+  </data>
+  <data name="ContextMenu_Delete" xml:space="preserve">
+    <value>Ta bort</value>
+  </data>
+  <data name="ContextMenu_BulkEdit" xml:space="preserve">
+    <value>Massredigering</value>
+  </data>
+  <data name="ContextMenu_MoveToCollection" xml:space="preserve">
+    <value>Flytta till samling</value>
+  </data>
+  <data name="ContextMenu_CopyIsbn" xml:space="preserve">
+    <value>Kopiera ISBN</value>
+  </data>
+  <data name="ContextMenu_CopyTitle" xml:space="preserve">
+    <value>Kopiera titel</value>
+  </data>
+  <data name="MainWindow_Toolbar_NewBook" xml:space="preserve">
+    <value>Ny bok</value>
+  </data>
+  <data name="Menu_Help" xml:space="preserve">
+    <value>_Hjälp</value>
+  </data>
+  <data name="Menu_Help_KeyboardShortcuts" xml:space="preserve">
+    <value>_Tangentbordsgenvägar</value>
+  </data>
+  <data name="Menu_Help_FieldGlossary" xml:space="preserve">
+    <value>_Fältlexikon</value>
+  </data>
+  <data name="Menu_Help_ImportGuide" xml:space="preserve">
+    <value>_Importguide</value>
+  </data>
+  <data name="Menu_Help_DataSources" xml:space="preserve">
+    <value>_Om datakällor</value>
+  </data>
+  <data name="Help_WindowTitle" xml:space="preserve">
+    <value>Hjälp</value>
+  </data>
+  <data name="Help_Tab_KeyboardShortcuts" xml:space="preserve">
+    <value>Tangentbordsgenvägar</value>
+  </data>
+  <data name="Help_Tab_FieldGlossary" xml:space="preserve">
+    <value>Fältlexikon</value>
+  </data>
+  <data name="Help_Tab_ImportGuide" xml:space="preserve">
+    <value>Importguide</value>
+  </data>
+  <data name="Help_Tab_DataSources" xml:space="preserve">
+    <value>Om datakällor</value>
+  </data>
+  <data name="Menu_AboutBookDB" xml:space="preserve">
+    <value>_Om BookDB…</value>
+  </data>
+  <data name="About_Title" xml:space="preserve">
+    <value>Om BookDB</value>
+  </data>
+  <data name="About_Copyright" xml:space="preserve">
+    <value>© 2026 Ulf Axelsson</value>
+  </data>
+  <data name="About_AppName" xml:space="preserve">
+    <value>BookDB</value>
+  </data>
+  <data name="Splash_Status_Initializing" xml:space="preserve">
+    <value>Startar…</value>
+  </data>
+  <data name="Splash_Status_ApplyingMigrations" xml:space="preserve">
+    <value>Uppdaterar databasen…</value>
+  </data>
+  <data name="Splash_Status_ApplyingMigrationsCount" xml:space="preserve">
+    <value>Uppdaterar databasen… ({0} av {1})</value>
+  </data>
+  <data name="Splash_Status_LoadingLibrary" xml:space="preserve">
+    <value>Läser in ditt bibliotek…</value>
+  </data>
+  <data name="Splash_Status_RestoringSession" xml:space="preserve">
+    <value>Återställer sessionen…</value>
+  </data>
+  <data name="Splash_Status_Finishing" xml:space="preserve">
+    <value>Nästan klar…</value>
+  </data>
+  <data name="AppDialog_Info_Title" xml:space="preserve">
+    <value>BookDB</value>
+  </data>
+  <data name="AppDialog_Yes_Button" xml:space="preserve">
+    <value>Ja</value>
+  </data>
+  <data name="AppDialog_No_Button" xml:space="preserve">
+    <value>Nej</value>
+  </data>
+  <data name="AppDialog_BackupConflict_Title" xml:space="preserve">
+    <value>Filen finns redan</value>
+  </data>
+  <data name="AppDialog_BackupConflict_Overwrite" xml:space="preserve">
+    <value>Skriv över</value>
+  </data>
+  <data name="AppDialog_BackupConflict_SaveAs" xml:space="preserve">
+    <value>Spara som {0}</value>
+  </data>
+  <data name="AppDialog_BackupConflict_Body" xml:space="preserve">
+    <value>{0} finns redan i säkerhetskopieringsmappen.</value>
+  </data>
+  <data name="AppDialog_Progress_Title" xml:space="preserve">
+    <value>BookDB</value>
+  </data>
+  <data name="AppDialog_Progress_PleaseWait" xml:space="preserve">
+    <value>Vänta...</value>
+  </data>
+  <data name="DuplicateIsbn_Title" xml:space="preserve">
+    <value>Dubblerat ISBN</value>
+  </data>
+  <data name="DuplicateIsbn_UpdateExisting" xml:space="preserve">
+    <value>Uppdatera befintlig</value>
+  </data>
+  <data name="DuplicateIsbn_AddAsNew" xml:space="preserve">
+    <value>Lägg till som ny</value>
+  </data>
+  <data name="DuplicateIsbn_Body" xml:space="preserve">
+    <value>En bok med ISBN {0} finns redan ({1}). Uppdatera befintlig bok eller lägga till som ny?</value>
+  </data>
+  <data name="Delete_Dialog_Title" xml:space="preserve">
+    <value>Bekräfta borttagning</value>
+  </data>
+  <data name="Recatalog_NoIsbn_Watermark" xml:space="preserve">
+    <value>Ange ISBN...</value>
+  </data>
+  <data name="Recatalog_NoIsbn_LookUp" xml:space="preserve">
+    <value>Slå upp</value>
+  </data>
+  <data name="StatusBar_BookCount_All" xml:space="preserve">
+    <value>{0:N0} böcker</value>
+  </data>
+  <data name="StatusBar_BookCount_Filtered" xml:space="preserve">
+    <value>{0:N0} böcker (av {1:N0})</value>
+  </data>
+  <data name="RecatalogAll_Confirm" xml:space="preserve">
+    <value>Omkatalogsera alla {0} böcker? Det kan ta ett tag.</value>
+  </data>
+  <data name="Backup_Saved" xml:space="preserve">
+    <value>Säkerhetskopia sparad till {0}</value>
+  </data>
+  <data name="Backup_Failed" xml:space="preserve">
+    <value>Säkerhetskopiering misslyckades: {0}. Kontrollera målmappen och försök igen.</value>
+  </data>
+  <data name="Restore_Confirm_Title" xml:space="preserve">
+    <value>Spara säkerhetskopia innan återställning?</value>
+  </data>
+  <data name="Restore_Confirm_Body" xml:space="preserve">
+    <value>Ditt nuvarande bibliotek kommer att ersättas. Välj en plats för att spara en säkerhetskopia först.</value>
+  </data>
+  <data name="Restore_Replace_Title" xml:space="preserve">
+    <value>Ersätt nuvarande bibliotek?</value>
+  </data>
+  <data name="Restore_Replace_Body" xml:space="preserve">
+    <value>Det här skriver över ditt nuvarande bibliotek med den valda säkerhetskopian. Det går inte att ångra.</value>
+  </data>
+  <data name="Restore_Complete_Title" xml:space="preserve">
+    <value>Återställning klar</value>
+  </data>
+  <data name="Restore_Complete_Body" xml:space="preserve">
+    <value>Programmet stängs nu. Öppna det igen för att använda det återställda biblioteket.</value>
+  </data>
+  <data name="Restore_Failed" xml:space="preserve">
+    <value>Återställningen misslyckades: {0}. Ditt ursprungliga bibliotek ändrades inte.</value>
+  </data>
+  <data name="PrintList_Failed" xml:space="preserve">
+    <value>Det gick inte att skapa PDF-rapport: {0}</value>
+  </data>
+  <data name="BookList_AdvancedSearch_ActiveStatus" xml:space="preserve">
+    <value>Avancerad sökning aktiv</value>
+  </data>
+  <data name="CheckOut_Title" xml:space="preserve">
+    <value>Låna ut bok</value>
+  </data>
+  <data name="CheckOut_Label_Borrower" xml:space="preserve">
+    <value>Låntagare</value>
+  </data>
+  <data name="CheckOut_Label_DueDate" xml:space="preserve">
+    <value>Återlämningsdatum</value>
+  </data>
+  <data name="CheckOut_Borrower_Watermark" xml:space="preserve">
+    <value>Sök låntagare...</value>
+  </data>
+  <data name="CheckOut_NewBorrower_Format" xml:space="preserve">
+    <value>Lägg till ny låntagare: {0}</value>
+  </data>
+  <data name="CheckOut_Confirm" xml:space="preserve">
+    <value>Låna ut</value>
+  </data>
+  <data name="ManageBorrowers_Title" xml:space="preserve">
+    <value>Hantera låntagare</value>
+  </data>
+  <data name="ManageBorrowers_Filter_Watermark" xml:space="preserve">
+    <value>Filtrera låntagare...</value>
+  </data>
+  <data name="ManageBorrowers_Add" xml:space="preserve">
+    <value>Lägg till låntagare</value>
+  </data>
+  <data name="ManageBorrowers_Section_Name" xml:space="preserve">
+    <value>Namn</value>
+  </data>
+  <data name="ManageBorrowers_Section_Contact" xml:space="preserve">
+    <value>Kontakt</value>
+  </data>
+  <data name="ManageBorrowers_Section_Address" xml:space="preserve">
+    <value>Adress</value>
+  </data>
+  <data name="ManageBorrowers_Label_FirstName" xml:space="preserve">
+    <value>Förnamn</value>
+  </data>
+  <data name="ManageBorrowers_Label_LastName" xml:space="preserve">
+    <value>Efternamn</value>
+  </data>
+  <data name="ManageBorrowers_Label_Organization" xml:space="preserve">
+    <value>Organisation</value>
+  </data>
+  <data name="ManageBorrowers_Label_Phone" xml:space="preserve">
+    <value>Telefon</value>
+  </data>
+  <data name="ManageBorrowers_Label_AltPhone" xml:space="preserve">
+    <value>Alt. telefon</value>
+  </data>
+  <data name="ManageBorrowers_Label_Email" xml:space="preserve">
+    <value>E-post</value>
+  </data>
+  <data name="ManageBorrowers_Label_Fax" xml:space="preserve">
+    <value>Fax</value>
+  </data>
+  <data name="ManageBorrowers_Label_Address1" xml:space="preserve">
+    <value>Adress 1</value>
+  </data>
+  <data name="ManageBorrowers_Label_Address2" xml:space="preserve">
+    <value>Adress 2</value>
+  </data>
+  <data name="ManageBorrowers_Label_City" xml:space="preserve">
+    <value>Stad</value>
+  </data>
+  <data name="ManageBorrowers_Label_State" xml:space="preserve">
+    <value>Stat / Län</value>
+  </data>
+  <data name="ManageBorrowers_Label_PostalCode" xml:space="preserve">
+    <value>Postnummer</value>
+  </data>
+  <data name="ManageBorrowers_Label_Country" xml:space="preserve">
+    <value>Land</value>
+  </data>
+  <data name="ManageBorrowers_Label_Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="ManageBorrowers_Delete" xml:space="preserve">
+    <value>Ta bort låntagare</value>
+  </data>
+  <data name="ManageBorrowers_DeleteBlocked" xml:space="preserve">
+    <value>Kan inte ta bort: låntagaren har lånehistorik.</value>
+  </data>
+  <data name="ManageBorrowers_SelectPrompt" xml:space="preserve">
+    <value>Välj en låntagare att redigera</value>
+  </data>
+  <data name="Tab_LoanHistory" xml:space="preserve">
+    <value>Lånehistorik</value>
+  </data>
+  <data name="LoanHistory_EmptyState" xml:space="preserve">
+    <value>Ingen lånehistorik för denna bok.</value>
+  </data>
+  <data name="LoanHistory_Column_Borrower" xml:space="preserve">
+    <value>Låntagare</value>
+  </data>
+  <data name="LoanHistory_Column_Loaned" xml:space="preserve">
+    <value>Utlånad</value>
+  </data>
+  <data name="LoanHistory_Column_Due" xml:space="preserve">
+    <value>Förfallodag</value>
+  </data>
+  <data name="LoanHistory_Column_Returned" xml:space="preserve">
+    <value>Återlämnad</value>
+  </data>
+  <data name="LoanHistory_Column_Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="LoanHistory_Status_Active" xml:space="preserve">
+    <value>Aktiv</value>
+  </data>
+  <data name="LoanHistory_Status_Overdue" xml:space="preserve">
+    <value>Försenad</value>
+  </data>
+  <data name="LoanHistory_Status_Returned" xml:space="preserve">
+    <value>Återlämnad</value>
+  </data>
+  <data name="BookDetail_Label_Loan" xml:space="preserve">
+    <value>Lån</value>
+  </data>
+  <data name="BookDetail_LoanStatus_Format" xml:space="preserve">
+    <value>Utlånad till {0}</value>
+  </data>
+  <data name="BookDetail_OverdueStatus_Format" xml:space="preserve">
+    <value>Försenad – utlånad till {0}</value>
+  </data>
+  <data name="Filter_LoanedOut" xml:space="preserve">
+    <value>Utlånad</value>
+  </data>
+  <data name="BookList_Column_LoanedTo" xml:space="preserve">
+    <value>Utlånad till</value>
+  </data>
+  <data name="ContextMenu_CheckOut" xml:space="preserve">
+    <value>Låna ut...</value>
+  </data>
+  <data name="ContextMenu_CheckIn" xml:space="preserve">
+    <value>Återlämna</value>
+  </data>
+  <data name="Menu_ManageBorrowers" xml:space="preserve">
+    <value>Hantera låntagare...</value>
+  </data>
+  <data name="Menu_View_LoanedToColumn" xml:space="preserve">
+    <value>Visa kolumn _Utlånad till</value>
+  </data>
+  <data name="Common_Save" xml:space="preserve">
+    <value>Spara</value>
+  </data>
+  <data name="Common_Cancel" xml:space="preserve">
+    <value>Avbryt</value>
+  </data>
+  <data name="Common_Discard" xml:space="preserve">
+    <value>Förkasta</value>
+  </data>
+  <data name="Common_Close" xml:space="preserve">
+    <value>Stäng</value>
+  </data>
+  <data name="Common_Apply" xml:space="preserve">
+    <value>Tillämpa</value>
+  </data>
+  <data name="Common_OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="Export_Header" xml:space="preserve">
+    <value>Exporterar böcker…</value>
+  </data>
+  <data name="Export_Status_WritingBooks" xml:space="preserve">
+    <value>Skriver {0:N0} böcker…</value>
+  </data>
+  <data name="Export_Status_WritingRow" xml:space="preserve">
+    <value>Skriver rad {0:N0} av {1:N0}…</value>
+  </data>
+  <data name="FilePicker_SelectCoverImage" xml:space="preserve">
+    <value>Välj omslagsbild</value>
+  </data>
+  <data name="FilePicker_SelectReaderwareBackup" xml:space="preserve">
+    <value>Välj Readerware-säkerhetskopia</value>
+  </data>
+  <data name="FilePicker_SelectReaderwareFolder" xml:space="preserve">
+    <value>Välj Readerware-säkerhetskopieringsmapp</value>
+  </data>
+  <data name="FilePicker_OpenIsbnList" xml:space="preserve">
+    <value>Öppna ISBN-lista</value>
+  </data>
+  <data name="FilePicker_ChooseBackupDestination" xml:space="preserve">
+    <value>Välj mål för säkerhetskopia</value>
+  </data>
+  <data name="FilePicker_SelectBackupFile" xml:space="preserve">
+    <value>Välj säkerhetskopia</value>
+  </data>
+  <data name="FilePicker_ChooseSafetyBackupLocation" xml:space="preserve">
+    <value>Välj plats för säkerhetskopia</value>
+  </data>
+  <data name="FilePicker_ExportBooks" xml:space="preserve">
+    <value>Exportera böcker</value>
+  </data>
+  <data name="FilePicker_SavePdfReport" xml:space="preserve">
+    <value>Spara PDF-rapport</value>
+  </data>
+  <data name="FilePicker_ChooseAutoBackupDestination" xml:space="preserve">
+    <value>Välj mål för automatisk säkerhetskopia</value>
+  </data>
+  <data name="FilePicker_ChooseReaderwareToolFolder" xml:space="preserve">
+    <value>Välj Readerware-verktygsmappen</value>
+  </data>
+  <data name="ManageLookups_Tab_Collection" xml:space="preserve">
+    <value>Samlingar</value>
+  </data>
+  <data name="ManageLookups_MoveUp" xml:space="preserve">
+    <value>Flytta upp</value>
+  </data>
+  <data name="ManageLookups_MoveDown" xml:space="preserve">
+    <value>Flytta ner</value>
+  </data>
+  <data name="ReaderwareImport_WindowTitle" xml:space="preserve">
+    <value>Importera från Readerware-databas</value>
+  </data>
+  <data name="ReaderwareImport_Intro" xml:space="preserve">
+    <value>Konvertera en aktiv Readerware-databasmapp (.rw4-mappen) till en säkerhetskopia som BookDB kan importera. Din ursprungliga databas kopieras först och ändras aldrig.</value>
+  </data>
+  <data name="ReaderwareImport_DatabaseLabel" xml:space="preserve">
+    <value>Readerware-databasmapp</value>
+  </data>
+  <data name="ReaderwareImport_DatabaseWatermark" xml:space="preserve">
+    <value>Välj .rw4-databasmappen</value>
+  </data>
+  <data name="ReaderwareImport_ToolPathLabel" xml:space="preserve">
+    <value>Konverteringsverktyg</value>
+  </data>
+  <data name="ReaderwareImport_ToolPathNote" xml:space="preserve">
+    <value>Ange mappen med HSQLDB- och Java-verktyg under Inställningar > Import.</value>
+  </data>
+  <data name="ReaderwareImport_Convert" xml:space="preserve">
+    <value>Konvertera</value>
+  </data>
+  <data name="ReaderwareImport_Continue" xml:space="preserve">
+    <value>Öppna importguiden</value>
+  </data>
+  <data name="ReaderwareImport_ProgressHeader" xml:space="preserve">
+    <value>Förlopp</value>
+  </data>
+  <data name="ReaderwareImport_Success" xml:space="preserve">
+    <value>Konvertering klar: {0} tabeller exporterade. Fortsätt för att öppna importguiden.</value>
+  </data>
+  <data name="ReaderwareImport_Error_ToolPathInvalid" xml:space="preserve">
+    <value>Konverteringsverktyget hittades inte. Kontrollera verktygsmappen under Inställningar > Import (den måste innehålla jre\bin\java.exe och lib\hsqldb.jar).</value>
+  </data>
+  <data name="ReaderwareImport_Error_DatabaseInvalid" xml:space="preserve">
+    <value>Den här mappen är inte en giltig Readerware-databas. Välj .rw4-mappen som innehåller databasfilerna.</value>
+  </data>
+  <data name="ReaderwareImport_Error_MainTableMissing" xml:space="preserve">
+    <value>Databasen saknar Readerwares boktabell och kan därför inte importeras.</value>
+  </data>
+  <data name="ReaderwareImport_Error_ProcessFailed" xml:space="preserve">
+    <value>Konverteringen misslyckades. Se förloppsloggen för detaljer.</value>
+  </data>
+  <data name="FilePicker_ChooseReaderwareDatabase" xml:space="preserve">
+    <value>Välj Readerware-databasmappen</value>
+  </data>
+  <data name="Import_Step1_NewCollectionWatermark" xml:space="preserve">
+    <value>Namn på ny samling</value>
+  </data>
+  <data name="Import_Step1_CreateCollection" xml:space="preserve">
+    <value>Skapa</value>
+  </data>
+  <data name="Import_Step1_CollectionCreateFailed" xml:space="preserve">
+    <value>Det gick inte att skapa samlingen. Namnet kanske redan används.</value>
+  </data>
+  <data name="Import_Duplicate_Overwrite" xml:space="preserve">
+    <value>Skriv över</value>
+  </data>
+  <data name="Import_Duplicate_OverwriteAll" xml:space="preserve">
+    <value>Skriv över alla</value>
+  </data>
+  <data name="Import_Duplicate_Skip" xml:space="preserve">
+    <value>Hoppa över</value>
+  </data>
+  <data name="Import_Duplicate_SkipAll" xml:space="preserve">
+    <value>Hoppa över alla</value>
+  </data>
+  <data name="Import_Duplicate_CancelImport" xml:space="preserve">
+    <value>Avbryt import</value>
+  </data>
+</root>

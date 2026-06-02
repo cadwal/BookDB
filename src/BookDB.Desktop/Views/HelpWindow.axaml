@@ -1,0 +1,43 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:BookDB.Desktop.ViewModels"
+        xmlns:res="using:BookDB.Desktop.Localization"
+        xmlns:md="https://github.com/whistyun/Markdown.Avalonia.Tight"
+        x:Class="BookDB.Desktop.Views.HelpWindow"
+        x:DataType="vm:HelpWindowViewModel"
+        Title="{x:Static res:Resources.Help_WindowTitle}"
+        Width="860" MinWidth="640"
+        Height="640" MinHeight="480"
+        WindowStartupLocation="CenterOwner"
+        ShowInTaskbar="False"
+        CanResize="True">
+
+    <TabControl SelectedIndex="{Binding SelectedTabIndex}">
+
+        <TabItem Header="{x:Static res:Resources.Help_Tab_KeyboardShortcuts}">
+            <Border Padding="16">
+                <md:MarkdownScrollViewer Markdown="{Binding ShortcutsContent}" />
+            </Border>
+        </TabItem>
+
+        <TabItem Header="{x:Static res:Resources.Help_Tab_FieldGlossary}">
+            <Border Padding="16">
+                <md:MarkdownScrollViewer Markdown="{Binding GlossaryContent}" />
+            </Border>
+        </TabItem>
+
+        <TabItem Header="{x:Static res:Resources.Help_Tab_ImportGuide}">
+            <Border Padding="16">
+                <md:MarkdownScrollViewer Markdown="{Binding ImportGuideContent}" />
+            </Border>
+        </TabItem>
+
+        <TabItem Header="{x:Static res:Resources.Help_Tab_DataSources}">
+            <Border Padding="16">
+                <md:MarkdownScrollViewer Markdown="{Binding DataSourcesContent}" />
+            </Border>
+        </TabItem>
+
+    </TabControl>
+
+</Window>

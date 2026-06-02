@@ -1,0 +1,253 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:BookDB.Desktop.ViewModels"
+        xmlns:res="using:BookDB.Desktop.Localization"
+        xmlns:conv="using:BookDB.Desktop.Converters"
+        x:Class="BookDB.Desktop.Views.PrintDialog"
+        x:DataType="vm:PrintDialogViewModel"
+        Title="{x:Static res:Resources.Print_WindowTitle}"
+        Width="560" MinHeight="500" MaxHeight="640"
+        WindowStartupLocation="CenterOwner"
+        ShowInTaskbar="False"
+        CanResize="True">
+
+    <DockPanel Margin="24">
+
+        <!-- Zone 7: Action bar (docked bottom first so it reserves space before fill) -->
+        <StackPanel DockPanel.Dock="Bottom" Margin="0,16,0,0">
+            <Separator/>
+            <TextBlock Text="{Binding ErrorMessage}"
+                       FontSize="12"
+                       Foreground="{StaticResource BrushDestructive}"
+                       IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                       Margin="0,8,0,0"/>
+            <StackPanel Orientation="Horizontal"
+                        HorizontalAlignment="Right"
+                        Spacing="8"
+                        Margin="0,12,0,0">
+                <Button Content="{x:Static res:Resources.Print_SaveAsPdfButton}"   Command="{Binding SaveAsPdfCommand}"/>
+                <Button Content="{x:Static res:Resources.Print_PreviewButton}" Command="{Binding PreviewCommand}"
+                        Classes="accent"
+                        IsDefault="{Binding IsPreviewDefault}"/>
+                <Button Content="{x:Static res:Resources.Common_Cancel}"          Command="{Binding CancelCommand}"/>
+            </StackPanel>
+        </StackPanel>
+
+        <!-- Zone 1: Heading -->
+        <TextBlock DockPanel.Dock="Top"
+                   Text="{x:Static res:Resources.Print_Heading}"
+                   FontSize="14"
+                   FontWeight="SemiBold"
+                   Margin="0,0,0,12"/>
+
+        <!-- Zone 2: Scope summary -->
+        <TextBlock DockPanel.Dock="Top"
+                   Text="{Binding ScopeSummaryText}"
+                   FontSize="13"
+                   Foreground="{StaticResource BrushTextSecondary}"
+                   Margin="0,0,0,12"/>
+
+        <!-- Zone 3a: Preset selector row (normal state) -->
+        <Grid DockPanel.Dock="Top"
+              ColumnDefinitions="Auto,*,Auto,Auto,Auto"
+              Margin="0,0,0,12"
+              IsVisible="{Binding ShowPresetRow}">
+            <TextBlock Grid.Column="0"
+                       Text="{x:Static res:Resources.Print_PresetLabel}"
+                       FontSize="13"
+                       VerticalAlignment="Center"
+                       Margin="0,0,8,0"/>
+            <ComboBox Grid.Column="1"
+                      ItemsSource="{Binding Presets}"
+                      SelectedItem="{Binding SelectedPreset}"
+                      MinWidth="160"
+                      FontSize="13">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Name,
+                            Converter={x:Static conv:StandardPresetNameConverter.Instance}}"/>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+            <Button Grid.Column="2"
+                    Content="{x:Static res:Resources.Print_NewPreset}"
+                    Command="{Binding NewPresetCommand}"
+                    Margin="4,0,0,0"/>
+            <Button Grid.Column="3"
+                    Content="{x:Static res:Resources.Print_RenamePreset}"
+                    Command="{Binding RenamePresetCommand}"
+                    IsEnabled="{Binding CanModifySelectedPreset}"
+                    Margin="4,0,0,0"/>
+            <Button Grid.Column="4"
+                    Content="{x:Static res:Resources.Print_DeletePreset}"
+                    Command="{Binding DeletePresetCommand}"
+                    IsEnabled="{Binding CanDeleteSelectedPreset}"
+                    Margin="4,0,0,0"/>
+        </Grid>
+
+        <!-- Zone 3b: Inline preset naming row -->
+        <StackPanel DockPanel.Dock="Top"
+                    Margin="0,0,0,12"
+                    IsVisible="{Binding ShowNamingRow}">
+            <Grid ColumnDefinitions="Auto,*,Auto,Auto">
+                <TextBlock Grid.Column="0"
+                           Text="{x:Static res:Resources.Print_PresetNameLabel}"
+                           FontSize="13"
+                           VerticalAlignment="Center"
+                           Margin="0,0,8,0"/>
+                <TextBox Grid.Column="1"
+                         Text="{Binding PresetNameEditText}"
+                         FontSize="13"/>
+                <Button Grid.Column="2"
+                        Content="{x:Static res:Resources.Common_Save}"
+                        Command="{Binding ConfirmPresetNameCommand}"
+                        Classes="accent"
+                        Margin="4,0,0,0"/>
+                <Button Grid.Column="3"
+                        Content="{x:Static res:Resources.Common_Cancel}"
+                        Command="{Binding CancelPresetNameCommand}"
+                        Margin="4,0,0,0"/>
+            </Grid>
+            <TextBlock Text="{Binding PresetNameError}"
+                       FontSize="12"
+                       Foreground="{StaticResource BrushDestructive}"
+                       IsVisible="{Binding PresetNameError, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                       Margin="0,4,0,0"/>
+        </StackPanel>
+
+        <!-- Zone 3c: Delete confirmation row -->
+        <Grid DockPanel.Dock="Top"
+              ColumnDefinitions="*,Auto,Auto"
+              Margin="0,0,0,12"
+              IsVisible="{Binding ShowDeleteConfirmRow}">
+            <TextBlock Grid.Column="0"
+                       FontSize="13"
+                       Foreground="{StaticResource BrushTextPrimary}"
+                       VerticalAlignment="Center">
+                <TextBlock.Text>
+                    <MultiBinding StringFormat="{x:Static res:Resources.Print_DeletePresetConfirm}">
+                        <Binding Path="SelectedPreset.Name"/>
+                    </MultiBinding>
+                </TextBlock.Text>
+            </TextBlock>
+            <Button Grid.Column="1"
+                    Content="{x:Static res:Resources.Print_ConfirmDeletePreset}"
+                    Command="{Binding ConfirmDeleteCommand}"
+                    Foreground="{StaticResource BrushDestructive}"
+                    Margin="8,0,4,0"/>
+            <Button Grid.Column="2"
+                    Content="{x:Static res:Resources.Common_Cancel}"
+                    Command="{Binding CancelDeleteCommand}"/>
+        </Grid>
+
+        <!-- Zone 4: Preset configuration form -->
+        <Grid DockPanel.Dock="Top"
+              RowDefinitions="Auto,Auto,Auto,Auto,Auto"
+              ColumnDefinitions="Auto,*"
+              Margin="0,0,0,8">
+
+            <!-- Row 0: Orientation -->
+            <TextBlock Grid.Row="0" Grid.Column="0"
+                       Text="{x:Static res:Resources.Print_OrientationLabel}"
+                       FontSize="13"
+                       VerticalAlignment="Center"
+                       Margin="0,0,12,8"/>
+            <StackPanel Grid.Row="0" Grid.Column="1"
+                        Orientation="Horizontal"
+                        Spacing="16"
+                        Margin="0,0,0,8">
+                <RadioButton Content="{x:Static res:Resources.Print_OrientationPortrait}"  IsChecked="{Binding IsPortrait}"/>
+                <RadioButton Content="{x:Static res:Resources.Print_OrientationLandscape}" IsChecked="{Binding IsLandscape}"/>
+            </StackPanel>
+
+            <!-- Row 1: Font size -->
+            <TextBlock Grid.Row="1" Grid.Column="0"
+                       Text="{x:Static res:Resources.Print_FontSizeLabel}"
+                       FontSize="13"
+                       VerticalAlignment="Center"
+                       Margin="0,0,12,8"/>
+            <NumericUpDown Grid.Row="1" Grid.Column="1"
+                           Value="{Binding FontSize}"
+                           Minimum="7" Maximum="14" Increment="1"
+                           FontSize="13" MinWidth="80"
+                           Margin="0,0,0,8"/>
+
+            <!-- Row 2: Header text -->
+            <TextBlock Grid.Row="2" Grid.Column="0"
+                       Text="{x:Static res:Resources.Print_HeaderLabel}"
+                       FontSize="13"
+                       VerticalAlignment="Center"
+                       Margin="0,0,12,8"/>
+            <TextBox Grid.Row="2" Grid.Column="1"
+                     Text="{Binding HeaderText}"
+                     FontSize="13"
+                     MaxLength="120"
+                     Margin="0,0,0,8"/>
+
+            <!-- Row 3: Footer text -->
+            <TextBlock Grid.Row="3" Grid.Column="0"
+                       Text="{x:Static res:Resources.Print_FooterLabel}"
+                       FontSize="13"
+                       VerticalAlignment="Center"
+                       Margin="0,0,12,8"/>
+            <TextBox Grid.Row="3" Grid.Column="1"
+                     Text="{Binding FooterText}"
+                     FontSize="13"
+                     MaxLength="120"
+                     Watermark="{x:Static res:Resources.Print_FooterWatermark}"
+                     Margin="0,0,0,8"/>
+
+            <!-- Row 4: Margins -->
+            <TextBlock Grid.Row="4" Grid.Column="0"
+                       Text="{x:Static res:Resources.Print_MarginsLabel}"
+                       FontSize="13"
+                       VerticalAlignment="Center"
+                       Margin="0,0,12,0"/>
+            <StackPanel Grid.Row="4" Grid.Column="1"
+                        Orientation="Horizontal"
+                        Spacing="8">
+                <TextBlock Text="{x:Static res:Resources.Print_MarginH}"
+                           FontSize="13"
+                           VerticalAlignment="Center"/>
+                <NumericUpDown Value="{Binding MarginHorizontalMm}"
+                               Minimum="5" Maximum="40" Increment="1"
+                               MinWidth="64" FontSize="13"/>
+                <TextBlock Text="{x:Static res:Resources.Print_MarginV}"
+                           FontSize="13"
+                           VerticalAlignment="Center"/>
+                <NumericUpDown Value="{Binding MarginVerticalMm}"
+                               Minimum="5" Maximum="40" Increment="1"
+                               MinWidth="64" FontSize="13"/>
+            </StackPanel>
+
+        </Grid>
+
+        <!-- Zone 5: Column selector heading -->
+        <StackPanel DockPanel.Dock="Top"
+                    Orientation="Horizontal"
+                    Spacing="8"
+                    Margin="0,0,0,4">
+            <TextBlock Text="{x:Static res:Resources.Print_ColumnsHeading}"
+                       FontSize="13"
+                       FontWeight="SemiBold"
+                       VerticalAlignment="Center"/>
+            <Button Content="{x:Static res:Resources.Print_SelectAll}" Command="{Binding SelectAllColumnsCommand}"/>
+            <Button Content="{x:Static res:Resources.Print_ClearAll}"  Command="{Binding ClearAllColumnsCommand}"/>
+        </StackPanel>
+
+        <!-- Zone 6: Column list (fills remaining space) -->
+        <ScrollViewer>
+            <ItemsControl ItemsSource="{Binding Columns}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="vm:PrintColumnItem">
+                        <CheckBox Content="{Binding Label}"
+                                  IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                  Margin="0,2"/>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+
+    </DockPanel>
+
+</Window>

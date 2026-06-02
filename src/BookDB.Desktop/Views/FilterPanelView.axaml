@@ -1,0 +1,156 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:BookDB.Desktop.ViewModels"
+             xmlns:models="using:BookDB.Models.Entities"
+             xmlns:res="using:BookDB.Desktop.Localization"
+             x:Class="BookDB.Desktop.Views.FilterPanelView"
+             x:DataType="vm:FilterPanelViewModel"
+             Background="{StaticResource BrushBackgroundAlt}">
+    <ScrollViewer>
+        <StackPanel>
+            <!-- Clear Filters button at top -->
+            <Button Content="{x:Static res:Resources.FilterPanel_ClearFilters}"
+                    Command="{Binding ClearFiltersCommand}"
+                    HorizontalAlignment="Stretch"
+                    Margin="8,4" />
+
+            <!-- 10 facet groups -->
+            <ItemsControl ItemsSource="{Binding FacetGroups}" HorizontalAlignment="Stretch">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="vm:FacetGroupViewModel">
+                        <Expander HorizontalAlignment="Stretch"
+                                  IsExpanded="{Binding IsExpanded}"
+                                  Padding="8,6"
+                                  BorderBrush="{StaticResource BrushBorderInput}"
+                                  BorderThickness="0,1,0,0">
+                            <Expander.Header>
+                                <DockPanel HorizontalAlignment="Stretch" LastChildFill="True">
+                                    <TextBlock DockPanel.Dock="Right"
+                                               Text="{Binding TotalCount, StringFormat='({0})'}"
+                                               Classes="facetCount"
+                                               VerticalAlignment="Center"
+                                               Margin="4,0,0,0" />
+                                    <TextBlock Text="{Binding Name}"
+                                               Classes="facetHeader"
+                                               VerticalAlignment="Center" />
+                                </DockPanel>
+                            </Expander.Header>
+                            <Panel>
+                                <!-- Flat layout for non-grouped facets (Format, Language, etc.) -->
+                                <ItemsControl ItemsSource="{Binding Values}"
+                                              IsVisible="{Binding !IsGrouped}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="vm:FacetValueViewModel">
+                                            <CheckBox IsChecked="{Binding IsChecked}" Margin="16,0">
+                                                <StackPanel Orientation="Horizontal" Spacing="4">
+                                                    <TextBlock Text="{Binding Name}" FontSize="13"/>
+                                                    <TextBlock Text="{Binding Count, StringFormat='({0})'}" Classes="facetCountInline" />
+                                                </StackPanel>
+                                            </CheckBox>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+
+                                <!-- A-Z grouped layout for Author, Series, Publisher -->
+                                <ItemsControl ItemsSource="{Binding LetterGroups}"
+                                              IsVisible="{Binding IsGrouped}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <StackPanel />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="vm:FacetLetterGroupViewModel">
+                                            <Expander IsExpanded="{Binding IsExpanded}" Padding="16,4,8,4">
+                                                <Expander.Header>
+                                                    <DockPanel HorizontalAlignment="Stretch" LastChildFill="True">
+                                                        <CheckBox DockPanel.Dock="Left"
+                                                                  IsChecked="{Binding IsAllChecked}"
+                                                                  IsThreeState="True"
+                                                                  VerticalAlignment="Center"
+                                                                  Margin="0,0,6,0" />
+                                                        <TextBlock DockPanel.Dock="Right"
+                                                                   Text="{Binding TotalCount, StringFormat='({0})'}"
+                                                                   Classes="facetCount"
+                                                                   VerticalAlignment="Center"
+                                                                   Margin="4,0,0,0" />
+                                                        <TextBlock Text="{Binding Letter}"
+                                                                   FontSize="12"
+                                                                   FontWeight="SemiBold"
+                                                                   VerticalAlignment="Center" />
+                                                    </DockPanel>
+                                                </Expander.Header>
+                                                <ItemsControl ItemsSource="{Binding Values}">
+                                                    <ItemsControl.ItemsPanel>
+                                                        <ItemsPanelTemplate>
+                                                            <StackPanel />
+                                                        </ItemsPanelTemplate>
+                                                    </ItemsControl.ItemsPanel>
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate x:DataType="vm:FacetValueViewModel">
+                                                            <CheckBox IsChecked="{Binding IsChecked}" Margin="32,0,42,0"
+                                                                      HorizontalAlignment="Stretch"
+                                                                      HorizontalContentAlignment="Stretch">
+                                                                <DockPanel HorizontalAlignment="Stretch">
+                                                                    <TextBlock DockPanel.Dock="Right"
+                                                                               Text="{Binding Count, StringFormat='({0})'}"
+                                                                               Classes="facetCountInline"
+                                                                               VerticalAlignment="Center"
+                                                                               Margin="4,0,0,0" />
+                                                                    <TextBlock Text="{Binding DisplayLabel}"
+                                                                               FontSize="13"
+                                                                               VerticalAlignment="Center" />
+                                                                </DockPanel>
+                                                            </CheckBox>
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
+                                            </Expander>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </Panel>
+                        </Expander>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <!-- Loaned Out pseudo-filter -->
+            <Border Height="1" Margin="0,8,0,0" Background="{DynamicResource BrushBorder}" />
+            <CheckBox Content="{x:Static res:Resources.Filter_LoanedOut}"
+                      IsChecked="{Binding IsLoanedOutFilterActive, Mode=TwoWay}"
+                      Margin="8,4,8,4"
+                      FontSize="13" />
+
+            <!-- Saved Searches section -->
+            <Separator Margin="0,8"/>
+            <TextBlock Text="{x:Static res:Resources.FilterPanel_SavedSearches_Header}"
+                       FontSize="12" FontWeight="SemiBold" Margin="8,4"/>
+            <ListBox ItemsSource="{Binding SavedSearches}"
+                     SelectedItem="{Binding ActiveSavedSearch}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate x:DataType="models:SavedSearch">
+                        <DockPanel>
+                            <Button DockPanel.Dock="Right" Content="x" FontSize="13"
+                                    Width="26" Height="26" Padding="0"
+                                    HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                                    ToolTip.Tip="{x:Static res:Resources.FilterPanel_DeleteSavedSearch_Tooltip}"
+                                    Command="{Binding $parent[ListBox].((vm:FilterPanelViewModel)DataContext).DeleteSavedSearchCommand}"
+                                    CommandParameter="{Binding}" />
+                            <Button DockPanel.Dock="Right" Content="✎" FontSize="13"
+                                    Width="26" Height="26" Padding="0"
+                                    HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                                    ToolTip.Tip="{x:Static res:Resources.FilterPanel_EditSavedSearch_Tooltip}"
+                                    Command="{Binding $parent[ListBox].((vm:FilterPanelViewModel)DataContext).EditSavedSearchCommand}"
+                                    CommandParameter="{Binding}" />
+                            <TextBlock Text="{Binding Name}" FontSize="13" VerticalAlignment="Center"/>
+                        </DockPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+            <TextBlock Text="{x:Static res:Resources.FilterPanel_SavedSearches_Empty}"
+                       IsVisible="{Binding !SavedSearches.Count}"
+                       Classes="facetHint" Margin="8,4"/>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

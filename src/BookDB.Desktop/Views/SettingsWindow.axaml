@@ -1,0 +1,307 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:BookDB.Desktop.ViewModels"
+        xmlns:res="using:BookDB.Desktop.Localization"
+        x:Class="BookDB.Desktop.Views.SettingsWindow"
+        x:DataType="vm:SettingsWindowViewModel"
+        Title="{x:Static res:Resources.Settings_WindowTitle}"
+        Width="620" MinWidth="520"
+        Height="480" MinHeight="400"
+        WindowStartupLocation="CenterOwner"
+        ShowInTaskbar="False"
+        CanResize="True">
+
+  <Window.Resources>
+
+    <!-- General tab template -->
+    <DataTemplate x:Key="GeneralTabTemplate" x:DataType="vm:SettingsGeneralTabViewModel">
+      <ScrollViewer Padding="16">
+        <Grid ColumnDefinitions="200,*" RowDefinitions="Auto,Auto,Auto"
+              HorizontalAlignment="Stretch">
+
+          <!-- Row 0: Language (NEW) -->
+          <TextBlock Grid.Row="0" Grid.Column="0"
+                     Text="{x:Static res:Resources.Settings_General_Language}"
+                     FontSize="12"
+                     TextWrapping="Wrap"
+                     VerticalAlignment="Center"
+                     Margin="0,0,8,8"/>
+          <ComboBox Grid.Row="0" Grid.Column="1"
+                    ItemsSource="{Binding AvailableLanguages}"
+                    SelectedItem="{Binding SelectedLanguage}"
+                    DisplayMemberBinding="{Binding DisplayName}"
+                    HorizontalAlignment="Stretch"
+                    Margin="0,0,0,8"/>
+
+          <!-- Row 1: Restart note (NEW — always visible static hint) -->
+          <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                     Text="{x:Static res:Resources.Settings_General_LanguageRestartNote}"
+                     FontSize="11"
+                     Opacity="0.6"
+                     TextWrapping="Wrap"
+                     Margin="0,0,0,12"/>
+
+          <!-- Row 2: Default Collection (EXISTING — was Row 0; last row, no bottom margin) -->
+          <TextBlock Grid.Row="2" Grid.Column="0"
+                     Text="{x:Static res:Resources.Settings_General_DefaultCollection}"
+                     FontSize="12"
+                     TextWrapping="Wrap"
+                     VerticalAlignment="Center"
+                     Margin="0,0,8,0"/>
+          <ComboBox Grid.Row="2" Grid.Column="1"
+                    ItemsSource="{Binding Collections}"
+                    SelectedValue="{Binding DefaultCollectionId}"
+                    SelectedValueBinding="{Binding Id}"
+                    DisplayMemberBinding="{Binding Name}"
+                    HorizontalAlignment="Stretch"/>
+        </Grid>
+      </ScrollViewer>
+    </DataTemplate>
+
+    <!-- Lookup tab template -->
+    <DataTemplate x:Key="LookupTabTemplate" x:DataType="vm:SettingsLookupTabViewModel">
+      <ScrollViewer Padding="16">
+        <StackPanel Spacing="12">
+
+          <!-- Libris KB -->
+          <TextBlock Text="{x:Static res:Resources.Settings_Lookup_LibrisKB}" FontSize="14" FontWeight="SemiBold"/>
+          <Grid ColumnDefinitions="200,*" RowDefinitions="Auto" HorizontalAlignment="Stretch">
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="{x:Static res:Resources.Settings_Lookup_Enabled}" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,0"/>
+            <CheckBox Grid.Row="0" Grid.Column="1"
+                      IsChecked="{Binding LibrisKbEnabled}"/>
+          </Grid>
+
+          <!-- Google Books -->
+          <TextBlock Text="{x:Static res:Resources.Settings_Lookup_GoogleBooks}" FontSize="14" FontWeight="SemiBold" Margin="0,8,0,0"/>
+          <Grid ColumnDefinitions="200,*" RowDefinitions="Auto" HorizontalAlignment="Stretch">
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="{x:Static res:Resources.Settings_Lookup_Enabled}" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,0"/>
+            <CheckBox Grid.Row="0" Grid.Column="1"
+                      IsChecked="{Binding GoogleBooksEnabled}"/>
+          </Grid>
+
+          <!-- Open Library -->
+          <TextBlock Text="{x:Static res:Resources.Settings_Lookup_OpenLibrary}" FontSize="14" FontWeight="SemiBold" Margin="0,8,0,0"/>
+          <Grid ColumnDefinitions="200,*" RowDefinitions="Auto" HorizontalAlignment="Stretch">
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="{x:Static res:Resources.Settings_Lookup_Enabled}" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,0"/>
+            <CheckBox Grid.Row="0" Grid.Column="1"
+                      IsChecked="{Binding OpenLibraryEnabled}"/>
+          </Grid>
+
+          <!-- IsbnSearch.org -->
+          <TextBlock Text="{x:Static res:Resources.Settings_Lookup_IsbnSearchOrg}" FontSize="14" FontWeight="SemiBold" Margin="0,8,0,0"/>
+          <Grid ColumnDefinitions="200,*" RowDefinitions="Auto" HorizontalAlignment="Stretch">
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="{x:Static res:Resources.Settings_Lookup_Enabled}" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,0"/>
+            <CheckBox Grid.Row="0" Grid.Column="1"
+                      IsChecked="{Binding IsbnSearchOrgEnabled}"/>
+          </Grid>
+
+        </StackPanel>
+      </ScrollViewer>
+    </DataTemplate>
+
+    <!-- Import tab template -->
+    <DataTemplate x:Key="ImportTabTemplate" x:DataType="vm:SettingsImportTabViewModel">
+      <ScrollViewer Padding="16">
+        <Grid ColumnDefinitions="200,*,Auto" RowDefinitions="Auto,Auto,Auto,Auto" HorizontalAlignment="Stretch">
+          <!-- Row 0: Overwrite policy -->
+          <TextBlock Grid.Row="0" Grid.Column="0"
+                     Text="{x:Static res:Resources.Settings_Import_OverwritePolicy}"
+                     FontSize="12"
+                     TextWrapping="Wrap"
+                     VerticalAlignment="Center"
+                     Margin="0,0,8,8"/>
+          <ComboBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2"
+                    ItemsSource="{Binding OverwritePolicies}"
+                    SelectedItem="{Binding OverwritePolicy}"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Center"
+                    Margin="0,0,0,8"/>
+
+          <!-- Row 1: Separator -->
+          <Separator Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,4,0,8"/>
+
+          <!-- Row 2: Readerware tool folder -->
+          <TextBlock Grid.Row="2" Grid.Column="0"
+                     Text="{x:Static res:Resources.Settings_Import_ReaderwareToolPath}"
+                     FontSize="12"
+                     TextWrapping="Wrap"
+                     VerticalAlignment="Center"
+                     Margin="0,0,8,0"/>
+          <TextBox Grid.Row="2" Grid.Column="1"
+                   Text="{Binding ReaderwareToolPath}"
+                   Watermark="{x:Static res:Resources.Settings_Import_ReaderwareToolPathWatermark}"
+                   HorizontalAlignment="Stretch"
+                   Margin="0,0,4,0"/>
+          <Button Grid.Row="2" Grid.Column="2"
+                  Content="{x:Static res:Resources.Settings_Advanced_Browse}"
+                  Command="{Binding BrowseReaderwareToolPathCommand}"/>
+
+          <!-- Row 3: Hint -->
+          <TextBlock Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3"
+                     Text="{x:Static res:Resources.Settings_Import_ReaderwareToolPathHint}"
+                     FontSize="11"
+                     Opacity="0.6"
+                     TextWrapping="Wrap"
+                     Margin="0,6,0,0"/>
+        </Grid>
+      </ScrollViewer>
+    </DataTemplate>
+
+    <!-- Advanced tab template -->
+    <DataTemplate x:Key="AdvancedTabTemplate" x:DataType="vm:SettingsAdvancedTabViewModel">
+      <ScrollViewer Padding="16">
+        <Grid ColumnDefinitions="200,*,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto" HorizontalAlignment="Stretch">
+          <!-- Row 0: Auto-backup enabled -->
+          <TextBlock Grid.Row="0" Grid.Column="0"
+                     Text="{x:Static res:Resources.Settings_Advanced_AutoBackup}"
+                     FontSize="12"
+                     TextWrapping="Wrap"
+                     VerticalAlignment="Center"
+                     Margin="0,0,8,8"/>
+          <CheckBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2"
+                    IsChecked="{Binding AutoBackupEnabled}"
+                    Margin="0,0,0,8"/>
+          <!-- Row 1: Auto-backup format -->
+          <TextBlock Grid.Row="1" Grid.Column="0"
+                     Text="{x:Static res:Resources.Settings_Advanced_BackupFormat}"
+                     FontSize="12"
+                     TextWrapping="Wrap"
+                     VerticalAlignment="Center"
+                     Margin="0,0,8,8"/>
+          <ComboBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2"
+                    ItemsSource="{Binding BackupFormats}"
+                    SelectedItem="{Binding AutoBackupFormat}"
+                    HorizontalAlignment="Stretch"
+                    Margin="0,0,0,8"/>
+          <!-- Row 2: Auto-backup folder -->
+          <TextBlock Grid.Row="2" Grid.Column="0"
+                     Text="{x:Static res:Resources.Settings_Advanced_BackupFolder}"
+                     FontSize="12"
+                     TextWrapping="Wrap"
+                     VerticalAlignment="Center"
+                     Margin="0,0,8,0"/>
+          <TextBox Grid.Row="2" Grid.Column="1"
+                   Text="{Binding AutoBackupFolder}"
+                   IsReadOnly="True"
+                   Watermark="{x:Static res:Resources.Settings_Advanced_BackupFolderWatermark}"
+                   HorizontalAlignment="Stretch"
+                   Margin="0,0,4,0"/>
+          <Button Grid.Row="2" Grid.Column="2"
+                  Content="{x:Static res:Resources.Settings_Advanced_Browse}"
+                  Command="{Binding BrowseFolderCommand}"/>
+          <!-- Row 3: Separator between auto-backup and logging sections -->
+          <Separator Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,12,0,8"/>
+          <!-- Row 4: Log level label + dropdown -->
+          <TextBlock Grid.Row="4" Grid.Column="0"
+                     Text="{x:Static res:Resources.Settings_Advanced_Logging_Level_Label}"
+                     FontSize="12"
+                     TextWrapping="Wrap"
+                     VerticalAlignment="Center"
+                     Margin="0,0,8,8"/>
+          <ComboBox Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2"
+                    ItemsSource="{Binding AvailableLogLevels}"
+                    SelectedItem="{Binding SelectedLogLevel}"
+                    DisplayMemberBinding="{Binding DisplayName}"
+                    HorizontalAlignment="Stretch"
+                    Margin="0,0,0,8"/>
+          <!-- Row 5: Restart note -->
+          <TextBlock Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="3"
+                     Text="{x:Static res:Resources.Settings_Advanced_Logging_RestartNote}"
+                     FontSize="11"
+                     Opacity="0.6"
+                     TextWrapping="Wrap"
+                     Margin="0,0,0,8"/>
+          <!-- Row 6: Open log file button -->
+          <Button Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="3"
+                  Content="{x:Static res:Resources.Settings_Advanced_Logging_OpenLogFile}"
+                  Command="{Binding OpenLogFileCommand}"
+                  HorizontalAlignment="Left"/>
+        </Grid>
+      </ScrollViewer>
+    </DataTemplate>
+
+    <!-- Browse tab — Author facet label setting -->
+    <DataTemplate x:Key="BrowseTabTemplate" x:DataType="vm:SettingsBrowseTabViewModel">
+      <ScrollViewer Padding="16">
+        <Grid ColumnDefinitions="200,*"
+              RowDefinitions="Auto"
+              HorizontalAlignment="Stretch">
+          <!-- Row 0: Author facet label -->
+          <TextBlock Grid.Row="0" Grid.Column="0"
+                     Text="{x:Static res:Resources.Settings_Browse_AuthorFacetLabel}"
+                     FontSize="12"
+                     TextWrapping="Wrap"
+                     VerticalAlignment="Center"
+                     Margin="0,0,8,0" />
+          <StackPanel Grid.Row="0" Grid.Column="1"
+                      Orientation="Horizontal"
+                      Spacing="16"
+                      VerticalAlignment="Center">
+            <RadioButton GroupName="AuthorFacetLabel"
+                         Content="{x:Static res:Resources.Settings_Browse_SortName}"
+                         IsChecked="{Binding IsSortNameSelected}" />
+            <RadioButton GroupName="AuthorFacetLabel"
+                         Content="{x:Static res:Resources.Settings_Browse_DisplayName}"
+                         IsChecked="{Binding IsDisplayNameSelected}" />
+          </StackPanel>
+        </Grid>
+      </ScrollViewer>
+    </DataTemplate>
+
+  </Window.Resources>
+
+  <DockPanel Margin="0">
+
+    <!-- Title bar -->
+    <Border DockPanel.Dock="Top"
+            Background="{DynamicResource BrushBackgroundAlt}"
+            Padding="16,12"
+            BorderThickness="0,0,0,1"
+            BorderBrush="{DynamicResource BrushBorder}">
+      <TextBlock Text="{x:Static res:Resources.Settings_WindowTitle}" FontSize="14" FontWeight="SemiBold"/>
+    </Border>
+
+    <!-- Footer -->
+    <Border DockPanel.Dock="Bottom"
+            Padding="16,12"
+            BorderThickness="0,1,0,0"
+            BorderBrush="{DynamicResource BrushBorder}">
+      <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+        <Button Classes="accent" Content="{x:Static res:Resources.Common_Save}" Command="{Binding SaveCommand}"/>
+        <Button Content="{x:Static res:Resources.Common_Cancel}" Command="{Binding CloseCommand}"/>
+      </StackPanel>
+    </Border>
+
+    <!-- Tab control -->
+    <TabControl SelectedIndex="{Binding SelectedTabIndex}">
+
+      <TabItem Header="{x:Static res:Resources.Settings_Tab_General}">
+        <ContentControl ContentTemplate="{StaticResource GeneralTabTemplate}"
+                        Content="{Binding GeneralTab}"/>
+      </TabItem>
+
+      <TabItem Header="{x:Static res:Resources.Settings_Tab_Browse}">
+        <ContentControl ContentTemplate="{StaticResource BrowseTabTemplate}"
+                        Content="{Binding BrowseTab}"/>
+      </TabItem>
+
+      <TabItem Header="{x:Static res:Resources.Settings_Tab_Lookup}">
+        <ContentControl ContentTemplate="{StaticResource LookupTabTemplate}"
+                        Content="{Binding LookupTab}"/>
+      </TabItem>
+
+      <TabItem Header="{x:Static res:Resources.Settings_Tab_Import}">
+        <ContentControl ContentTemplate="{StaticResource ImportTabTemplate}"
+                        Content="{Binding ImportTab}"/>
+      </TabItem>
+
+      <TabItem Header="{x:Static res:Resources.Settings_Tab_Advanced}">
+        <ContentControl ContentTemplate="{StaticResource AdvancedTabTemplate}"
+                        Content="{Binding AdvancedTab}"/>
+      </TabItem>
+
+    </TabControl>
+
+  </DockPanel>
+
+</Window>

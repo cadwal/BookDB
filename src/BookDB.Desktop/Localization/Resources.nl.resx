@@ -1,0 +1,2417 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!--
+    Microsoft ResX Schema
+
+    Version 2.0
+
+    The primary goals of this format is to allow a simple XML format
+    that is mostly human readable. The generation and parsing of the
+    various data types is done through the TypeConverter classes
+    associated with the data types.
+
+    Example:
+
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+
+    There are any number of "resheader" rows that contain simple
+    name/value pairs.
+
+    Each data row contains a name, and value. The row also contains a
+    type or mimetype. Type corresponds to a .NET class that support
+    text/value conversion through the TypeConverter architecture.
+    Mimetype is used for serialized objects, and tells the
+    ResXResourceReader how to depersist the object.
+
+    This is essentially the inverse of a
+
+    ClientTypeConverter.ConvertTo(obj, targetType);
+
+    call.
+
+    The Xml Relation of the data element:
+    <data name="Name1">
+      <value>Value1</value>
+      <comment>User comment</comment>
+    </data>
+
+    The type attribute indicates the type of the serialized object.
+    The mimetype attribute indicates the serialized encoding.
+
+    The value of the type attribute is specified as follows:
+
+       type = "typename, assemblyname"
+
+    The type of the resource value is specified as follows:
+
+       type = System.ResourceObject, System.Windows.Forms
+
+    The mimetype attribute is used to indicate the .NET binary
+    encoding of a data entry.  The following table shows the supported
+    mime types:
+
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized with
+            : System.ComponentModel.TypeConverter.ConvertTo(obj, typeof(byte[]))
+            : and then encoded with base64 encoding.
+  -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="StatusBar_CollectionSelector_Label" xml:space="preserve">
+    <value>Collecties:</value>
+  </data>
+  <data name="CollectionSelector_AllSelected" xml:space="preserve">
+    <value>Alle collecties</value>
+  </data>
+  <data name="FilterPanel_EmptyState" xml:space="preserve">
+    <value>Geen filters beschikbaar</value>
+  </data>
+  <data name="BookList_EmptyState" xml:space="preserve">
+    <value>Geen boeken om weer te geven</value>
+  </data>
+  <data name="DetailPanel_EmptyState" xml:space="preserve">
+    <value>Selecteer een boek om details te zien</value>
+  </data>
+  <data name="FilterPanel_ClearFilters" xml:space="preserve">
+    <value>Filters wissen</value>
+  </data>
+  <data name="FilterPanel_DeleteSavedSearch_Tooltip" xml:space="preserve">
+    <value>Deze zoekopdracht verwijderen</value>
+  </data>
+  <data name="FilterPanel_EditSavedSearch_Tooltip" xml:space="preserve">
+    <value>Deze zoekopdracht bewerken</value>
+  </data>
+  <data name="FilterPanel_SavedSearches_Header" xml:space="preserve">
+    <value>Opgeslagen zoekopdrachten</value>
+  </data>
+  <data name="FilterPanel_SavedSearches_Empty" xml:space="preserve">
+    <value>Nog geen opgeslagen zoekopdrachten. Gebruik geavanceerd zoeken om er een te maken.</value>
+  </data>
+  <data name="AdvancedSearch_Title" xml:space="preserve">
+    <value>Geavanceerd zoeken</value>
+  </data>
+  <data name="AdvancedSearch_SaveSearch" xml:space="preserve">
+    <value>Opslaan als zoekopdracht...</value>
+  </data>
+  <data name="Delete_SingleBook_Message" xml:space="preserve">
+    <value>"{0}" verwijderen? Dit kan niet ongedaan worden gemaakt.</value>
+  </data>
+  <data name="Delete_MultipleBooks_Message" xml:space="preserve">
+    <value>{0} boeken verwijderen? Dit kan niet ongedaan worden gemaakt.</value>
+  </data>
+  <data name="Delete_Confirm_Button" xml:space="preserve">
+    <value>Verwijderen</value>
+  </data>
+  <data name="Delete_Cancel_Button" xml:space="preserve">
+    <value>Boek behouden</value>
+  </data>
+  <data name="UnsavedChanges_Title" xml:space="preserve">
+    <value>Niet-opgeslagen wijzigingen</value>
+  </data>
+  <data name="UnsavedChanges_Body" xml:space="preserve">
+    <value>Je hebt niet-opgeslagen wijzigingen in "{0}". Wat wil je doen?</value>
+  </data>
+  <data name="UnsavedChanges_Cancel" xml:space="preserve">
+    <value>Doorgaan met bewerken</value>
+  </data>
+  <data name="AddBookDialog_Title" xml:space="preserve">
+    <value>Boek toevoegen</value>
+  </data>
+  <data name="AddBookDialog_AddButton" xml:space="preserve">
+    <value>Boek toevoegen</value>
+  </data>
+  <data name="Toolbar_AddBook" xml:space="preserve">
+    <value>Boek toevoegen</value>
+  </data>
+  <data name="Toolbar_Edit" xml:space="preserve">
+    <value>Bewerken</value>
+  </data>
+  <data name="Toolbar_Delete" xml:space="preserve">
+    <value>Verwijderen</value>
+  </data>
+  <data name="Toolbar_FullDetails" xml:space="preserve">
+    <value>Volledige details</value>
+  </data>
+  <data name="Toolbar_OpenInWindow" xml:space="preserve">
+    <value>Openen in venster</value>
+  </data>
+  <data name="Toolbar_Search_Placeholder" xml:space="preserve">
+    <value>Boeken zoeken...</value>
+  </data>
+  <data name="Toolbar_Search_Clear" xml:space="preserve">
+    <value>Zoeken wissen</value>
+  </data>
+  <data name="BookList_NoResults" xml:space="preserve">
+    <value>Geen boeken komen overeen met je zoekopdracht. Wis filters of pas je zoektermen aan.</value>
+  </data>
+  <data name="BulkEdit_Apply_Button" xml:space="preserve">
+    <value>Toepassen op {0} boeken</value>
+  </data>
+  <data name="BulkEdit_Cancel_Button" xml:space="preserve">
+    <value>Huidige waarden behouden</value>
+  </data>
+  <data name="BulkEdit_Title" xml:space="preserve">
+    <value>Bulkbewerking</value>
+  </data>
+  <data name="Cover_Placeholder_Tooltip" xml:space="preserve">
+    <value>Laat hier een afbeelding vallen, of gebruik de knoppen hieronder om een omslag toe te voegen</value>
+  </data>
+  <data name="Cover_AttachFile" xml:space="preserve">
+    <value>Toevoegen</value>
+  </data>
+  <data name="Cover_AttachUrl" xml:space="preserve">
+    <value>Van URL...</value>
+  </data>
+  <data name="Cover_NoImage" xml:space="preserve">
+    <value>Geen omslagafbeelding</value>
+  </data>
+  <data name="Tab_BasicInfo" xml:space="preserve">
+    <value>Basisinfo</value>
+  </data>
+  <data name="Tab_Details" xml:space="preserve">
+    <value>Details</value>
+  </data>
+  <data name="Tab_Acquisition" xml:space="preserve">
+    <value>Aanschaf</value>
+  </data>
+  <data name="Tab_Contributors" xml:space="preserve">
+    <value>Medewerkers</value>
+  </data>
+  <data name="Tab_ContributorsAdmin" xml:space="preserve">
+    <value>Medewerkers &amp; Beheer</value>
+  </data>
+  <data name="Button_AddContributor" xml:space="preserve">
+    <value>+ Medewerker toevoegen</value>
+  </data>
+  <data name="Section_Contributors" xml:space="preserve">
+    <value>Medewerkers</value>
+  </data>
+  <data name="Label_VisibleInCatalog" xml:space="preserve">
+    <value>Zichtbaar in catalogus</value>
+  </data>
+  <data name="Tooltip_VisibleInCatalog" xml:space="preserve">
+    <value>Als dit niet is aangevinkt, is het boek verborgen voor het bladeren in de catalogus (maar het staat nog wel in de database).</value>
+  </data>
+  <data name="Tab_AdditionalInfo" xml:space="preserve">
+    <value>Aanvullende info</value>
+  </data>
+  <data name="FullDetails_WindowTitle" xml:space="preserve">
+    <value>Boekdetails — {0}</value>
+  </data>
+  <data name="Error_SaveFailed" xml:space="preserve">
+    <value>Kan wijzigingen niet opslaan. Controleer of de database toegankelijk is en probeer het opnieuw.</value>
+  </data>
+  <data name="Error_CoverLoadFailed" xml:space="preserve">
+    <value>Kan omslagafbeelding niet laden. Voeg opnieuw toe via Bladeren of slepen-en-neerzetten.</value>
+  </data>
+  <data name="Error_SearchFailed" xml:space="preserve">
+    <value>Zoeken mislukt. Probeer het opnieuw of herstart de applicatie.</value>
+  </data>
+  <data name="LookupWizard_Title" xml:space="preserve">
+    <value>Catalogiseren op ISBN</value>
+  </data>
+  <data name="LookupWizard_StartButton" xml:space="preserve">
+    <value>Opzoeken starten</value>
+  </data>
+  <data name="LookupWizard_IsbnBox_Placeholder" xml:space="preserve">
+    <value>Voer ISBN('s) in, één per regel...</value>
+  </data>
+  <data name="LookupWizard_DropArea_Label" xml:space="preserve">
+    <value>Laat .txt-bestand hier vallen of</value>
+  </data>
+  <data name="LookupWizard_BrowseLink" xml:space="preserve">
+    <value>Bladeren...</value>
+  </data>
+  <data name="LookupWizard_IsbnCount" xml:space="preserve">
+    <value>{0} ISBN('s) gereed</value>
+  </data>
+  <data name="LookupWizard_NoResults" xml:space="preserve">
+    <value>Geen resultaten gevonden voor dit ISBN. Controleer het nummer en probeer het opnieuw, of voer de boekgegevens handmatig in.</value>
+  </data>
+  <data name="LookupWizard_ManualEntryButton" xml:space="preserve">
+    <value>Details handmatig invoeren</value>
+  </data>
+  <data name="LookupWizard_Error_EnterIsbn" xml:space="preserve">
+    <value>Voer ten minste één ISBN in.</value>
+  </data>
+  <data name="MergeReview_Title_New" xml:space="preserve">
+    <value>Metadata controleren - nieuw boek</value>
+  </data>
+  <data name="MergeReview_Title_Recatalog" xml:space="preserve">
+    <value>Metadata controleren - {0}</value>
+  </data>
+  <data name="MergeReview_AcceptAllFromSource" xml:space="preserve">
+    <value>Alles accepteren van {0}</value>
+  </data>
+  <data name="MergeReview_NoConflicts" xml:space="preserve">
+    <value>Geen veldconflicten — alle bronnen stemmen overeen.</value>
+  </data>
+  <data name="MergeReview_Field_Authors" xml:space="preserve">
+    <value>Auteurs</value>
+  </data>
+  <data name="MergeReview_Field_Description" xml:space="preserve">
+    <value>Beschrijving</value>
+  </data>
+  <data name="MergeReview_Field_Language" xml:space="preserve">
+    <value>Taal</value>
+  </data>
+  <data name="MergeReview_Field_Pages" xml:space="preserve">
+    <value>Pagina's</value>
+  </data>
+  <data name="MergeReview_Field_PubDate" xml:space="preserve">
+    <value>Publicatiedatum</value>
+  </data>
+  <data name="MergeReview_Field_Publisher" xml:space="preserve">
+    <value>Uitgever</value>
+  </data>
+  <data name="MergeReview_Field_Series" xml:space="preserve">
+    <value>Reeks</value>
+  </data>
+  <data name="MergeReview_Field_SeriesNumber" xml:space="preserve">
+    <value>Reeksnummer</value>
+  </data>
+  <data name="MergeReview_Field_Subtitle" xml:space="preserve">
+    <value>Ondertitel</value>
+  </data>
+  <data name="MergeReview_Field_Title" xml:space="preserve">
+    <value>Titel</value>
+  </data>
+  <data name="BatchQueue_WindowTitle" xml:space="preserve">
+    <value>Batch-ISBN-opzoeken</value>
+  </data>
+  <data name="BatchQueue_RunningHeader" xml:space="preserve">
+    <value>Boeken opzoeken...</value>
+  </data>
+  <data name="BatchQueue_CompleteHeader" xml:space="preserve">
+    <value>Opzoeken voltooid</value>
+  </data>
+  <data name="BatchQueue_CurrentItem" xml:space="preserve">
+    <value>Momenteel opzoeken: {0}</value>
+  </data>
+  <data name="BatchQueue_ProgressCounts" xml:space="preserve">
+    <value>{0} van {1}</value>
+  </data>
+  <data name="BatchQueue_StatusComplete" xml:space="preserve">
+    <value>Batch voltooid</value>
+  </data>
+  <data name="BatchQueue_StatusProcessing" xml:space="preserve">
+    <value>{0} bronresultaat/resultaten verwerken…</value>
+  </data>
+  <data name="BatchQueue_StatusQuerying" xml:space="preserve">
+    <value>Bronnen opvragen voor {0}…</value>
+  </data>
+  <data name="BatchQueue_StatusSaving" xml:space="preserve">
+    <value>Opslaan…</value>
+  </data>
+  <data name="BatchQueue_StartReviewButton" xml:space="preserve">
+    <value>Resultaten controleren</value>
+  </data>
+  <data name="BatchQueue_Summary_Saved" xml:space="preserve">
+    <value>Opgeslagen: {0}</value>
+  </data>
+  <data name="BatchQueue_Summary_AutoAccepted" xml:space="preserve">
+    <value>Automatisch geaccepteerd: {0}</value>
+  </data>
+  <data name="BatchQueue_Summary_NotFound" xml:space="preserve">
+    <value>Niet gevonden: {0}</value>
+  </data>
+  <data name="BatchQueue_Summary_PendingReview" xml:space="preserve">
+    <value>Wacht op controle: {0}</value>
+  </data>
+  <data name="BatchQueue_Summary_Skipped" xml:space="preserve">
+    <value>Overgeslagen: {0}</value>
+  </data>
+  <data name="BatchQueue_ShutdownWarning_Title" xml:space="preserve">
+    <value>Batch-opzoeken bezig</value>
+  </data>
+  <data name="BatchQueue_ShutdownWarning_Body" xml:space="preserve">
+    <value>Er is nog een batch-opzoeken actief. Als je nu sluit, stopt het opzoeken. Doorgaan?</value>
+  </data>
+  <data name="StatusBar_BatchQueue_Progress" xml:space="preserve">
+    <value>Opzoeken: {0} van {1}</value>
+  </data>
+  <data name="Recatalog_NoIsbn_Title" xml:space="preserve">
+    <value>Geen ISBN</value>
+  </data>
+  <data name="Recatalog_NoIsbn_Body" xml:space="preserve">
+    <value>Dit boek heeft geen ISBN. Voer er een in om metadata op te zoeken.</value>
+  </data>
+  <data name="EditForm_RecatalogButton" xml:space="preserve">
+    <value>Opnieuw catalogiseren</value>
+  </data>
+  <data name="CoverPopup_SourceOnly" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="CoverPopup_WithMetadata" xml:space="preserve">
+    <value>{0} — {1}×{2} {3}</value>
+  </data>
+  <data name="Label_ISSN" xml:space="preserve">
+    <value>ISSN</value>
+  </data>
+  <data name="Label_LCCN" xml:space="preserve">
+    <value>LCCN</value>
+  </data>
+  <data name="Label_DeweyDecimal" xml:space="preserve">
+    <value>Decimale classificatie Dewey</value>
+  </data>
+  <data name="Label_CallNumber" xml:space="preserve">
+    <value>Signatuur</value>
+  </data>
+  <data name="Label_Dimensions" xml:space="preserve">
+    <value>Afmetingen</value>
+  </data>
+  <data name="Label_Weight" xml:space="preserve">
+    <value>Gewicht</value>
+  </data>
+  <data name="Label_ItemValue" xml:space="preserve">
+    <value>Artikelwaarde</value>
+  </data>
+  <data name="Label_ValuationDate" xml:space="preserve">
+    <value>Waarderingsdatum</value>
+  </data>
+  <data name="Label_AmazonNew" xml:space="preserve">
+    <value>Amazon nieuw</value>
+  </data>
+  <data name="Label_AmazonUsed" xml:space="preserve">
+    <value>Amazon gebruikt</value>
+  </data>
+  <data name="Label_AmazonCollectible" xml:space="preserve">
+    <value>Amazon verzamelaar</value>
+  </data>
+  <data name="Label_SalesRank" xml:space="preserve">
+    <value>Verkoopranglijst</value>
+  </data>
+  <data name="Label_LexileLevel" xml:space="preserve">
+    <value>Lexile-niveau</value>
+  </data>
+  <data name="ManageLookups_Add" xml:space="preserve">
+    <value>+ Toevoegen</value>
+  </data>
+  <data name="ManageLookups_CancelMerge" xml:space="preserve">
+    <value>Samenvoegen annuleren</value>
+  </data>
+  <data name="ManageLookups_CannotDelete" xml:space="preserve">
+    <value>Kan niet verwijderen — gebruikt door {0} boeken</value>
+  </data>
+  <data name="ManageLookups_ConfirmMerge" xml:space="preserve">
+    <value>Samenvoegen bevestigen</value>
+  </data>
+  <data name="ManageLookups_DataCleanup" xml:space="preserve">
+    <value>Gegevens opschonen...</value>
+  </data>
+  <data name="ManageLookups_DataCleanupDesc" xml:space="preserve">
+    <value>De volgende namen zijn voorgesteld voor correctie. Bewerk de voorgestelde sorteernaam indien nodig. Deselecteer rijen om over te slaan. Rijen zonder wijziging worden niet getoond.</value>
+  </data>
+  <data name="ManageLookups_DataCleanupTitle" xml:space="preserve">
+    <value>Voorbeeld gegevensopschoning</value>
+  </data>
+  <data name="ManageLookups_Delete" xml:space="preserve">
+    <value>Verwijderen</value>
+  </data>
+  <data name="ManageLookups_DeleteConfirm" xml:space="preserve">
+    <value>'{0}' verwijderen? Dit kan niet ongedaan worden gemaakt.</value>
+  </data>
+  <data name="ManageLookups_DeselectAll" xml:space="preserve">
+    <value>Alles deselecteren</value>
+  </data>
+  <data name="ManageLookups_DisplayName" xml:space="preserve">
+    <value>Weergavenaam</value>
+  </data>
+  <data name="ManageLookups_ErrorDuplicateName" xml:space="preserve">
+    <value>Er bestaat al een {0} met deze naam.</value>
+  </data>
+  <data name="ManageLookups_ErrorEmptyName" xml:space="preserve">
+    <value>Naam mag niet leeg zijn.</value>
+  </data>
+  <data name="ManageLookups_ErrorSaveFailed" xml:space="preserve">
+    <value>Opslaan mislukt — zie logboek.</value>
+  </data>
+  <data name="ManageLookups_ErrorDeleteFailed" xml:space="preserve">
+    <value>Verwijderen mislukt — zie logboek.</value>
+  </data>
+  <data name="ManageLookups_ErrorMergeFailed" xml:space="preserve">
+    <value>Samenvoegen mislukt — zie logboek.</value>
+  </data>
+  <data name="ManageLookups_ErrorCleanupScanFailed" xml:space="preserve">
+    <value>Cleanup scan failed — see log.</value>
+  </data>
+  <data name="ManageLookups_ErrorApplyCleanupFailed" xml:space="preserve">
+    <value>Apply cleanup failed — see log.</value>
+  </data>
+  <data name="ManageLookups_Filter_Watermark" xml:space="preserve">
+    <value>Filteren...</value>
+  </data>
+  <data name="ManageLookups_FilterToAuthor" xml:space="preserve">
+    <value>Boeken filteren op auteur</value>
+  </data>
+  <data name="ManageLookups_Gear_Category" xml:space="preserve">
+    <value>Categorieën beheren</value>
+  </data>
+  <data name="ManageLookups_Gear_Language" xml:space="preserve">
+    <value>Talen beheren</value>
+  </data>
+  <data name="ManageLookups_Gear_Location" xml:space="preserve">
+    <value>Locaties beheren</value>
+  </data>
+  <data name="ManageLookups_Gear_Owner" xml:space="preserve">
+    <value>Eigenaren beheren</value>
+  </data>
+  <data name="ManageLookups_Gear_PurchasePlace" xml:space="preserve">
+    <value>Aankoopplaatsen beheren</value>
+  </data>
+  <data name="ManageLookups_Gear_Publisher" xml:space="preserve">
+    <value>Uitgevers beheren</value>
+  </data>
+  <data name="ManageLookups_Gear_Series" xml:space="preserve">
+    <value>Reeksen beheren</value>
+  </data>
+  <data name="ManageLookups_KeepingThis" xml:space="preserve">
+    <value>Dit behouden ✓</value>
+  </data>
+  <data name="ManageLookups_KeepThis" xml:space="preserve">
+    <value>Dit behouden</value>
+  </data>
+  <data name="ManageLookups_Merge" xml:space="preserve">
+    <value>Samenvoegen met...</value>
+  </data>
+  <data name="ManageLookups_MergeConfirmBody" xml:space="preserve">
+    <value>De boeken van de niet-behouden persoon worden toegewezen aan de behouden persoon.</value>
+  </data>
+  <data name="ManageLookups_MergePickerConfirmHint" xml:space="preserve">
+    <value>'{0}' wordt samengevoegd met '{1}' en verwijderd.</value>
+  </data>
+  <data name="ManageLookups_MergePickerTitle" xml:space="preserve">
+    <value>'{0}' samenvoegen met...</value>
+  </data>
+  <data name="ManageLookups_Name" xml:space="preserve">
+    <value>Naam</value>
+  </data>
+  <data name="ManageLookups_NoCleanup" xml:space="preserve">
+    <value>Geen opschoning nodig.</value>
+  </data>
+  <data name="ManageLookups_Scanning" xml:space="preserve">
+    <value>Scannen...</value>
+  </data>
+  <data name="ManageLookups_SelectAll" xml:space="preserve">
+    <value>Alles selecteren</value>
+  </data>
+  <data name="ManageLookups_SelectEntry" xml:space="preserve">
+    <value>Selecteer een item om te bewerken</value>
+  </data>
+  <data name="ManageLookups_SelectPerson" xml:space="preserve">
+    <value>Selecteer een persoon om te bewerken</value>
+  </data>
+  <data name="ManageLookups_SortName" xml:space="preserve">
+    <value>Sorteernaam</value>
+  </data>
+  <data name="ManageLookups_SuspectedDuplicates" xml:space="preserve">
+    <value>Vermoedelijke duplicaten</value>
+  </data>
+  <data name="ManageLookups_Tab_Category" xml:space="preserve">
+    <value>Categorie</value>
+  </data>
+  <data name="ManageLookups_Tab_Language" xml:space="preserve">
+    <value>Taal</value>
+  </data>
+  <data name="ManageLookups_Tab_Location" xml:space="preserve">
+    <value>Locatie</value>
+  </data>
+  <data name="ManageLookups_Tab_Owner" xml:space="preserve">
+    <value>Eigenaar</value>
+  </data>
+  <data name="ManageLookups_Tab_Person" xml:space="preserve">
+    <value>Persoon</value>
+  </data>
+  <data name="ManageLookups_Tab_PurchasePlace" xml:space="preserve">
+    <value>Aankoopplaats</value>
+  </data>
+  <data name="ManageLookups_Tab_Publisher" xml:space="preserve">
+    <value>Uitgever</value>
+  </data>
+  <data name="ManageLookups_Tab_Series" xml:space="preserve">
+    <value>Reeks</value>
+  </data>
+  <data name="ManageLookups_Title" xml:space="preserve">
+    <value>Lijsten beheren</value>
+  </data>
+  <data name="ManageLookups_UsedByBooks" xml:space="preserve">
+    <value>Gebruikt door {0} boeken</value>
+  </data>
+  <data name="ManageLookups_UsedInBooks" xml:space="preserve">
+    <value>Gebruikt in {0} boeken</value>
+  </data>
+  <data name="ManageLookups_UseSuggested" xml:space="preserve">
+    <value>Voorgestelde gebruiken</value>
+  </data>
+  <data name="ManageLookups_SortNameSuggestionHint" xml:space="preserve">
+    <value>Voorstel: {0}</value>
+  </data>
+  <data name="MainWindow_StatusBar_Show" xml:space="preserve">
+    <value>Tonen</value>
+  </data>
+  <data name="Backup_Header_Sqlite" xml:space="preserve">
+    <value>Back-up van bibliotheek maken…</value>
+  </data>
+  <data name="Backup_Header_CsvArchive" xml:space="preserve">
+    <value>Back-up van bibliotheek maken (CSV-archief)…</value>
+  </data>
+  <data name="Restore_Header" xml:space="preserve">
+    <value>Bibliotheek herstellen…</value>
+  </data>
+  <data name="Backup_Status_FlushingLog" xml:space="preserve">
+    <value>Write-ahead-log wordt leeggemaakt…</value>
+  </data>
+  <data name="Backup_Status_CopyingDatabase" xml:space="preserve">
+    <value>Database wordt gekopieerd…</value>
+  </data>
+  <data name="Backup_Status_CreatingArchive" xml:space="preserve">
+    <value>Archief wordt gemaakt…</value>
+  </data>
+  <data name="Backup_Status_ExportingBooks" xml:space="preserve">
+    <value>Boeken exporteren…</value>
+  </data>
+  <data name="Backup_Status_ExportingPeople" xml:space="preserve">
+    <value>Personen exporteren…</value>
+  </data>
+  <data name="Backup_Status_ExportingPublishers" xml:space="preserve">
+    <value>Uitgevers exporteren…</value>
+  </data>
+  <data name="Backup_Status_ExportingSeries" xml:space="preserve">
+    <value>Reeksen exporteren…</value>
+  </data>
+  <data name="Backup_Status_ExportingCollections" xml:space="preserve">
+    <value>Collecties exporteren…</value>
+  </data>
+  <data name="Backup_Status_ExportingCategories" xml:space="preserve">
+    <value>Categorieën exporteren…</value>
+  </data>
+  <data name="Backup_Status_ExportingFormats" xml:space="preserve">
+    <value>Formaten exporteren…</value>
+  </data>
+  <data name="Backup_Status_ExportingLanguages" xml:space="preserve">
+    <value>Talen exporteren…</value>
+  </data>
+  <data name="Backup_Status_ExportingLocations" xml:space="preserve">
+    <value>Locaties exporteren…</value>
+  </data>
+  <data name="Backup_Status_ExportingOwners" xml:space="preserve">
+    <value>Eigenaren exporteren…</value>
+  </data>
+  <data name="Backup_Status_ExportingRelationships" xml:space="preserve">
+    <value>Boekrelaties exporteren…</value>
+  </data>
+  <data name="Backup_Status_ExportingCoverImages" xml:space="preserve">
+    <value>Omslagafbeeldingen exporteren…</value>
+  </data>
+  <data name="Backup_Status_ExportingCoverImagesCount" xml:space="preserve">
+    <value>Omslagafbeeldingen exporteren ({0}/{1})…</value>
+  </data>
+  <data name="Restore_Status_SavingSafetyBackup" xml:space="preserve">
+    <value>Veiligheidsback-up opslaan…</value>
+  </data>
+  <data name="Restore_Status_ExtractingArchive" xml:space="preserve">
+    <value>Back-uparchief uitpakken…</value>
+  </data>
+  <data name="Restore_Status_ReplacingLibrary" xml:space="preserve">
+    <value>Actieve bibliotheek vervangen…</value>
+  </data>
+  <data name="Shutdown_BackupInProgress" xml:space="preserve">
+    <value>Back-up van je bibliotheek maken voor het afsluiten…</value>
+  </data>
+  <data name="MainWindow_Toolbar_CatalogByIsbn" xml:space="preserve">
+    <value>Catalogiseren op ISBN</value>
+  </data>
+  <data name="Menu_AdvancedSearch" xml:space="preserve">
+    <value>_Geavanceerd zoeken...</value>
+  </data>
+  <data name="Menu_BackupCsv" xml:space="preserve">
+    <value>Back-up (CSV-archief)...</value>
+  </data>
+  <data name="Menu_BackupSqlite" xml:space="preserve">
+    <value>Back-up (SQLite)...</value>
+  </data>
+  <data name="Menu_BulkEdit" xml:space="preserve">
+    <value>_Bulkselectie bewerken...</value>
+  </data>
+  <data name="Menu_CatalogByIsbn" xml:space="preserve">
+    <value>Catalogiseren op _ISBN...</value>
+  </data>
+  <data name="Menu_DeleteBooks" xml:space="preserve">
+    <value>_Boek/boeken verwijderen...</value>
+  </data>
+  <data name="Menu_DetailPanel" xml:space="preserve">
+    <value>_Detailpaneel</value>
+  </data>
+  <data name="Menu_DuplicateBook" xml:space="preserve">
+    <value>_Boek dupliceren</value>
+  </data>
+  <data name="Menu_Edit" xml:space="preserve">
+    <value>_Bewerken</value>
+  </data>
+  <data name="Menu_EditBook" xml:space="preserve">
+    <value>_Boek bewerken</value>
+  </data>
+  <data name="Menu_Exit" xml:space="preserve">
+    <value>_Afsluiten</value>
+  </data>
+  <data name="Menu_ExportCsv" xml:space="preserve">
+    <value>Exporteren...</value>
+  </data>
+  <data name="Menu_File" xml:space="preserve">
+    <value>_Bestand</value>
+  </data>
+  <data name="Menu_FullDetails" xml:space="preserve">
+    <value>_Volledige details</value>
+  </data>
+  <data name="Menu_ImportReaderware" xml:space="preserve">
+    <value>Readerware-back-up importeren…</value>
+  </data>
+  <data name="Menu_ImportReaderwareDatabase" xml:space="preserve">
+    <value>Readerware-database importeren…</value>
+  </data>
+  <data name="Menu_ManageLookups" xml:space="preserve">
+    <value>Lijsten beheren...</value>
+  </data>
+  <data name="Menu_NewBook" xml:space="preserve">
+    <value>_Nieuw boek</value>
+  </data>
+  <data name="Menu_PrintList" xml:space="preserve">
+    <value>Lijst afdrukken...</value>
+  </data>
+  <data name="Menu_RecatalogAll" xml:space="preserve">
+    <value>_Alles opnieuw catalogiseren</value>
+  </data>
+  <data name="Menu_RecatalogSelected" xml:space="preserve">
+    <value>_Selectie opnieuw catalogiseren</value>
+  </data>
+  <data name="Menu_RestoreBackup" xml:space="preserve">
+    <value>Herstellen vanuit back-up...</value>
+  </data>
+  <data name="Menu_Settings" xml:space="preserve">
+    <value>Instellingen...</value>
+  </data>
+  <data name="Menu_ShowAuthor" xml:space="preserve">
+    <value>_Auteurkolom tonen</value>
+  </data>
+  <data name="Menu_ShowFormat" xml:space="preserve">
+    <value>_Formaatkolom tonen</value>
+  </data>
+  <data name="Menu_ShowPublisher" xml:space="preserve">
+    <value>_Uitgeverkolom tonen</value>
+  </data>
+  <data name="Menu_ShowRating" xml:space="preserve">
+    <value>_Beoordelingskolom tonen</value>
+  </data>
+  <data name="Menu_ShowSeries" xml:space="preserve">
+    <value>_Reekskolom tonen</value>
+  </data>
+  <data name="Menu_ShowStatus" xml:space="preserve">
+    <value>_Statuskolom tonen</value>
+  </data>
+  <data name="Menu_ShowThumbnail" xml:space="preserve">
+    <value>_Miniatuurkolom tonen</value>
+  </data>
+  <data name="Menu_ShowYear" xml:space="preserve">
+    <value>_Jaarkolom tonen</value>
+  </data>
+  <data name="Menu_Statistics" xml:space="preserve">
+    <value>Statistieken</value>
+  </data>
+  <data name="Menu_Tools" xml:space="preserve">
+    <value>_Extra</value>
+  </data>
+  <data name="Menu_View" xml:space="preserve">
+    <value>_Beeld</value>
+  </data>
+  <data name="Menu_Window" xml:space="preserve">
+    <value>_Venster</value>
+  </data>
+  <data name="BookDetail_Label_Category" xml:space="preserve">
+    <value>Categorie:</value>
+  </data>
+  <data name="BookDetail_Label_Condition" xml:space="preserve">
+    <value>Staat:</value>
+  </data>
+  <data name="BookDetail_Label_Edition" xml:space="preserve">
+    <value>Editie:</value>
+  </data>
+  <data name="BookDetail_Label_Format" xml:space="preserve">
+    <value>Formaat:</value>
+  </data>
+  <data name="BookDetail_Label_Isbn" xml:space="preserve">
+    <value>ISBN:</value>
+  </data>
+  <data name="BookDetail_Label_Language" xml:space="preserve">
+    <value>Taal:</value>
+  </data>
+  <data name="BookDetail_Label_Location" xml:space="preserve">
+    <value>Locatie:</value>
+  </data>
+  <data name="BookDetail_Label_Owner" xml:space="preserve">
+    <value>Eigenaar:</value>
+  </data>
+  <data name="BookDetail_Label_Pages" xml:space="preserve">
+    <value>Pagina's:</value>
+  </data>
+  <data name="BookDetail_Label_Published" xml:space="preserve">
+    <value>Gepubliceerd:</value>
+  </data>
+  <data name="BookDetail_Label_Rating" xml:space="preserve">
+    <value>Beoordeling:</value>
+  </data>
+  <data name="BookDetail_Label_Status" xml:space="preserve">
+    <value>Status:</value>
+  </data>
+  <data name="BookDetail_Section_BookInfo" xml:space="preserve">
+    <value>Boekinfo</value>
+  </data>
+  <data name="BookEditForm_Button_Remove" xml:space="preserve">
+    <value>Verwijderen</value>
+  </data>
+  <data name="BookEditForm_Flag_Favorite" xml:space="preserve">
+    <value>Favoriet</value>
+  </data>
+  <data name="BookEditForm_Flag_OutOfPrint" xml:space="preserve">
+    <value>Uit de handel</value>
+  </data>
+  <data name="BookEditForm_Flag_Signed" xml:space="preserve">
+    <value>Gesigneerd</value>
+  </data>
+  <data name="BookEditForm_Label_AltTitle" xml:space="preserve">
+    <value>Alternatieve titel</value>
+  </data>
+  <data name="BookEditForm_Label_BookInfo" xml:space="preserve">
+    <value>Boekinfo</value>
+  </data>
+  <data name="BookEditForm_Label_Category" xml:space="preserve">
+    <value>Categorie</value>
+  </data>
+  <data name="BookEditForm_Label_Comments" xml:space="preserve">
+    <value>Opmerkingen</value>
+  </data>
+  <data name="BookEditForm_Label_Condition" xml:space="preserve">
+    <value>Staat</value>
+  </data>
+  <data name="BookEditForm_Label_Copies" xml:space="preserve">
+    <value>Exemplaren</value>
+  </data>
+  <data name="BookEditForm_Label_CopyrightDate" xml:space="preserve">
+    <value>Copyrightdatum</value>
+  </data>
+  <data name="BookEditForm_Label_Edition" xml:space="preserve">
+    <value>Editie</value>
+  </data>
+  <data name="BookEditForm_Label_ExtId" xml:space="preserve">
+    <value>EAN / Ext ID</value>
+  </data>
+  <data name="BookEditForm_Label_Flags" xml:space="preserve">
+    <value>Vlaggen</value>
+  </data>
+  <data name="BookEditForm_Label_Format" xml:space="preserve">
+    <value>Formaat</value>
+  </data>
+  <data name="BookEditForm_Label_Isbn" xml:space="preserve">
+    <value>ISBN</value>
+  </data>
+  <data name="BookEditForm_Label_Keywords" xml:space="preserve">
+    <value>Trefwoorden</value>
+  </data>
+  <data name="BookEditForm_Label_Language" xml:space="preserve">
+    <value>Taal</value>
+  </data>
+  <data name="BookEditForm_Label_ListPrice" xml:space="preserve">
+    <value>Catalogusprijs</value>
+  </data>
+  <data name="BookEditForm_Label_Location" xml:space="preserve">
+    <value>Locatie</value>
+  </data>
+  <data name="BookEditForm_Label_MediaLink" xml:space="preserve">
+    <value>Medialink</value>
+  </data>
+  <data name="BookEditForm_Label_Owner" xml:space="preserve">
+    <value>Eigenaar</value>
+  </data>
+  <data name="BookEditForm_Label_Pages" xml:space="preserve">
+    <value>Pagina's</value>
+  </data>
+  <data name="BookEditForm_Label_PubPlace" xml:space="preserve">
+    <value>Uitgaveplaats</value>
+  </data>
+  <data name="BookEditForm_Label_Publisher" xml:space="preserve">
+    <value>Uitgever</value>
+  </data>
+  <data name="BookEditForm_Label_PurchaseDate" xml:space="preserve">
+    <value>Aankoopdatum</value>
+  </data>
+  <data name="BookEditForm_Label_PurchasePlace" xml:space="preserve">
+    <value>Aankoopplaats</value>
+  </data>
+  <data name="BookEditForm_Label_PurchasePrice" xml:space="preserve">
+    <value>Aankoopprijs</value>
+  </data>
+  <data name="BookEditForm_Label_Qty" xml:space="preserve">
+    <value>ant:</value>
+  </data>
+  <data name="BookEditForm_Label_Rating" xml:space="preserve">
+    <value>Beoordeling</value>
+  </data>
+  <data name="BookEditForm_Label_ReadingLevel" xml:space="preserve">
+    <value>Leesniveau</value>
+  </data>
+  <data name="BookEditForm_Label_Series" xml:space="preserve">
+    <value>Reeks</value>
+  </data>
+  <data name="BookEditForm_Label_SeriesNumber" xml:space="preserve">
+    <value>Reeks #</value>
+  </data>
+  <data name="BookEditForm_Label_Source" xml:space="preserve">
+    <value>Bron</value>
+  </data>
+  <data name="BookEditForm_Label_Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="BookEditForm_Label_Subtitle" xml:space="preserve">
+    <value>Ondertitel</value>
+  </data>
+  <data name="BookEditForm_Label_TimesRead" xml:space="preserve">
+    <value>Aantal keer gelezen</value>
+  </data>
+  <data name="BookEditForm_Label_Title" xml:space="preserve">
+    <value>Titel *</value>
+  </data>
+  <data name="BookEditForm_Label_Year" xml:space="preserve">
+    <value>Jaar</value>
+  </data>
+  <data name="BookEditForm_Tab_Images" xml:space="preserve">
+    <value>Afbeeldingen</value>
+  </data>
+  <data name="BookEditForm_Watermark_Usd" xml:space="preserve">
+    <value>USD</value>
+  </data>
+  <data name="BookList_AdvancedSearch_Button" xml:space="preserve">
+    <value>Geavanceerd zoeken</value>
+  </data>
+  <data name="BookList_AdvancedSearch_Label" xml:space="preserve">
+    <value>Geavanceerd</value>
+  </data>
+  <data name="BookList_ClearSearch_Label" xml:space="preserve">
+    <value>Wissen</value>
+  </data>
+  <data name="BookList_Column_Authors" xml:space="preserve">
+    <value>Auteur(s)</value>
+  </data>
+  <data name="BookList_Column_Cover" xml:space="preserve">
+    <value>Omslag</value>
+  </data>
+  <data name="BookList_Column_Format" xml:space="preserve">
+    <value>Formaat</value>
+  </data>
+  <data name="BookList_Column_Publisher" xml:space="preserve">
+    <value>Uitgever</value>
+  </data>
+  <data name="BookList_Column_Rating" xml:space="preserve">
+    <value>Beoordeling</value>
+  </data>
+  <data name="BookList_Column_Series" xml:space="preserve">
+    <value>Reeks</value>
+  </data>
+  <data name="BookList_Column_Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="BookList_Column_Title" xml:space="preserve">
+    <value>Titel</value>
+  </data>
+  <data name="BookList_Column_Year" xml:space="preserve">
+    <value>Jaar</value>
+  </data>
+  <data name="BookList_ContextMenu_Recatalog" xml:space="preserve">
+    <value>Selectie opnieuw catalogiseren</value>
+  </data>
+  <data name="BookList_Loading" xml:space="preserve">
+    <value>Laden...</value>
+  </data>
+  <data name="BookImageType_BackCover" xml:space="preserve">
+    <value>Achterkant</value>
+  </data>
+  <data name="BookImageType_Cover" xml:space="preserve">
+    <value>Voorkant</value>
+  </data>
+  <data name="BookImageType_DustJacket" xml:space="preserve">
+    <value>Stofomslag</value>
+  </data>
+  <data name="BookImageType_Spine" xml:space="preserve">
+    <value>Rug</value>
+  </data>
+  <data name="BookImageType_Thumbnail" xml:space="preserve">
+    <value>Miniatuur</value>
+  </data>
+  <data name="BorrowerStatus_Active" xml:space="preserve">
+    <value>Actief</value>
+  </data>
+  <data name="BorrowerStatus_Inactive" xml:space="preserve">
+    <value>Inactief</value>
+  </data>
+  <data name="Condition_Fair" xml:space="preserve">
+    <value>Redelijk</value>
+  </data>
+  <data name="Condition_Good" xml:space="preserve">
+    <value>Goed</value>
+  </data>
+  <data name="Condition_LikeNew" xml:space="preserve">
+    <value>Als nieuw</value>
+  </data>
+  <data name="Condition_New" xml:space="preserve">
+    <value>Nieuw</value>
+  </data>
+  <data name="Condition_Poor" xml:space="preserve">
+    <value>Slecht</value>
+  </data>
+  <data name="Condition_VeryGood" xml:space="preserve">
+    <value>Zeer goed</value>
+  </data>
+  <data name="ContributorRole_Author" xml:space="preserve">
+    <value>Auteur</value>
+  </data>
+  <data name="ContributorRole_Colorist" xml:space="preserve">
+    <value>Colorist</value>
+  </data>
+  <data name="ContributorRole_CoverArtist" xml:space="preserve">
+    <value>Omslagkunstenaar</value>
+  </data>
+  <data name="ContributorRole_Designer" xml:space="preserve">
+    <value>Ontwerper</value>
+  </data>
+  <data name="ContributorRole_Editor" xml:space="preserve">
+    <value>Redacteur</value>
+  </data>
+  <data name="ContributorRole_Foreword" xml:space="preserve">
+    <value>Voorwoord</value>
+  </data>
+  <data name="ContributorRole_Illustrator" xml:space="preserve">
+    <value>Illustrator</value>
+  </data>
+  <data name="ContributorRole_Introduction" xml:space="preserve">
+    <value>Inleiding</value>
+  </data>
+  <data name="ContributorRole_Inker" xml:space="preserve">
+    <value>Inkttekenaar</value>
+  </data>
+  <data name="ContributorRole_Letterer" xml:space="preserve">
+    <value>Letteraar</value>
+  </data>
+  <data name="ContributorRole_Penciller" xml:space="preserve">
+    <value>Potloodtekenaar</value>
+  </data>
+  <data name="ContributorRole_Translator" xml:space="preserve">
+    <value>Vertaler</value>
+  </data>
+  <data name="ContributorRole_Writer" xml:space="preserve">
+    <value>Schrijver</value>
+  </data>
+  <data name="Edition_1stEdition" xml:space="preserve">
+    <value>1e editie</value>
+  </data>
+  <data name="Edition_2ndEdition" xml:space="preserve">
+    <value>2e editie</value>
+  </data>
+  <data name="Edition_3rdEdition" xml:space="preserve">
+    <value>3e editie</value>
+  </data>
+  <data name="Edition_CollectorsEdition" xml:space="preserve">
+    <value>Verzamelaarsuitgave</value>
+  </data>
+  <data name="Edition_LimitedEdition" xml:space="preserve">
+    <value>Beperkte oplage</value>
+  </data>
+  <data name="Edition_RevisedEdition" xml:space="preserve">
+    <value>Herziene editie</value>
+  </data>
+  <data name="Edition_SignedEdition" xml:space="preserve">
+    <value>Gesigneerde editie</value>
+  </data>
+  <data name="ImageEditor_NoImage_Back" xml:space="preserve">
+    <value>Geen achterkantafbeelding</value>
+  </data>
+  <data name="ImageEditor_NoImage_DustJacket" xml:space="preserve">
+    <value>Geen stofomslagonafbeelding</value>
+  </data>
+  <data name="ImageEditor_NoImage_Front" xml:space="preserve">
+    <value>Geen voorkantafbeelding</value>
+  </data>
+  <data name="ImageEditor_NoImage_Generic" xml:space="preserve">
+    <value>Geen afbeelding</value>
+  </data>
+  <data name="ImageEditor_NoImage_Spine" xml:space="preserve">
+    <value>Geen rugafbeelding</value>
+  </data>
+  <data name="ImageEditor_NoImage_Thumb" xml:space="preserve">
+    <value>Geen miniatuurafbeelding</value>
+  </data>
+  <data name="ImageEditor_TypeButton_Back" xml:space="preserve">
+    <value>Achterkant</value>
+  </data>
+  <data name="ImageEditor_TypeButton_Front" xml:space="preserve">
+    <value>Voorkant</value>
+  </data>
+  <data name="ImageEditor_TypeButton_Jacket" xml:space="preserve">
+    <value>Stofomslag</value>
+  </data>
+  <data name="ImageEditor_TypeButton_Spine" xml:space="preserve">
+    <value>Rug</value>
+  </data>
+  <data name="ImageEditor_TypeButton_Thumb" xml:space="preserve">
+    <value>Miniatuur</value>
+  </data>
+  <data name="ImageEditor_ManageSection_Heading" xml:space="preserve">
+    <value>Alle afbeeldingen beheren</value>
+  </data>
+  <data name="ImageEditor_ManageItem_MoveUp_Tooltip" xml:space="preserve">
+    <value>Omhoog binnen type</value>
+  </data>
+  <data name="ImageEditor_ManageItem_MoveDown_Tooltip" xml:space="preserve">
+    <value>Omlaag binnen type</value>
+  </data>
+  <data name="ImageEditor_ManageItem_TypePicker_Tooltip" xml:space="preserve">
+    <value>Opnieuw toewijzen aan een ander afbeeldingstype</value>
+  </data>
+  <data name="ImageEditor_ManageItem_Remove_Tooltip" xml:space="preserve">
+    <value>Afbeelding verwijderen</value>
+  </data>
+  <data name="BookList_Thumbnail_Badge_Tooltip" xml:space="preserve">
+    <value>Dubbele afbeeldingstypen — controleer het tabblad Afbeeldingen</value>
+  </data>
+  <data name="Import_Ask_Body" xml:space="preserve">
+    <value>Er bestaat al een boek met hetzelfde ISBN:
+
+"{0}"
+
+Overschrijven met de importgegevens?</value>
+  </data>
+  <data name="Import_Ask_Title" xml:space="preserve">
+    <value>Duplicaat boek — Overschrijven?</value>
+  </data>
+  <data name="Import_BackButton" xml:space="preserve">
+    <value>Terug</value>
+  </data>
+  <data name="Import_ImportButton" xml:space="preserve">
+    <value>Importeren</value>
+  </data>
+  <data name="Import_NextButton" xml:space="preserve">
+    <value>Volgende</value>
+  </data>
+  <data name="Import_Step1_BrowseFolder" xml:space="preserve">
+    <value>Back-upmap selecteren…</value>
+  </data>
+  <data name="Import_Step1_BrowseZip" xml:space="preserve">
+    <value>Bladeren naar back-up-zip…</value>
+  </data>
+  <data name="Import_Step1_CollectionLabel" xml:space="preserve">
+    <value>Importeren in collectie:</value>
+  </data>
+  <data name="Import_Step1_CollectionWatermark" xml:space="preserve">
+    <value>Selecteer een collectie...</value>
+  </data>
+  <data name="Import_Step1_FileLabel" xml:space="preserve">
+    <value>Back-upbestand of -map:</value>
+  </data>
+  <data name="Import_Step1_FileWatermark" xml:space="preserve">
+    <value>Pad naar back-up .zip-bestand of map...</value>
+  </data>
+  <data name="Import_Step1_HelpText" xml:space="preserve">
+    <value>Selecteer een .zip-back-up die is gemaakt door de back-upfunctie van Readerware, of de uitgepakte back-upmap.</value>
+  </data>
+  <data name="Import_Step2_Analyzing" xml:space="preserve">
+    <value>Back-upbestand analyseren...</value>
+  </data>
+  <data name="Import_Step2_Column_Author" xml:space="preserve">
+    <value>Auteur</value>
+  </data>
+  <data name="Import_Step2_Column_Cover" xml:space="preserve">
+    <value>Omslag</value>
+  </data>
+  <data name="Import_Step2_Column_Isbn" xml:space="preserve">
+    <value>ISBN</value>
+  </data>
+  <data name="Import_Step2_Column_Note" xml:space="preserve">
+    <value>Notitie</value>
+  </data>
+  <data name="Import_Step2_Column_RowNumber" xml:space="preserve">
+    <value>#</value>
+  </data>
+  <data name="Import_Step2_Column_Title" xml:space="preserve">
+    <value>Titel</value>
+  </data>
+  <data name="Import_Step2_WarningsHeader" xml:space="preserve">
+    <value>{0} item(s) gemarkeerd tijdens de analyse — klik voor details</value>
+  </data>
+  <data name="Import_Step2_PotentialDuplicates" xml:space="preserve">
+    <value>Mogelijke duplicaten:</value>
+  </data>
+  <data name="Import_Step2_TotalRecords" xml:space="preserve">
+    <value>Totaal aantal records:</value>
+  </data>
+  <data name="Import_Step2_WithCovers" xml:space="preserve">
+    <value>Met omslag:</value>
+  </data>
+  <data name="Import_Step2_WithIsbn" xml:space="preserve">
+    <value>Met ISBN:</value>
+  </data>
+  <data name="Import_Step2_WithoutIsbn" xml:space="preserve">
+    <value>Zonder ISBN:</value>
+  </data>
+  <data name="Import_Step3_HelpText" xml:space="preserve">
+    <value>Klik op Importeren om te beginnen. Deze bewerking kan op elk moment worden geannuleerd.</value>
+  </data>
+  <data name="Import_Step3_ReviewLabel" xml:space="preserve">
+    <value>Controleer en bevestig je import:</value>
+  </data>
+  <data name="Import_Step3_Summary" xml:space="preserve">
+    <value>Klaar om {0} records te importeren
+Met ISBN: {1}  |  Zonder ISBN: {2}
+Mogelijke duplicaten: {3}  |  Met omslag: {4}</value>
+  </data>
+  <data name="Import_Step4_CancelButton" xml:space="preserve">
+    <value>Import annuleren</value>
+  </data>
+  <data name="Import_Step4_Cancelling" xml:space="preserve">
+    <value>Import annuleren...</value>
+  </data>
+  <data name="Import_Step4_Importing" xml:space="preserve">
+    <value>Records importeren...</value>
+  </data>
+  <data name="Import_Step4_Progress" xml:space="preserve">
+    <value>{0} van {1} records</value>
+  </data>
+  <data name="Import_Step5_Cancelled" xml:space="preserve">
+    <value>Import is geannuleerd. Gedeeltelijke records zijn opgeslagen.</value>
+  </data>
+  <data name="Import_Step5_ErrorsLabel" xml:space="preserve">
+    <value>Fouten:</value>
+  </data>
+  <data name="Import_Step5_FlaggedNoIsbn" xml:space="preserve">
+    <value>Gemarkeerd (geen ISBN):</value>
+  </data>
+  <data name="Import_Step5_Heading" xml:space="preserve">
+    <value>Importresultaten</value>
+  </data>
+  <data name="Import_Step5_Imported" xml:space="preserve">
+    <value>Geïmporteerd:</value>
+  </data>
+  <data name="Import_Step5_Skipped" xml:space="preserve">
+    <value>Overgeslagen:</value>
+  </data>
+  <data name="Import_Step5_Updated" xml:space="preserve">
+    <value>Bijgewerkt:</value>
+  </data>
+  <data name="Import_StepIndicator" xml:space="preserve">
+    <value>Stap {0} van {1}</value>
+  </data>
+  <data name="Import_StepTitle_Complete" xml:space="preserve">
+    <value>Import voltooid</value>
+  </data>
+  <data name="Import_StepTitle_Confirm" xml:space="preserve">
+    <value>Import bevestigen</value>
+  </data>
+  <data name="Import_StepTitle_Default" xml:space="preserve">
+    <value>Importeren vanuit Readerware</value>
+  </data>
+  <data name="Import_StepTitle_FileSelect" xml:space="preserve">
+    <value>Back-upbestand selecteren</value>
+  </data>
+  <data name="Import_StepTitle_Preview" xml:space="preserve">
+    <value>Import voorbeeld</value>
+  </data>
+  <data name="Import_StepTitle_Progress" xml:space="preserve">
+    <value>Importeren...</value>
+  </data>
+  <data name="Import_WindowTitle" xml:space="preserve">
+    <value>Importeren vanuit Readerware</value>
+  </data>
+  <data name="Format_Audiobook" xml:space="preserve">
+    <value>Luisterboek</value>
+  </data>
+  <data name="Format_Comic" xml:space="preserve">
+    <value>Strip</value>
+  </data>
+  <data name="Format_Ebook" xml:space="preserve">
+    <value>E-boek</value>
+  </data>
+  <data name="Format_GraphicNovel" xml:space="preserve">
+    <value>Graphic novel</value>
+  </data>
+  <data name="Format_Hardcover" xml:space="preserve">
+    <value>Hardcover</value>
+  </data>
+  <data name="Format_Magazine" xml:space="preserve">
+    <value>Tijdschrift</value>
+  </data>
+  <data name="Format_MassMarketPaperback" xml:space="preserve">
+    <value>Pocket</value>
+  </data>
+  <data name="Format_Paperback" xml:space="preserve">
+    <value>Paperback</value>
+  </data>
+  <data name="Format_TradePaperback" xml:space="preserve">
+    <value>Trade Paperback</value>
+  </data>
+  <data name="Language_Danish" xml:space="preserve">
+    <value>Deens</value>
+  </data>
+
+  <data name="Language_Finnish" xml:space="preserve">
+    <value>Fins</value>
+  </data>
+  <data name="Language_French" xml:space="preserve">
+    <value>Frans</value>
+  </data>
+  <data name="Language_German" xml:space="preserve">
+    <value>Duits</value>
+  </data>
+  <data name="Language_Italian" xml:space="preserve">
+    <value>Italiaans</value>
+  </data>
+  <data name="Language_Japanese" xml:space="preserve">
+    <value>Japans</value>
+  </data>
+  <data name="Language_Norwegian" xml:space="preserve">
+    <value>Noors</value>
+  </data>
+  <data name="Language_Spanish" xml:space="preserve">
+    <value>Spaans</value>
+  </data>
+  <data name="Language_Swedish" xml:space="preserve">
+    <value>Zweeds</value>
+  </data>
+  <data name="Rating_1Star" xml:space="preserve">
+    <value>1 ster</value>
+  </data>
+  <data name="Rating_2Stars" xml:space="preserve">
+    <value>2 sterren</value>
+  </data>
+  <data name="Rating_3Stars" xml:space="preserve">
+    <value>3 sterren</value>
+  </data>
+  <data name="Rating_4Stars" xml:space="preserve">
+    <value>4 sterren</value>
+  </data>
+  <data name="Rating_5Stars" xml:space="preserve">
+    <value>5 sterren</value>
+  </data>
+  <data name="ReadingLevel_Adult" xml:space="preserve">
+    <value>Volwassen</value>
+  </data>
+  <data name="ReadingLevel_EasyReader" xml:space="preserve">
+    <value>Makkelijk leesbaar</value>
+  </data>
+  <data name="ReadingLevel_MiddleGrade" xml:space="preserve">
+    <value>Middelbouw</value>
+  </data>
+  <data name="ReadingLevel_YoungAdult" xml:space="preserve">
+    <value>Jongvolwassene</value>
+  </data>
+  <data name="Print_ClearAll" xml:space="preserve">
+    <value>Alles wissen</value>
+  </data>
+  <data name="Print_ColumnsHeading" xml:space="preserve">
+    <value>Op te nemen kolommen:</value>
+  </data>
+  <data name="Print_ConfirmDeletePreset" xml:space="preserve">
+    <value>Voorinstelling verwijderen</value>
+  </data>
+  <data name="Print_DeletePreset" xml:space="preserve">
+    <value>Verwijderen</value>
+  </data>
+  <data name="Print_DeletePresetConfirm" xml:space="preserve">
+    <value>'{0}' verwijderen? Dit kan niet ongedaan worden gemaakt.</value>
+  </data>
+  <data name="Print_FontSizeLabel" xml:space="preserve">
+    <value>Lettergrootte:</value>
+  </data>
+  <data name="Print_FooterLabel" xml:space="preserve">
+    <value>Voettekst:</value>
+  </data>
+  <data name="Print_FooterWatermark" xml:space="preserve">
+    <value>Paginanummers worden automatisch toegevoegd</value>
+  </data>
+  <data name="Print_HeaderLabel" xml:space="preserve">
+    <value>Koptekst:</value>
+  </data>
+  <data name="Print_Heading" xml:space="preserve">
+    <value>Lijst afdrukken</value>
+  </data>
+  <data name="Print_MarginH" xml:space="preserve">
+    <value>H:</value>
+  </data>
+  <data name="Print_MarginsLabel" xml:space="preserve">
+    <value>Marges (mm):</value>
+  </data>
+  <data name="Print_MarginV" xml:space="preserve">
+    <value>V:</value>
+  </data>
+  <data name="Print_NewPreset" xml:space="preserve">
+    <value>Nieuw…</value>
+  </data>
+  <data name="Print_OrientationLabel" xml:space="preserve">
+    <value>Afdrukstand:</value>
+  </data>
+  <data name="Print_OrientationLandscape" xml:space="preserve">
+    <value>Liggend</value>
+  </data>
+  <data name="Print_OrientationPortrait" xml:space="preserve">
+    <value>Staand</value>
+  </data>
+  <data name="Print_PresetLabel" xml:space="preserve">
+    <value>Voorinstelling:</value>
+  </data>
+  <data name="Print_PresetNameLabel" xml:space="preserve">
+    <value>Naam:</value>
+  </data>
+  <data name="Print_PreviewButton" xml:space="preserve">
+    <value>Voorbeeld / Afdrukken</value>
+  </data>
+  <data name="Print_RenamePreset" xml:space="preserve">
+    <value>Hernoemen…</value>
+  </data>
+  <data name="Print_SaveAsPdfButton" xml:space="preserve">
+    <value>Opslaan als PDF…</value>
+  </data>
+  <data name="Print_SelectAll" xml:space="preserve">
+    <value>Alles selecteren</value>
+  </data>
+  <data name="Print_WindowTitle" xml:space="preserve">
+    <value>Lijst afdrukken</value>
+  </data>
+  <data name="Print_Column_Added" xml:space="preserve">
+    <value>Toegevoegd</value>
+  </data>
+  <data name="Print_Column_AltTitle" xml:space="preserve">
+    <value>Alt. titel</value>
+  </data>
+  <data name="Print_Column_Authors" xml:space="preserve">
+    <value>Auteur</value>
+  </data>
+  <data name="Print_Column_Collection" xml:space="preserve">
+    <value>Collectie</value>
+  </data>
+  <data name="Print_Column_Comments" xml:space="preserve">
+    <value>Opmerkingen</value>
+  </data>
+  <data name="Print_Column_Condition" xml:space="preserve">
+    <value>Staat</value>
+  </data>
+  <data name="Print_Column_Copies" xml:space="preserve">
+    <value>Exemplaren</value>
+  </data>
+  <data name="Print_Column_Edition" xml:space="preserve">
+    <value>Editie</value>
+  </data>
+  <data name="Print_Column_Favorite" xml:space="preserve">
+    <value>Favoriet</value>
+  </data>
+  <data name="Print_Column_Format" xml:space="preserve">
+    <value>Formaat</value>
+  </data>
+  <data name="Print_Column_ISBN" xml:space="preserve">
+    <value>ISBN</value>
+  </data>
+  <data name="Print_Column_Keywords" xml:space="preserve">
+    <value>Trefwoorden</value>
+  </data>
+  <data name="Print_Column_Language" xml:space="preserve">
+    <value>Taal</value>
+  </data>
+  <data name="Print_Column_Location" xml:space="preserve">
+    <value>Locatie</value>
+  </data>
+  <data name="Print_Column_OutOfPrint" xml:space="preserve">
+    <value>Uit de handel</value>
+  </data>
+  <data name="Print_Column_Owner" xml:space="preserve">
+    <value>Eigenaar</value>
+  </data>
+  <data name="Print_Column_Pages" xml:space="preserve">
+    <value>Pagina's</value>
+  </data>
+  <data name="Print_Column_PubDate" xml:space="preserve">
+    <value>Jaar</value>
+  </data>
+  <data name="Print_Column_PubPlace" xml:space="preserve">
+    <value>Uitgaveplaats</value>
+  </data>
+  <data name="Print_Column_Publisher" xml:space="preserve">
+    <value>Uitgever</value>
+  </data>
+  <data name="Print_Column_PurchaseCurrency" xml:space="preserve">
+    <value>Valuta</value>
+  </data>
+  <data name="Print_Column_PurchasePrice" xml:space="preserve">
+    <value>Aankoopprijs</value>
+  </data>
+  <data name="Print_Column_Rating" xml:space="preserve">
+    <value>Beoordeling</value>
+  </data>
+  <data name="Print_Column_ReadCount" xml:space="preserve">
+    <value>Leesaantal</value>
+  </data>
+  <data name="Print_Column_Series" xml:space="preserve">
+    <value>Reeks</value>
+  </data>
+  <data name="Print_Column_SeriesNumber" xml:space="preserve">
+    <value>Reeks #</value>
+  </data>
+  <data name="Print_Column_Signed" xml:space="preserve">
+    <value>Gesigneerd</value>
+  </data>
+  <data name="Print_Column_Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Print_Column_Subtitle" xml:space="preserve">
+    <value>Ondertitel</value>
+  </data>
+  <data name="Print_Column_Title" xml:space="preserve">
+    <value>Titel</value>
+  </data>
+  <data name="Print_Column_Updated" xml:space="preserve">
+    <value>Bijgewerkt</value>
+  </data>
+  <data name="Print_DefaultHeaderTitle" xml:space="preserve">
+    <value>Boekenlijst</value>
+  </data>
+  <data name="Print_Error_PresetNameDuplicate" xml:space="preserve">
+    <value>Er bestaat al een voorinstelling met deze naam.</value>
+  </data>
+  <data name="Print_Error_PresetNameEmpty" xml:space="preserve">
+    <value>Naam van de voorinstelling mag niet leeg zijn.</value>
+  </data>
+  <data name="Print_Error_PresetSaveFailed" xml:space="preserve">
+    <value>Opslaan mislukt. Wijzigingen worden mogelijk niet bewaard na herstart.</value>
+  </data>
+  <data name="Print_Footer_PageFormat" xml:space="preserve">
+    <value>Pagina {0} van {1}</value>
+  </data>
+  <data name="Print_ScopeSummary_Multiple" xml:space="preserve">
+    <value>{0} boeken afdrukken uit het huidige filter.</value>
+  </data>
+  <data name="Print_ScopeSummary_None" xml:space="preserve">
+    <value>Geen boeken komen overeen met het huidige filter. Niets om af te drukken.</value>
+  </data>
+  <data name="Print_ScopeSummary_Single" xml:space="preserve">
+    <value>{0} boek afdrukken uit het huidige filter.</value>
+  </data>
+  <data name="Print_StandardPresetDisplayName" xml:space="preserve">
+    <value>Standard</value>
+  </data>
+  <data name="Settings_Advanced_AutoBackup" xml:space="preserve">
+    <value>Automatische back-up bij afsluiten</value>
+  </data>
+  <data name="Settings_Advanced_BackupFolder" xml:space="preserve">
+    <value>Map voor automatische back-up</value>
+  </data>
+  <data name="Settings_Advanced_BackupFolderWatermark" xml:space="preserve">
+    <value>(niet ingesteld — klik op Bladeren)</value>
+  </data>
+  <data name="Settings_Advanced_BackupFormat" xml:space="preserve">
+    <value>Indeling voor automatische back-up</value>
+  </data>
+  <data name="Settings_Advanced_Browse" xml:space="preserve">
+    <value>Bladeren…</value>
+  </data>
+  <data name="Settings_Advanced_Logging_Label" xml:space="preserve">
+    <value>Logboekregistratie</value>
+  </data>
+  <data name="Settings_Advanced_Logging_Level_Label" xml:space="preserve">
+    <value>Logniveau</value>
+  </data>
+  <data name="Settings_Advanced_Logging_Level_Normal" xml:space="preserve">
+    <value>Normaal (fouten en waarschuwingen)</value>
+  </data>
+  <data name="Settings_Advanced_Logging_Level_Verbose" xml:space="preserve">
+    <value>Uitgebreid (alle berichten)</value>
+  </data>
+  <data name="Settings_Advanced_Logging_OpenLogFile" xml:space="preserve">
+    <value>Logbestand openen…</value>
+  </data>
+  <data name="Settings_Advanced_Logging_RestartNote" xml:space="preserve">
+    <value>Wijziging van logniveau wordt van kracht bij de volgende start.</value>
+  </data>
+  <data name="Settings_Browse_AuthorFacetLabel" xml:space="preserve">
+    <value>Label voor auteursfacet</value>
+  </data>
+  <data name="Settings_Browse_DisplayName" xml:space="preserve">
+    <value>Weergavenaam (Jan de Vries)</value>
+  </data>
+  <data name="Settings_Browse_SortName" xml:space="preserve">
+    <value>Sorteernaam (De Vries, Jan)</value>
+  </data>
+  <data name="Settings_General_Language" xml:space="preserve">
+    <value>Taal</value>
+  </data>
+  <data name="Settings_General_LanguageRestartNote" xml:space="preserve">
+    <value>Taalwijziging wordt van kracht bij de volgende start.</value>
+  </data>
+  <data name="Settings_General_DefaultCollection" xml:space="preserve">
+    <value>Standaard collectie</value>
+  </data>
+  <data name="Settings_Import_OverwritePolicy" xml:space="preserve">
+    <value>Overschrijfbeleid</value>
+  </data>
+  <data name="Settings_Import_ReaderwareToolPath" xml:space="preserve">
+    <value>Readerware-hulpprogrammamap</value>
+  </data>
+  <data name="Settings_Import_ReaderwareToolPathWatermark" xml:space="preserve">
+    <value>Pad naar de map met HSQLDB- en Java-hulpprogramma's</value>
+  </data>
+  <data name="Settings_Import_ReaderwareToolPathHint" xml:space="preserve">
+    <value>Map met de HSQLDB-runtime (jre\bin\java.exe en lib\hsqldb.jar) die wordt gebruikt om een actieve Readerware-database rechtstreeks te lezen.</value>
+  </data>
+  <data name="Settings_Lookup_LibrisKB" xml:space="preserve">
+    <value>Libris KB</value>
+  </data>
+  <data name="Settings_Lookup_GoogleBooks" xml:space="preserve">
+    <value>Google Books</value>
+  </data>
+  <data name="Settings_Lookup_OpenLibrary" xml:space="preserve">
+    <value>Open Library</value>
+  </data>
+  <data name="Settings_Lookup_IsbnSearchOrg" xml:space="preserve">
+    <value>IsbnSearch.org</value>
+  </data>
+  <data name="Settings_Lookup_Enabled" xml:space="preserve">
+    <value>Ingeschakeld</value>
+  </data>
+  <data name="Settings_Tab_Advanced" xml:space="preserve">
+    <value>Geavanceerd</value>
+  </data>
+  <data name="Settings_Tab_Browse" xml:space="preserve">
+    <value>Bladeren</value>
+  </data>
+  <data name="Settings_Tab_General" xml:space="preserve">
+    <value>Algemeen</value>
+  </data>
+  <data name="Settings_Tab_Import" xml:space="preserve">
+    <value>Importeren</value>
+  </data>
+  <data name="Settings_Tab_Lookup" xml:space="preserve">
+    <value>Opzoeken</value>
+  </data>
+  <data name="Settings_WindowTitle" xml:space="preserve">
+    <value>Instellingen</value>
+  </data>
+  <data name="Statistics_Column_Collection" xml:space="preserve">
+    <value>Collectie</value>
+  </data>
+  <data name="Statistics_Column_Count" xml:space="preserve">
+    <value>Aantal (%)</value>
+  </data>
+  <data name="Statistics_Column_Format" xml:space="preserve">
+    <value>Formaat</value>
+  </data>
+  <data name="Statistics_Column_Language" xml:space="preserve">
+    <value>Taal</value>
+  </data>
+  <data name="Statistics_Column_Year" xml:space="preserve">
+    <value>Jaar</value>
+  </data>
+  <data name="Statistics_Label_TotalBooks" xml:space="preserve">
+    <value>Totaal boeken</value>
+  </data>
+  <data name="Statistics_RefreshButton" xml:space="preserve">
+    <value>Vernieuwen</value>
+  </data>
+  <data name="Statistics_Section_ByCollection" xml:space="preserve">
+    <value>Per collectie</value>
+  </data>
+  <data name="Statistics_Section_ByFormat" xml:space="preserve">
+    <value>Per formaat</value>
+  </data>
+  <data name="Statistics_Section_ByLanguage" xml:space="preserve">
+    <value>Per taal</value>
+  </data>
+  <data name="Statistics_Section_BooksPerYear" xml:space="preserve">
+    <value>Boeken toegevoegd per jaar</value>
+  </data>
+  <data name="Statistics_Section_ByYear" xml:space="preserve">
+    <value>Per publicatiejaar</value>
+  </data>
+  <data name="Statistics_Section_Summary" xml:space="preserve">
+    <value>Samenvatting</value>
+  </data>
+  <data name="Statistics_WindowTitle" xml:space="preserve">
+    <value>Statistieken</value>
+  </data>
+  <data name="Status_Borrowed" xml:space="preserve">
+    <value>Uitgeleend</value>
+  </data>
+  <data name="Status_GivenAway" xml:space="preserve">
+    <value>Weggegeven</value>
+  </data>
+  <data name="Status_OnOrder" xml:space="preserve">
+    <value>Besteld</value>
+  </data>
+  <data name="Status_Owned" xml:space="preserve">
+    <value>In bezit</value>
+  </data>
+  <data name="Status_Sold" xml:space="preserve">
+    <value>Verkocht</value>
+  </data>
+  <data name="Status_Wishlist" xml:space="preserve">
+    <value>Verlanglijst</value>
+  </data>
+  <data name="AddBook_Label_Author" xml:space="preserve">
+    <value>Auteur</value>
+  </data>
+  <data name="AddBook_Label_Isbn" xml:space="preserve">
+    <value>ISBN</value>
+  </data>
+  <data name="AddBook_Label_Title" xml:space="preserve">
+    <value>Titel *</value>
+  </data>
+  <data name="AddBook_Label_Collection" xml:space="preserve">
+    <value>Collectie</value>
+  </data>
+  <data name="AddBook_Label_Year" xml:space="preserve">
+    <value>Jaar</value>
+  </data>
+  <data name="AdvancedSearch_AddCondition" xml:space="preserve">
+    <value>+ Voorwaarde toevoegen</value>
+  </data>
+  <data name="AdvancedSearch_ConditionsLabel" xml:space="preserve">
+    <value>van de volgende voorwaarden:</value>
+  </data>
+  <data name="AdvancedSearch_EditTitle" xml:space="preserve">
+    <value>Zoekopdracht bewerken</value>
+  </data>
+  <data name="AdvancedSearch_MatchCountFormat" xml:space="preserve">
+    <value>{0} overeenkomende boeken</value>
+  </data>
+  <data name="AdvancedSearch_TestButton" xml:space="preserve">
+    <value>Testen</value>
+  </data>
+  <data name="AdvancedSearch_MatchLabel" xml:space="preserve">
+    <value>Overeenkomen</value>
+  </data>
+  <data name="AdvancedSearch_SearchButton" xml:space="preserve">
+    <value>Zoeken</value>
+  </data>
+  <data name="BatchQueue_Idle" xml:space="preserve">
+    <value>Geen batch bezig</value>
+  </data>
+  <data name="BatchQueue_Label_AutoAccepted" xml:space="preserve">
+    <value>Automatisch geaccepteerd (geen conflicten):</value>
+  </data>
+  <data name="BatchQueue_Label_NotFound" xml:space="preserve">
+    <value>Niet gevonden:</value>
+  </data>
+  <data name="BatchQueue_Label_PendingReview" xml:space="preserve">
+    <value>Wacht op controle:</value>
+  </data>
+  <data name="BatchQueue_Label_Saved" xml:space="preserve">
+    <value>Opgeslagen:</value>
+  </data>
+  <data name="BatchQueue_Label_Skipped" xml:space="preserve">
+    <value>Geen nieuwe gegevens (overgeslagen):</value>
+  </data>
+  <data name="BatchQueue_Minimize" xml:space="preserve">
+    <value>Minimaliseren</value>
+  </data>
+  <data name="BatchQueue_Pause" xml:space="preserve">
+    <value>Pauzeren</value>
+  </data>
+  <data name="BatchQueue_Paused" xml:space="preserve">
+    <value>Gepauzeerd — klik op Hervatten om door te gaan</value>
+  </data>
+  <data name="BatchQueue_Processing" xml:space="preserve">
+    <value>Verwerken: {0}</value>
+  </data>
+  <data name="BatchQueue_Resume" xml:space="preserve">
+    <value>Hervatten</value>
+  </data>
+  <data name="BulkEdit_ConfirmSummary" xml:space="preserve">
+    <value>{0} wijzigen naar "{1}" voor {2} boeken.</value>
+  </data>
+  <data name="BulkEdit_FieldLabel" xml:space="preserve">
+    <value>Te wijzigen veld:</value>
+  </data>
+  <data name="BulkEdit_Header" xml:space="preserve">
+    <value>{0} boeken bulkbewerken</value>
+  </data>
+  <data name="BulkEdit_ValueLabel" xml:space="preserve">
+    <value>Nieuwe waarde:</value>
+  </data>
+  <data name="BulkEditField_Format" xml:space="preserve">
+    <value>Formaat</value>
+  </data>
+  <data name="BulkEditField_Language" xml:space="preserve">
+    <value>Taal</value>
+  </data>
+  <data name="BulkEditField_Location" xml:space="preserve">
+    <value>Locatie</value>
+  </data>
+  <data name="BulkEditField_Owner" xml:space="preserve">
+    <value>Eigenaar</value>
+  </data>
+  <data name="BulkEditField_Rating" xml:space="preserve">
+    <value>Beoordeling</value>
+  </data>
+  <data name="BulkEditField_Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="CsvPicker_ClearAll" xml:space="preserve">
+    <value>Alles wissen</value>
+  </data>
+  <data name="CsvPicker_ExportButton" xml:space="preserve">
+    <value>CSV exporteren</value>
+  </data>
+  <data name="CsvPicker_Heading" xml:space="preserve">
+    <value>Selecteer kolommen om op te nemen in de export:</value>
+  </data>
+  <data name="CsvPicker_SelectAll" xml:space="preserve">
+    <value>Alles selecteren</value>
+  </data>
+  <data name="CsvPicker_WindowTitle" xml:space="preserve">
+    <value>Exportkolommen selecteren</value>
+  </data>
+  <data name="LookupWizard_LookingUp" xml:space="preserve">
+    <value>Opzoeken…</value>
+  </data>
+  <data name="Merge_Column_Field" xml:space="preserve">
+    <value>Veld</value>
+  </data>
+  <data name="Merge_Cover_Label" xml:space="preserve">
+    <value>Omslag</value>
+  </data>
+  <data name="Person_Column_Apply" xml:space="preserve">
+    <value>Toepassen</value>
+  </data>
+  <data name="Person_Column_CurrentName" xml:space="preserve">
+    <value>Huidige naam</value>
+  </data>
+  <data name="Person_Column_ProposedName" xml:space="preserve">
+    <value>Voorgestelde naam</value>
+  </data>
+  <data name="Person_Column_SortName" xml:space="preserve">
+    <value>Sorteernaam</value>
+  </data>
+  <data name="Person_Label_Bio" xml:space="preserve">
+    <value>Biografie:</value>
+  </data>
+  <data name="Person_Label_Birthplace" xml:space="preserve">
+    <value>Geboorteplaats:</value>
+  </data>
+  <data name="Person_Label_Born" xml:space="preserve">
+    <value>Geboren:</value>
+  </data>
+  <data name="Person_Label_DeathPlace" xml:space="preserve">
+    <value>Overlijdensplaats:</value>
+  </data>
+  <data name="Person_Label_Died" xml:space="preserve">
+    <value>Gestorven:</value>
+  </data>
+  <data name="Person_Label_Website" xml:space="preserve">
+    <value>Website:</value>
+  </data>
+  <data name="Person_Merge_Arrow" xml:space="preserve">
+    <value>→</value>
+  </data>
+  <data name="Person_Merge_Heading" xml:space="preserve">
+    <value>Personen samenvoegen</value>
+  </data>
+  <data name="Person_Section_Bio" xml:space="preserve">
+    <value>Biografische gegevens</value>
+  </data>
+  <data name="Person_Bio_SaveButton" xml:space="preserve">
+    <value>Biografie opslaan</value>
+  </data>
+  <data name="Person_ErrorBioSaveFailed" xml:space="preserve">
+    <value>Bio save failed — see log.</value>
+  </data>
+  <data name="SearchCombinator_And" xml:space="preserve">
+    <value>EN</value>
+  </data>
+  <data name="SearchCombinator_Or" xml:space="preserve">
+    <value>OF</value>
+  </data>
+  <data name="SearchField_Author" xml:space="preserve">
+    <value>Auteur</value>
+  </data>
+  <data name="SearchField_Category" xml:space="preserve">
+    <value>Categorie</value>
+  </data>
+  <data name="SearchField_Comments" xml:space="preserve">
+    <value>Opmerkingen</value>
+  </data>
+  <data name="SearchField_Format" xml:space="preserve">
+    <value>Formaat</value>
+  </data>
+  <data name="SearchField_Isbn" xml:space="preserve">
+    <value>ISBN</value>
+  </data>
+  <data name="SearchField_Keywords" xml:space="preserve">
+    <value>Trefwoorden</value>
+  </data>
+  <data name="SearchField_Language" xml:space="preserve">
+    <value>Taal</value>
+  </data>
+  <data name="SearchField_Location" xml:space="preserve">
+    <value>Locatie</value>
+  </data>
+  <data name="SearchField_Owner" xml:space="preserve">
+    <value>Eigenaar</value>
+  </data>
+  <data name="SearchField_Publisher" xml:space="preserve">
+    <value>Uitgever</value>
+  </data>
+  <data name="SearchField_Rating" xml:space="preserve">
+    <value>Beoordeling</value>
+  </data>
+  <data name="SearchField_Series" xml:space="preserve">
+    <value>Reeks</value>
+  </data>
+  <data name="SearchField_Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="SearchField_Title" xml:space="preserve">
+    <value>Titel</value>
+  </data>
+  <data name="SearchField_Year" xml:space="preserve">
+    <value>Jaar</value>
+  </data>
+  <data name="SearchOperator_NotContains" xml:space="preserve">
+    <value>Bevat niet</value>
+  </data>
+  <data name="SearchOperator_NotEquals" xml:space="preserve">
+    <value>Is niet gelijk aan</value>
+  </data>
+  <data name="SearchOperator_Contains" xml:space="preserve">
+    <value>Bevat</value>
+  </data>
+  <data name="SearchOperator_EndsWith" xml:space="preserve">
+    <value>Eindigt op</value>
+  </data>
+  <data name="SearchOperator_Equals" xml:space="preserve">
+    <value>Is gelijk aan</value>
+  </data>
+  <data name="SearchOperator_IsEmpty" xml:space="preserve">
+    <value>Is leeg</value>
+  </data>
+  <data name="SearchOperator_IsNotEmpty" xml:space="preserve">
+    <value>Is niet leeg</value>
+  </data>
+  <data name="SearchOperator_StartsWith" xml:space="preserve">
+    <value>Begint met</value>
+  </data>
+  <data name="ContextMenu_Edit" xml:space="preserve">
+    <value>Bewerken</value>
+  </data>
+  <data name="ContextMenu_OpenInWindow" xml:space="preserve">
+    <value>Openen in venster</value>
+  </data>
+  <data name="ContextMenu_Duplicate" xml:space="preserve">
+    <value>Dupliceren</value>
+  </data>
+  <data name="DuplicateBook_TitlePrefix" xml:space="preserve">
+    <value>Kopie: </value>
+  </data>
+  <data name="ContextMenu_Delete" xml:space="preserve">
+    <value>Verwijderen</value>
+  </data>
+  <data name="ContextMenu_BulkEdit" xml:space="preserve">
+    <value>Bulkbewerking</value>
+  </data>
+  <data name="ContextMenu_MoveToCollection" xml:space="preserve">
+    <value>Verplaatsen naar collectie</value>
+  </data>
+  <data name="ContextMenu_CopyIsbn" xml:space="preserve">
+    <value>ISBN kopiëren</value>
+  </data>
+  <data name="ContextMenu_CopyTitle" xml:space="preserve">
+    <value>Titel kopiëren</value>
+  </data>
+  <data name="MainWindow_Toolbar_NewBook" xml:space="preserve">
+    <value>Nieuw boek</value>
+  </data>
+  <data name="Menu_Help" xml:space="preserve">
+    <value>_Help</value>
+  </data>
+  <data name="Menu_AboutBookDB" xml:space="preserve">
+    <value>_Over BookDB…</value>
+  </data>
+  <data name="About_Title" xml:space="preserve">
+    <value>Over BookDB</value>
+  </data>
+  <data name="About_Copyright" xml:space="preserve">
+    <value>© 2026 Ulf Axelsson</value>
+  </data>
+  <data name="About_AppName" xml:space="preserve">
+    <value>BookDB</value>
+  </data>
+  <data name="Splash_Status_Initializing" xml:space="preserve">
+    <value>Opstarten…</value>
+  </data>
+  <data name="Splash_Status_ApplyingMigrations" xml:space="preserve">
+    <value>Database bijwerken…</value>
+  </data>
+  <data name="Splash_Status_ApplyingMigrationsCount" xml:space="preserve">
+    <value>Database bijwerken… ({0} van {1})</value>
+  </data>
+  <data name="Splash_Status_LoadingLibrary" xml:space="preserve">
+    <value>Je bibliotheek laden…</value>
+  </data>
+  <data name="Splash_Status_RestoringSession" xml:space="preserve">
+    <value>Sessie herstellen…</value>
+  </data>
+  <data name="Splash_Status_Finishing" xml:space="preserve">
+    <value>Bijna klaar…</value>
+  </data>
+  <data name="AppDialog_Info_Title" xml:space="preserve">
+    <value>BookDB</value>
+  </data>
+  <data name="AppDialog_Yes_Button" xml:space="preserve">
+    <value>Ja</value>
+  </data>
+  <data name="AppDialog_No_Button" xml:space="preserve">
+    <value>Nee</value>
+  </data>
+  <data name="AppDialog_BackupConflict_Title" xml:space="preserve">
+    <value>Bestand bestaat al</value>
+  </data>
+  <data name="AppDialog_BackupConflict_Overwrite" xml:space="preserve">
+    <value>Overschrijven</value>
+  </data>
+  <data name="AppDialog_BackupConflict_SaveAs" xml:space="preserve">
+    <value>Opslaan als {0}</value>
+  </data>
+  <data name="AppDialog_BackupConflict_Body" xml:space="preserve">
+    <value>{0} bestaat al in de back-upmap.</value>
+  </data>
+  <data name="AppDialog_Progress_Title" xml:space="preserve">
+    <value>BookDB</value>
+  </data>
+  <data name="AppDialog_Progress_PleaseWait" xml:space="preserve">
+    <value>Even geduld...</value>
+  </data>
+  <data name="DuplicateIsbn_Title" xml:space="preserve">
+    <value>Dubbel ISBN</value>
+  </data>
+  <data name="DuplicateIsbn_UpdateExisting" xml:space="preserve">
+    <value>Bestaande bijwerken</value>
+  </data>
+  <data name="DuplicateIsbn_AddAsNew" xml:space="preserve">
+    <value>Als nieuw toevoegen</value>
+  </data>
+  <data name="DuplicateIsbn_Body" xml:space="preserve">
+    <value>Er bestaat al een boek met ISBN {0} ({1}). Bestaand boek bijwerken of als nieuw toevoegen?</value>
+  </data>
+  <data name="Delete_Dialog_Title" xml:space="preserve">
+    <value>Verwijdering bevestigen</value>
+  </data>
+  <data name="Recatalog_NoIsbn_Watermark" xml:space="preserve">
+    <value>ISBN invoeren...</value>
+  </data>
+  <data name="Recatalog_NoIsbn_LookUp" xml:space="preserve">
+    <value>Opzoeken</value>
+  </data>
+  <data name="StatusBar_BookCount_All" xml:space="preserve">
+    <value>{0:N0} boeken</value>
+  </data>
+  <data name="StatusBar_BookCount_Filtered" xml:space="preserve">
+    <value>{0:N0} boeken (van {1:N0})</value>
+  </data>
+  <data name="RecatalogAll_Confirm" xml:space="preserve">
+    <value>Alle {0} boeken opnieuw catalogiseren? Dit kan even duren.</value>
+  </data>
+  <data name="Backup_Saved" xml:space="preserve">
+    <value>Back-up opgeslagen naar {0}</value>
+  </data>
+  <data name="Backup_Failed" xml:space="preserve">
+    <value>Back-up mislukt: {0}. Controleer de doelmap en probeer het opnieuw.</value>
+  </data>
+  <data name="Restore_Confirm_Title" xml:space="preserve">
+    <value>Veiligheidskopie opslaan vóór herstel?</value>
+  </data>
+  <data name="Restore_Confirm_Body" xml:space="preserve">
+    <value>Je huidige bibliotheek wordt vervangen. Kies eerst een locatie om een veiligheidskopie op te slaan.</value>
+  </data>
+  <data name="Restore_Replace_Title" xml:space="preserve">
+    <value>Huidige bibliotheek vervangen?</value>
+  </data>
+  <data name="Restore_Replace_Body" xml:space="preserve">
+    <value>Dit overschrijft je huidige bibliotheek met de geselecteerde back-up. Dit kan niet ongedaan worden gemaakt.</value>
+  </data>
+  <data name="Restore_Complete_Title" xml:space="preserve">
+    <value>Herstel voltooid</value>
+  </data>
+  <data name="Restore_Complete_Body" xml:space="preserve">
+    <value>De applicatie wordt nu afgesloten. Open het opnieuw om de herstelde bibliotheek te gebruiken.</value>
+  </data>
+  <data name="Restore_Failed" xml:space="preserve">
+    <value>Herstel mislukt: {0}. Je oorspronkelijke bibliotheek is niet gewijzigd.</value>
+  </data>
+  <data name="PrintList_Failed" xml:space="preserve">
+    <value>Kan PDF-rapport niet genereren: {0}</value>
+  </data>
+  <data name="BookList_AdvancedSearch_ActiveStatus" xml:space="preserve">
+    <value>Geavanceerd zoeken actief</value>
+  </data>
+  <data name="CheckOut_Title" xml:space="preserve">
+    <value>Boek uitlenen</value>
+  </data>
+  <data name="CheckOut_Label_Borrower" xml:space="preserve">
+    <value>Lener</value>
+  </data>
+  <data name="CheckOut_Label_DueDate" xml:space="preserve">
+    <value>Inleverdatum</value>
+  </data>
+  <data name="CheckOut_Borrower_Watermark" xml:space="preserve">
+    <value>Lener zoeken...</value>
+  </data>
+  <data name="CheckOut_NewBorrower_Format" xml:space="preserve">
+    <value>Nieuwe lener toevoegen: {0}</value>
+  </data>
+  <data name="CheckOut_Confirm" xml:space="preserve">
+    <value>Uitlenen</value>
+  </data>
+  <data name="ManageBorrowers_Title" xml:space="preserve">
+    <value>Leners beheren</value>
+  </data>
+  <data name="ManageBorrowers_Filter_Watermark" xml:space="preserve">
+    <value>Leners filteren...</value>
+  </data>
+  <data name="ManageBorrowers_Add" xml:space="preserve">
+    <value>Lener toevoegen</value>
+  </data>
+  <data name="ManageBorrowers_Section_Name" xml:space="preserve">
+    <value>Naam</value>
+  </data>
+  <data name="ManageBorrowers_Section_Contact" xml:space="preserve">
+    <value>Contact</value>
+  </data>
+  <data name="ManageBorrowers_Section_Address" xml:space="preserve">
+    <value>Adres</value>
+  </data>
+  <data name="ManageBorrowers_Label_FirstName" xml:space="preserve">
+    <value>Voornaam</value>
+  </data>
+  <data name="ManageBorrowers_Label_LastName" xml:space="preserve">
+    <value>Achternaam</value>
+  </data>
+  <data name="ManageBorrowers_Label_Organization" xml:space="preserve">
+    <value>Organisatie</value>
+  </data>
+  <data name="ManageBorrowers_Label_Phone" xml:space="preserve">
+    <value>Telefoon</value>
+  </data>
+  <data name="ManageBorrowers_Label_AltPhone" xml:space="preserve">
+    <value>Alt. telefoon</value>
+  </data>
+  <data name="ManageBorrowers_Label_Email" xml:space="preserve">
+    <value>E-mail</value>
+  </data>
+  <data name="ManageBorrowers_Label_Fax" xml:space="preserve">
+    <value>Fax</value>
+  </data>
+  <data name="ManageBorrowers_Label_Address1" xml:space="preserve">
+    <value>Adres 1</value>
+  </data>
+  <data name="ManageBorrowers_Label_Address2" xml:space="preserve">
+    <value>Adres 2</value>
+  </data>
+  <data name="ManageBorrowers_Label_City" xml:space="preserve">
+    <value>Stad</value>
+  </data>
+  <data name="ManageBorrowers_Label_State" xml:space="preserve">
+    <value>Provincie</value>
+  </data>
+  <data name="ManageBorrowers_Label_PostalCode" xml:space="preserve">
+    <value>Postcode</value>
+  </data>
+  <data name="ManageBorrowers_Label_Country" xml:space="preserve">
+    <value>Land</value>
+  </data>
+  <data name="ManageBorrowers_Label_Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="ManageBorrowers_Delete" xml:space="preserve">
+    <value>Lener verwijderen</value>
+  </data>
+  <data name="ManageBorrowers_DeleteBlocked" xml:space="preserve">
+    <value>Kan niet verwijderen: lener heeft uitleengeschiedenis.</value>
+  </data>
+  <data name="ManageBorrowers_SelectPrompt" xml:space="preserve">
+    <value>Selecteer een lener om te bewerken</value>
+  </data>
+  <data name="Tab_LoanHistory" xml:space="preserve">
+    <value>Uitleengeschiedenis</value>
+  </data>
+  <data name="LoanHistory_EmptyState" xml:space="preserve">
+    <value>Geen uitleengeschiedenis voor dit boek.</value>
+  </data>
+  <data name="LoanHistory_Column_Borrower" xml:space="preserve">
+    <value>Lener</value>
+  </data>
+  <data name="LoanHistory_Column_Loaned" xml:space="preserve">
+    <value>Uitgeleend</value>
+  </data>
+  <data name="LoanHistory_Column_Due" xml:space="preserve">
+    <value>Inleverdatum</value>
+  </data>
+  <data name="LoanHistory_Column_Returned" xml:space="preserve">
+    <value>Teruggebracht</value>
+  </data>
+  <data name="LoanHistory_Column_Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="LoanHistory_Status_Active" xml:space="preserve">
+    <value>Actief</value>
+  </data>
+  <data name="LoanHistory_Status_Overdue" xml:space="preserve">
+    <value>Te laat</value>
+  </data>
+  <data name="LoanHistory_Status_Returned" xml:space="preserve">
+    <value>Teruggebracht</value>
+  </data>
+  <data name="BookDetail_Label_Loan" xml:space="preserve">
+    <value>Uitlening</value>
+  </data>
+  <data name="BookDetail_LoanStatus_Format" xml:space="preserve">
+    <value>Uitgeleend aan {0}</value>
+  </data>
+  <data name="BookDetail_OverdueStatus_Format" xml:space="preserve">
+    <value>Te laat – uitgeleend aan {0}</value>
+  </data>
+  <data name="Filter_LoanedOut" xml:space="preserve">
+    <value>Uitgeleend</value>
+  </data>
+  <data name="BookList_Column_LoanedTo" xml:space="preserve">
+    <value>Uitgeleend aan</value>
+  </data>
+  <data name="ContextMenu_CheckOut" xml:space="preserve">
+    <value>Uitlenen...</value>
+  </data>
+  <data name="ContextMenu_CheckIn" xml:space="preserve">
+    <value>Inleveren</value>
+  </data>
+  <data name="Menu_ManageBorrowers" xml:space="preserve">
+    <value>Leners beheren...</value>
+  </data>
+  <data name="Menu_View_LoanedToColumn" xml:space="preserve">
+    <value>Kolom _Uitgeleend aan tonen</value>
+  </data>
+  <data name="Common_Save" xml:space="preserve">
+    <value>Opslaan</value>
+  </data>
+  <data name="Common_Cancel" xml:space="preserve">
+    <value>Annuleren</value>
+  </data>
+  <data name="Common_Discard" xml:space="preserve">
+    <value>Verwerpen</value>
+  </data>
+  <data name="Common_Close" xml:space="preserve">
+    <value>Sluiten</value>
+  </data>
+  <data name="Common_Apply" xml:space="preserve">
+    <value>Toepassen</value>
+  </data>
+  <data name="Common_OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="Export_Header" xml:space="preserve">
+    <value>Boeken exporteren…</value>
+  </data>
+  <data name="Export_Status_WritingBooks" xml:space="preserve">
+    <value>{0:N0} boeken schrijven…</value>
+  </data>
+  <data name="Export_Status_WritingRow" xml:space="preserve">
+    <value>Rij {0:N0} van {1:N0} schrijven…</value>
+  </data>
+  <data name="FilePicker_SelectCoverImage" xml:space="preserve">
+    <value>Omslagafbeelding selecteren</value>
+  </data>
+  <data name="FilePicker_SelectReaderwareBackup" xml:space="preserve">
+    <value>Readerware-back-up selecteren</value>
+  </data>
+  <data name="FilePicker_SelectReaderwareFolder" xml:space="preserve">
+    <value>Readerware-back-upmap selecteren</value>
+  </data>
+  <data name="FilePicker_OpenIsbnList" xml:space="preserve">
+    <value>ISBN-lijst openen</value>
+  </data>
+  <data name="FilePicker_ChooseBackupDestination" xml:space="preserve">
+    <value>Back-upbestemming kiezen</value>
+  </data>
+  <data name="FilePicker_SelectBackupFile" xml:space="preserve">
+    <value>Back-upbestand selecteren</value>
+  </data>
+  <data name="FilePicker_ChooseSafetyBackupLocation" xml:space="preserve">
+    <value>Locatie voor veiligheidsback-up kiezen</value>
+  </data>
+  <data name="FilePicker_ExportBooks" xml:space="preserve">
+    <value>Boeken exporteren</value>
+  </data>
+  <data name="FilePicker_SavePdfReport" xml:space="preserve">
+    <value>PDF-rapport opslaan</value>
+  </data>
+  <data name="FilePicker_ChooseAutoBackupDestination" xml:space="preserve">
+    <value>Bestemming voor automatische back-up kiezen</value>
+  </data>
+  <data name="FilePicker_ChooseReaderwareToolFolder" xml:space="preserve">
+    <value>Kies de Readerware-hulpprogrammamap</value>
+  </data>
+  <data name="ManageLookups_Tab_Collection" xml:space="preserve">
+    <value>Collecties</value>
+  </data>
+  <data name="ManageLookups_MoveUp" xml:space="preserve">
+    <value>Omhoog</value>
+  </data>
+  <data name="ManageLookups_MoveDown" xml:space="preserve">
+    <value>Omlaag</value>
+  </data>
+  <data name="ReaderwareImport_WindowTitle" xml:space="preserve">
+    <value>Importeren uit Readerware-database</value>
+  </data>
+  <data name="ReaderwareImport_Intro" xml:space="preserve">
+    <value>Converteer een actieve Readerware-databasemap (de .rw4-map) naar een back-up die BookDB kan importeren. Uw oorspronkelijke database wordt eerst gekopieerd en nooit gewijzigd.</value>
+  </data>
+  <data name="ReaderwareImport_DatabaseLabel" xml:space="preserve">
+    <value>Readerware-databasemap</value>
+  </data>
+  <data name="ReaderwareImport_DatabaseWatermark" xml:space="preserve">
+    <value>Selecteer de .rw4-databasemap</value>
+  </data>
+  <data name="ReaderwareImport_ToolPathLabel" xml:space="preserve">
+    <value>Conversiehulpprogramma</value>
+  </data>
+  <data name="ReaderwareImport_ToolPathNote" xml:space="preserve">
+    <value>Stel de map met HSQLDB- en Java-hulpprogramma's in via Instellingen > Importeren.</value>
+  </data>
+  <data name="ReaderwareImport_Convert" xml:space="preserve">
+    <value>Converteren</value>
+  </data>
+  <data name="ReaderwareImport_Continue" xml:space="preserve">
+    <value>Importwizard openen</value>
+  </data>
+  <data name="ReaderwareImport_ProgressHeader" xml:space="preserve">
+    <value>Voortgang</value>
+  </data>
+  <data name="ReaderwareImport_Success" xml:space="preserve">
+    <value>Conversie voltooid: {0} tabellen geëxporteerd. Ga verder om de importwizard te openen.</value>
+  </data>
+  <data name="ReaderwareImport_Error_ToolPathInvalid" xml:space="preserve">
+    <value>Het conversiehulpprogramma is niet gevonden. Controleer de hulpprogrammamap via Instellingen > Importeren (deze moet jre\bin\java.exe en lib\hsqldb.jar bevatten).</value>
+  </data>
+  <data name="ReaderwareImport_Error_DatabaseInvalid" xml:space="preserve">
+    <value>Deze map is geen geldige Readerware-database. Selecteer de .rw4-map met de databasebestanden.</value>
+  </data>
+  <data name="ReaderwareImport_Error_MainTableMissing" xml:space="preserve">
+    <value>De database bevat geen Readerware-boekentabel en kan daarom niet worden geïmporteerd.</value>
+  </data>
+  <data name="ReaderwareImport_Error_ProcessFailed" xml:space="preserve">
+    <value>De conversie is mislukt. Zie het voortgangslogboek voor details.</value>
+  </data>
+  <data name="FilePicker_ChooseReaderwareDatabase" xml:space="preserve">
+    <value>Kies de Readerware-databasemap</value>
+  </data>
+  <data name="Import_Step1_NewCollectionWatermark" xml:space="preserve">
+    <value>Naam van nieuwe collectie</value>
+  </data>
+  <data name="Import_Step1_CreateCollection" xml:space="preserve">
+    <value>Aanmaken</value>
+  </data>
+  <data name="Import_Step1_CollectionCreateFailed" xml:space="preserve">
+    <value>Kan de collectie niet aanmaken. De naam is mogelijk al in gebruik.</value>
+  </data>
+  <data name="Import_Duplicate_Overwrite" xml:space="preserve">
+    <value>Overschrijven</value>
+  </data>
+  <data name="Import_Duplicate_OverwriteAll" xml:space="preserve">
+    <value>Alles overschrijven</value>
+  </data>
+  <data name="Import_Duplicate_Skip" xml:space="preserve">
+    <value>Overslaan</value>
+  </data>
+  <data name="Import_Duplicate_SkipAll" xml:space="preserve">
+    <value>Alles overslaan</value>
+  </data>
+  <data name="Import_Duplicate_CancelImport" xml:space="preserve">
+    <value>Import annuleren</value>
+  </data>
+</root>

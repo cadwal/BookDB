@@ -1,0 +1,92 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="BookDB.Desktop.App"
+             RequestedThemeVariant="Light">
+
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="avares://BookDB.Desktop/Styles/Colors.axaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <!-- ControlTheme must live in ResourceDictionary (not Styles). Key = {x:Type} for implicit theming.
+                 PART_toggle spans the full header width so the entire row is the click target (UI-SPEC).
+                 Chevron lives inside PART_toggle col 1: right (→) collapsed, down (↓) expanded. -->
+            <ControlTheme x:Key="{x:Type Expander}" TargetType="Expander">
+                <Setter Property="Template">
+                    <ControlTemplate>
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="{TemplateBinding CornerRadius}">
+                            <StackPanel>
+                                <!-- Full-width toggle button — entire header row is the click target -->
+                                <ToggleButton Name="PART_toggle"
+                                              IsChecked="{TemplateBinding IsExpanded, Mode=TwoWay}"
+                                              ClickMode="Press"
+                                              HorizontalAlignment="Stretch"
+                                              HorizontalContentAlignment="Stretch"
+                                              Padding="0">
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <ContentPresenter Grid.Column="0"
+                                                          Content="{TemplateBinding Header}"
+                                                          ContentTemplate="{TemplateBinding HeaderTemplate}"
+                                                          Padding="{TemplateBinding Padding}"
+                                                          VerticalAlignment="Center"
+                                                          HorizontalAlignment="Stretch" />
+                                        <Path Grid.Column="1"
+                                              x:Name="PART_chevron"
+                                              Data="M 2 0 L 7 5 L 2 10"
+                                              Stroke="{StaticResource BrushTextSecondary}"
+                                              StrokeThickness="1.5"
+                                              StrokeLineCap="Round"
+                                              Width="8"
+                                              Height="10"
+                                              Stretch="None"
+                                              HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"
+                                              Margin="6,0,20,0" />
+                                    </Grid>
+                                </ToggleButton>
+                                <ContentPresenter Name="PART_ContentPresenter"
+                                                  Content="{TemplateBinding Content}"
+                                                  ContentTemplate="{TemplateBinding ContentTemplate}"
+                                                  HorizontalAlignment="Stretch"
+                                                  IsVisible="{TemplateBinding IsExpanded}" />
+                            </StackPanel>
+                        </Border>
+                    </ControlTemplate>
+                </Setter>
+                <!-- Strip all FluentTheme chrome — leave only the content (the Grid with header + chevron) -->
+                <Style Selector="^ /template/ ToggleButton#PART_toggle">
+                    <Setter Property="Template">
+                        <ControlTemplate>
+                            <ContentPresenter Content="{TemplateBinding Content}"
+                                              Background="Transparent"
+                                              HorizontalAlignment="Stretch"
+                                              HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                              VerticalAlignment="Center" />
+                        </ControlTemplate>
+                    </Setter>
+                </Style>
+                <!-- Chevron: swap geometry instead of rotating — avoids Stretch=None/RenderTransformOrigin ambiguity -->
+                <Style Selector="^:expanded /template/ Path#PART_chevron">
+                    <Setter Property="Data" Value="M 0 2.5 L 4 7.5 L 8 2.5" />
+                </Style>
+            </ControlTheme>
+        </ResourceDictionary>
+    </Application.Resources>
+
+    <Application.Styles>
+        <FluentTheme />
+        <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml" />
+        <StyleInclude Source="avares://BookDB.Desktop/Styles/Grid.axaml" />
+        <StyleInclude Source="avares://BookDB.Desktop/Styles/Badges.axaml" />
+        <StyleInclude Source="avares://BookDB.Desktop/Styles/Buttons.axaml" />
+        <StyleInclude Source="avares://BookDB.Desktop/Styles/Facets.axaml" />
+        <Style Selector="GridSplitter">
+            <Setter Property="Background" Value="{StaticResource BrushBorder}" />
+        </Style>
+        <StyleInclude Source="avares://OxyPlot.Avalonia/Themes/Default.axaml"/>
+    </Application.Styles>
+</Application>

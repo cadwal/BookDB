@@ -1,0 +1,250 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:BookDB.Desktop.ViewModels"
+        xmlns:res="using:BookDB.Desktop.Localization"
+        xmlns:conv="using:BookDB.Desktop.Converters"
+        x:Class="BookDB.Desktop.Views.MergeReviewDialog"
+        x:DataType="vm:MergeReviewViewModel"
+        Title="{Binding WindowTitle}"
+        Width="900"
+        Height="620"
+        MinWidth="700"
+        CanResize="True"
+        WindowStartupLocation="CenterOwner"
+        ShowInTaskbar="False">
+
+    <DockPanel>
+        <!-- Footer -->
+        <Border DockPanel.Dock="Bottom" Margin="16,8,16,16">
+            <StackPanel Orientation="Horizontal"
+                        HorizontalAlignment="Right"
+                        Spacing="8">
+                <Button Content="{x:Static res:Resources.Common_Cancel}"
+                        Command="{Binding CancelCommand}" />
+                <Button Content="{x:Static res:Resources.Common_Save}"
+                        Classes="accent"
+                        Command="{Binding SaveCommand}" />
+            </StackPanel>
+        </Border>
+
+        <!-- Scrollable content -->
+        <ScrollViewer Margin="16,12,16,8">
+            <StackPanel>
+
+                <!-- No conflicts message -->
+                <TextBlock Text="{x:Static res:Resources.MergeReview_NoConflicts}"
+                           FontSize="13"
+                           IsVisible="{Binding HasNoConflicts}"
+                           Margin="0,8" />
+
+                <!-- Cover comparison row — one cell per AllColumnNames column, aligned to field rows -->
+                <Border IsVisible="{Binding !HasNoConflicts}"
+                        Margin="0,0,0,12">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="120" />
+                            <ColumnDefinition Width="*" MinWidth="150" />
+                            <ColumnDefinition Width="*" MinWidth="150" />
+                            <ColumnDefinition Width="*" MinWidth="150" />
+                            <ColumnDefinition Width="*" MinWidth="150" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0"
+                                   Text="{x:Static res:Resources.Merge_Cover_Label}"
+                                   FontWeight="SemiBold"
+                                   FontSize="12"
+                                   VerticalAlignment="Top"
+                                   Margin="4,0,0,0" />
+                        <ItemsControl Grid.Column="1" Grid.ColumnSpan="4"
+                                      ItemsSource="{Binding CoverCells}"
+                                      ToolTip.ShowDelay="400"
+                                      ToolTip.BetweenShowDelay="0">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <UniformGrid Rows="1" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="vm:CoverCell">
+                                    <StackPanel Spacing="2" Margin="4,0">
+                                        <!-- Thumbnail with selection border and hover tooltip preview -->
+                                        <Button Width="80" Height="105"
+                                                HorizontalAlignment="Center"
+                                                CornerRadius="4"
+                                                Padding="0"
+                                                Background="Transparent"
+                                                IsVisible="{Binding HasCover}"
+                                                Classes.selected="{Binding Cover.IsSelected}"
+                                                Command="{Binding $parent[ItemsControl].((vm:MergeReviewViewModel)DataContext).SelectCoverCommand}"
+                                                CommandParameter="{Binding Cover}">
+                                            <Button.Styles>
+                                                <Style Selector="Button.selected">
+                                                    <Setter Property="BorderThickness" Value="2" />
+                                                    <Setter Property="BorderBrush" Value="DodgerBlue" />
+                                                </Style>
+                                                <Style Selector="Button.selected:pointerover /template/ ContentPresenter">
+                                                    <Setter Property="BorderThickness" Value="2" />
+                                                    <Setter Property="BorderBrush" Value="DodgerBlue" />
+                                                </Style>
+                                            </Button.Styles>
+                                            <ToolTip.Tip>
+                                                <ToolTip MaxWidth="420">
+                                                    <StackPanel Spacing="6" Margin="4">
+                                                        <Image Source="{Binding Cover.FullBitmap}"
+                                                               Stretch="Uniform"
+                                                               StretchDirection="DownOnly"
+                                                               RenderOptions.BitmapInterpolationMode = "HighQuality"
+                                                               MaxWidth="400"
+                                                               MaxHeight="560"
+                                                               IsVisible="{Binding Cover.FullBitmap, Converter={x:Static ObjectConverters.IsNotNull}}" />
+                                                        <TextBlock Text="{Binding Cover.SourceName}"
+                                                                   FontWeight="SemiBold" />
+                                                        <TextBlock Text="{Binding Cover.CoverInfo}"
+                                                                   Opacity="0.7"
+                                                                   FontSize="11"
+                                                                   IsVisible="{Binding Cover.CoverInfo, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                                                    </StackPanel>
+                                                </ToolTip>
+                                            </ToolTip.Tip>
+                                            <Image Source="{Binding Cover.ThumbnailBitmap}" Stretch="Uniform" />
+                                        </Button>
+                                        <!-- Placeholder to maintain column width when no cover -->
+                                        <Border Width="80" Height="105"
+                                                IsVisible="{Binding !HasCover}" />
+                                        <!-- Dimensions and file size below thumbnail -->
+                                        <TextBlock Text="{Binding Cover.CoverInfo}"
+                                                   FontSize="10"
+                                                   Opacity="0.6"
+                                                   HorizontalAlignment="Center"
+                                                   TextWrapping="NoWrap"
+                                                   IsVisible="{Binding Cover.CoverInfo, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                                        <!-- Column name label -->
+                                        <TextBlock Text="{Binding ColumnName}"
+                                                   FontSize="12"
+                                                   HorizontalAlignment="Center"
+                                                   Margin="0,2,0,0"
+                                                   IsVisible="{Binding HasCover}" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Grid>
+                </Border>
+
+                <!-- Accept All buttons — aligned to source columns via same Grid+UniformGrid layout -->
+                <Grid IsVisible="{Binding !HasNoConflicts}"
+                      Margin="0,0,0,8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="120" />
+                        <ColumnDefinition Width="*" MinWidth="150" />
+                        <ColumnDefinition Width="*" MinWidth="150" />
+                        <ColumnDefinition Width="*" MinWidth="150" />
+                        <ColumnDefinition Width="*" MinWidth="150" />
+                    </Grid.ColumnDefinitions>
+                    <ItemsControl Grid.Column="1" Grid.ColumnSpan="4"
+                                  ItemsSource="{Binding AllColumnNames}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <UniformGrid Rows="1" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="x:String">
+                                <Button Content="{Binding Converter={x:Static conv:AcceptAllLabelConverter.Instance}}"
+                                        CommandParameter="{Binding}"
+                                        Command="{Binding $parent[ItemsControl].((vm:MergeReviewViewModel)DataContext).AcceptAllFromSourceCommand}"
+                                        Margin="4,0" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Grid>
+
+                <!-- Column headers — uses ItemsControl+UniformGrid bound to AllColumnNames so header
+                     cells use the same layout math as data rows (also UniformGrid Rows="1"). -->
+                <Grid IsVisible="{Binding !HasNoConflicts}"
+                      Margin="0,0,0,4">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="120" />
+                        <ColumnDefinition Width="*" MinWidth="150" />
+                        <ColumnDefinition Width="*" MinWidth="150" />
+                        <ColumnDefinition Width="*" MinWidth="150" />
+                        <ColumnDefinition Width="*" MinWidth="150" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="{x:Static res:Resources.Merge_Column_Field}" FontSize="11" Opacity="0.6" Margin="4,0,0,2" />
+                    <ItemsControl Grid.Column="1" Grid.ColumnSpan="4"
+                                  ItemsSource="{Binding AllColumnNames}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <UniformGrid Rows="1" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="x:String">
+                                <TextBlock Text="{Binding}" FontSize="11" FontWeight="SemiBold" Margin="4,0,0,2" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Grid>
+
+                <!-- Field diff rows — each FieldDiffRow.SourceValues is aligned to AllColumnNames -->
+                <ItemsControl ItemsSource="{Binding FieldDiffs}"
+                              IsVisible="{Binding !HasNoConflicts}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:FieldDiffRow">
+                            <Border MinHeight="40"
+                                    Padding="4,4"
+                                    BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                                    BorderThickness="0,0,0,1">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="120" />
+                                        <ColumnDefinition Width="*" MinWidth="150" />
+                                        <ColumnDefinition Width="*" MinWidth="150" />
+                                        <ColumnDefinition Width="*" MinWidth="150" />
+                                        <ColumnDefinition Width="*" MinWidth="150" />
+                                    </Grid.ColumnDefinitions>
+                                    <!-- Field name -->
+                                    <TextBlock Grid.Column="0"
+                                               Text="{Binding FieldName}"
+                                               FontWeight="SemiBold"
+                                               VerticalAlignment="Center"
+                                               FontSize="12"
+                                               TextWrapping="Wrap" />
+                                    <!-- Source value columns — rendered via ItemsControl over SourceValues
+                                         which is padded to match AllColumnNames count -->
+                                    <ItemsControl Grid.Column="1"
+                                                  Grid.ColumnSpan="4"
+                                                  ItemsSource="{Binding SourceValues}">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <UniformGrid Rows="1" />
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate x:DataType="vm:SourceValueOption">
+                                                <Panel Margin="4,0">
+                                                    <!-- RadioButton shown when source has a value -->
+                                                    <RadioButton IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                                                 Content="{Binding Value}"
+                                                                 GroupName="{Binding $parent[Border].((vm:FieldDiffRow)DataContext).FieldName}"
+                                                                 FontSize="12"
+                                                                 IsVisible="{Binding Value, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                                                 VerticalAlignment="Center" />
+                                                    <!-- Placeholder when source has no value for this field -->
+                                                    <TextBlock Text="—"
+                                                               Opacity="0.35"
+                                                               FontSize="12"
+                                                               VerticalAlignment="Center"
+                                                               IsVisible="{Binding Value, Converter={x:Static StringConverters.IsNullOrEmpty}}" />
+                                                </Panel>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </ScrollViewer>
+    </DockPanel>
+</Window>

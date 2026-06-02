@@ -1,0 +1,468 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:BookDB.Desktop.ViewModels"
+             xmlns:res="using:BookDB.Desktop.Localization"
+             xmlns:i="using:Avalonia.Xaml.Interactivity"
+             xmlns:behaviors="using:BookDB.Desktop.Behaviors"
+             xmlns:converters="using:BookDB.Desktop.Converters"
+             xmlns:svg="using:Avalonia.Svg.Skia"
+             x:Class="BookDB.Desktop.Views.BookListView"
+             x:DataType="vm:BookListViewModel">
+    <UserControl.Resources>
+        <!-- Import icon — arrow-download.svg registered for use by toolbar/menu extensions -->
+        <svg:SvgImage x:Key="IconImport" Source="avares://BookDB.Desktop/Assets/Icons/arrow-download.svg" />
+    </UserControl.Resources>
+    <DockPanel LastChildFill="True">
+
+        <!-- Toolbar -->
+        <Border DockPanel.Dock="Top"
+                Height="36"
+                Padding="8,4"
+                Background="{StaticResource BrushBackgroundAlt}">
+            <DockPanel LastChildFill="False">
+                <!-- Left: action buttons -->
+                <StackPanel DockPanel.Dock="Left"
+                            Orientation="Horizontal"
+                            Spacing="4"
+                            VerticalAlignment="Center">
+                    <Button Classes="iconButton"
+                            Command="{Binding AddBookCommand}"
+                            ToolTip.Tip="{x:Static res:Resources.Toolbar_AddBook}">
+                        <StackPanel Orientation="Horizontal" Spacing="4">
+                            <Image Width="20" Height="20">
+                                <Image.Source>
+                                    <svg:SvgImage Source="avares://BookDB.Desktop/Assets/Icons/add.svg" />
+                                </Image.Source>
+                            </Image>
+                            <TextBlock Text="{x:Static res:Resources.Toolbar_AddBook}"
+                                       VerticalAlignment="Center"
+                                       FontSize="13" />
+                        </StackPanel>
+                    </Button>
+                    <Button Classes="iconButton"
+                            Command="{Binding EditBookCommand}"
+                            ToolTip.Tip="{x:Static res:Resources.Toolbar_Edit}">
+                        <StackPanel Orientation="Horizontal" Spacing="4">
+                            <Image Width="20" Height="20">
+                                <Image.Source>
+                                    <svg:SvgImage Source="avares://BookDB.Desktop/Assets/Icons/edit.svg" />
+                                </Image.Source>
+                            </Image>
+                            <TextBlock Text="{x:Static res:Resources.Toolbar_Edit}"
+                                       VerticalAlignment="Center"
+                                       FontSize="13" />
+                        </StackPanel>
+                    </Button>
+                    <Button Classes="iconButton"
+                            Command="{Binding DeleteBooksCommand}"
+                            ToolTip.Tip="{x:Static res:Resources.Toolbar_Delete}">
+                        <StackPanel Orientation="Horizontal" Spacing="4">
+                            <Image Width="20" Height="20">
+                                <Image.Source>
+                                    <svg:SvgImage Source="avares://BookDB.Desktop/Assets/Icons/delete.svg" />
+                                </Image.Source>
+                            </Image>
+                            <TextBlock Text="{x:Static res:Resources.Toolbar_Delete}"
+                                       VerticalAlignment="Center"
+                                       FontSize="13" />
+                        </StackPanel>
+                    </Button>
+                    <Button Classes="iconButton"
+                            Command="{Binding OpenFullDetailsCommand}"
+                            ToolTip.Tip="{x:Static res:Resources.Toolbar_FullDetails}">
+                        <StackPanel Orientation="Horizontal" Spacing="4">
+                            <Image Width="20" Height="20">
+                                <Image.Source>
+                                    <svg:SvgImage Source="avares://BookDB.Desktop/Assets/Icons/open.svg" />
+                                </Image.Source>
+                            </Image>
+                            <TextBlock Text="{x:Static res:Resources.Toolbar_FullDetails}"
+                                       VerticalAlignment="Center"
+                                       FontSize="13" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+
+                <!-- Vertical separator -->
+                <Border DockPanel.Dock="Left"
+                        Classes="toolbarSeparator"
+                        Background="{StaticResource BrushBorder}" />
+
+                <!-- Advanced search button -->
+                <Button DockPanel.Dock="Left"
+                        Classes="iconButton"
+                        Command="{Binding AdvancedSearchCommand}"
+                        ToolTip.Tip="{x:Static res:Resources.BookList_AdvancedSearch_Button}">
+                    <StackPanel Orientation="Horizontal" Spacing="4">
+                        <Image Width="20" Height="20">
+                            <Image.Source>
+                                <svg:SvgImage Source="avares://BookDB.Desktop/Assets/Icons/filter.svg" />
+                            </Image.Source>
+                        </Image>
+                        <TextBlock Text="{x:Static res:Resources.BookList_AdvancedSearch_Label}"
+                                   VerticalAlignment="Center"
+                                   FontSize="13" />
+                    </StackPanel>
+                </Button>
+
+                <!-- Advanced search active indicator -->
+                <StackPanel DockPanel.Dock="Left"
+                            Orientation="Horizontal"
+                            Spacing="4"
+                            VerticalAlignment="Center"
+                            IsVisible="{Binding IsAdvancedSearchActive}">
+                    <TextBlock Text="{Binding AdvancedSearchStatusText}"
+                               VerticalAlignment="Center"
+                               FontSize="12"
+                               Foreground="{DynamicResource SystemAccentColor}"
+                               Margin="4,0" />
+                    <Button Classes="iconButton"
+                            Command="{Binding ClearSearchCommand}"
+                            ToolTip.Tip="{x:Static res:Resources.Toolbar_Search_Clear}"
+                            VerticalAlignment="Center"
+                            Margin="0,0,4,0">
+                        <TextBlock Text="{x:Static res:Resources.BookList_ClearSearch_Label}" FontSize="12" />
+                    </Button>
+                </StackPanel>
+
+                <!-- Right: search bar -->
+                <StackPanel DockPanel.Dock="Right"
+                            Orientation="Horizontal"
+                            Spacing="4"
+                            VerticalAlignment="Center">
+                    <Image Width="16" Height="16"
+                           VerticalAlignment="Center"
+                           Opacity="0.6">
+                        <Image.Source>
+                            <svg:SvgImage Source="avares://BookDB.Desktop/Assets/Icons/search.svg" />
+                        </Image.Source>
+                    </Image>
+                    <TextBox Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                             Watermark="{x:Static res:Resources.Toolbar_Search_Placeholder}"
+                             Width="240"
+                             FontSize="13" />
+                    <Button Classes="iconButton"
+                            Command="{Binding ClearSearchCommand}"
+                            IsVisible="{Binding SearchText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                            ToolTip.Tip="{x:Static res:Resources.Toolbar_Search_Clear}">
+                        <Image Width="20" Height="20">
+                            <Image.Source>
+                                <svg:SvgImage Source="avares://BookDB.Desktop/Assets/Icons/dismiss-circle.svg" />
+                            </Image.Source>
+                        </Image>
+                    </Button>
+                </StackPanel>
+            </DockPanel>
+        </Border>
+
+        <!-- Book list area -->
+        <Panel>
+            <!-- DataGrid — always in the tree so it never loses its layout when populated -->
+            <DataGrid x:Name="BooksGrid"
+                      ItemsSource="{Binding Books}"
+                      SelectionMode="Extended"
+                      IsReadOnly="True"
+                      CanUserReorderColumns="True"
+                      CanUserResizeColumns="True"
+                      CanUserSortColumns="True"
+                      RowHeight="{Binding RowHeight}"
+                      AutoGenerateColumns="False"
+                      FontSize="13"
+                      ScrollViewer.HorizontalScrollBarVisibility="Auto">
+                <i:Interaction.Behaviors>
+                    <behaviors:DataGridColumnStateBehavior />
+                    <behaviors:DataGridSelectionBehavior />
+                    <behaviors:DataGridDoubleTapBehavior />
+                    <behaviors:DataGridSortBehavior />
+                    <behaviors:DataGridSortIndicatorBehavior />
+                    <behaviors:InfiniteScrollBehavior NearBottomThreshold="20" />
+                    <behaviors:OverdueRowHighlightBehavior />
+                </i:Interaction.Behaviors>
+                <DataGrid.KeyBindings>
+                    <KeyBinding Gesture="Delete" Command="{Binding DeleteBooksCommand}" />
+                </DataGrid.KeyBindings>
+                <DataGrid.ContextMenu>
+                    <ContextMenu>
+                        <!-- Group 1: Open actions (single-select only via CanExecute) -->
+                        <MenuItem Header="{x:Static res:Resources.ContextMenu_Edit}"
+                                  Command="{Binding EditBookCommand}" />
+                        <MenuItem Header="{x:Static res:Resources.ContextMenu_OpenInWindow}"
+                                  Command="{Binding OpenFullDetailsCommand}" />
+                        <Separator />
+                        <!-- Group 2: Create / Destroy -->
+                        <MenuItem Header="{x:Static res:Resources.ContextMenu_Duplicate}"
+                                  Command="{Binding DuplicateBookCommand}" />
+                        <MenuItem Header="{x:Static res:Resources.ContextMenu_Delete}"
+                                  Command="{Binding DeleteBooksCommand}" />
+                        <Separator />
+                        <!-- Group 3: Batch actions -->
+                        <MenuItem Header="{x:Static res:Resources.ContextMenu_BulkEdit}"
+                                  Command="{Binding BulkEditCommand}" />
+                        <MenuItem Header="{x:Static res:Resources.BookList_ContextMenu_Recatalog}"
+                                  Command="{Binding RecatalogSelectedCommand}">
+                            <MenuItem.Icon>
+                                <Image Width="16" Height="16">
+                                    <Image.Source>
+                                        <svg:SvgImage Source="avares://BookDB.Desktop/Assets/Icons/arrow-sync.svg" />
+                                    </Image.Source>
+                                </Image>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <Separator />
+                        <!-- Group 4: Collection management -->
+                        <MenuItem Header="{x:Static res:Resources.ContextMenu_MoveToCollection}"
+                                  ItemsSource="{Binding CollectionMenuEntries}">
+                            <MenuItem.ItemContainerTheme>
+                                <ControlTheme TargetType="MenuItem"
+                                              x:DataType="vm:CollectionMenuEntry"
+                                              BasedOn="{StaticResource {x:Type MenuItem}}">
+                                    <Setter Property="Header" Value="{Binding Name}" />
+                                    <Setter Property="ToggleType" Value="CheckBox" />
+                                    <Setter Property="IsChecked" Value="{Binding IsCurrentCollection, Mode=OneWay}" />
+                                    <Setter Property="Command"
+                                            Value="{Binding $parent[MenuItem].((vm:BookListViewModel)DataContext).MoveToCollectionCommand}" />
+                                    <Setter Property="CommandParameter" Value="{Binding CollectionId}" />
+                                </ControlTheme>
+                            </MenuItem.ItemContainerTheme>
+                        </MenuItem>
+                        <Separator />
+                        <!-- Group 5: Copy -->
+                        <MenuItem Header="{x:Static res:Resources.ContextMenu_CopyIsbn}"
+                                  Command="{Binding CopyIsbnCommand}" />
+                        <MenuItem Header="{x:Static res:Resources.ContextMenu_CopyTitle}"
+                                  Command="{Binding CopyTitleCommand}" />
+                        <Separator />
+                        <!-- Group 6: Loan -->
+                        <MenuItem Header="{x:Static res:Resources.ContextMenu_CheckOut}"
+                                  Command="{Binding CheckOutCommand}" />
+                        <MenuItem Header="{x:Static res:Resources.ContextMenu_CheckIn}"
+                                  Command="{Binding CheckInCommand}" />
+                    </ContextMenu>
+                </DataGrid.ContextMenu>
+                <DataGrid.Columns>
+                    <!-- Row number column: sequential 1-based index, non-interactive, monospace (09.1 A-01/A-02) -->
+                    <DataGridTemplateColumn Width="48"
+                                            CanUserReorder="False"
+                                            CanUserResize="False"
+                                            CanUserSort="False">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate x:DataType="vm:BookRowViewModel">
+                                <TextBlock Text="{Binding RowNumber}"
+                                           HorizontalAlignment="Right"
+                                           VerticalAlignment="Center"
+                                           FontFamily="Consolas"
+                                           FontSize="11"
+                                           Foreground="{StaticResource BrushTextTertiary}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <!-- Thumbnail column: optional, off by default -->
+                    <DataGridTemplateColumn Header="{x:Static res:Resources.BookList_Column_Cover}"
+                                            behaviors:DataGridColumnEx.Name="Thumbnail"
+                                            IsVisible="{Binding $parent[DataGrid].((vm:BookListViewModel)DataContext).ThumbnailColumnVisible, FallbackValue=False}"
+                                            CanUserSort="False">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate x:DataType="vm:BookRowViewModel">
+                                <Border Background="{StaticResource BrushBackground}"
+                                        Width="30"
+                                        Height="36"
+                                        IsVisible="{Binding CoverThumbnail, Converter={x:Static ObjectConverters.IsNotNull}}">
+                                    <i:Interaction.Behaviors>
+                                        <behaviors:CoverHoverPopupBehavior ImagePropertyName="TooltipBitmap" />
+                                    </i:Interaction.Behaviors>
+                                    <Grid>
+                                        <Image Source="{Binding CoverThumbnail}"
+                                               Stretch="Uniform" />
+                                        <Border Background="{StaticResource BrushWarning}"
+                                                CornerRadius="2"
+                                                Padding="2,1"
+                                                Width="18"
+                                                Height="18"
+                                                HorizontalAlignment="Right"
+                                                VerticalAlignment="Bottom"
+                                                Margin="0,0,1,1"
+                                                IsVisible="{Binding HasMultipleImages}">
+                                            <ToolTip.Tip>
+                                                <TextBlock Text="{Binding ImageCountTooltip}" />
+                                            </ToolTip.Tip>
+                                            <TextBlock Text="{Binding ImageCountBadge}"
+                                                       FontSize="11"
+                                                       HorizontalAlignment="Center"
+                                                       VerticalAlignment="Center"
+                                                       Foreground="{StaticResource BrushTextPrimary}" />
+                                        </Border>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <!-- Title — always visible, blue semi-bold -->
+                    <DataGridTemplateColumn Header="{x:Static res:Resources.BookList_Column_Title}"
+                                            behaviors:DataGridColumnEx.Name="Title"
+                                            IsVisible="True"
+                                            Width="Auto"
+                                            MinWidth="120"
+                                            SortMemberPath="Title">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate x:DataType="vm:BookRowViewModel">
+                                <TextBlock Text="{Binding Title}"
+                                           Classes="titleText"
+                                           TextTrimming="CharacterEllipsis"
+                                           ToolTip.Tip="{Binding Title}"
+                                           VerticalAlignment="Center" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <!-- Author(s) — visibility bound from VM, secondary text color -->
+                    <DataGridTemplateColumn Header="{x:Static res:Resources.BookList_Column_Authors}"
+                                            behaviors:DataGridColumnEx.Name="Author"
+                                            SortMemberPath="AuthorDisplay"
+                                            IsVisible="{Binding $parent[DataGrid].((vm:BookListViewModel)DataContext).AuthorColumnVisible, FallbackValue=True}">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate x:DataType="vm:BookRowViewModel">
+                                <TextBlock Text="{Binding AuthorDisplay}"
+                                           Classes="authorText"
+                                           TextTrimming="CharacterEllipsis"
+                                           VerticalAlignment="Center" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <!-- Series -->
+                    <DataGridTemplateColumn Header="{x:Static res:Resources.BookList_Column_Series}"
+                                            behaviors:DataGridColumnEx.Name="Series"
+                                            SortMemberPath="SeriesDisplay"
+                                            IsVisible="{Binding $parent[DataGrid].((vm:BookListViewModel)DataContext).SeriesColumnVisible, FallbackValue=True}">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate x:DataType="vm:BookRowViewModel">
+                                <TextBlock Text="{Binding SeriesDisplay}"
+                                           TextTrimming="CharacterEllipsis"
+                                           VerticalAlignment="Center" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <!-- Publisher -->
+                    <DataGridTemplateColumn Header="{x:Static res:Resources.BookList_Column_Publisher}"
+                                            behaviors:DataGridColumnEx.Name="Publisher"
+                                            SortMemberPath="PublisherName"
+                                            IsVisible="{Binding $parent[DataGrid].((vm:BookListViewModel)DataContext).PublisherColumnVisible, FallbackValue=True}">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate x:DataType="vm:BookRowViewModel">
+                                <TextBlock Text="{Binding PublisherName}"
+                                           TextTrimming="CharacterEllipsis"
+                                           VerticalAlignment="Center" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <!-- Year — monospace, right-aligned, tertiary color -->
+                    <DataGridTemplateColumn Header="{x:Static res:Resources.BookList_Column_Year}"
+                                            behaviors:DataGridColumnEx.Name="Year"
+                                            SortMemberPath="Year"
+                                            IsVisible="{Binding $parent[DataGrid].((vm:BookListViewModel)DataContext).YearColumnVisible, FallbackValue=True}">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate x:DataType="vm:BookRowViewModel">
+                                <TextBlock Text="{Binding Year}"
+                                           Classes="yearText"
+                                           FontFamily="Consolas"
+                                           HorizontalAlignment="Right"
+                                           VerticalAlignment="Center" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <!-- Format -->
+                    <DataGridTemplateColumn Header="{x:Static res:Resources.BookList_Column_Format}"
+                                            behaviors:DataGridColumnEx.Name="Format"
+                                            SortMemberPath="FormatName"
+                                            IsVisible="{Binding $parent[DataGrid].((vm:BookListViewModel)DataContext).FormatColumnVisible, FallbackValue=True}">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate x:DataType="vm:BookRowViewModel">
+                                <TextBlock Text="{Binding FormatName}"
+                                           TextTrimming="CharacterEllipsis"
+                                           VerticalAlignment="Center" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <!-- Rating — Unicode stars via RatingStarsConverter -->
+                    <DataGridTemplateColumn Header="{x:Static res:Resources.BookList_Column_Rating}"
+                                            behaviors:DataGridColumnEx.Name="Rating"
+                                            Width="100"
+                                            IsVisible="{Binding $parent[DataGrid].((vm:BookListViewModel)DataContext).RatingColumnVisible, FallbackValue=False}"
+                                            CanUserSort="False">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate x:DataType="vm:BookRowViewModel">
+                                <TextBlock Text="{Binding RatingDisplay, Converter={x:Static converters:RatingStarsConverter.Instance}}"
+                                           Classes="ratingText"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <!-- Status — colored pill badges via StatusBadgeColorConverter -->
+                    <DataGridTemplateColumn Header="{x:Static res:Resources.BookList_Column_Status}"
+                                            behaviors:DataGridColumnEx.Name="Status"
+                                            Width="100"
+                                            IsVisible="{Binding $parent[DataGrid].((vm:BookListViewModel)DataContext).StatusColumnVisible, FallbackValue=False}"
+                                            CanUserSort="False">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate x:DataType="vm:BookRowViewModel">
+                                <Border Background="{Binding StatusDisplay, Converter={x:Static converters:StatusBadgeColorConverter.Instance}}"
+                                        Classes="statusBadge"
+                                        IsVisible="{Binding StatusDisplay, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                                    <TextBlock Text="{Binding StatusDisplay}"
+                                               Foreground="{StaticResource BrushBadgeText}"
+                                               FontSize="13" />
+                                </Border>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <!-- Loaned To — hidden by default, toggleable via View menu -->
+                    <DataGridTextColumn Header="{x:Static res:Resources.BookList_Column_LoanedTo}"
+                                        behaviors:DataGridColumnEx.Name="LoanedTo"
+                                        Binding="{Binding LoanedToName}"
+                                        SortMemberPath="LoanedToName"
+                                        Width="120"
+                                        IsVisible="{Binding $parent[DataGrid].((vm:BookListViewModel)DataContext).LoanedToColumnVisible, FallbackValue=False}" />
+                </DataGrid.Columns>
+            </DataGrid>
+
+            <!-- Loading indicator — overlays bottom of DataGrid -->
+            <Border IsVisible="{Binding IsLoadingMore}"
+                    Height="24"
+                    VerticalAlignment="Bottom"
+                    Background="{DynamicResource SystemControlBackgroundChromeMediumLowBrush}"
+                    AutomationProperties.Name="Loading more books">
+                <StackPanel Orientation="Horizontal"
+                            HorizontalAlignment="Center"
+                            Spacing="8"
+                            VerticalAlignment="Center">
+                    <ProgressBar IsIndeterminate="True"
+                                 Width="120"
+                                 Height="4" />
+                    <TextBlock Text="{x:Static res:Resources.BookList_Loading}"
+                               FontSize="12"
+                               Foreground="{StaticResource BrushTextTertiary}"
+                               VerticalAlignment="Center" />
+                </StackPanel>
+            </Border>
+
+            <!-- Empty state overlay — rendered on top of grid only when no books -->
+            <TextBlock Text="{x:Static res:Resources.BookList_EmptyState}"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       FontSize="13"
+                       Foreground="{StaticResource BrushTextTertiary}"
+                       IsHitTestVisible="False"
+                       IsVisible="{Binding !HasBooks}" />
+        </Panel>
+
+    </DockPanel>
+</UserControl>

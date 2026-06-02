@@ -1,0 +1,195 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:BookDB.Desktop.ViewModels"
+        xmlns:res="using:BookDB.Desktop.Localization"
+        xmlns:i="using:Avalonia.Xaml.Interactivity"
+        xmlns:behaviors="using:BookDB.Desktop.Behaviors"
+        x:Class="BookDB.Desktop.Views.BatchQueueWindow"
+        x:DataType="vm:BatchQueueWindowViewModel"
+        Title="{x:Static res:Resources.BatchQueue_WindowTitle}"
+        Width="480"
+        MinWidth="400"
+        MinHeight="200"
+        SizeToContent="Height"
+        CanResize="False"
+        WindowStartupLocation="CenterScreen"
+        ShowInTaskbar="True">
+    <i:Interaction.Behaviors>
+        <behaviors:WindowCloseGuardBehavior />
+    </i:Interaction.Behaviors>
+
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- Running state -->
+        <StackPanel Grid.Row="0"
+                    Spacing="12"
+                    IsVisible="{Binding IsRunning}">
+            <!-- Header + Minimize + Cancel row -->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0"
+                           Text="{x:Static res:Resources.BatchQueue_RunningHeader}"
+                           FontSize="16"
+                           FontWeight="SemiBold"
+                           VerticalAlignment="Center" />
+                <Button Grid.Column="1"
+                        Content="{x:Static res:Resources.BatchQueue_Minimize}"
+                        Command="{Binding MinimizeCommand}"
+                        VerticalAlignment="Center"
+                        Margin="0,0,4,0" />
+                <Button Grid.Column="2"
+                        Content="{x:Static res:Resources.Common_Cancel}"
+                        Command="{Binding CancelCommand}"
+                        VerticalAlignment="Center" />
+            </Grid>
+
+            <!-- Progress bar -->
+            <ProgressBar Value="{Binding ProgressPercent}"
+                         Minimum="0"
+                         Maximum="100"
+                         Height="8"
+                         Margin="0,4"
+                         AutomationProperties.Name="Lookup queue progress" />
+
+            <!-- Paused indicator -->
+            <Border Background="{DynamicResource SystemControlBackgroundAltHighBrush}"
+                    BorderBrush="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                    BorderThickness="1"
+                    CornerRadius="4"
+                    Padding="12,6"
+                    IsVisible="{Binding IsPaused}">
+                <TextBlock Text="{x:Static res:Resources.BatchQueue_Paused}"
+                           FontSize="13"
+                           FontWeight="Medium"
+                           HorizontalAlignment="Center" />
+            </Border>
+
+            <!-- Current ISBN -->
+            <TextBlock Text="{Binding CurrentIsbn, StringFormat={x:Static res:Resources.BatchQueue_Processing}}"
+                       FontSize="12"
+                       Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                       IsVisible="{Binding CurrentIsbn, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+
+            <!-- Status text (source being queried) -->
+            <TextBlock Text="{Binding StatusText}"
+                       FontSize="12"
+                       FontStyle="Italic"
+                       Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                       IsVisible="{Binding StatusText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+
+            <!-- Progress counts -->
+            <TextBlock Text="{Binding ProgressText}"
+                       FontSize="12"
+                       Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+
+            <!-- Pause / Resume buttons -->
+            <StackPanel Orientation="Horizontal"
+                        HorizontalAlignment="Right"
+                        Spacing="8">
+                <Button Content="{x:Static res:Resources.BatchQueue_Pause}"
+                        Command="{Binding PauseCommand}"
+                        IsVisible="{Binding !IsPaused}" />
+                <Button Content="{x:Static res:Resources.BatchQueue_Resume}"
+                        Command="{Binding ResumeCommand}"
+                        IsVisible="{Binding IsPaused}" />
+            </StackPanel>
+        </StackPanel>
+
+        <!-- Results summary state -->
+        <StackPanel Grid.Row="0"
+                    Spacing="12"
+                    IsVisible="{Binding IsComplete}">
+            <TextBlock Text="{x:Static res:Resources.BatchQueue_CompleteHeader}"
+                       FontSize="16"
+                       FontWeight="SemiBold" />
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0" Grid.Column="0"
+                           Text="{x:Static res:Resources.BatchQueue_Label_Saved}"
+                           FontSize="14" />
+                <TextBlock Grid.Row="0" Grid.Column="1"
+                           Text="{Binding SavedCount}"
+                           FontSize="14"
+                           FontWeight="SemiBold"
+                           HorizontalAlignment="Right" />
+
+                <TextBlock Grid.Row="1" Grid.Column="0"
+                           Text="{x:Static res:Resources.BatchQueue_Label_AutoAccepted}"
+                           FontSize="14" />
+                <TextBlock Grid.Row="1" Grid.Column="1"
+                           Text="{Binding AutoAcceptedCount}"
+                           FontSize="14"
+                           FontWeight="SemiBold"
+                           HorizontalAlignment="Right" />
+
+                <TextBlock Grid.Row="2" Grid.Column="0"
+                           Text="{x:Static res:Resources.BatchQueue_Label_NotFound}"
+                           FontSize="14" />
+                <TextBlock Grid.Row="2" Grid.Column="1"
+                           Text="{Binding NotFoundCount}"
+                           FontSize="14"
+                           FontWeight="SemiBold"
+                           HorizontalAlignment="Right" />
+
+                <TextBlock Grid.Row="3" Grid.Column="0"
+                           Text="{x:Static res:Resources.BatchQueue_Label_PendingReview}"
+                           FontSize="14" />
+                <TextBlock Grid.Row="3" Grid.Column="1"
+                           Text="{Binding PendingReviewCount}"
+                           FontSize="14"
+                           FontWeight="SemiBold"
+                           HorizontalAlignment="Right" />
+
+                <TextBlock Grid.Row="4" Grid.Column="0"
+                           Text="{x:Static res:Resources.BatchQueue_Label_Skipped}"
+                           FontSize="14" />
+                <TextBlock Grid.Row="4" Grid.Column="1"
+                           Text="{Binding SkippedCount}"
+                           FontSize="14"
+                           FontWeight="SemiBold"
+                           HorizontalAlignment="Right" />
+            </Grid>
+
+            <StackPanel Orientation="Horizontal"
+                        HorizontalAlignment="Right"
+                        Spacing="8"
+                        Margin="0,8,0,0">
+                <Button Classes="accent"
+                        Content="{x:Static res:Resources.BatchQueue_StartReviewButton}"
+                        Command="{Binding StartReviewCommand}"
+                        IsVisible="{Binding PendingReviewCount}"
+                        AutomationProperties.Name="Start merge review for pending items" />
+                <Button Content="{x:Static res:Resources.Common_Close}"
+                        Command="{Binding CloseCommand}" />
+            </StackPanel>
+        </StackPanel>
+
+        <!-- Empty/idle state when neither running nor complete -->
+        <TextBlock Grid.Row="0"
+                   Text="{x:Static res:Resources.BatchQueue_Idle}"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                   IsVisible="{Binding IsIdle}" />
+    </Grid>
+
+</Window>

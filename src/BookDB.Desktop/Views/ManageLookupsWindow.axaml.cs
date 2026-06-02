@@ -1,0 +1,11 @@
+using Avalonia.Controls;
+
+namespace BookDB.Desktop.Views;
+
+public partial class ManageLookupsWindow : Window
+{
+    public ManageLookupsWindow()
+    {
+        InitializeComponent();
+    }
+}
