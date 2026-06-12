@@ -58,6 +58,34 @@
       </ScrollViewer>
     </DataTemplate>
 
+    <!-- Appearance tab template -->
+    <DataTemplate x:Key="AppearanceTabTemplate" x:DataType="vm:SettingsAppearanceTabViewModel">
+      <ScrollViewer Padding="16">
+        <Grid ColumnDefinitions="200,*" RowDefinitions="Auto,Auto" HorizontalAlignment="Stretch">
+          <!-- Row 0: Colour theme dropdown -->
+          <TextBlock Grid.Row="0" Grid.Column="0"
+                     Text="{x:Static res:Resources.Settings_Appearance_Flavour_Label}"
+                     FontSize="12"
+                     TextWrapping="Wrap"
+                     VerticalAlignment="Center"
+                     Margin="0,0,8,8"/>
+          <ComboBox Grid.Row="0" Grid.Column="1"
+                    ItemsSource="{Binding AvailableFlavours}"
+                    SelectedItem="{Binding SelectedFlavour}"
+                    DisplayMemberBinding="{Binding DisplayName}"
+                    HorizontalAlignment="Stretch"
+                    Margin="0,0,0,8"/>
+          <!-- Row 1: Restart note -->
+          <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                     Text="{x:Static res:Resources.Settings_Appearance_RestartNote}"
+                     FontSize="11"
+                     Opacity="0.6"
+                     TextWrapping="Wrap"
+                     Margin="0,0,0,8"/>
+        </Grid>
+      </ScrollViewer>
+    </DataTemplate>
+
     <!-- Lookup tab template -->
     <DataTemplate x:Key="LookupTabTemplate" x:DataType="vm:SettingsLookupTabViewModel">
       <ScrollViewer Padding="16">
@@ -248,6 +276,81 @@
       </ScrollViewer>
     </DataTemplate>
 
+    <!-- Application access tab template -->
+    <DataTemplate x:Key="ApplicationAccessTabTemplate" x:DataType="vm:SettingsApplicationAccessTabViewModel">
+      <ScrollViewer Padding="16">
+        <StackPanel Spacing="12">
+
+          <TextBlock Text="{x:Static res:Resources.Settings_AppAccess_Intro}"
+                     FontSize="12"
+                     TextWrapping="Wrap"/>
+
+          <!-- Windows: Start Menu + desktop shortcuts, with current state beside each -->
+          <StackPanel Spacing="8" IsVisible="{Binding IsWindows}">
+            <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto">
+              <Button Grid.Row="0" Grid.Column="0"
+                      Content="{x:Static res:Resources.Settings_AppAccess_StartMenuButton}"
+                      Command="{Binding AddToStartMenuCommand}"
+                      HorizontalAlignment="Stretch"/>
+              <TextBlock Grid.Row="0" Grid.Column="1"
+                         Text="{Binding StartMenuState}"
+                         FontSize="12"
+                         Opacity="0.7"
+                         VerticalAlignment="Center"
+                         TextWrapping="Wrap"
+                         Margin="12,0,0,0"/>
+              <Button Grid.Row="1" Grid.Column="0"
+                      Content="{x:Static res:Resources.Settings_AppAccess_DesktopButton}"
+                      Command="{Binding AddDesktopShortcutCommand}"
+                      HorizontalAlignment="Stretch"
+                      Margin="0,8,0,0"/>
+              <TextBlock Grid.Row="1" Grid.Column="1"
+                         Text="{Binding DesktopState}"
+                         FontSize="12"
+                         Opacity="0.7"
+                         VerticalAlignment="Center"
+                         TextWrapping="Wrap"
+                         Margin="12,8,0,0"/>
+            </Grid>
+            <TextBlock Text="{x:Static res:Resources.Settings_AppAccess_PinHint}"
+                       FontSize="11"
+                       Opacity="0.6"
+                       TextWrapping="Wrap"/>
+          </StackPanel>
+
+          <!-- Linux: application-menu entry, with current state beside it -->
+          <StackPanel Spacing="8" IsVisible="{Binding IsLinux}">
+            <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto">
+              <Button Grid.Column="0"
+                      Content="{x:Static res:Resources.Settings_AppAccess_AppMenuButton}"
+                      Command="{Binding AddToApplicationMenuCommand}"
+                      HorizontalAlignment="Stretch"/>
+              <TextBlock Grid.Column="1"
+                         Text="{Binding ApplicationMenuState}"
+                         FontSize="12"
+                         Opacity="0.7"
+                         VerticalAlignment="Center"
+                         TextWrapping="Wrap"
+                         Margin="12,0,0,0"/>
+            </Grid>
+          </StackPanel>
+
+          <!-- Other platforms (e.g. macOS): not applicable -->
+          <TextBlock Text="{x:Static res:Resources.Settings_AppAccess_Unsupported}"
+                     FontSize="12"
+                     TextWrapping="Wrap"
+                     IsVisible="{Binding IsUnsupported}"/>
+
+          <!-- Result status -->
+          <TextBlock Text="{Binding StatusMessage}"
+                     FontSize="12"
+                     TextWrapping="Wrap"
+                     Foreground="{DynamicResource BrushPrimaryBlue}"
+                     IsVisible="{Binding StatusMessage, Converter={x:Static ObjectConverters.IsNotNull}}"/>
+        </StackPanel>
+      </ScrollViewer>
+    </DataTemplate>
+
   </Window.Resources>
 
   <DockPanel Margin="0">
@@ -280,6 +383,11 @@
                         Content="{Binding GeneralTab}"/>
       </TabItem>
 
+      <TabItem Header="{x:Static res:Resources.Settings_Tab_Appearance}">
+        <ContentControl ContentTemplate="{StaticResource AppearanceTabTemplate}"
+                        Content="{Binding AppearanceTab}"/>
+      </TabItem>
+
       <TabItem Header="{x:Static res:Resources.Settings_Tab_Browse}">
         <ContentControl ContentTemplate="{StaticResource BrowseTabTemplate}"
                         Content="{Binding BrowseTab}"/>
@@ -298,6 +406,11 @@
       <TabItem Header="{x:Static res:Resources.Settings_Tab_Advanced}">
         <ContentControl ContentTemplate="{StaticResource AdvancedTabTemplate}"
                         Content="{Binding AdvancedTab}"/>
+      </TabItem>
+
+      <TabItem Header="{x:Static res:Resources.Settings_Tab_ApplicationAccess}">
+        <ContentControl ContentTemplate="{StaticResource ApplicationAccessTabTemplate}"
+                        Content="{Binding ApplicationAccessTab}"/>
       </TabItem>
 
     </TabControl>

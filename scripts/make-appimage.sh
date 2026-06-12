@@ -1,11 +1,24 @@
 #!/usr/bin/env bash
-# scripts/make-appimage.sh <version>
-# Builds an AppImage from the linux-x64 self-contained publish output.
-# Must be run from the repository root. Requires publish/linux-x64 to exist.
+# scripts/make-appimage.sh <version> [arch]
+# Builds an AppImage from a self-contained Linux publish output.
+#   arch = x86_64 (default) -> publish/linux-x64   -> BookDB-v<version>-x86_64.AppImage
+#   arch = aarch64          -> publish/linux-arm64 -> BookDB-v<version>-aarch64.AppImage
+# AppImage filenames use the canonical AppImage arch token (x86_64/aarch64) — the same value
+# passed to appimagetool — which is what AppImage tooling and the AM catalog expect.
+# Must be run from the repository root. Requires the matching publish/<rid> to exist.
 set -euo pipefail
 
-VERSION="${1:?Usage: make-appimage.sh <version>}"
-PUBLISH_DIR="publish/linux-x64"
+VERSION="${1:?Usage: make-appimage.sh <version> [arch]}"
+ARCH="${2:-x86_64}"
+
+# appimagetool releases ship a per-arch binary; pinned to 1.9.1, SHA-256 verified below.
+case "$ARCH" in
+    x86_64)  RID="linux-x64";   APPIMAGETOOL_SHA256="ed4ce84f0d9caff66f50bcca6ff6f35aae54ce8135408b3fa33abfc3cb384eb0" ;;
+    aarch64) RID="linux-arm64"; APPIMAGETOOL_SHA256="f0837e7448a0c1e4e650a93bb3e85802546e60654ef287576f46c71c126a9158" ;;
+    *) echo "Unsupported arch: $ARCH (expected x86_64 or aarch64)" >&2; exit 1 ;;
+esac
+
+PUBLISH_DIR="publish/${RID}"
 APPDIR="BookDB.AppDir"
 trap 'rm -rf "$APPDIR"' EXIT
 
@@ -34,18 +47,18 @@ exec "$HERE/usr/bin/BookDB.Desktop" "$@"
 APPRUN
 chmod +x "$APPDIR/AppRun"
 
-# Download appimagetool if not cached (pinned to release 13, SHA-256 verified)
+# Download appimagetool for this arch if not cached (pinned release, SHA-256 verified)
 APPIMAGETOOL_VERSION="1.9.1"
-APPIMAGETOOL_SHA256="ed4ce84f0d9caff66f50bcca6ff6f35aae54ce8135408b3fa33abfc3cb384eb0"
-if [[ ! -f appimagetool-x86_64.AppImage ]]; then
-    wget -q "https://github.com/AppImage/appimagetool/releases/download/${APPIMAGETOOL_VERSION}/appimagetool-x86_64.AppImage"
-    echo "${APPIMAGETOOL_SHA256}  appimagetool-x86_64.AppImage" | sha256sum -c -
-    chmod +x appimagetool-x86_64.AppImage
+APPIMAGETOOL="appimagetool-${ARCH}.AppImage"
+if [[ ! -f "$APPIMAGETOOL" ]]; then
+    wget -q "https://github.com/AppImage/appimagetool/releases/download/${APPIMAGETOOL_VERSION}/${APPIMAGETOOL}"
+    echo "${APPIMAGETOOL_SHA256}  ${APPIMAGETOOL}" | sha256sum -c -
+    chmod +x "$APPIMAGETOOL"
 fi
 
-# --appimage-extract-and-run is REQUIRED on GitHub Actions (no FUSE on ubuntu-latest)
-ARCH=x86_64 VERSION="$VERSION" \
-    ./appimagetool-x86_64.AppImage --appimage-extract-and-run \
-    "$APPDIR" "BookDB-v${VERSION}-linux-x64.AppImage"
+# --appimage-extract-and-run is REQUIRED on GitHub Actions (no FUSE on the runners)
+ARCH=$ARCH VERSION="$VERSION" \
+    "./$APPIMAGETOOL" --appimage-extract-and-run \
+    "$APPDIR" "BookDB-v${VERSION}-${ARCH}.AppImage"
 
-echo "AppImage created: BookDB-v${VERSION}-linux-x64.AppImage"
+echo "AppImage created: BookDB-v${VERSION}-${ARCH}.AppImage"

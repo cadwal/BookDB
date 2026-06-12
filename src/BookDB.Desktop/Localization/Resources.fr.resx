@@ -685,6 +685,15 @@
   <data name="Backup_Status_ExportingCoverImagesCount" xml:space="preserve">
     <value>Exportation des images de couverture ({0}/{1})…</value>
   </data>
+  <data name="Backup_Status_ExportingLookups" xml:space="preserve">
+    <value>Exportation des listes de référence…</value>
+  </data>
+  <data name="Backup_Status_ExportingLoans" xml:space="preserve">
+    <value>Exportation des prêts et des emprunteurs…</value>
+  </data>
+  <data name="Backup_Status_ExportingSettings" xml:space="preserve">
+    <value>Exportation des paramètres et des recherches sauvegardées…</value>
+  </data>
   <data name="Restore_Status_SavingSafetyBackup" xml:space="preserve">
     <value>Enregistrement de la sauvegarde de sécurité…</value>
   </data>
@@ -1613,6 +1622,24 @@ Doublons potentiels : {3}  |  Avec couvertures : {4}</value>
   <data name="Settings_Advanced_Logging_RestartNote" xml:space="preserve">
     <value>Le changement de niveau de journal prend effet au prochain lancement.</value>
   </data>
+  <data name="Settings_Appearance_Flavour_Dark" xml:space="preserve">
+    <value>Sombre</value>
+  </data>
+  <data name="Settings_Appearance_Flavour_Default" xml:space="preserve">
+    <value>Par défaut</value>
+  </data>
+  <data name="Settings_Appearance_Flavour_HighContrast" xml:space="preserve">
+    <value>Contraste élevé</value>
+  </data>
+  <data name="Settings_Appearance_Flavour_Label" xml:space="preserve">
+    <value>Thème de couleur</value>
+  </data>
+  <data name="Settings_Appearance_Flavour_Vibrant" xml:space="preserve">
+    <value>Éclatant</value>
+  </data>
+  <data name="Settings_Appearance_RestartNote" xml:space="preserve">
+    <value>Le changement de thème prend effet au prochain lancement.</value>
+  </data>
   <data name="Settings_Browse_AuthorFacetLabel" xml:space="preserve">
     <value>Libellé de facette Auteur</value>
   </data>
@@ -1660,6 +1687,9 @@ Doublons potentiels : {3}  |  Avec couvertures : {4}</value>
   </data>
   <data name="Settings_Tab_Advanced" xml:space="preserve">
     <value>Avancé</value>
+  </data>
+  <data name="Settings_Tab_Appearance" xml:space="preserve">
+    <value>Apparence</value>
   </data>
   <data name="Settings_Tab_Browse" xml:space="preserve">
     <value>Parcourir</value>
@@ -2413,5 +2443,104 @@ Doublons potentiels : {3}  |  Avec couvertures : {4}</value>
   </data>
   <data name="Import_Duplicate_CancelImport" xml:space="preserve">
     <value>Annuler l'importation</value>
+  </data>
+  <data name="Settings_Tab_ApplicationAccess" xml:space="preserve">
+    <value>Accès à l'application</value>
+  </data>
+  <data name="Settings_AppAccess_Intro" xml:space="preserve">
+    <value>Ajoutez BookDB à votre système pour pouvoir le lancer sans rechercher le fichier du programme.</value>
+  </data>
+  <data name="Settings_AppAccess_StartMenuButton" xml:space="preserve">
+    <value>Ajouter au menu Démarrer</value>
+  </data>
+  <data name="Settings_AppAccess_DesktopButton" xml:space="preserve">
+    <value>Créer un raccourci sur le bureau</value>
+  </data>
+  <data name="Settings_AppAccess_AppMenuButton" xml:space="preserve">
+    <value>Ajouter au menu des applications</value>
+  </data>
+  <data name="Settings_AppAccess_PinHint" xml:space="preserve">
+    <value>Astuce : une fois le raccourci créé, faites un clic droit dessus pour épingler BookDB à la barre des tâches ou au menu Démarrer.</value>
+  </data>
+  <data name="Settings_AppAccess_Unsupported" xml:space="preserve">
+    <value>L'ajout de raccourcis n'est pas disponible sur ce système d'exploitation.</value>
+  </data>
+  <data name="Settings_AppAccess_StatusCreated" xml:space="preserve">
+    <value>Terminé — le raccourci a été créé.</value>
+  </data>
+  <data name="Settings_AppAccess_StatusWingetWarning" xml:space="preserve">
+    <value>Le raccourci a été créé, mais il pointe vers le dossier d'installation actuel et peut cesser de fonctionner après une mise à jour de winget. Pour un raccourci résistant aux mises à jour, réinstallez BookDB depuis un terminal administrateur.</value>
+  </data>
+  <data name="Settings_AppAccess_StatusFailed" xml:space="preserve">
+    <value>Impossible de créer le raccourci. Consultez le journal pour plus de détails.</value>
+  </data>
+  <data name="Settings_AppAccess_State_Missing" xml:space="preserve">
+    <value>Non créé</value>
+  </data>
+  <data name="Settings_AppAccess_State_UpToDate" xml:space="preserve">
+    <value>Présent — pointe ici</value>
+  </data>
+  <data name="Settings_AppAccess_State_Mismatch" xml:space="preserve">
+    <value>Présent — pointe ailleurs</value>
+  </data>
+  <data name="Menu_Maintenance" xml:space="preserve">
+    <value>Maintenance...</value>
+  </data>
+  <data name="Maintenance_WindowTitle" xml:space="preserve">
+    <value>Maintenance de la base de données</value>
+  </data>
+  <data name="Maintenance_Intro" xml:space="preserve">
+    <value>Vérifiez si votre base de données de bibliothèque présente des problèmes et appliquez des réparations sûres. Une sauvegarde de sécurité est créée automatiquement avant toute réparation.</value>
+  </data>
+  <data name="Maintenance_IntegrityHeader" xml:space="preserve">
+    <value>Intégrité de la base de données</value>
+  </data>
+  <data name="Maintenance_RunCheck" xml:space="preserve">
+    <value>Lancer la vérification</value>
+  </data>
+  <data name="Maintenance_Repair" xml:space="preserve">
+    <value>Optimiser et réparer</value>
+  </data>
+  <data name="Maintenance_ResultsHeader" xml:space="preserve">
+    <value>Résultats</value>
+  </data>
+  <data name="Maintenance_AdviseRestore" xml:space="preserve">
+    <value>La base de données a signalé des problèmes qui ne peuvent pas être réparés sur place. Restaurez à partir d'une sauvegarde récente pour récupérer vos données.</value>
+  </data>
+  <data name="Maintenance_Step_CheckingIntegrity" xml:space="preserve">
+    <value>Vérification de l'intégrité de la base de données…</value>
+  </data>
+  <data name="Maintenance_Step_CheckingForeignKeys" xml:space="preserve">
+    <value>Vérification des références de clés étrangères…</value>
+  </data>
+  <data name="Maintenance_Step_SafetyBackup" xml:space="preserve">
+    <value>Création d'une sauvegarde de sécurité…</value>
+  </data>
+  <data name="Maintenance_Step_Reindex" xml:space="preserve">
+    <value>Reconstruction des index…</value>
+  </data>
+  <data name="Maintenance_Step_Vacuum" xml:space="preserve">
+    <value>Compactage de la base de données…</value>
+  </data>
+  <data name="Maintenance_Step_Checkpoint" xml:space="preserve">
+    <value>Vidage du journal d'écriture anticipée…</value>
+  </data>
+  <data name="Maintenance_Status_Ok" xml:space="preserve">
+    <value>Aucun problème détecté — la base de données est saine.</value>
+  </data>
+  <data name="Maintenance_Status_IntegrityFailed" xml:space="preserve">
+    <value>Des problèmes d'intégrité ont été détectés.</value>
+  </data>
+  <data name="Maintenance_Status_ForeignKeyViolations" xml:space="preserve">
+    <value>Des violations de clés étrangères ont été détectées.</value>
+  </data>
+  <data name="Maintenance_RepairDone" xml:space="preserve">
+    <value>Réparation terminée.</value>
+  </data>
+  <data name="Maintenance_RepairFailed" xml:space="preserve">
+    <value>Échec de la réparation.</value>
+  </data>
+  <data name="Maintenance_SafetyBackupSaved" xml:space="preserve">
+    <value>Sauvegarde de sécurité enregistrée dans : {0}</value>
   </data>
 </root>

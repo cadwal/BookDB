@@ -29,7 +29,8 @@
                   Content="{x:Static res:Resources.ManageLookups_Add}"
                   Command="{Binding AddCommand}"/>
           <ListBox ItemsSource="{Binding FilteredEntries}"
-                   SelectedItem="{Binding SelectedEntry}">
+                   SelectedItem="{Binding SelectedEntry}"
+                   Background="Transparent">
             <ListBox.ItemTemplate>
               <DataTemplate x:DataType="vm:LookupEntryRow">
                 <TextBlock Text="{Binding Name}" FontSize="13" Padding="8,4"/>
@@ -101,7 +102,8 @@
                     Command="{Binding MoveDownCommand}"/>
           </StackPanel>
           <ListBox ItemsSource="{Binding FilteredEntries}"
-                   SelectedItem="{Binding SelectedEntry}">
+                   SelectedItem="{Binding SelectedEntry}"
+                   Background="Transparent">
             <ListBox.ItemTemplate>
               <DataTemplate x:DataType="vm:LookupEntryRow">
                 <TextBlock Text="{Binding Name}" FontSize="13" Padding="8,4"/>

@@ -74,6 +74,20 @@ Klik op **Voltooien** om de wizard te sluiten. Uw boekenlijst wordt automatisch 
 
 Omslagafbeeldingen ingebed in het back-uparchief worden automatisch geïmporteerd en gekoppeld aan elk boek.
 
+## Meerdere afbeeldingen van hetzelfde type
+
+Een boek kan meer dan één afbeelding van hetzelfde type krijgen — Readerware bewaart vaak meerdere omslag- of miniatuurafbeeldingen per boek, en die worden mogelijk allemaal als hetzelfde type geïmporteerd (bijvoorbeeld twee *Voorkant*-afbeeldingen). BookDB bewaart elke afbeelding, maar elk type toont er maar één in de voorvertoning: die met de laagste volgorde.
+
+Zulke boeken worden in de boekenlijst gemarkeerd met een **!**-label op de miniatuur ("Dubbele afbeeldingstypen — controleer het tabblad Afbeeldingen").
+
+Om dit op te lossen opent u het boek om te bewerken en gaat u naar het tabblad **Afbeeldingen**. Zodra een type twee of meer afbeeldingen bevat, verschijnt het gedeelte **Alle afbeeldingen beheren** met alle afbeeldingen. Voor elke afbeelding kunt u:
+
+- **Aan een ander afbeeldingstype toewijzen** — bijvoorbeeld een tweede *Voorkant* omzetten naar *Achterkant* of *Rug*.
+- **Omhoog of omlaag verplaatsen binnen het type** — de bovenste afbeelding (met de laagste volgorde) wordt de voorvertoning van dat type.
+- **De afbeelding verwijderen**.
+
+Sla het boek op om uw wijzigingen te bewaren. Zodra elk type hooguit één afbeelding heeft, verdwijnt het **!**-label.
+
 ## Importeren uit een actieve Readerware-database
 
 Als u geen back-up hebt maar nog wel uw actieve Readerware-database (de `.rw4`-map, bijv. `MyBooks.rw4`), kan BookDB die rechtstreeks lezen:

@@ -372,6 +372,19 @@ public partial class MainWindowViewModel : ObservableObject
     }
 
     [RelayCommand]
+    private async Task OpenMaintenanceAsync()
+    {
+        try
+        {
+            await _windowService.ShowMaintenanceDialogAsync();
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Failed to open Maintenance");
+        }
+    }
+
+    [RelayCommand]
     private void OpenHelpKeyboardShortcuts() =>
         _windowService.OpenHelpWindow(HelpTab.KeyboardShortcuts);
 

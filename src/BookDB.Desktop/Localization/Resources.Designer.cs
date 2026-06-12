@@ -2107,6 +2107,21 @@ namespace BookDB.Desktop.Localization
             get { return ResourceManager.GetString("Backup_Status_ExportingCoverImagesCount", resourceCulture) ?? "Exporting cover images ({0}/{1})…"; }
         }
 
+        public static string Backup_Status_ExportingLookups
+        {
+            get { return ResourceManager.GetString("Backup_Status_ExportingLookups", resourceCulture) ?? "Exporting lookup lists…"; }
+        }
+
+        public static string Backup_Status_ExportingLoans
+        {
+            get { return ResourceManager.GetString("Backup_Status_ExportingLoans", resourceCulture) ?? "Exporting loans and borrowers…"; }
+        }
+
+        public static string Backup_Status_ExportingSettings
+        {
+            get { return ResourceManager.GetString("Backup_Status_ExportingSettings", resourceCulture) ?? "Exporting settings and saved searches…"; }
+        }
+
         public static string Restore_Status_SavingSafetyBackup
         {
             get { return ResourceManager.GetString("Restore_Status_SavingSafetyBackup", resourceCulture) ?? "Saving safety backup…"; }
@@ -2717,6 +2732,36 @@ namespace BookDB.Desktop.Localization
             get { return ResourceManager.GetString("Settings_Advanced_Logging_RestartNote", resourceCulture) ?? "Log level change takes effect on next launch."; }
         }
 
+        public static string Settings_Appearance_Flavour_Dark
+        {
+            get { return ResourceManager.GetString("Settings_Appearance_Flavour_Dark", resourceCulture) ?? "Dark"; }
+        }
+
+        public static string Settings_Appearance_Flavour_Default
+        {
+            get { return ResourceManager.GetString("Settings_Appearance_Flavour_Default", resourceCulture) ?? "Default"; }
+        }
+
+        public static string Settings_Appearance_Flavour_HighContrast
+        {
+            get { return ResourceManager.GetString("Settings_Appearance_Flavour_HighContrast", resourceCulture) ?? "High contrast"; }
+        }
+
+        public static string Settings_Appearance_Flavour_Label
+        {
+            get { return ResourceManager.GetString("Settings_Appearance_Flavour_Label", resourceCulture) ?? "Color theme"; }
+        }
+
+        public static string Settings_Appearance_Flavour_Vibrant
+        {
+            get { return ResourceManager.GetString("Settings_Appearance_Flavour_Vibrant", resourceCulture) ?? "Vibrant"; }
+        }
+
+        public static string Settings_Appearance_RestartNote
+        {
+            get { return ResourceManager.GetString("Settings_Appearance_RestartNote", resourceCulture) ?? "Theme change takes effect on next launch."; }
+        }
+
         public static string Settings_Browse_AuthorFacetLabel
         {
             get { return ResourceManager.GetString("Settings_Browse_AuthorFacetLabel", resourceCulture) ?? "Author facet label"; }
@@ -2798,6 +2843,11 @@ namespace BookDB.Desktop.Localization
         public static string Settings_Tab_Advanced
         {
             get { return ResourceManager.GetString("Settings_Tab_Advanced", resourceCulture) ?? "Advanced"; }
+        }
+
+        public static string Settings_Tab_Appearance
+        {
+            get { return ResourceManager.GetString("Settings_Tab_Appearance", resourceCulture) ?? "Appearance"; }
         }
 
         public static string Settings_Tab_Browse
@@ -4043,6 +4093,171 @@ namespace BookDB.Desktop.Localization
         public static string Menu_View_LoanedToColumn
         {
             get { return ResourceManager.GetString("Menu_View_LoanedToColumn", resourceCulture) ?? "Loaned To Column"; }
+        }
+
+        public static string Settings_Tab_ApplicationAccess
+        {
+            get { return ResourceManager.GetString("Settings_Tab_ApplicationAccess", resourceCulture) ?? "Application access"; }
+        }
+
+        public static string Settings_AppAccess_Intro
+        {
+            get { return ResourceManager.GetString("Settings_AppAccess_Intro", resourceCulture) ?? "Add BookDB to your system so you can launch it without locating the program file."; }
+        }
+
+        public static string Settings_AppAccess_StartMenuButton
+        {
+            get { return ResourceManager.GetString("Settings_AppAccess_StartMenuButton", resourceCulture) ?? "Add to Start menu"; }
+        }
+
+        public static string Settings_AppAccess_DesktopButton
+        {
+            get { return ResourceManager.GetString("Settings_AppAccess_DesktopButton", resourceCulture) ?? "Create desktop shortcut"; }
+        }
+
+        public static string Settings_AppAccess_AppMenuButton
+        {
+            get { return ResourceManager.GetString("Settings_AppAccess_AppMenuButton", resourceCulture) ?? "Add to applications menu"; }
+        }
+
+        public static string Settings_AppAccess_PinHint
+        {
+            get { return ResourceManager.GetString("Settings_AppAccess_PinHint", resourceCulture) ?? "Tip: after the shortcut is created, right-click it to pin BookDB to the taskbar or Start menu."; }
+        }
+
+        public static string Settings_AppAccess_Unsupported
+        {
+            get { return ResourceManager.GetString("Settings_AppAccess_Unsupported", resourceCulture) ?? "Adding shortcuts isn't available on this operating system."; }
+        }
+
+        public static string Settings_AppAccess_StatusCreated
+        {
+            get { return ResourceManager.GetString("Settings_AppAccess_StatusCreated", resourceCulture) ?? "Done — the shortcut was created."; }
+        }
+
+        public static string Settings_AppAccess_StatusWingetWarning
+        {
+            get { return ResourceManager.GetString("Settings_AppAccess_StatusWingetWarning", resourceCulture) ?? "The shortcut was created, but it points to the current install folder and may stop working after a winget update. For an update-proof shortcut, reinstall BookDB from an administrator terminal."; }
+        }
+
+        public static string Settings_AppAccess_StatusFailed
+        {
+            get { return ResourceManager.GetString("Settings_AppAccess_StatusFailed", resourceCulture) ?? "Could not create the shortcut. See the log for details."; }
+        }
+
+        public static string Settings_AppAccess_State_Missing
+        {
+            get { return ResourceManager.GetString("Settings_AppAccess_State_Missing", resourceCulture) ?? "Not created"; }
+        }
+
+        public static string Settings_AppAccess_State_UpToDate
+        {
+            get { return ResourceManager.GetString("Settings_AppAccess_State_UpToDate", resourceCulture) ?? "In place — points here"; }
+        }
+
+        public static string Settings_AppAccess_State_Mismatch
+        {
+            get { return ResourceManager.GetString("Settings_AppAccess_State_Mismatch", resourceCulture) ?? "In place — points elsewhere"; }
+        }
+
+        public static string Menu_Maintenance
+        {
+            get { return ResourceManager.GetString("Menu_Maintenance", resourceCulture) ?? "Maintenance..."; }
+        }
+
+        public static string Maintenance_WindowTitle
+        {
+            get { return ResourceManager.GetString("Maintenance_WindowTitle", resourceCulture) ?? "Database Maintenance"; }
+        }
+
+        public static string Maintenance_Intro
+        {
+            get { return ResourceManager.GetString("Maintenance_Intro", resourceCulture) ?? "Check your library database for problems and apply safe repairs. A safety backup is created automatically before any repair runs."; }
+        }
+
+        public static string Maintenance_IntegrityHeader
+        {
+            get { return ResourceManager.GetString("Maintenance_IntegrityHeader", resourceCulture) ?? "Database integrity"; }
+        }
+
+        public static string Maintenance_RunCheck
+        {
+            get { return ResourceManager.GetString("Maintenance_RunCheck", resourceCulture) ?? "Run check"; }
+        }
+
+        public static string Maintenance_Repair
+        {
+            get { return ResourceManager.GetString("Maintenance_Repair", resourceCulture) ?? "Optimize & repair"; }
+        }
+
+        public static string Maintenance_ResultsHeader
+        {
+            get { return ResourceManager.GetString("Maintenance_ResultsHeader", resourceCulture) ?? "Results"; }
+        }
+
+        public static string Maintenance_AdviseRestore
+        {
+            get { return ResourceManager.GetString("Maintenance_AdviseRestore", resourceCulture) ?? "The database reported problems that cannot be repaired in place. Restore from a recent backup to recover your data."; }
+        }
+
+        public static string Maintenance_Step_CheckingIntegrity
+        {
+            get { return ResourceManager.GetString("Maintenance_Step_CheckingIntegrity", resourceCulture) ?? "Checking database integrity…"; }
+        }
+
+        public static string Maintenance_Step_CheckingForeignKeys
+        {
+            get { return ResourceManager.GetString("Maintenance_Step_CheckingForeignKeys", resourceCulture) ?? "Checking foreign-key references…"; }
+        }
+
+        public static string Maintenance_Step_SafetyBackup
+        {
+            get { return ResourceManager.GetString("Maintenance_Step_SafetyBackup", resourceCulture) ?? "Creating a safety backup…"; }
+        }
+
+        public static string Maintenance_Step_Reindex
+        {
+            get { return ResourceManager.GetString("Maintenance_Step_Reindex", resourceCulture) ?? "Rebuilding indexes…"; }
+        }
+
+        public static string Maintenance_Step_Vacuum
+        {
+            get { return ResourceManager.GetString("Maintenance_Step_Vacuum", resourceCulture) ?? "Compacting the database…"; }
+        }
+
+        public static string Maintenance_Step_Checkpoint
+        {
+            get { return ResourceManager.GetString("Maintenance_Step_Checkpoint", resourceCulture) ?? "Flushing the write-ahead log…"; }
+        }
+
+        public static string Maintenance_Status_Ok
+        {
+            get { return ResourceManager.GetString("Maintenance_Status_Ok", resourceCulture) ?? "No problems found — the database is healthy."; }
+        }
+
+        public static string Maintenance_Status_IntegrityFailed
+        {
+            get { return ResourceManager.GetString("Maintenance_Status_IntegrityFailed", resourceCulture) ?? "Integrity problems were found."; }
+        }
+
+        public static string Maintenance_Status_ForeignKeyViolations
+        {
+            get { return ResourceManager.GetString("Maintenance_Status_ForeignKeyViolations", resourceCulture) ?? "Foreign-key violations were found."; }
+        }
+
+        public static string Maintenance_RepairDone
+        {
+            get { return ResourceManager.GetString("Maintenance_RepairDone", resourceCulture) ?? "Repair complete."; }
+        }
+
+        public static string Maintenance_RepairFailed
+        {
+            get { return ResourceManager.GetString("Maintenance_RepairFailed", resourceCulture) ?? "Repair failed."; }
+        }
+
+        public static string Maintenance_SafetyBackupSaved
+        {
+            get { return ResourceManager.GetString("Maintenance_SafetyBackupSaved", resourceCulture) ?? "Safety backup saved to: {0}"; }
         }
     }
 }

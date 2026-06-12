@@ -30,7 +30,7 @@
                 <Image Width="48" Height="48"
                        VerticalAlignment="Center">
                     <Image.Source>
-                        <svg:SvgImage Source="avares://BookDB.Desktop/Assets/Icons/book.svg" />
+                        <svg:SvgImage Source="avares://BookDB.Desktop/Assets/Icons/book.svg" Css="{DynamicResource IconCss}" />
                     </Image.Source>
                 </Image>
                 <StackPanel VerticalAlignment="Center" Spacing="2">

@@ -5,31 +5,31 @@
     <Style Selector="TextBlock.facetHeader">
         <Setter Property="FontSize" Value="15" />
         <Setter Property="FontWeight" Value="SemiBold" />
-        <Setter Property="Foreground" Value="{StaticResource BrushTextPrimary}" />
+        <Setter Property="Foreground" Value="{DynamicResource BrushTextPrimary}" />
     </Style>
 
     <!-- Facet value text: 13px, #555555 -->
     <Style Selector="TextBlock.facetValue">
         <Setter Property="FontSize" Value="13" />
-        <Setter Property="Foreground" Value="{StaticResource BrushTextOnDark}" />
+        <Setter Property="Foreground" Value="{DynamicResource BrushTextOnDark}" />
     </Style>
 
     <!-- Facet count text: 12px, #666666 — same color as facetCountInline per user feedback -->
     <Style Selector="TextBlock.facetCount">
         <Setter Property="FontSize" Value="12" />
-        <Setter Property="Foreground" Value="{StaticResource BrushTextSecondary}" />
+        <Setter Property="Foreground" Value="{DynamicResource BrushTextSecondary}" />
     </Style>
 
     <!-- Facet count inline: 12px, #666666 — replaces Opacity="0.7" on checkbox item counts -->
     <Style Selector="TextBlock.facetCountInline">
         <Setter Property="FontSize" Value="12" />
-        <Setter Property="Foreground" Value="{StaticResource BrushTextSecondary}" />
+        <Setter Property="Foreground" Value="{DynamicResource BrushTextSecondary}" />
     </Style>
 
     <!-- Saved search empty hint: 12px, #999999 — replaces Opacity="0.6" -->
     <Style Selector="TextBlock.facetHint">
         <Setter Property="FontSize" Value="12" />
-        <Setter Property="Foreground" Value="{StaticResource BrushTextTertiary}" />
+        <Setter Property="Foreground" Value="{DynamicResource BrushTextTertiary}" />
     </Style>
 
 

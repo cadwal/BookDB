@@ -685,6 +685,15 @@
   <data name="Backup_Status_ExportingCoverImagesCount" xml:space="preserve">
     <value>Cover-Bilder werden exportiert ({0}/{1})…</value>
   </data>
+  <data name="Backup_Status_ExportingLookups" xml:space="preserve">
+    <value>Nachschlagelisten werden exportiert…</value>
+  </data>
+  <data name="Backup_Status_ExportingLoans" xml:space="preserve">
+    <value>Ausleihen und Entleiher werden exportiert…</value>
+  </data>
+  <data name="Backup_Status_ExportingSettings" xml:space="preserve">
+    <value>Einstellungen und gespeicherte Suchen werden exportiert…</value>
+  </data>
   <data name="Restore_Status_SavingSafetyBackup" xml:space="preserve">
     <value>Sicherheitskopie wird gespeichert…</value>
   </data>
@@ -1613,6 +1622,24 @@ Mögliche Duplikate: {3}  |  Mit Cover: {4}</value>
   <data name="Settings_Advanced_Logging_RestartNote" xml:space="preserve">
     <value>Änderung der Protokollebene wird beim nächsten Start wirksam.</value>
   </data>
+  <data name="Settings_Appearance_Flavour_Dark" xml:space="preserve">
+    <value>Dunkel</value>
+  </data>
+  <data name="Settings_Appearance_Flavour_Default" xml:space="preserve">
+    <value>Standard</value>
+  </data>
+  <data name="Settings_Appearance_Flavour_HighContrast" xml:space="preserve">
+    <value>Hoher Kontrast</value>
+  </data>
+  <data name="Settings_Appearance_Flavour_Label" xml:space="preserve">
+    <value>Farbschema</value>
+  </data>
+  <data name="Settings_Appearance_Flavour_Vibrant" xml:space="preserve">
+    <value>Lebendig</value>
+  </data>
+  <data name="Settings_Appearance_RestartNote" xml:space="preserve">
+    <value>Designänderung wird beim nächsten Start wirksam.</value>
+  </data>
   <data name="Settings_Browse_AuthorFacetLabel" xml:space="preserve">
     <value>Autoren-Facettenbezeichnung</value>
   </data>
@@ -1660,6 +1687,9 @@ Mögliche Duplikate: {3}  |  Mit Cover: {4}</value>
   </data>
   <data name="Settings_Tab_Advanced" xml:space="preserve">
     <value>Erweitert</value>
+  </data>
+  <data name="Settings_Tab_Appearance" xml:space="preserve">
+    <value>Darstellung</value>
   </data>
   <data name="Settings_Tab_Browse" xml:space="preserve">
     <value>Durchsuchen</value>
@@ -2413,5 +2443,104 @@ Mögliche Duplikate: {3}  |  Mit Cover: {4}</value>
   </data>
   <data name="Import_Duplicate_CancelImport" xml:space="preserve">
     <value>Import abbrechen</value>
+  </data>
+  <data name="Settings_Tab_ApplicationAccess" xml:space="preserve">
+    <value>Anwendungszugriff</value>
+  </data>
+  <data name="Settings_AppAccess_Intro" xml:space="preserve">
+    <value>Fügen Sie BookDB zu Ihrem System hinzu, damit Sie es starten können, ohne die Programmdatei zu suchen.</value>
+  </data>
+  <data name="Settings_AppAccess_StartMenuButton" xml:space="preserve">
+    <value>Zum Startmenü hinzufügen</value>
+  </data>
+  <data name="Settings_AppAccess_DesktopButton" xml:space="preserve">
+    <value>Desktopverknüpfung erstellen</value>
+  </data>
+  <data name="Settings_AppAccess_AppMenuButton" xml:space="preserve">
+    <value>Zum Anwendungsmenü hinzufügen</value>
+  </data>
+  <data name="Settings_AppAccess_PinHint" xml:space="preserve">
+    <value>Tipp: Klicken Sie nach dem Erstellen mit der rechten Maustaste auf die Verknüpfung, um BookDB an die Taskleiste oder das Startmenü anzuheften.</value>
+  </data>
+  <data name="Settings_AppAccess_Unsupported" xml:space="preserve">
+    <value>Das Hinzufügen von Verknüpfungen ist auf diesem Betriebssystem nicht verfügbar.</value>
+  </data>
+  <data name="Settings_AppAccess_StatusCreated" xml:space="preserve">
+    <value>Fertig — die Verknüpfung wurde erstellt.</value>
+  </data>
+  <data name="Settings_AppAccess_StatusWingetWarning" xml:space="preserve">
+    <value>Die Verknüpfung wurde erstellt, verweist aber auf den aktuellen Installationsordner und funktioniert nach einem winget-Update möglicherweise nicht mehr. Installieren Sie BookDB für eine updatesichere Verknüpfung über ein Administrator-Terminal neu.</value>
+  </data>
+  <data name="Settings_AppAccess_StatusFailed" xml:space="preserve">
+    <value>Die Verknüpfung konnte nicht erstellt werden. Weitere Informationen finden Sie im Protokoll.</value>
+  </data>
+  <data name="Settings_AppAccess_State_Missing" xml:space="preserve">
+    <value>Nicht erstellt</value>
+  </data>
+  <data name="Settings_AppAccess_State_UpToDate" xml:space="preserve">
+    <value>Vorhanden — verweist hierauf</value>
+  </data>
+  <data name="Settings_AppAccess_State_Mismatch" xml:space="preserve">
+    <value>Vorhanden — verweist woandershin</value>
+  </data>
+  <data name="Menu_Maintenance" xml:space="preserve">
+    <value>Wartung...</value>
+  </data>
+  <data name="Maintenance_WindowTitle" xml:space="preserve">
+    <value>Datenbankwartung</value>
+  </data>
+  <data name="Maintenance_Intro" xml:space="preserve">
+    <value>Überprüfen Sie Ihre Bibliotheksdatenbank auf Probleme und führen Sie sichere Reparaturen durch. Vor jeder Reparatur wird automatisch eine Sicherung erstellt.</value>
+  </data>
+  <data name="Maintenance_IntegrityHeader" xml:space="preserve">
+    <value>Datenbankintegrität</value>
+  </data>
+  <data name="Maintenance_RunCheck" xml:space="preserve">
+    <value>Prüfung ausführen</value>
+  </data>
+  <data name="Maintenance_Repair" xml:space="preserve">
+    <value>Optimieren und reparieren</value>
+  </data>
+  <data name="Maintenance_ResultsHeader" xml:space="preserve">
+    <value>Ergebnisse</value>
+  </data>
+  <data name="Maintenance_AdviseRestore" xml:space="preserve">
+    <value>Die Datenbank hat Probleme gemeldet, die nicht direkt repariert werden können. Stellen Sie aus einer aktuellen Sicherung wieder her, um Ihre Daten zu retten.</value>
+  </data>
+  <data name="Maintenance_Step_CheckingIntegrity" xml:space="preserve">
+    <value>Datenbankintegrität wird geprüft…</value>
+  </data>
+  <data name="Maintenance_Step_CheckingForeignKeys" xml:space="preserve">
+    <value>Fremdschlüsselverweise werden geprüft…</value>
+  </data>
+  <data name="Maintenance_Step_SafetyBackup" xml:space="preserve">
+    <value>Sicherung wird erstellt…</value>
+  </data>
+  <data name="Maintenance_Step_Reindex" xml:space="preserve">
+    <value>Indizes werden neu aufgebaut…</value>
+  </data>
+  <data name="Maintenance_Step_Vacuum" xml:space="preserve">
+    <value>Datenbank wird komprimiert…</value>
+  </data>
+  <data name="Maintenance_Step_Checkpoint" xml:space="preserve">
+    <value>Write-Ahead-Log wird geleert…</value>
+  </data>
+  <data name="Maintenance_Status_Ok" xml:space="preserve">
+    <value>Keine Probleme gefunden — die Datenbank ist intakt.</value>
+  </data>
+  <data name="Maintenance_Status_IntegrityFailed" xml:space="preserve">
+    <value>Es wurden Integritätsprobleme gefunden.</value>
+  </data>
+  <data name="Maintenance_Status_ForeignKeyViolations" xml:space="preserve">
+    <value>Es wurden Fremdschlüsselverletzungen gefunden.</value>
+  </data>
+  <data name="Maintenance_RepairDone" xml:space="preserve">
+    <value>Reparatur abgeschlossen.</value>
+  </data>
+  <data name="Maintenance_RepairFailed" xml:space="preserve">
+    <value>Reparatur fehlgeschlagen.</value>
+  </data>
+  <data name="Maintenance_SafetyBackupSaved" xml:space="preserve">
+    <value>Sicherung gespeichert unter: {0}</value>
   </data>
 </root>

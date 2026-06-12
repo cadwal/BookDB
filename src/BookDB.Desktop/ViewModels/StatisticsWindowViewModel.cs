@@ -31,8 +31,13 @@ public sealed partial class StatisticsWindowViewModel : ObservableObject
     public PlotModel ChartModel { get; } = new PlotModel
     {
         Title = Localization.Resources.Statistics_Section_BooksPerYear,
-        Background = OxyColors.White
+        Background = ToOxy(Helpers.Palette.Color("BrushBackground", Avalonia.Media.Colors.White)),
+        TextColor = ToOxy(Helpers.Palette.Color("BrushTextPrimary", Avalonia.Media.Colors.Black)),
+        TitleColor = ToOxy(Helpers.Palette.Color("BrushTextPrimary", Avalonia.Media.Colors.Black)),
+        PlotAreaBorderColor = ToOxy(Helpers.Palette.Color("BrushBorder", Avalonia.Media.Colors.Gray)),
     };
+
+    private static OxyColor ToOxy(Avalonia.Media.Color c) => OxyColor.FromArgb(c.A, c.R, c.G, c.B);
 
     [ObservableProperty]
     private int _totalBooks;
@@ -71,13 +76,20 @@ public sealed partial class StatisticsWindowViewModel : ObservableObject
         ChartModel.Series.Clear();
         ChartModel.Axes.Clear();
 
+        var axisText = ToOxy(Helpers.Palette.Color("BrushTextSecondary", Avalonia.Media.Colors.Black));
+        var axisLine = ToOxy(Helpers.Palette.Color("BrushBorder", Avalonia.Media.Colors.Gray));
+
         // OxyPlot 2.x BarSeries renders horizontal bars; CategoryAxis must be on Left (Y axis).
         // CategoryAxis.Labels is a List<string> (read-only property — use .Add(), not assignment).
-        var catAxis = new CategoryAxis { Position = AxisPosition.Left };
+        var catAxis = new CategoryAxis
+        {
+            Position = AxisPosition.Left,
+            TextColor = axisText, TitleColor = axisText, AxislineColor = axisLine, TicklineColor = axisLine,
+        };
         foreach (var (year, _) in data)
             catAxis.Labels.Add(year.ToString());
 
-        var series = new BarSeries { FillColor = OxyColor.Parse("#4682B4") };
+        var series = new BarSeries { FillColor = ToOxy(Helpers.Palette.Color("BrushChartBar", Avalonia.Media.Color.Parse("#4682b4"))) };
         foreach (var (_, count) in data)
             series.Items.Add(new BarItem(count));
 
@@ -85,7 +97,8 @@ public sealed partial class StatisticsWindowViewModel : ObservableObject
         ChartModel.Axes.Add(new LinearAxis
         {
             Position = AxisPosition.Bottom,
-            MinimumPadding = 0
+            MinimumPadding = 0,
+            TextColor = axisText, TitleColor = axisText, AxislineColor = axisLine, TicklineColor = axisLine,
         });
 
         ChartModel.Series.Add(series);

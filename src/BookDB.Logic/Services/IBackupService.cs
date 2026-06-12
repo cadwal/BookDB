@@ -14,10 +14,17 @@ public interface IBackupService
     Task AutoBackupIfEnabledAsync(CancellationToken ct = default, IProgress<string>? progress = null);
 
     /// <summary>
-    /// True when an auto-backup would actually run on shutdown (the feature is enabled and a
-    /// destination folder is configured). Lets callers show shutdown status only when needed.
+    /// True when auto-backup is configured (the feature is enabled and a destination folder is set),
+    /// regardless of whether a backup is actually due right now.
     /// </summary>
     Task<bool> IsAutoBackupEnabledAsync(CancellationToken ct = default);
+
+    /// <summary>
+    /// True when an auto-backup should actually run now: configured AND (library data changed this session,
+    /// OR no backup has ever run, OR more than the recency threshold has passed since the last one).
+    /// Lets the shutdown path show its progress window only when a backup will really happen.
+    /// </summary>
+    Task<bool> ShouldAutoBackupAsync(CancellationToken ct = default);
 
     string GetCandidateSqlitePath(string destFolder);
     string GetCandidateCsvArchivePath(string destFolder);

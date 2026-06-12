@@ -345,12 +345,12 @@ public partial class BookDetailViewModel :
                 if (isOverdue)
                 {
                     LoanStatusDisplay = string.Format(Resources.BookDetail_OverdueStatus_Format, name);
-                    LoanStatusForeground = (IBrush?)Avalonia.Application.Current?.Resources["BrushWarning"] ?? Brushes.Orange;
+                    LoanStatusForeground = Helpers.Palette.Brush("BrushWarning", Brushes.Orange);
                 }
                 else
                 {
                     LoanStatusDisplay = string.Format(Resources.BookDetail_LoanStatus_Format, name, dueDate?.ToLocalTime().ToShortDateString() ?? string.Empty);
-                    LoanStatusForeground = (IBrush?)Avalonia.Application.Current?.Resources["BrushTextSecondary"] ?? Brushes.Gray;
+                    LoanStatusForeground = Helpers.Palette.Brush("BrushTextSecondary", Brushes.Gray);
                 }
             }
 

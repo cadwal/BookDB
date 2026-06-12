@@ -11,6 +11,23 @@ The purpose is specifically to allow me, and any other users, to continue to mai
  - Import Readerware backups into your collections (File | Import ...)
  - Or, but this depends on the availability of the JRE and HSQLDB from a Readerware 4 installation on your platform, import from a Readerware database.
 
+### Installing and starting via winget (Windows)
+
+```powershell
+winget install cadwal.BookDB
+```
+
+The winget package is a portable install, so no Start Menu entry is created. To start the
+application, open a **new** terminal (winget adds the install folder to your user `PATH`, and
+already-open terminals don't see the update) and run:
+
+```powershell
+BookDB.Desktop
+```
+
+Once the application is running, open **Settings → Application access** to create Start Menu
+and desktop shortcuts, so future launches don't need the terminal.
+
 ## What it does
 
 With this application you can maintain a book database. It supports:

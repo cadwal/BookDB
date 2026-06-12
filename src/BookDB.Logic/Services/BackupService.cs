@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using BookDB.Data.DbContexts;
 using BookDB.Models;
+using BookDB.Models.Interfaces;
 using CsvHelper;
 using CsvHelper.Configuration;
 using Microsoft.EntityFrameworkCore;
@@ -16,21 +17,29 @@ namespace BookDB.Logic.Services;
 
 public sealed class BackupService : IBackupService
 {
+    // Setting key holding the ISO-8601 UTC timestamp of the last successful backup.
+    private const string LastRunKey = "AutoBackup.LastRun";
+    // Auto-backup runs at least this often even when nothing changed (the user's recency threshold).
+    private static readonly TimeSpan RecencyThreshold = TimeSpan.FromDays(7);
+
     private readonly IDbContextFactory<BookDbContext> _factory;
     private readonly AppSettings _appSettings;
     private readonly ISettingsService _settingsService;
     private readonly IResourceProvider _resources;
+    private readonly IDataChangeTracker _changeTracker;
 
     public BackupService(
         IDbContextFactory<BookDbContext> factory,
         AppSettings appSettings,
         ISettingsService settingsService,
-        IResourceProvider resources)
+        IResourceProvider resources,
+        IDataChangeTracker changeTracker)
     {
         _factory = factory;
         _appSettings = appSettings;
         _settingsService = settingsService;
         _resources = resources;
+        _changeTracker = changeTracker;
     }
 
     // Localised status text for user-facing progress windows. Log messages stay in English.
@@ -84,6 +93,7 @@ public sealed class BackupService : IBackupService
         }
 
         Log.Information("BackupService: SQLite backup written to {ZipPath}", zipPath);
+        await RecordBackupCompletedAsync(ct);
         return zipPath;
     }
 
@@ -147,11 +157,64 @@ public sealed class BackupService : IBackupService
                 await dbContext.BookContributors.AsNoTracking().ToListAsync(ct));
             await WriteCsvAsync(tempDir, "BookCategories.csv",
                 await dbContext.BookCategories.AsNoTracking().ToListAsync(ct));
+            await WriteCsvAsync(tempDir, "CategoryCollections.csv",
+                await dbContext.CategoryCollections.AsNoTracking().ToListAsync(ct));
+            await WriteCsvAsync(tempDir, "BookVolumes.csv",
+                await dbContext.BookVolumes.AsNoTracking().ToListAsync(ct));
+            await WriteCsvAsync(tempDir, "BookChapters.csv",
+                await dbContext.BookChapters.AsNoTracking().ToListAsync(ct));
+
+            progress?.Report(L("Backup_Status_ExportingLookups"));
+            await WriteCsvAsync(tempDir, "Conditions.csv",
+                await dbContext.Conditions.AsNoTracking().ToListAsync(ct));
+            await WriteCsvAsync(tempDir, "ContributorRoles.csv",
+                await dbContext.ContributorRoles.AsNoTracking().ToListAsync(ct));
+            await WriteCsvAsync(tempDir, "Editions.csv",
+                await dbContext.Editions.AsNoTracking().ToListAsync(ct));
+            await WriteCsvAsync(tempDir, "PurchasePlaces.csv",
+                await dbContext.PurchasePlaces.AsNoTracking().ToListAsync(ct));
+            await WriteCsvAsync(tempDir, "Ratings.csv",
+                await dbContext.Ratings.AsNoTracking().ToListAsync(ct));
+            await WriteCsvAsync(tempDir, "ReadingLevels.csv",
+                await dbContext.ReadingLevels.AsNoTracking().ToListAsync(ct));
+            await WriteCsvAsync(tempDir, "Sources.csv",
+                await dbContext.Sources.AsNoTracking().ToListAsync(ct));
+            await WriteCsvAsync(tempDir, "Statuses.csv",
+                await dbContext.Statuses.AsNoTracking().ToListAsync(ct));
+            await WriteCsvAsync(tempDir, "BookImageTypes.csv",
+                await dbContext.BookImageTypes.AsNoTracking().ToListAsync(ct));
+            await WriteCsvAsync(tempDir, "BorrowerStatuses.csv",
+                await dbContext.BorrowerStatuses.AsNoTracking().ToListAsync(ct));
+
+            progress?.Report(L("Backup_Status_ExportingLoans"));
+            await WriteCsvAsync(tempDir, "Borrowers.csv",
+                await dbContext.Borrowers.AsNoTracking().ToListAsync(ct));
+            await WriteCsvAsync(tempDir, "Loans.csv",
+                await dbContext.Loans.AsNoTracking().ToListAsync(ct));
+
+            progress?.Report(L("Backup_Status_ExportingSettings"));
+            await WriteCsvAsync(tempDir, "Settings.csv",
+                await dbContext.Settings.AsNoTracking().ToListAsync(ct));
+            await WriteCsvAsync(tempDir, "SavedSearches.csv",
+                await dbContext.SavedSearches.AsNoTracking().ToListAsync(ct));
+            await WriteCsvAsync(tempDir, "BatchQueueItems.csv",
+                await dbContext.BatchQueueItems.AsNoTracking().ToListAsync(ct));
 
             progress?.Report(L("Backup_Status_ExportingCoverImages"));
             var imagesDir = Path.Combine(tempDir, "images");
             Directory.CreateDirectory(imagesDir);
             var images = await dbContext.BookImages.AsNoTracking().ToListAsync(ct);
+            // Image metadata rows (book linkage, type, ordering) — the bytes go to images/ below.
+            await WriteCsvAsync(tempDir, "BookImages.csv", images.Select(i => new
+            {
+                i.BookImageId,
+                i.BookId,
+                i.BookImageTypeId,
+                i.MimeType,
+                i.IsPrimary,
+                i.DisplayOrder,
+                i.Added,
+            }));
             var imageIndex = 0;
             foreach (var image in images)
             {
@@ -179,6 +242,7 @@ public sealed class BackupService : IBackupService
             }
         }
 
+        await RecordBackupCompletedAsync(ct);
         return zipPath;
     }
 
@@ -232,9 +296,29 @@ public sealed class BackupService : IBackupService
         return !string.IsNullOrWhiteSpace(folder);
     }
 
-    public async Task AutoBackupIfEnabledAsync(CancellationToken ct = default, IProgress<string>? progress = null)
+    public async Task<bool> ShouldAutoBackupAsync(CancellationToken ct = default)
     {
         if (!await IsAutoBackupEnabledAsync(ct))
+            return false;
+
+        // Library data changed this session — always back up.
+        if (_changeTracker.HasChanges)
+            return true;
+
+        var lastRunRaw = await _settingsService.GetAsync(LastRunKey, ct);
+        if (string.IsNullOrWhiteSpace(lastRunRaw))
+            return true; // never backed up
+
+        if (!DateTime.TryParse(lastRunRaw, CultureInfo.InvariantCulture,
+                DateTimeStyles.RoundtripKind, out var lastRun))
+            return true; // unparseable timestamp — treat as stale
+
+        return DateTime.UtcNow - lastRun.ToUniversalTime() > RecencyThreshold;
+    }
+
+    public async Task AutoBackupIfEnabledAsync(CancellationToken ct = default, IProgress<string>? progress = null)
+    {
+        if (!await ShouldAutoBackupAsync(ct))
             return;
 
         var folder = await _settingsService.GetAsync("LastBackupFolder", ct);
@@ -254,6 +338,16 @@ public sealed class BackupService : IBackupService
         {
             Log.Error(ex, "BackupService: AutoBackupIfEnabledAsync failed");
         }
+    }
+
+    // Records that a backup just succeeded: stamps the last-run time and clears the change flag so the next
+    // shutdown only backs up again once data changes or the recency window lapses. Covers manual and auto
+    // backups alike. The Settings write is excluded from the change tracker, so it won't re-flag the session.
+    private async Task RecordBackupCompletedAsync(CancellationToken ct)
+    {
+        await _settingsService.SetAsync(
+            LastRunKey, DateTime.UtcNow.ToString("o", CultureInfo.InvariantCulture), ct);
+        _changeTracker.Reset();
     }
 
     // Generates a suffix path if the candidate already exists: bookdb-2026-04-19-1.zip, -2.zip, etc.

@@ -34,7 +34,7 @@
 
         <!-- Validation message -->
         <TextBlock Text="{Binding ErrorMessage}"
-                   Foreground="Red"
+                   Foreground="{DynamicResource BrushError}"
                    FontSize="12"
                    IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
 

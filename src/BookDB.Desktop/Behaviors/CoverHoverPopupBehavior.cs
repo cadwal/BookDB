@@ -122,7 +122,7 @@ public class CoverHoverPopupBehavior : Behavior<Control>
         {
             Text = dimensionText,
             FontSize = 11,
-            Foreground = Avalonia.Media.Brushes.Gray,
+            Foreground = Helpers.Palette.Brush("BrushTextSecondary", Avalonia.Media.Brushes.Gray),
             HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
             Margin = new Thickness(0, 4, 0, 0),
         };
@@ -136,7 +136,7 @@ public class CoverHoverPopupBehavior : Behavior<Control>
         var border = new Border
         {
             Child = stack,
-            Background = Avalonia.Media.Brushes.White,
+            Background = Helpers.Palette.Brush("BrushBackground", Avalonia.Media.Brushes.White),
             Padding = new Thickness(4),
             CornerRadius = new CornerRadius(4),
         };

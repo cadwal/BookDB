@@ -73,6 +73,68 @@ jobs:
           name: win-x64-fdd
           path: BookDB-v*-win-x64-fdd.zip
 
+  build-windows-arm64:
+    runs-on: windows-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+
+      - name: Validate tag format
+        shell: pwsh
+        run: |
+          if ('${{ github.ref }}' -notmatch '^refs/tags/v\d+\.\d+\.\d+$') {
+            Write-Error "This workflow must be triggered from a version tag (v*.*.*), not a branch. Got: ${{ github.ref }}"
+            exit 1
+          }
+
+      - uses: actions/setup-dotnet@3e891b0cb619bf60e2c25674b222b8940e2c1c25  # v4.1.0
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Get version from tag
+        id: version
+        shell: pwsh
+        run: echo "version=$('${{ github.ref_name }}'.TrimStart('v'))" >> $env:GITHUB_OUTPUT
+
+      # win-arm64 cross-compiles fine on the x64 runner; kept non-blocking like Linux/macOS.
+      - name: Publish win-arm64
+        shell: pwsh
+        run: |
+          dotnet publish src/BookDB.Desktop/BookDB.Desktop.csproj `
+            -c Release -r win-arm64 --self-contained `
+            -o publish/win-arm64
+
+      - name: Create portable zip
+        shell: pwsh
+        run: |
+          $ver = "${{ steps.version.outputs.version }}"
+          Compress-Archive -Path publish/win-arm64/* `
+            -DestinationPath "BookDB-v$ver-win-arm64.zip"
+
+      - uses: actions/upload-artifact@6f51ac03b9356f520e9adb1b1b7802705f340c2b  # v4.5.0
+        with:
+          name: win-arm64
+          path: BookDB-v*-win-arm64.zip
+
+      - name: Publish win-arm64 FDD
+        shell: pwsh
+        run: |
+          dotnet publish src/BookDB.Desktop/BookDB.Desktop.csproj `
+            -c Release -r win-arm64 --no-self-contained `
+            -o publish/win-arm64-fdd
+
+      - name: Create FDD zip
+        shell: pwsh
+        run: |
+          $ver = "${{ steps.version.outputs.version }}"
+          Compress-Archive -Path publish/win-arm64-fdd/* `
+            -DestinationPath "BookDB-v$ver-win-arm64-fdd.zip"
+
+      - uses: actions/upload-artifact@6f51ac03b9356f520e9adb1b1b7802705f340c2b  # v4.5.0
+        with:
+          name: win-arm64-fdd
+          path: BookDB-v*-win-arm64-fdd.zip
+
   build-linux:
     runs-on: ubuntu-latest
     continue-on-error: true
@@ -116,7 +178,54 @@ jobs:
           name: linux-x64
           path: |
             BookDB-v*-linux-x64.tar.gz
-            BookDB-v*-linux-x64.AppImage
+            BookDB-v*-x86_64.AppImage
+
+  # Native ARM64 Linux runner (free on public repos) so appimagetool packages the aarch64
+  # AppImage natively — cleaner than cross-building an arm64 AppImage on an x64 host.
+  build-linux-arm64:
+    runs-on: ubuntu-24.04-arm
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+
+      - name: Validate tag format
+        env:
+          GH_REF: ${{ github.ref }}
+        run: |
+          if [[ "${GH_REF}" != refs/tags/v[0-9]*.[0-9]*.[0-9]* ]]; then
+            echo "Error: This workflow must be triggered from a version tag (v*.*.*). Got: ${GH_REF}"
+            exit 1
+          fi
+
+      - uses: actions/setup-dotnet@3e891b0cb619bf60e2c25674b222b8940e2c1c25  # v4.1.0
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Get version from tag
+        id: version
+        run: echo "version=${GITHUB_REF_NAME#v}" >> $GITHUB_OUTPUT
+
+      - name: Publish linux-arm64
+        run: |
+          dotnet publish src/BookDB.Desktop/BookDB.Desktop.csproj \
+            -c Release -r linux-arm64 --self-contained \
+            -o publish/linux-arm64
+
+      - name: Create tar.gz
+        run: |
+          ver="${{ steps.version.outputs.version }}"
+          tar -czf "BookDB-v${ver}-linux-arm64.tar.gz" -C publish/linux-arm64 .
+
+      - name: Build AppImage
+        run: bash scripts/make-appimage.sh "${{ steps.version.outputs.version }}" aarch64
+
+      - uses: actions/upload-artifact@6f51ac03b9356f520e9adb1b1b7802705f340c2b  # v4.5.0
+        if: always()
+        with:
+          name: linux-arm64
+          path: |
+            BookDB-v*-linux-arm64.tar.gz
+            BookDB-v*-aarch64.AppImage
 
   build-macos:
     runs-on: macos-latest
@@ -164,7 +273,7 @@ jobs:
           path: BookDB-v*-osx-${{ matrix.arch }}.dmg
 
   release:
-    needs: [build-windows, build-linux, build-macos]
+    needs: [build-windows, build-windows-arm64, build-linux, build-linux-arm64, build-macos]
     if: always() && needs.build-windows.result == 'success'
     runs-on: ubuntu-latest
     steps:

@@ -74,6 +74,20 @@ Klicka **Slutför** för att stänga guiden. Din boklista uppdateras automatiskt
 
 Omslagsbilder inbäddade i säkerhetskopieringsarkivet importeras automatiskt och kopplas till varje bok.
 
+## Flera bilder av samma typ
+
+En bok kan få fler än en bild av samma typ — Readerware lagrar ofta flera omslags- eller miniatyrbilder per bok, och de kan alla importeras som samma typ (till exempel två *Framsida*-bilder). BookDB behåller alla bilder, men varje typ visar bara en i förhandsvisningen: den med lägst ordning.
+
+Sådana böcker markeras i boklistan med en **!**-bricka på miniatyren ("Duplicerade bildtyper — kontrollera fliken Bilder").
+
+För att reda ut detta öppnar du boken för redigering och går till fliken **Bilder**. När en typ har två eller fler bilder visas avsnittet **Hantera alla bilder** med alla bilder listade. För varje bild kan du:
+
+- **Tilldela en annan bildtyp** — t.ex. ändra en andra *Framsida* till *Baksida* eller *Rygg*.
+- **Flytta upp eller ned inom typen** — den översta bilden (med lägst ordning) blir typens förhandsvisning.
+- **Ta bort bilden** helt.
+
+Spara boken för att behålla ändringarna. När varje typ har högst en bild försvinner **!**-brickan.
+
 ## Importera från en aktiv Readerware-databas
 
 Om du inte har en säkerhetskopia men fortfarande har din aktiva Readerware-databas (`.rw4`-mappen, t.ex. `MyBooks.rw4`) kan BookDB läsa den direkt:

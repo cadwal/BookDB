@@ -98,13 +98,13 @@
       <Border Grid.Row="3"
               IsVisible="{Binding HasError}"
               Background="{DynamicResource BrushBackgroundAlt}"
-              BorderBrush="#C42B1C"
+              BorderBrush="{DynamicResource BrushError}"
               BorderThickness="1"
               CornerRadius="4"
               Padding="10,8"
               Margin="0,0,0,12">
         <TextBlock Text="{Binding ErrorMessage}"
-                   Foreground="#C42B1C"
+                   Foreground="{DynamicResource BrushError}"
                    TextWrapping="Wrap"
                    FontSize="12"/>
       </Border>

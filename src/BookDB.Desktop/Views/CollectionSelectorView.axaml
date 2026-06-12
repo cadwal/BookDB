@@ -6,8 +6,13 @@
     <StackPanel Orientation="Horizontal" Spacing="4">
         <ToggleButton x:Name="DropdownToggle"
                       IsChecked="{Binding IsDropdownOpen}"
-                      Content="{Binding SelectionSummary}"
-                      AutomationProperties.Name="Open collection filter" />
+                      VerticalContentAlignment="Center"
+                      Padding="10,4"
+                      AutomationProperties.Name="Open collection filter">
+            <!-- Explicit TextBlock with bottom padding so descenders (e.g. the tail of "g")
+                 in collection names aren't clipped by the button's content area. -->
+            <TextBlock Text="{Binding SelectionSummary}" Padding="0,0,0,2" />
+        </ToggleButton>
 
         <Popup PlacementTarget="{Binding #DropdownToggle}"
                IsOpen="{Binding IsDropdownOpen}"

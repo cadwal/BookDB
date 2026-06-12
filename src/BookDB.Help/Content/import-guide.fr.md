@@ -74,6 +74,20 @@ Cliquez sur **Terminer** pour fermer l'assistant. Votre liste de livres se rafra
 
 Les images de couverture intégrées dans l'archive de sauvegarde sont importées automatiquement et associées à chaque livre.
 
+## Plusieurs images du même type
+
+Un livre peut se retrouver avec plus d'une image du même type — Readerware stocke souvent plusieurs images de couverture ou miniatures par livre, et elles peuvent toutes être importées comme le même type (par exemple, deux images de *Première de couverture*). BookDB conserve toutes les images, mais chaque type n'en affiche qu'une dans l'aperçu : celle dont l'ordre est le plus bas.
+
+Ces livres sont signalés dans la liste par un badge **!** sur la miniature ("Types d'images en double — vérifiez l'onglet Images").
+
+Pour y remédier, ouvrez le livre en modification et accédez à l'onglet **Images**. Dès qu'un type contient deux images ou plus, une section **Gérer toutes les images** apparaît, répertoriant chaque image. Pour chacune, vous pouvez :
+
+- **La réassigner à un autre type d'image** — par exemple, redéfinir une deuxième *Première de couverture* en *Quatrième de couverture* ou *Dos*.
+- **La déplacer vers le haut ou le bas au sein du type** — l'image du haut (à l'ordre le plus bas) devient l'aperçu de ce type.
+- **Supprimer l'image**.
+
+Enregistrez le livre pour conserver vos modifications. Lorsque chaque type ne contient au plus qu'une image, le badge **!** disparaît.
+
 ## Importer depuis une base de données Readerware active
 
 Si vous n'avez pas de sauvegarde mais que vous disposez encore de votre base de données Readerware active (le dossier `.rw4`, par ex. `MyBooks.rw4`), BookDB peut la lire directement :

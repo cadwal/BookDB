@@ -42,6 +42,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IMetadataLookupService, FilteringMetadataLookupService>();
         services.AddSingleton<IStatisticsService, StatisticsService>();
         services.AddSingleton<IBackupService, BackupService>();
+        services.AddSingleton<IDatabaseMaintenanceService, DatabaseMaintenanceService>();
         services.AddSingleton<ICsvExportService, CsvExportService>();
         services.AddSingleton<IPrintService, PrintService>();
         return services;

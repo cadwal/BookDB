@@ -74,6 +74,20 @@ Klicken Sie auf **Fertigstellen**, um den Assistenten zu schließen. Ihre Büche
 
 Im Sicherungsarchiv enthaltene Umschlagbilder werden automatisch importiert und den jeweiligen Büchern zugeordnet.
 
+## Mehrere Bilder desselben Typs
+
+Ein Buch kann mehr als ein Bild desselben Typs erhalten — Readerware speichert oft mehrere Umschlag- oder Miniaturbilder pro Buch, und diese werden möglicherweise alle als derselbe Typ importiert (zum Beispiel zwei *Vorderdeckel*-Bilder). BookDB behält jedes Bild, aber jeder Typ zeigt in der Vorschau nur eines an: das mit der niedrigsten Reihenfolge.
+
+Solche Bücher werden in der Buchliste mit einem **!**-Abzeichen auf dem Miniaturbild gekennzeichnet ("Doppelte Bildtypen — prüfe den Reiter Bilder").
+
+Um das zu bereinigen, öffnen Sie das Buch zur Bearbeitung und wechseln Sie zum Reiter **Bilder**. Sobald ein Typ zwei oder mehr Bilder enthält, erscheint der Abschnitt **Alle Bilder verwalten**, der jedes Bild auflistet. Für jedes Bild können Sie:
+
+- **Einem anderen Bildtyp zuweisen** — zum Beispiel einen zweiten *Vorderdeckel* in *Rückseite* oder *Buchrücken* umwandeln.
+- **Innerhalb des Typs nach oben oder unten verschieben** — das oberste Bild (mit der niedrigsten Reihenfolge) wird zur Vorschau dieses Typs.
+- **Das Bild entfernen**.
+
+Speichern Sie das Buch, um Ihre Änderungen zu übernehmen. Sobald jeder Typ höchstens ein Bild enthält, verschwindet das **!**-Abzeichen.
+
 ## Aus einer aktiven Readerware-Datenbank importieren
 
 Wenn Sie keine Sicherung haben, aber noch Ihre aktive Readerware-Datenbank (den `.rw4`-Ordner, z. B. `MyBooks.rw4`), kann BookDB sie direkt lesen:

@@ -685,6 +685,15 @@
   <data name="Backup_Status_ExportingCoverImagesCount" xml:space="preserve">
     <value>Exporterar omslagsbilder ({0}/{1})…</value>
   </data>
+  <data name="Backup_Status_ExportingLookups" xml:space="preserve">
+    <value>Exporterar uppslagslistor…</value>
+  </data>
+  <data name="Backup_Status_ExportingLoans" xml:space="preserve">
+    <value>Exporterar lån och låntagare…</value>
+  </data>
+  <data name="Backup_Status_ExportingSettings" xml:space="preserve">
+    <value>Exporterar inställningar och sparade sökningar…</value>
+  </data>
   <data name="Restore_Status_SavingSafetyBackup" xml:space="preserve">
     <value>Sparar säkerhetskopia…</value>
   </data>
@@ -1613,6 +1622,24 @@ Möjliga dubletter: {3}  |  Med omslag: {4}</value>
   <data name="Settings_Advanced_Logging_RestartNote" xml:space="preserve">
     <value>Loggnivån träder i kraft vid nästa start.</value>
   </data>
+  <data name="Settings_Appearance_Flavour_Dark" xml:space="preserve">
+    <value>Mörkt</value>
+  </data>
+  <data name="Settings_Appearance_Flavour_Default" xml:space="preserve">
+    <value>Standard</value>
+  </data>
+  <data name="Settings_Appearance_Flavour_HighContrast" xml:space="preserve">
+    <value>Hög kontrast</value>
+  </data>
+  <data name="Settings_Appearance_Flavour_Label" xml:space="preserve">
+    <value>Färgtema</value>
+  </data>
+  <data name="Settings_Appearance_Flavour_Vibrant" xml:space="preserve">
+    <value>Färgstark</value>
+  </data>
+  <data name="Settings_Appearance_RestartNote" xml:space="preserve">
+    <value>Temaändringen träder i kraft vid nästa start.</value>
+  </data>
   <data name="Settings_Browse_AuthorFacetLabel" xml:space="preserve">
     <value>Visningsetikett för författare</value>
   </data>
@@ -1660,6 +1687,9 @@ Möjliga dubletter: {3}  |  Med omslag: {4}</value>
   </data>
   <data name="Settings_Tab_Advanced" xml:space="preserve">
     <value>Avancerat</value>
+  </data>
+  <data name="Settings_Tab_Appearance" xml:space="preserve">
+    <value>Utseende</value>
   </data>
   <data name="Settings_Tab_Browse" xml:space="preserve">
     <value>Bläddra</value>
@@ -2440,5 +2470,104 @@ Möjliga dubletter: {3}  |  Med omslag: {4}</value>
   </data>
   <data name="Import_Duplicate_CancelImport" xml:space="preserve">
     <value>Avbryt import</value>
+  </data>
+  <data name="Settings_Tab_ApplicationAccess" xml:space="preserve">
+    <value>Programåtkomst</value>
+  </data>
+  <data name="Settings_AppAccess_Intro" xml:space="preserve">
+    <value>Lägg till BookDB i systemet så att du kan starta programmet utan att leta upp programfilen.</value>
+  </data>
+  <data name="Settings_AppAccess_StartMenuButton" xml:space="preserve">
+    <value>Lägg till i Start-menyn</value>
+  </data>
+  <data name="Settings_AppAccess_DesktopButton" xml:space="preserve">
+    <value>Skapa skrivbordsgenväg</value>
+  </data>
+  <data name="Settings_AppAccess_AppMenuButton" xml:space="preserve">
+    <value>Lägg till i programmenyn</value>
+  </data>
+  <data name="Settings_AppAccess_PinHint" xml:space="preserve">
+    <value>Tips: när genvägen har skapats högerklickar du på den för att fästa BookDB i aktivitetsfältet eller på Start-menyn.</value>
+  </data>
+  <data name="Settings_AppAccess_Unsupported" xml:space="preserve">
+    <value>Att lägga till genvägar är inte tillgängligt i det här operativsystemet.</value>
+  </data>
+  <data name="Settings_AppAccess_StatusCreated" xml:space="preserve">
+    <value>Klart — genvägen har skapats.</value>
+  </data>
+  <data name="Settings_AppAccess_StatusWingetWarning" xml:space="preserve">
+    <value>Genvägen skapades, men den pekar på den aktuella installationsmappen och kan sluta fungera efter en winget-uppdatering. För en uppdateringssäker genväg, installera om BookDB från en administratörsterminal.</value>
+  </data>
+  <data name="Settings_AppAccess_StatusFailed" xml:space="preserve">
+    <value>Det gick inte att skapa genvägen. Se loggen för detaljer.</value>
+  </data>
+  <data name="Settings_AppAccess_State_Missing" xml:space="preserve">
+    <value>Inte skapad</value>
+  </data>
+  <data name="Settings_AppAccess_State_UpToDate" xml:space="preserve">
+    <value>Finns — pekar hit</value>
+  </data>
+  <data name="Settings_AppAccess_State_Mismatch" xml:space="preserve">
+    <value>Finns — pekar någon annanstans</value>
+  </data>
+  <data name="Menu_Maintenance" xml:space="preserve">
+    <value>Underhåll...</value>
+  </data>
+  <data name="Maintenance_WindowTitle" xml:space="preserve">
+    <value>Databasunderhåll</value>
+  </data>
+  <data name="Maintenance_Intro" xml:space="preserve">
+    <value>Kontrollera din biblioteksdatabas efter problem och utför säkra reparationer. En säkerhetskopia skapas automatiskt innan någon reparation körs.</value>
+  </data>
+  <data name="Maintenance_IntegrityHeader" xml:space="preserve">
+    <value>Databasintegritet</value>
+  </data>
+  <data name="Maintenance_RunCheck" xml:space="preserve">
+    <value>Kör kontroll</value>
+  </data>
+  <data name="Maintenance_Repair" xml:space="preserve">
+    <value>Optimera och reparera</value>
+  </data>
+  <data name="Maintenance_ResultsHeader" xml:space="preserve">
+    <value>Resultat</value>
+  </data>
+  <data name="Maintenance_AdviseRestore" xml:space="preserve">
+    <value>Databasen rapporterade problem som inte kan repareras på plats. Återställ från en nyligen tagen säkerhetskopia för att rädda dina data.</value>
+  </data>
+  <data name="Maintenance_Step_CheckingIntegrity" xml:space="preserve">
+    <value>Kontrollerar databasintegritet…</value>
+  </data>
+  <data name="Maintenance_Step_CheckingForeignKeys" xml:space="preserve">
+    <value>Kontrollerar referenser för främmande nycklar…</value>
+  </data>
+  <data name="Maintenance_Step_SafetyBackup" xml:space="preserve">
+    <value>Skapar en säkerhetskopia…</value>
+  </data>
+  <data name="Maintenance_Step_Reindex" xml:space="preserve">
+    <value>Bygger om index…</value>
+  </data>
+  <data name="Maintenance_Step_Vacuum" xml:space="preserve">
+    <value>Komprimerar databasen…</value>
+  </data>
+  <data name="Maintenance_Step_Checkpoint" xml:space="preserve">
+    <value>Tömmer transaktionsloggen…</value>
+  </data>
+  <data name="Maintenance_Status_Ok" xml:space="preserve">
+    <value>Inga problem hittades — databasen är frisk.</value>
+  </data>
+  <data name="Maintenance_Status_IntegrityFailed" xml:space="preserve">
+    <value>Integritetsproblem hittades.</value>
+  </data>
+  <data name="Maintenance_Status_ForeignKeyViolations" xml:space="preserve">
+    <value>Brott mot främmande nycklar hittades.</value>
+  </data>
+  <data name="Maintenance_RepairDone" xml:space="preserve">
+    <value>Reparation klar.</value>
+  </data>
+  <data name="Maintenance_RepairFailed" xml:space="preserve">
+    <value>Reparationen misslyckades.</value>
+  </data>
+  <data name="Maintenance_SafetyBackupSaved" xml:space="preserve">
+    <value>Säkerhetskopia sparad till: {0}</value>
   </data>
 </root>

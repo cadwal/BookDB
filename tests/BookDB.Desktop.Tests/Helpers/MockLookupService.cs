@@ -100,6 +100,7 @@ public sealed class TestLookupServiceFactory : IDisposable
         public void CloseAllSecondaryWindows() { }
         public Task ShowManageLookupsAsync(string? initialTab = null) => Task.CompletedTask;
         public Task ShowSettingsAsync() => Task.CompletedTask;
+        public Task ShowMaintenanceDialogAsync() => Task.CompletedTask;
         public void OpenStatisticsWindow() { }
         public void OpenHelpWindow(HelpTab tab) { }
         public Task<IReadOnlyList<string>?> ShowCsvColumnPickerAsync(
@@ -144,6 +145,7 @@ public sealed class TestLookupServiceFactory : IDisposable
         public Task RestoreAsync(string backupZipPath, string safetyBackupPath, CancellationToken ct = default, IProgress<string>? progress = null) => Task.CompletedTask;
         public Task AutoBackupIfEnabledAsync(CancellationToken ct = default, IProgress<string>? progress = null) => Task.CompletedTask;
         public Task<bool> IsAutoBackupEnabledAsync(CancellationToken ct = default) => Task.FromResult(false);
+        public Task<bool> ShouldAutoBackupAsync(CancellationToken ct = default) => Task.FromResult(false);
         public string GetCandidateSqlitePath(string destFolder) => string.Empty;
         public string GetCandidateCsvArchivePath(string destFolder) => string.Empty;
     }

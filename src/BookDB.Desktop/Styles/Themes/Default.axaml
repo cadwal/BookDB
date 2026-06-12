@@ -1,0 +1,14 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!--
+      Default flavour. A flavour is a ResourceDictionary that pulls in the base palette
+      (Colors.axaml) and then overrides whatever brushes it wants to recolor. The Default
+      flavour overrides nothing, so it is the base palette verbatim.
+
+      At startup the chosen flavour's dictionary is merged (restart-to-apply); other flavours
+      (Vibrant, High-contrast) live beside this file and override specific brush keys.
+    -->
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceInclude Source="avares://BookDB.Desktop/Styles/Colors.axaml" />
+    </ResourceDictionary.MergedDictionaries>
+</ResourceDictionary>

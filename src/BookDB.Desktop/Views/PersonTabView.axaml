@@ -64,7 +64,8 @@
           <ListBox ItemsSource="{Binding FilteredPersons}"
                    SelectedItem="{Binding SelectedPerson}"
                    Margin="0,4,0,0"
-                   MinHeight="200">
+                   MinHeight="200"
+                   Background="Transparent">
             <ListBox.ItemTemplate>
               <DataTemplate x:DataType="vm:PersonRow">
                 <StackPanel Spacing="0" Margin="8,4">

@@ -338,7 +338,7 @@ public static class AppDialogs
             Text = Localization.Resources.AppDialog_Progress_PleaseWait,
             TextWrapping = TextWrapping.Wrap,
             MaxWidth = 360,
-            Foreground = new SolidColorBrush(Color.Parse("#666666"))
+            Foreground = Palette.Brush("BrushTextSecondary", Brushes.Gray)
         };
         var root = new StackPanel
         {
@@ -384,7 +384,7 @@ public static class AppDialogs
             FontSize = 12,
             TextWrapping = TextWrapping.Wrap,
             MaxWidth = 320,
-            Foreground = new SolidColorBrush(Color.Parse("#666666"))
+            Foreground = Palette.Brush("BrushTextSecondary", Brushes.Gray)
         };
 
         var root = new StackPanel
@@ -417,8 +417,8 @@ public static class AppDialogs
             WindowStartupLocation = WindowStartupLocation.CenterScreen,
             Content = new Border
             {
-                Background = new SolidColorBrush(Color.Parse("#ffffff")),
-                BorderBrush = new SolidColorBrush(Color.Parse("#1976d2")),
+                Background = Palette.Brush("BrushBackground", Brushes.White),
+                BorderBrush = Palette.Brush("BrushPrimaryBlue", Brushes.RoyalBlue),
                 BorderThickness = new Thickness(1),
                 CornerRadius = new CornerRadius(8),
                 Child = root
@@ -488,7 +488,7 @@ public static class AppDialogs
         {
             Text = copyright,
             HorizontalAlignment = HorizontalAlignment.Center,
-            Foreground = new SolidColorBrush(Color.Parse("#888888"))
+            Foreground = Palette.Brush("BrushTextTertiary", Brushes.Gray)
         });
         root.Children.Add(new Separator { Margin = new Thickness(0, 8) });
         root.Children.Add(okBtn);

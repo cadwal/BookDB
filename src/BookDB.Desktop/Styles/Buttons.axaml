@@ -1,74 +1,78 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <!-- Disabled control overrides: replace Fluent gray-on-gray with readable contrast -->
-    <Style Selector="Button:disabled">
-        <Setter Property="Foreground" Value="{StaticResource BrushDisabledText}" />
-        <Setter Property="Background" Value="{StaticResource BrushDisabledBackground}" />
-    </Style>
+    <!-- Disabled control overrides: replace Fluent gray-on-gray with readable contrast.
+         A button's disabled foreground is driven by Fluent's own resource key ButtonForegroundDisabled
+         (its template-targeted disabled setter wins over an app-level style), so flavours recolor it by
+         overriding that key — see High-contrast. -->
     <Style Selector="TextBox:disabled">
-        <Setter Property="Foreground" Value="{StaticResource BrushDisabledText}" />
-        <Setter Property="Background" Value="{StaticResource BrushDisabledBackground}" />
+        <Setter Property="Foreground" Value="{DynamicResource BrushDisabledText}" />
+        <Setter Property="Background" Value="{DynamicResource BrushDisabledBackground}" />
     </Style>
     <Style Selector="ComboBox:disabled">
-        <Setter Property="Foreground" Value="{StaticResource BrushDisabledText}" />
-        <Setter Property="Background" Value="{StaticResource BrushDisabledBackground}" />
+        <Setter Property="Foreground" Value="{DynamicResource BrushDisabledText}" />
+        <Setter Property="Background" Value="{DynamicResource BrushDisabledBackground}" />
     </Style>
     <Style Selector="CheckBox:disabled">
-        <Setter Property="Foreground" Value="{StaticResource BrushDisabledText}" />
-        <Setter Property="Background" Value="{StaticResource BrushDisabledBackground}" />
+        <Setter Property="Foreground" Value="{DynamicResource BrushDisabledText}" />
+        <Setter Property="Background" Value="{DynamicResource BrushDisabledBackground}" />
+    </Style>
+
+    <!-- Standard (unclassed) buttons follow the palette via DynamicResource so they stay legible in
+         every flavour — Fluent's own button brushes don't react to our palette, which left them grey-on-grey
+         in High contrast. The accent and custom button classes opt out and keep their own look. -->
+    <Style Selector="Button:not(.accent):not(.iconButton):not(.primaryButton):not(.secondaryButton)">
+        <Setter Property="BorderBrush" Value="{DynamicResource BrushBorderInput}" />
+        <Setter Property="Foreground" Value="{DynamicResource BrushTextPrimary}" />
     </Style>
 
     <!-- Icon button: transparent background, hover/active feedback, compact sizing -->
     <Style Selector="Button.iconButton">
         <Setter Property="Background" Value="Transparent" />
-        <Setter Property="Foreground" Value="{StaticResource BrushTextPrimary}" />
+        <Setter Property="Foreground" Value="{DynamicResource BrushTextPrimary}" />
         <Setter Property="Padding" Value="8,4" />
         <Setter Property="Margin" Value="4,0" />
         <Setter Property="CornerRadius" Value="4" />
         <Setter Property="MinWidth" Value="0" />
     </Style>
-    <Style Selector="Button.iconButton:disabled">
-        <Setter Property="Foreground" Value="{StaticResource BrushDisabledText}" />
-    </Style>
     <Style Selector="Button.iconButton:pointerover /template/ ContentPresenter">
-        <Setter Property="Background" Value="{StaticResource BrushIconHover}" />
+        <Setter Property="Background" Value="{DynamicResource BrushIconHover}" />
     </Style>
     <Style Selector="Button.iconButton:pressed /template/ ContentPresenter">
-        <Setter Property="Background" Value="{StaticResource BrushIconActive}" />
+        <Setter Property="Background" Value="{DynamicResource BrushIconActive}" />
     </Style>
 
     <!-- Primary button: solid blue, white text, semibold -->
     <Style Selector="Button.primaryButton">
-        <Setter Property="Background" Value="{StaticResource BrushPrimaryBlue}" />
-        <Setter Property="Foreground" Value="{StaticResource BrushBadgeText}" />
+        <Setter Property="Background" Value="{DynamicResource BrushPrimaryBlue}" />
+        <Setter Property="Foreground" Value="{DynamicResource BrushBadgeText}" />
         <Setter Property="Padding" Value="10,24" />
         <Setter Property="CornerRadius" Value="4" />
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="FontSize" Value="13" />
     </Style>
     <Style Selector="Button.primaryButton:pointerover /template/ ContentPresenter">
-        <Setter Property="Background" Value="{StaticResource BrushPrimaryBlueDark}" />
+        <Setter Property="Background" Value="{DynamicResource BrushPrimaryBlueDark}" />
     </Style>
 
     <!-- Secondary button: bordered, transparent background -->
     <Style Selector="Button.secondaryButton">
         <Setter Property="Background" Value="Transparent" />
-        <Setter Property="BorderBrush" Value="{StaticResource BrushBorderInput}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BrushBorderInput}" />
         <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="Foreground" Value="{StaticResource BrushTextPrimary}" />
+        <Setter Property="Foreground" Value="{DynamicResource BrushTextPrimary}" />
         <Setter Property="Padding" Value="10,24" />
         <Setter Property="CornerRadius" Value="4" />
     </Style>
     <Style Selector="Button.secondaryButton:pointerover /template/ ContentPresenter">
-        <Setter Property="Background" Value="#f5f5f5" />
+        <Setter Property="Background" Value="{DynamicResource BrushButtonHover}" />
     </Style>
 
     <!-- Toolbar separator: thin vertical divider between toolbar groups -->
     <Style Selector="Border.toolbarSeparator">
         <Setter Property="Width" Value="1" />
         <Setter Property="Height" Value="24" />
-        <Setter Property="Background" Value="{StaticResource BrushBorder}" />
+        <Setter Property="Background" Value="{DynamicResource BrushBorder}" />
         <Setter Property="Margin" Value="8,4" />
     </Style>
 </Styles>

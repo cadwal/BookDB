@@ -1,0 +1,24 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="using:System">
+    <!--
+      Vibrant flavour. Override-only: merged on top of the base palette (Colors.axaml) at startup, so it
+      lists just the keys that differ. The energy comes from a more saturated blue carried across the
+      accent, selection, hover, chart and the Reading badge, plus brighter stars and a faint cool base.
+      Status/destructive badges stay at the base AA-safe values (white-on-colour legibility).
+    -->
+    <SolidColorBrush x:Key="BrushPrimaryBlue" Color="#2563eb" />
+    <SolidColorBrush x:Key="BrushPrimaryBlueDark" Color="#1d4ed8" />
+    <SolidColorBrush x:Key="BrushRowSelected" Color="#2563eb" />
+    <SolidColorBrush x:Key="BrushRowHover" Color="#dbeafe" />
+    <SolidColorBrush x:Key="BrushBackgroundAlt" Color="#eff4fb" />
+    <SolidColorBrush x:Key="BrushStatusReading" Color="#2563eb" />
+    <SolidColorBrush x:Key="BrushChartBar" Color="#2563eb" />
+    <SolidColorBrush x:Key="BrushStarFull" Color="#ffca28" />
+    <!-- Accent icons use Vibrant's brighter blue (flat for now; richer multi-colour artwork comes later). -->
+    <sys:String x:Key="IconCssAccent">* { fill: #2563eb; }</sys:String>
+    <!-- Icon chips: role-tinted backdrops behind the coloured toolbar actions, only in Vibrant. -->
+    <SolidColorBrush x:Key="BrushIconChipAccent" Color="#dbeafe" />
+    <SolidColorBrush x:Key="BrushIconChipSuccess" Color="#c8e6c9" />
+    <SolidColorBrush x:Key="BrushIconChipDanger" Color="#ffcdd2" />
+</ResourceDictionary>

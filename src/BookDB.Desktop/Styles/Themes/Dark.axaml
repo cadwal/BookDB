@@ -1,0 +1,57 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="using:System">
+    <!--
+      Dark flavour. Override-only on top of the base palette; the applier also flips RequestedThemeVariant
+      to Dark so Fluent's built-in dark theme drives native controls (textboxes, combos, etc.).
+
+      Light text on dark surfaces. The blue splits in two: BrushPrimaryBlue is a brighter blue for text /
+      links / titles (read on the dark background), while BrushRowSelected stays the mid-blue so white text
+      keeps its contrast on selections and accent buttons (the applier syncs the Fluent accent to it).
+      Status / destructive colours are left at the base values — they're coloured pills with white text and
+      read fine on a dark page.
+    -->
+
+    <!-- Brand blue -->
+    <SolidColorBrush x:Key="BrushPrimaryBlue" Color="#4a9eff" />
+    <SolidColorBrush x:Key="BrushPrimaryBlueDark" Color="#6cb0ff" />
+
+    <!-- Text -->
+    <SolidColorBrush x:Key="BrushTextPrimary" Color="#e8e8e8" />
+    <SolidColorBrush x:Key="BrushTextSecondary" Color="#ababab" />
+    <SolidColorBrush x:Key="BrushTextTertiary" Color="#8a8a8a" />
+    <SolidColorBrush x:Key="BrushTextOnDark" Color="#cfcfcf" />
+
+    <!-- Surfaces -->
+    <SolidColorBrush x:Key="BrushBackground" Color="#1e1e1e" />
+    <SolidColorBrush x:Key="BrushBackgroundAlt" Color="#262626" />
+    <SolidColorBrush x:Key="BrushBorder" Color="#3a3a3a" />
+    <SolidColorBrush x:Key="BrushBorderLight" Color="#2e2e2e" />
+    <SolidColorBrush x:Key="BrushBorderInput" Color="#4d4d4d" />
+
+    <!-- Rows (BrushRowSelected kept at base #1976d2 so white text holds) -->
+    <SolidColorBrush x:Key="BrushRowHover" Color="#2a3340" />
+    <SolidColorBrush x:Key="BrushRowOverdue" Color="#43331d" />
+
+    <!-- Icons / stars -->
+    <SolidColorBrush x:Key="BrushIconHover" Color="#2e2e2e" />
+    <SolidColorBrush x:Key="BrushIconActive" Color="#3a3a3a" />
+    <SolidColorBrush x:Key="BrushStarEmpty" Color="#4a4a4a" />
+
+    <!-- Chart, hovers, warning surface -->
+    <SolidColorBrush x:Key="BrushChartBar" Color="#4a9eff" />
+    <SolidColorBrush x:Key="BrushButtonHover" Color="#2e2e2e" />
+    <SolidColorBrush x:Key="BrushWarningBackground" Color="#3a3320" />
+
+    <!-- Disabled -->
+    <SolidColorBrush x:Key="BrushDisabledText" Color="#757575" />
+    <SolidColorBrush x:Key="BrushDisabledBackground" Color="#1e1e1e" />
+    <SolidColorBrush x:Key="ButtonForegroundDisabled" Color="#757575" />
+
+    <!-- Icons follow the light dark-mode text. -->
+    <sys:String x:Key="IconCss">* { fill: #e8e8e8; }</sys:String>
+    <!-- Dark-safe role colours (lighter so they read on the dark surface). -->
+    <sys:String x:Key="IconCssAccent">* { fill: #4a9eff; }</sys:String>
+    <sys:String x:Key="IconCssSuccess">* { fill: #66bb6a; }</sys:String>
+    <sys:String x:Key="IconCssDanger">* { fill: #ef5350; }</sys:String>
+</ResourceDictionary>

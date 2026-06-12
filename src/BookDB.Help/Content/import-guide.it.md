@@ -74,6 +74,20 @@ Fai clic su **Fine** per chiudere la procedura guidata. L'elenco libri si aggior
 
 Le immagini di copertina incorporate nell'archivio di backup vengono importate automaticamente e associate a ciascun libro.
 
+## Più immagini dello stesso tipo
+
+Un libro può ritrovarsi con più di un'immagine dello stesso tipo — Readerware spesso memorizza diverse immagini di copertina o miniatura per libro, e potrebbero essere importate tutte come lo stesso tipo (ad esempio, due immagini *Prima di copertina*). BookDB conserva ogni immagine, ma ogni tipo ne mostra solo una nell'anteprima: quella con l'ordine più basso.
+
+Questi libri sono contrassegnati nell'elenco con un indicatore **!** sulla miniatura ("Tipi di immagine duplicati — controlla la scheda Immagini").
+
+Per sistemarli, apri il libro in modifica e vai alla scheda **Immagini**. Quando un tipo contiene due o più immagini, compare la sezione **Gestisci tutte le immagini**, che elenca ogni immagine. Per ciascuna puoi:
+
+- **Riassegnarla a un tipo di immagine diverso** — ad esempio, cambiare una seconda *Prima di copertina* in *Quarta di copertina* o *Dorso*.
+- **Spostarla su o giù all'interno del tipo** — l'immagine in alto (con l'ordine più basso) diventa l'anteprima di quel tipo.
+- **Rimuovere l'immagine**.
+
+Salva il libro per mantenere le modifiche. Quando ogni tipo contiene al massimo un'immagine, l'indicatore **!** scompare.
+
 ## Importare da un database Readerware attivo
 
 Se non hai un backup ma disponi ancora del tuo database Readerware attivo (la cartella `.rw4`, ad es. `MyBooks.rw4`), BookDB può leggerlo direttamente:

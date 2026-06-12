@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -20,6 +21,7 @@ public sealed class BackupServiceTests : IDisposable
     private readonly TestBookDbContextFactory _factory;
     private readonly BackupService _sut;
     private readonly LookupService _settings;
+    private readonly DataChangeTracker _changeTracker;
     private readonly string _tempWorkDir;
 
     public BackupServiceTests()
@@ -47,7 +49,8 @@ public sealed class BackupServiceTests : IDisposable
 
         var appSettings = new AppSettings { ActiveLibraryPath = _dbPath };
         _settings = new LookupService(_factory, new NullResourceProvider());
-        _sut = new BackupService(_factory, appSettings, _settings, new NullResourceProvider());
+        _changeTracker = new DataChangeTracker();
+        _sut = new BackupService(_factory, appSettings, _settings, new NullResourceProvider(), _changeTracker);
 
         _tempWorkDir = Path.Combine(Path.GetTempPath(), $"bookdb_backup_workdir_{Guid.NewGuid():N}");
         Directory.CreateDirectory(_tempWorkDir);
@@ -91,6 +94,33 @@ public sealed class BackupServiceTests : IDisposable
     }
 
     [Fact]
+    public async Task BackupCsvArchiveAsync_CoversEveryEntitySetInTheModel()
+    {
+        var ct = TestContext.Current.CancellationToken;
+
+        await _sut.BackupCsvArchiveAsync(_tempWorkDir, ct);
+
+        var zips = Directory.GetFiles(_tempWorkDir, "*.zip");
+        Assert.Single(zips);
+
+        using var archive = ZipFile.OpenRead(zips[0]);
+        var entryNames = archive.Entries.Select(e => e.Name).ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        // Every DbSet on the context must have a matching per-table CSV, so a newly added
+        // table can never be silently absent from the backup archive.
+        var expected = typeof(BookDbContext).GetProperties()
+            .Where(p => p.PropertyType.IsGenericType
+                && p.PropertyType.GetGenericTypeDefinition() == typeof(DbSet<>))
+            .Select(p => $"{p.Name}.csv")
+            .ToList();
+
+        Assert.NotEmpty(expected);
+        var missing = expected.Where(name => !entryNames.Contains(name)).ToList();
+        Assert.True(missing.Count == 0,
+            $"CSV archive is missing per-table files: {string.Join(", ", missing)}");
+    }
+
+    [Fact]
     public async Task RestoreAsync_AbortedWhenSafetyBackupFails_OriginalNotModified()
     {
         var ct = TestContext.Current.CancellationToken;
@@ -125,5 +155,95 @@ public sealed class BackupServiceTests : IDisposable
         await _settings.SetAsync("LastBackupFolder", _tempWorkDir, ct);
 
         Assert.True(await _sut.IsAutoBackupEnabledAsync(ct));
+    }
+
+    // Marks auto-backup enabled with a destination folder so ShouldAutoBackup only varies on the change/recency signals.
+    private async Task EnableAutoBackupAsync()
+    {
+        var ct = TestContext.Current.CancellationToken;
+        await _settings.SetAsync("AutoBackup.Enabled", "true", ct);
+        await _settings.SetAsync("LastBackupFolder", _tempWorkDir, ct);
+    }
+
+    [Fact]
+    public async Task ShouldAutoBackupAsync_FalseWhenNotConfigured_EvenWithChanges()
+    {
+        var ct = TestContext.Current.CancellationToken;
+        _changeTracker.MarkChanged();
+
+        Assert.False(await _sut.ShouldAutoBackupAsync(ct));
+    }
+
+    [Fact]
+    public async Task ShouldAutoBackupAsync_TrueWhenNeverBackedUp()
+    {
+        var ct = TestContext.Current.CancellationToken;
+        await EnableAutoBackupAsync();
+        // No AutoBackup.LastRun set, no changes — first-ever backup should still run.
+
+        Assert.True(await _sut.ShouldAutoBackupAsync(ct));
+    }
+
+    [Fact]
+    public async Task ShouldAutoBackupAsync_TrueWhenDataChanged()
+    {
+        var ct = TestContext.Current.CancellationToken;
+        await EnableAutoBackupAsync();
+        await _settings.SetAsync(
+            "AutoBackup.LastRun", DateTime.UtcNow.ToString("o", CultureInfo.InvariantCulture), ct);
+        _changeTracker.MarkChanged();
+
+        Assert.True(await _sut.ShouldAutoBackupAsync(ct));
+    }
+
+    [Fact]
+    public async Task ShouldAutoBackupAsync_FalseWhenRecentAndNoChanges()
+    {
+        var ct = TestContext.Current.CancellationToken;
+        await EnableAutoBackupAsync();
+        await _settings.SetAsync(
+            "AutoBackup.LastRun", DateTime.UtcNow.ToString("o", CultureInfo.InvariantCulture), ct);
+
+        Assert.False(await _sut.ShouldAutoBackupAsync(ct));
+    }
+
+    [Fact]
+    public async Task ShouldAutoBackupAsync_TrueWhenLastRunOlderThanThreshold()
+    {
+        var ct = TestContext.Current.CancellationToken;
+        await EnableAutoBackupAsync();
+        await _settings.SetAsync(
+            "AutoBackup.LastRun",
+            DateTime.UtcNow.AddDays(-8).ToString("o", CultureInfo.InvariantCulture), ct);
+
+        Assert.True(await _sut.ShouldAutoBackupAsync(ct));
+    }
+
+    [Fact]
+    public async Task BackupSqliteAsync_StampsLastRunAndResetsChangeTracker()
+    {
+        var ct = TestContext.Current.CancellationToken;
+        _changeTracker.MarkChanged();
+
+        await _sut.BackupSqliteAsync(_tempWorkDir, ct);
+
+        Assert.False(_changeTracker.HasChanges);
+        var lastRun = await _settings.GetAsync("AutoBackup.LastRun", ct);
+        Assert.False(string.IsNullOrWhiteSpace(lastRun));
+        Assert.True(DateTime.TryParse(
+            lastRun, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out _));
+    }
+
+    [Fact]
+    public async Task BackupCsvArchiveAsync_StampsLastRunAndResetsChangeTracker()
+    {
+        var ct = TestContext.Current.CancellationToken;
+        _changeTracker.MarkChanged();
+
+        await _sut.BackupCsvArchiveAsync(_tempWorkDir, ct);
+
+        Assert.False(_changeTracker.HasChanges);
+        var lastRun = await _settings.GetAsync("AutoBackup.LastRun", ct);
+        Assert.False(string.IsNullOrWhiteSpace(lastRun));
     }
 }

@@ -117,10 +117,16 @@ public sealed class LookupService : ILookupService, ISettingsService
         {
             dbContext.Set<Settings>().Add(new Settings { Key = key, Value = value });
         }
-        else
+        else if (setting.Value != value)
         {
             setting.Value = value;
             dbContext.Set<Settings>().Update(setting);
+        }
+        else
+        {
+            // Value unchanged — skip the write so re-saving identical settings (window size, current
+            // sort, etc.) issues no SQL and never flags the data-change tracker / triggers a backup.
+            return;
         }
 
         await dbContext.SaveChangesAsync(cancellationToken);

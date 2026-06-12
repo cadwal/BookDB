@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using BookDB.Desktop.Messages;
 using BookDB.Desktop.Localization;
+using BookDB.Desktop.Theming;
 using BookDB.Logic.Services;
 using BookDB.Models.Entities;
 using BookDB.Models.Interfaces;
@@ -40,11 +41,14 @@ public sealed partial class SettingsWindowViewModel : ObservableObject
     public SettingsLookupTabViewModel LookupTab { get; }
     public SettingsImportTabViewModel ImportTab { get; }
     public SettingsAdvancedTabViewModel AdvancedTab { get; }
+    public SettingsApplicationAccessTabViewModel ApplicationAccessTab { get; }
+    public SettingsAppearanceTabViewModel AppearanceTab { get; }
 
     public SettingsWindowViewModel(
         ISettingsService settingsService,
         ILookupService lookupService,
         IFilePickerService filePickerService,
+        IShortcutService shortcutService,
         IMessenger messenger)
     {
         _settingsService = settingsService;
@@ -56,6 +60,8 @@ public sealed partial class SettingsWindowViewModel : ObservableObject
         LookupTab   = new SettingsLookupTabViewModel(settingsService);
         ImportTab   = new SettingsImportTabViewModel(settingsService, filePickerService);
         AdvancedTab = new SettingsAdvancedTabViewModel(settingsService, filePickerService);
+        ApplicationAccessTab = new SettingsApplicationAccessTabViewModel(shortcutService);
+        AppearanceTab = new SettingsAppearanceTabViewModel(settingsService);
     }
 
     public async Task InitializeAsync(CancellationToken ct = default)
@@ -67,6 +73,8 @@ public sealed partial class SettingsWindowViewModel : ObservableObject
             await LookupTab.LoadAsync(ct);
             await ImportTab.LoadAsync(ct);
             await AdvancedTab.LoadAsync(ct);
+            await ApplicationAccessTab.LoadAsync(ct);
+            await AppearanceTab.LoadAsync(ct);
         }
         catch (Exception ex)
         {
@@ -84,6 +92,8 @@ public sealed partial class SettingsWindowViewModel : ObservableObject
             await LookupTab.SaveAsync();
             await ImportTab.SaveAsync();
             await AdvancedTab.SaveAsync();
+            await ApplicationAccessTab.SaveAsync();
+            await AppearanceTab.SaveAsync();
             _messenger.Send(new SettingsSavedMessage());
             CloseDialog?.Invoke(true);
         }
@@ -106,6 +116,8 @@ public sealed record CollectionItem(int Id, string Name);
 public sealed record LanguageOption(string CultureName, string DisplayName);
 
 public sealed record LogLevelOption(string Value, string DisplayName);
+
+public sealed record ThemeFlavourOption(ThemeFlavour Flavour, string DisplayName);
 
 // ============================================================
 // General Tab
@@ -468,6 +480,142 @@ public sealed partial class SettingsAdvancedTabViewModel : ObservableObject
         catch (Exception ex)
         {
             Log.Error(ex, "SettingsAdvancedTabViewModel: SaveAsync failed");
+        }
+    }
+}
+
+// ============================================================
+// Application Access Tab
+// ============================================================
+
+public sealed partial class SettingsApplicationAccessTabViewModel : ObservableObject
+{
+    private readonly IShortcutService _shortcutService;
+
+    public SettingsApplicationAccessTabViewModel(IShortcutService shortcutService)
+    {
+        _shortcutService = shortcutService;
+        RefreshStates();
+    }
+
+    public bool IsWindows => _shortcutService.IsWindows;
+    public bool IsLinux => _shortcutService.IsLinux;
+    public bool IsUnsupported => !_shortcutService.IsSupported;
+
+    [ObservableProperty]
+    private string _startMenuState = string.Empty;
+
+    [ObservableProperty]
+    private string _desktopState = string.Empty;
+
+    [ObservableProperty]
+    private string _applicationMenuState = string.Empty;
+
+    [ObservableProperty]
+    private string? _statusMessage;
+
+    // Action tab — nothing to persist; refresh the live shortcut states when the tab loads.
+    public Task LoadAsync(CancellationToken ct = default)
+    {
+        RefreshStates();
+        return Task.CompletedTask;
+    }
+
+    public Task SaveAsync(CancellationToken ct = default) => Task.CompletedTask;
+
+    [RelayCommand]
+    private void AddToStartMenu() => Report(_shortcutService.CreateStartMenuShortcut());
+
+    [RelayCommand]
+    private void AddDesktopShortcut() => Report(_shortcutService.CreateDesktopShortcut());
+
+    [RelayCommand]
+    private void AddToApplicationMenu() => Report(_shortcutService.CreateApplicationMenuEntry());
+
+    private void Report(ShortcutResult result)
+    {
+        if (result.Status == ShortcutStatus.Failed)
+            Log.Error("SettingsApplicationAccessTabViewModel: shortcut creation failed: {Error}", result.Error);
+
+        StatusMessage = result.Status switch
+        {
+            ShortcutStatus.Created => Resources.Settings_AppAccess_StatusCreated,
+            ShortcutStatus.CreatedWithWingetWarning => Resources.Settings_AppAccess_StatusWingetWarning,
+            _ => Resources.Settings_AppAccess_StatusFailed,
+        };
+        RefreshStates();
+    }
+
+    private void RefreshStates()
+    {
+        if (_shortcutService.IsWindows)
+        {
+            StartMenuState = Describe(_shortcutService.GetStartMenuShortcutState());
+            DesktopState = Describe(_shortcutService.GetDesktopShortcutState());
+        }
+        else if (_shortcutService.IsLinux)
+        {
+            ApplicationMenuState = Describe(_shortcutService.GetApplicationMenuEntryState());
+        }
+    }
+
+    private static string Describe(ShortcutState state) => state switch
+    {
+        ShortcutState.UpToDate => Resources.Settings_AppAccess_State_UpToDate,
+        ShortcutState.Mismatch => Resources.Settings_AppAccess_State_Mismatch,
+        ShortcutState.Missing => Resources.Settings_AppAccess_State_Missing,
+        _ => string.Empty,
+    };
+}
+
+// ============================================================
+// Appearance Tab
+// ============================================================
+
+public sealed partial class SettingsAppearanceTabViewModel : ObservableObject
+{
+    private readonly ISettingsService _settingsService;
+
+    [ObservableProperty]
+    private ThemeFlavourOption? _selectedFlavour;
+
+    public ObservableCollection<ThemeFlavourOption> AvailableFlavours { get; } =
+    [
+        new ThemeFlavourOption(ThemeFlavour.Default,      Resources.Settings_Appearance_Flavour_Default),
+        new ThemeFlavourOption(ThemeFlavour.Vibrant,      Resources.Settings_Appearance_Flavour_Vibrant),
+        new ThemeFlavourOption(ThemeFlavour.HighContrast, Resources.Settings_Appearance_Flavour_HighContrast),
+        new ThemeFlavourOption(ThemeFlavour.Dark,         Resources.Settings_Appearance_Flavour_Dark),
+    ];
+
+    public SettingsAppearanceTabViewModel(ISettingsService settingsService)
+    {
+        _settingsService = settingsService;
+    }
+
+    public async Task LoadAsync(CancellationToken ct = default)
+    {
+        try
+        {
+            var stored = await ThemeSettings.LoadAsync(_settingsService, ct);
+            SelectedFlavour = AvailableFlavours.FirstOrDefault(f => f.Flavour == stored)
+                ?? AvailableFlavours.First();
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "SettingsAppearanceTabViewModel: LoadAsync failed");
+        }
+    }
+
+    public async Task SaveAsync(CancellationToken ct = default)
+    {
+        try
+        {
+            if (SelectedFlavour is not null)
+                await ThemeSettings.SaveAsync(_settingsService, SelectedFlavour.Flavour, ct);
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "SettingsAppearanceTabViewModel: SaveAsync failed");
         }
     }
 }

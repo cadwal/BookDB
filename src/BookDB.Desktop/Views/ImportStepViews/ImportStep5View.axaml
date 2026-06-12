@@ -9,7 +9,7 @@
 
         <!-- Cancellation notice -->
         <Border Padding="10"
-                Background="#FFF3CD"
+                Background="{DynamicResource BrushWarningBackground}"
                 CornerRadius="4"
                 IsVisible="{Binding WasCancelled}">
             <TextBlock Text="{x:Static res:Resources.Import_Step5_Cancelled}"
@@ -37,11 +37,11 @@
         <Border IsVisible="{Binding Errors.Count}"
                 Padding="8"
                 BorderThickness="1"
-                BorderBrush="Red"
+                BorderBrush="{DynamicResource BrushError}"
                 CornerRadius="4"
                 Margin="0,8,0,0">
             <StackPanel Spacing="4">
-                <TextBlock Text="{x:Static res:Resources.Import_Step5_ErrorsLabel}" FontWeight="SemiBold" Foreground="Red"/>
+                <TextBlock Text="{x:Static res:Resources.Import_Step5_ErrorsLabel}" FontWeight="SemiBold" Foreground="{DynamicResource BrushError}"/>
                 <ScrollViewer MaxHeight="150">
                     <ItemsControl ItemsSource="{Binding Errors}">
                         <ItemsControl.ItemTemplate>

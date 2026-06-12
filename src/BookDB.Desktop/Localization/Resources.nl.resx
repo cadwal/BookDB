@@ -685,6 +685,15 @@
   <data name="Backup_Status_ExportingCoverImagesCount" xml:space="preserve">
     <value>Omslagafbeeldingen exporteren ({0}/{1})…</value>
   </data>
+  <data name="Backup_Status_ExportingLookups" xml:space="preserve">
+    <value>Referentielijsten exporteren…</value>
+  </data>
+  <data name="Backup_Status_ExportingLoans" xml:space="preserve">
+    <value>Uitleningen en leners exporteren…</value>
+  </data>
+  <data name="Backup_Status_ExportingSettings" xml:space="preserve">
+    <value>Instellingen en opgeslagen zoekopdrachten exporteren…</value>
+  </data>
   <data name="Restore_Status_SavingSafetyBackup" xml:space="preserve">
     <value>Veiligheidsback-up opslaan…</value>
   </data>
@@ -1613,6 +1622,24 @@ Mogelijke duplicaten: {3}  |  Met omslag: {4}</value>
   <data name="Settings_Advanced_Logging_RestartNote" xml:space="preserve">
     <value>Wijziging van logniveau wordt van kracht bij de volgende start.</value>
   </data>
+  <data name="Settings_Appearance_Flavour_Dark" xml:space="preserve">
+    <value>Donker</value>
+  </data>
+  <data name="Settings_Appearance_Flavour_Default" xml:space="preserve">
+    <value>Standaard</value>
+  </data>
+  <data name="Settings_Appearance_Flavour_HighContrast" xml:space="preserve">
+    <value>Hoog contrast</value>
+  </data>
+  <data name="Settings_Appearance_Flavour_Label" xml:space="preserve">
+    <value>Kleurthema</value>
+  </data>
+  <data name="Settings_Appearance_Flavour_Vibrant" xml:space="preserve">
+    <value>Levendig</value>
+  </data>
+  <data name="Settings_Appearance_RestartNote" xml:space="preserve">
+    <value>Themawijziging wordt van kracht bij de volgende start.</value>
+  </data>
   <data name="Settings_Browse_AuthorFacetLabel" xml:space="preserve">
     <value>Label voor auteursfacet</value>
   </data>
@@ -1660,6 +1687,9 @@ Mogelijke duplicaten: {3}  |  Met omslag: {4}</value>
   </data>
   <data name="Settings_Tab_Advanced" xml:space="preserve">
     <value>Geavanceerd</value>
+  </data>
+  <data name="Settings_Tab_Appearance" xml:space="preserve">
+    <value>Weergave</value>
   </data>
   <data name="Settings_Tab_Browse" xml:space="preserve">
     <value>Bladeren</value>
@@ -2413,5 +2443,104 @@ Mogelijke duplicaten: {3}  |  Met omslag: {4}</value>
   </data>
   <data name="Import_Duplicate_CancelImport" xml:space="preserve">
     <value>Import annuleren</value>
+  </data>
+  <data name="Settings_Tab_ApplicationAccess" xml:space="preserve">
+    <value>Toegang tot de toepassing</value>
+  </data>
+  <data name="Settings_AppAccess_Intro" xml:space="preserve">
+    <value>Voeg BookDB toe aan je systeem zodat je het kunt starten zonder het programmabestand te zoeken.</value>
+  </data>
+  <data name="Settings_AppAccess_StartMenuButton" xml:space="preserve">
+    <value>Aan Startmenu toevoegen</value>
+  </data>
+  <data name="Settings_AppAccess_DesktopButton" xml:space="preserve">
+    <value>Snelkoppeling op bureaublad maken</value>
+  </data>
+  <data name="Settings_AppAccess_AppMenuButton" xml:space="preserve">
+    <value>Aan toepassingenmenu toevoegen</value>
+  </data>
+  <data name="Settings_AppAccess_PinHint" xml:space="preserve">
+    <value>Tip: nadat de snelkoppeling is gemaakt, klik je er met de rechtermuisknop op om BookDB aan de taakbalk of het Startmenu vast te maken.</value>
+  </data>
+  <data name="Settings_AppAccess_Unsupported" xml:space="preserve">
+    <value>Snelkoppelingen toevoegen is niet beschikbaar op dit besturingssysteem.</value>
+  </data>
+  <data name="Settings_AppAccess_StatusCreated" xml:space="preserve">
+    <value>Klaar — de snelkoppeling is gemaakt.</value>
+  </data>
+  <data name="Settings_AppAccess_StatusWingetWarning" xml:space="preserve">
+    <value>De snelkoppeling is gemaakt, maar verwijst naar de huidige installatiemap en werkt mogelijk niet meer na een winget-update. Installeer BookDB opnieuw vanuit een beheerdersterminal voor een updatebestendige snelkoppeling.</value>
+  </data>
+  <data name="Settings_AppAccess_StatusFailed" xml:space="preserve">
+    <value>Kan de snelkoppeling niet maken. Raadpleeg het logboek voor details.</value>
+  </data>
+  <data name="Settings_AppAccess_State_Missing" xml:space="preserve">
+    <value>Niet gemaakt</value>
+  </data>
+  <data name="Settings_AppAccess_State_UpToDate" xml:space="preserve">
+    <value>Aanwezig — verwijst hierheen</value>
+  </data>
+  <data name="Settings_AppAccess_State_Mismatch" xml:space="preserve">
+    <value>Aanwezig — verwijst ergens anders heen</value>
+  </data>
+  <data name="Menu_Maintenance" xml:space="preserve">
+    <value>Onderhoud...</value>
+  </data>
+  <data name="Maintenance_WindowTitle" xml:space="preserve">
+    <value>Databaseonderhoud</value>
+  </data>
+  <data name="Maintenance_Intro" xml:space="preserve">
+    <value>Controleer uw bibliotheekdatabase op problemen en voer veilige reparaties uit. Voordat een reparatie wordt uitgevoerd, wordt automatisch een back-up gemaakt.</value>
+  </data>
+  <data name="Maintenance_IntegrityHeader" xml:space="preserve">
+    <value>Database-integriteit</value>
+  </data>
+  <data name="Maintenance_RunCheck" xml:space="preserve">
+    <value>Controle uitvoeren</value>
+  </data>
+  <data name="Maintenance_Repair" xml:space="preserve">
+    <value>Optimaliseren en repareren</value>
+  </data>
+  <data name="Maintenance_ResultsHeader" xml:space="preserve">
+    <value>Resultaten</value>
+  </data>
+  <data name="Maintenance_AdviseRestore" xml:space="preserve">
+    <value>De database heeft problemen gemeld die niet ter plaatse kunnen worden gerepareerd. Herstel vanaf een recente back-up om uw gegevens te redden.</value>
+  </data>
+  <data name="Maintenance_Step_CheckingIntegrity" xml:space="preserve">
+    <value>Database-integriteit controleren…</value>
+  </data>
+  <data name="Maintenance_Step_CheckingForeignKeys" xml:space="preserve">
+    <value>Refererende sleutels controleren…</value>
+  </data>
+  <data name="Maintenance_Step_SafetyBackup" xml:space="preserve">
+    <value>Een back-up maken…</value>
+  </data>
+  <data name="Maintenance_Step_Reindex" xml:space="preserve">
+    <value>Indexen opnieuw opbouwen…</value>
+  </data>
+  <data name="Maintenance_Step_Vacuum" xml:space="preserve">
+    <value>Database comprimeren…</value>
+  </data>
+  <data name="Maintenance_Step_Checkpoint" xml:space="preserve">
+    <value>Write-ahead-log leegmaken…</value>
+  </data>
+  <data name="Maintenance_Status_Ok" xml:space="preserve">
+    <value>Geen problemen gevonden — de database is gezond.</value>
+  </data>
+  <data name="Maintenance_Status_IntegrityFailed" xml:space="preserve">
+    <value>Er zijn integriteitsproblemen gevonden.</value>
+  </data>
+  <data name="Maintenance_Status_ForeignKeyViolations" xml:space="preserve">
+    <value>Er zijn schendingen van refererende sleutels gevonden.</value>
+  </data>
+  <data name="Maintenance_RepairDone" xml:space="preserve">
+    <value>Reparatie voltooid.</value>
+  </data>
+  <data name="Maintenance_RepairFailed" xml:space="preserve">
+    <value>Reparatie mislukt.</value>
+  </data>
+  <data name="Maintenance_SafetyBackupSaved" xml:space="preserve">
+    <value>Back-up opgeslagen in: {0}</value>
   </data>
 </root>

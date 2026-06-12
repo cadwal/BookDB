@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using BookDB.Desktop.Helpers;
 using BookDB.Desktop.Services;
+using BookDB.Desktop.Theming;
 using BookDB.Desktop.ViewModels;
 using BookDB.Desktop.Views;
 using BookDB.Logic;
@@ -55,11 +56,13 @@ public sealed class AppHost : IAsyncDisposable
             .WriteTo.Console()
             .CreateLogger();
 
+        var flavour = ApplyThemeBootstrap(activeLibraryPath, connectionString);
+
         var version = Assembly.GetExecutingAssembly()
             .GetCustomAttribute<AssemblyInformationalVersionAttribute>()
             ?.InformationalVersion ?? "unknown";
-        Log.Warning("Application started {Version} — DB: {DbPath} — Culture: {Culture}",
-            version, activeLibraryPath, CultureInfo.CurrentUICulture.Name);
+        Log.Warning("Application started {Version} — DB: {DbPath} — Culture: {Culture} — Theme: {Theme}",
+            version, activeLibraryPath, CultureInfo.CurrentUICulture.Name, flavour);
 
         var appSettings = new AppSettings
         {
@@ -125,12 +128,13 @@ public sealed class AppHost : IAsyncDisposable
         var viewModel = _host.Services.GetRequiredService<MainWindowViewModel>();
         await viewModel.PersistSettingsAsync();
 
-        // Auto-backup on close — only when one is configured. 10-second timeout prevents a hang.
+        // Auto-backup on close — only when one is configured AND actually due (data changed this session or
+        // the recency window lapsed). 10-second timeout prevents a hang.
         using var backupCts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
         try
         {
             var backupService = _host.Services.GetRequiredService<IBackupService>();
-            if (await backupService.IsAutoBackupEnabledAsync(backupCts.Token))
+            if (await backupService.ShouldAutoBackupAsync(backupCts.Token))
             {
                 // Show a status window and run the backup off the UI thread so the indicator keeps animating.
                 var (backupWindow, backupProgress) = AppDialogs.ShowBackupProgressWindow();
@@ -174,23 +178,35 @@ public sealed class AppHost : IAsyncDisposable
             _host.Dispose();
     }
 
+    /// <summary>
+    /// Reads a single value from the Settings key/value table during startup, before DI (and thus
+    /// ISettingsService) exists. Returns null when the DB file is missing, the Settings table has not
+    /// been created yet, or the key is absent — callers fall back to their own defaults.
+    /// </summary>
+    private static string? ReadStartupSetting(string dbPath, string connectionString, string key)
+    {
+        if (!File.Exists(dbPath)) return null;
+
+        try
+        {
+            using var conn = new SqliteConnection(connectionString);
+            conn.Open();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "SELECT Value FROM Settings WHERE Key = @key";
+            cmd.Parameters.AddWithValue("@key", key);
+            var scalar = cmd.ExecuteScalar();
+            return scalar is DBNull or null ? null : (string)scalar;
+        }
+        catch
+        {
+            // DB exists but Settings table not yet created — ignore
+            return null;
+        }
+    }
+
     internal static void ApplyCultureBootstrap(string dbPath, string connectionString)
     {
-        string? stored = null;
-
-        if (File.Exists(dbPath))
-        {
-            try
-            {
-                using var conn = new SqliteConnection(connectionString);
-                conn.Open();
-                using var cmd = conn.CreateCommand();
-                cmd.CommandText = "SELECT Value FROM Settings WHERE Key = 'Language'";
-                var scalar = cmd.ExecuteScalar();
-                stored = scalar is DBNull or null ? null : (string)scalar;
-            }
-            catch { /* DB exists but Settings table not yet created — ignore */ }
-        }
+        var stored = ReadStartupSetting(dbPath, connectionString, "Language");
 
         if (stored is null)
         {
@@ -235,27 +251,21 @@ public sealed class AppHost : IAsyncDisposable
 
     internal static LoggingLevelSwitch ApplyLogLevelBootstrap(string dbPath, string connectionString)
     {
-        string? stored = null;
-
-        if (File.Exists(dbPath))
-        {
-            try
-            {
-                using var conn = new SqliteConnection(connectionString);
-                conn.Open();
-                using var cmd = conn.CreateCommand();
-                cmd.CommandText = "SELECT Value FROM Settings WHERE Key = 'LogLevel'";
-                var scalar = cmd.ExecuteScalar();
-                stored = scalar is DBNull or null ? null : (string)scalar;
-            }
-            catch { /* Settings table not yet created — ignore */ }
-        }
+        var stored = ReadStartupSetting(dbPath, connectionString, "LogLevel");
 
         var level = stored == "Verbose"
             ? LogEventLevel.Debug
             : LogEventLevel.Warning;   // "Normal" or key absent
 
         return new LoggingLevelSwitch(level);
+    }
+
+    internal static ThemeFlavour ApplyThemeBootstrap(string dbPath, string connectionString)
+    {
+        var stored = ReadStartupSetting(dbPath, connectionString, "UiTheme");
+        var flavour = ThemeSettings.Parse(stored);
+        ThemeApplier.Apply(flavour);
+        return flavour;
     }
 
     internal static void HandleUnhandledException(Exception? ex)

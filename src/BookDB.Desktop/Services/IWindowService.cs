@@ -41,6 +41,7 @@ public interface IWindowService
     Task<bool?> ShowMainShutdownWarningAsync();
     Task ShowManageLookupsAsync(string? initialTab = null);
     Task ShowSettingsAsync();
+    Task ShowMaintenanceDialogAsync();
     void OpenStatisticsWindow();
     void OpenHelpWindow(HelpTab tab);
     Task<IReadOnlyList<string>?> ShowCsvColumnPickerAsync(

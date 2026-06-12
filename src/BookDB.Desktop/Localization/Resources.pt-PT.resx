@@ -685,6 +685,15 @@
   <data name="Backup_Status_ExportingCoverImagesCount" xml:space="preserve">
     <value>A exportar imagens de capa ({0}/{1})…</value>
   </data>
+  <data name="Backup_Status_ExportingLookups" xml:space="preserve">
+    <value>A exportar listas de referência…</value>
+  </data>
+  <data name="Backup_Status_ExportingLoans" xml:space="preserve">
+    <value>A exportar empréstimos e requisitantes…</value>
+  </data>
+  <data name="Backup_Status_ExportingSettings" xml:space="preserve">
+    <value>A exportar definições e pesquisas guardadas…</value>
+  </data>
   <data name="Restore_Status_SavingSafetyBackup" xml:space="preserve">
     <value>A guardar cópia de segurança preventiva…</value>
   </data>
@@ -1613,6 +1622,24 @@ Duplicados potenciais: {3}  |  Com capas: {4}</value>
   <data name="Settings_Advanced_Logging_RestartNote" xml:space="preserve">
     <value>A alteração do nível de registo entra em vigor no próximo arranque.</value>
   </data>
+  <data name="Settings_Appearance_Flavour_Dark" xml:space="preserve">
+    <value>Escuro</value>
+  </data>
+  <data name="Settings_Appearance_Flavour_Default" xml:space="preserve">
+    <value>Predefinido</value>
+  </data>
+  <data name="Settings_Appearance_Flavour_HighContrast" xml:space="preserve">
+    <value>Alto contraste</value>
+  </data>
+  <data name="Settings_Appearance_Flavour_Label" xml:space="preserve">
+    <value>Tema de cores</value>
+  </data>
+  <data name="Settings_Appearance_Flavour_Vibrant" xml:space="preserve">
+    <value>Vibrante</value>
+  </data>
+  <data name="Settings_Appearance_RestartNote" xml:space="preserve">
+    <value>A alteração de tema entra em vigor no próximo arranque.</value>
+  </data>
   <data name="Settings_Browse_AuthorFacetLabel" xml:space="preserve">
     <value>Etiqueta de faceta de autor</value>
   </data>
@@ -1660,6 +1687,9 @@ Duplicados potenciais: {3}  |  Com capas: {4}</value>
   </data>
   <data name="Settings_Tab_Advanced" xml:space="preserve">
     <value>Avançadas</value>
+  </data>
+  <data name="Settings_Tab_Appearance" xml:space="preserve">
+    <value>Aparência</value>
   </data>
   <data name="Settings_Tab_Browse" xml:space="preserve">
     <value>Navegar</value>
@@ -2413,5 +2443,104 @@ Duplicados potenciais: {3}  |  Com capas: {4}</value>
   </data>
   <data name="Import_Duplicate_CancelImport" xml:space="preserve">
     <value>Cancelar importação</value>
+  </data>
+  <data name="Settings_Tab_ApplicationAccess" xml:space="preserve">
+    <value>Acesso à aplicação</value>
+  </data>
+  <data name="Settings_AppAccess_Intro" xml:space="preserve">
+    <value>Adicione o BookDB ao seu sistema para poder iniciá-lo sem localizar o ficheiro do programa.</value>
+  </data>
+  <data name="Settings_AppAccess_StartMenuButton" xml:space="preserve">
+    <value>Adicionar ao menu Iniciar</value>
+  </data>
+  <data name="Settings_AppAccess_DesktopButton" xml:space="preserve">
+    <value>Criar atalho no ambiente de trabalho</value>
+  </data>
+  <data name="Settings_AppAccess_AppMenuButton" xml:space="preserve">
+    <value>Adicionar ao menu de aplicações</value>
+  </data>
+  <data name="Settings_AppAccess_PinHint" xml:space="preserve">
+    <value>Dica: depois de o atalho ser criado, clique com o botão direito nele para fixar o BookDB na barra de tarefas ou no menu Iniciar.</value>
+  </data>
+  <data name="Settings_AppAccess_Unsupported" xml:space="preserve">
+    <value>Adicionar atalhos não está disponível neste sistema operativo.</value>
+  </data>
+  <data name="Settings_AppAccess_StatusCreated" xml:space="preserve">
+    <value>Concluído — o atalho foi criado.</value>
+  </data>
+  <data name="Settings_AppAccess_StatusWingetWarning" xml:space="preserve">
+    <value>O atalho foi criado, mas aponta para a pasta de instalação atual e pode deixar de funcionar após uma atualização do winget. Para um atalho à prova de atualizações, reinstale o BookDB a partir de um terminal de administrador.</value>
+  </data>
+  <data name="Settings_AppAccess_StatusFailed" xml:space="preserve">
+    <value>Não foi possível criar o atalho. Consulte o registo para obter detalhes.</value>
+  </data>
+  <data name="Settings_AppAccess_State_Missing" xml:space="preserve">
+    <value>Não criado</value>
+  </data>
+  <data name="Settings_AppAccess_State_UpToDate" xml:space="preserve">
+    <value>Existe — aponta para aqui</value>
+  </data>
+  <data name="Settings_AppAccess_State_Mismatch" xml:space="preserve">
+    <value>Existe — aponta para outro local</value>
+  </data>
+  <data name="Menu_Maintenance" xml:space="preserve">
+    <value>Manutenção...</value>
+  </data>
+  <data name="Maintenance_WindowTitle" xml:space="preserve">
+    <value>Manutenção da base de dados</value>
+  </data>
+  <data name="Maintenance_Intro" xml:space="preserve">
+    <value>Verifique se a base de dados da sua biblioteca tem problemas e aplique reparações seguras. É criada automaticamente uma cópia de segurança antes de qualquer reparação.</value>
+  </data>
+  <data name="Maintenance_IntegrityHeader" xml:space="preserve">
+    <value>Integridade da base de dados</value>
+  </data>
+  <data name="Maintenance_RunCheck" xml:space="preserve">
+    <value>Executar verificação</value>
+  </data>
+  <data name="Maintenance_Repair" xml:space="preserve">
+    <value>Otimizar e reparar</value>
+  </data>
+  <data name="Maintenance_ResultsHeader" xml:space="preserve">
+    <value>Resultados</value>
+  </data>
+  <data name="Maintenance_AdviseRestore" xml:space="preserve">
+    <value>A base de dados comunicou problemas que não podem ser reparados no local. Restaure a partir de uma cópia de segurança recente para recuperar os seus dados.</value>
+  </data>
+  <data name="Maintenance_Step_CheckingIntegrity" xml:space="preserve">
+    <value>A verificar a integridade da base de dados…</value>
+  </data>
+  <data name="Maintenance_Step_CheckingForeignKeys" xml:space="preserve">
+    <value>A verificar as referências de chaves estrangeiras…</value>
+  </data>
+  <data name="Maintenance_Step_SafetyBackup" xml:space="preserve">
+    <value>A criar uma cópia de segurança…</value>
+  </data>
+  <data name="Maintenance_Step_Reindex" xml:space="preserve">
+    <value>A reconstruir os índices…</value>
+  </data>
+  <data name="Maintenance_Step_Vacuum" xml:space="preserve">
+    <value>A compactar a base de dados…</value>
+  </data>
+  <data name="Maintenance_Step_Checkpoint" xml:space="preserve">
+    <value>A esvaziar o registo de escrita antecipada…</value>
+  </data>
+  <data name="Maintenance_Status_Ok" xml:space="preserve">
+    <value>Não foram encontrados problemas — a base de dados está íntegra.</value>
+  </data>
+  <data name="Maintenance_Status_IntegrityFailed" xml:space="preserve">
+    <value>Foram encontrados problemas de integridade.</value>
+  </data>
+  <data name="Maintenance_Status_ForeignKeyViolations" xml:space="preserve">
+    <value>Foram encontradas violações de chaves estrangeiras.</value>
+  </data>
+  <data name="Maintenance_RepairDone" xml:space="preserve">
+    <value>Reparação concluída.</value>
+  </data>
+  <data name="Maintenance_RepairFailed" xml:space="preserve">
+    <value>Falha na reparação.</value>
+  </data>
+  <data name="Maintenance_SafetyBackupSaved" xml:space="preserve">
+    <value>Cópia de segurança guardada em: {0}</value>
   </data>
 </root>

@@ -1,0 +1,50 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="using:System">
+    <!--
+      High-contrast flavour. Override-only: merged on top of the base palette (Colors.axaml) at startup.
+      Maximises legibility for low vision — black text, a dark strong-blue accent, very dark status and
+      destructive badges (Material 800/900, white-on-colour ≥ 6.5:1), clearly visible borders, empty
+      stars and disabled text. Backgrounds stay light; the strong borders carry the separation.
+    -->
+    <SolidColorBrush x:Key="BrushPrimaryBlue" Color="#0d47a1" />
+    <SolidColorBrush x:Key="BrushPrimaryBlueDark" Color="#0a3d8f" />
+    <SolidColorBrush x:Key="BrushTextPrimary" Color="#000000" />
+    <SolidColorBrush x:Key="BrushTextSecondary" Color="#1a1a1a" />
+    <SolidColorBrush x:Key="BrushTextTertiary" Color="#4a4a4a" />
+    <SolidColorBrush x:Key="BrushTextOnDark" Color="#000000" />
+    <SolidColorBrush x:Key="BrushBackgroundAlt" Color="#eeeeee" />
+    <SolidColorBrush x:Key="BrushBorder" Color="#6e6e6e" />
+    <SolidColorBrush x:Key="BrushBorderLight" Color="#8a8a8a" />
+    <SolidColorBrush x:Key="BrushBorderInput" Color="#000000" />
+    <SolidColorBrush x:Key="BrushRowHover" Color="#cce0ff" />
+    <SolidColorBrush x:Key="BrushRowSelected" Color="#0d47a1" />
+    <SolidColorBrush x:Key="BrushIconHover" Color="#d0d0d0" />
+    <SolidColorBrush x:Key="BrushIconActive" Color="#b0b0b0" />
+    <SolidColorBrush x:Key="BrushStatusRead" Color="#1b5e20" />
+    <SolidColorBrush x:Key="BrushStatusReading" Color="#0d47a1" />
+    <SolidColorBrush x:Key="BrushStatusUnread" Color="#b71c1c" />
+    <SolidColorBrush x:Key="BrushStatusArchive" Color="#424242" />
+    <SolidColorBrush x:Key="BrushStatusWishlist" Color="#6a1b9a" />
+    <SolidColorBrush x:Key="BrushStarFull" Color="#f9a825" />
+    <SolidColorBrush x:Key="BrushStarEmpty" Color="#757575" />
+    <SolidColorBrush x:Key="BrushDestructive" Color="#b71c1c" />
+    <SolidColorBrush x:Key="BrushDestructiveHover" Color="#7f1010" />
+    <SolidColorBrush x:Key="BrushDisabledText" Color="#595959" />
+    <!-- Darker than the base disabled grey because the High-contrast surface is itself grey. -->
+    <SolidColorBrush x:Key="ButtonForegroundDisabled" Color="#595959" />
+    <SolidColorBrush x:Key="BrushChartBar" Color="#0d47a1" />
+    <SolidColorBrush x:Key="BrushError" Color="#b71c1c" />
+    <!-- Strengthen the selected-tab distinction (Fluent's own TabItem keys): black selected text vs grey
+         unselected, a light-blue selected fill, and a strong accent pipe. -->
+    <SolidColorBrush x:Key="TabItemHeaderForegroundSelected" Color="#000000" />
+    <SolidColorBrush x:Key="TabItemHeaderForegroundUnselected" Color="#595959" />
+    <SolidColorBrush x:Key="TabItemHeaderBackgroundSelected" Color="#d6e4f5" />
+    <SolidColorBrush x:Key="TabItemHeaderSelectedPipeFill" Color="#0d47a1" />
+    <!-- Icons follow the black High-contrast text. -->
+    <sys:String x:Key="IconCss">* { fill: #000000; }</sys:String>
+    <!-- All icon roles collapse to black in High contrast. -->
+    <sys:String x:Key="IconCssAccent">* { fill: #000000; }</sys:String>
+    <sys:String x:Key="IconCssSuccess">* { fill: #000000; }</sys:String>
+    <sys:String x:Key="IconCssDanger">* { fill: #000000; }</sys:String>
+</ResourceDictionary>

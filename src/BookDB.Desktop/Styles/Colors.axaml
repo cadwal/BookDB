@@ -1,34 +1,58 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="using:System">
+    <!-- Default (base) palette. The blue accent identity is kept; neutrals are deepened and the status
+         and destructive badges darkened so white-on-colour meets WCAG AA. -->
     <SolidColorBrush x:Key="BrushPrimaryBlue" Color="#1976d2" />
     <SolidColorBrush x:Key="BrushPrimaryBlueDark" Color="#1565c0" />
-    <SolidColorBrush x:Key="BrushTextPrimary" Color="#333333" />
-    <SolidColorBrush x:Key="BrushTextSecondary" Color="#666666" />
-    <SolidColorBrush x:Key="BrushTextTertiary" Color="#999999" />
+    <SolidColorBrush x:Key="BrushTextPrimary" Color="#212121" />
+    <SolidColorBrush x:Key="BrushTextSecondary" Color="#595959" />
+    <SolidColorBrush x:Key="BrushTextTertiary" Color="#757575" />
     <SolidColorBrush x:Key="BrushTextOnDark" Color="#555555" />
     <SolidColorBrush x:Key="BrushBackground" Color="#ffffff" />
-    <SolidColorBrush x:Key="BrushBackgroundAlt" Color="#f9f9f9" />
-    <SolidColorBrush x:Key="BrushBorder" Color="#e0e0e0" />
-    <SolidColorBrush x:Key="BrushBorderLight" Color="#f0f0f0" />
-    <SolidColorBrush x:Key="BrushBorderInput" Color="#d0d0d0" />
+    <SolidColorBrush x:Key="BrushBackgroundAlt" Color="#f5f5f5" />
+    <SolidColorBrush x:Key="BrushBorder" Color="#d4d4d4" />
+    <SolidColorBrush x:Key="BrushBorderLight" Color="#e8e8e8" />
+    <SolidColorBrush x:Key="BrushBorderInput" Color="#bdbdbd" />
     <SolidColorBrush x:Key="BrushRowHover" Color="#e3f2fd" />
     <SolidColorBrush x:Key="BrushRowSelected" Color="#1976d2" />
     <SolidColorBrush x:Key="BrushRowSelectedText" Color="#ffffff" />
-    <!-- Overdue loan row tint (Material Orange 100 — per D-06, darkened for contrast) -->
+    <!-- Overdue loan row tint (Material Orange 100, darkened for contrast) -->
     <SolidColorBrush x:Key="BrushRowOverdue" Color="#ffe0b2" />
-    <SolidColorBrush x:Key="BrushIconHover" Color="#f0f0f0" />
-    <SolidColorBrush x:Key="BrushIconActive" Color="#e0e0e0" />
-    <SolidColorBrush x:Key="BrushStatusRead" Color="#4caf50" />
-    <SolidColorBrush x:Key="BrushStatusReading" Color="#2196f3" />
-    <SolidColorBrush x:Key="BrushStatusUnread" Color="#f44336" />
-    <SolidColorBrush x:Key="BrushStatusArchive" Color="#9e9e9e" />
-    <SolidColorBrush x:Key="BrushStatusWishlist" Color="#9c27b0" />
+    <SolidColorBrush x:Key="BrushIconHover" Color="#e8e8e8" />
+    <SolidColorBrush x:Key="BrushIconActive" Color="#d4d4d4" />
+    <SolidColorBrush x:Key="BrushStatusRead" Color="#2e7d32" />
+    <SolidColorBrush x:Key="BrushStatusReading" Color="#1565c0" />
+    <SolidColorBrush x:Key="BrushStatusUnread" Color="#d32f2f" />
+    <SolidColorBrush x:Key="BrushStatusArchive" Color="#616161" />
+    <SolidColorBrush x:Key="BrushStatusWishlist" Color="#8e24aa" />
     <SolidColorBrush x:Key="BrushBadgeText" Color="#ffffff" />
     <SolidColorBrush x:Key="BrushStarFull" Color="#fbc02d" />
-    <SolidColorBrush x:Key="BrushStarEmpty" Color="#e0e0e0" />
+    <SolidColorBrush x:Key="BrushStarEmpty" Color="#cfcfcf" />
     <SolidColorBrush x:Key="BrushWarning" Color="#ff9800" />
-    <SolidColorBrush x:Key="BrushDestructive" Color="#f44336" />
-    <SolidColorBrush x:Key="BrushDestructiveHover" Color="#d32f2f" />
+    <SolidColorBrush x:Key="BrushDestructive" Color="#d32f2f" />
+    <SolidColorBrush x:Key="BrushDestructiveHover" Color="#b71c1c" />
     <SolidColorBrush x:Key="BrushDisabledText" Color="#999999" />
     <SolidColorBrush x:Key="BrushDisabledBackground" Color="#ffffff" />
+    <!-- Fluent's own disabled-button keys: a readable grey foreground, and a transparent background so the
+         text sits on the real surface instead of Fluent's grey-on-grey disabled fill. Flavours can darken
+         the foreground where the surface is itself grey (see High-contrast). -->
+    <SolidColorBrush x:Key="ButtonForegroundDisabled" Color="#767676" />
+    <SolidColorBrush x:Key="ButtonBackgroundDisabled" Color="Transparent" />
+    <!-- Palette brushes replacing former hardcoded colors, so themes can recolor them -->
+    <SolidColorBrush x:Key="BrushButtonHover" Color="#eeeeee" />
+    <SolidColorBrush x:Key="BrushWarningBackground" Color="#fff3cd" />
+    <SolidColorBrush x:Key="BrushError" Color="#c42b1c" />
+    <SolidColorBrush x:Key="BrushChartBar" Color="#1976d2" />
+    <!-- Icon "chip" backdrops — transparent everywhere; a flavour (Vibrant) tints them for colourful icons. -->
+    <SolidColorBrush x:Key="BrushIconChipAccent" Color="Transparent" />
+    <SolidColorBrush x:Key="BrushIconChipSuccess" Color="Transparent" />
+    <SolidColorBrush x:Key="BrushIconChipDanger" Color="Transparent" />
+    <!-- CSS injected into the monochrome SVG icons (incl. the single-path Splash logo) so they follow the
+         text colour per flavour; the fill overrides each icon's own fill. -->
+    <sys:String x:Key="IconCss">* { fill: #212121; }</sys:String>
+    <!-- Per-role icon colours (flat semantic): neutral = IconCss above; flavours override these. -->
+    <sys:String x:Key="IconCssAccent">* { fill: #1976d2; }</sys:String>
+    <sys:String x:Key="IconCssSuccess">* { fill: #2e7d32; }</sys:String>
+    <sys:String x:Key="IconCssDanger">* { fill: #d32f2f; }</sys:String>
 </ResourceDictionary>

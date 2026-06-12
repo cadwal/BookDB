@@ -648,7 +648,7 @@
 
                     <!-- Middle zone: large preview -->
                     <Border x:Name="LargePreviewBorder"
-                            Background="White"
+                            Background="{DynamicResource BrushBackground}"
                             CornerRadius="4"
                             Margin="8,6,8,0"
                             ToolTip.Tip="{x:Static res:Resources.Cover_Placeholder_Tooltip}">

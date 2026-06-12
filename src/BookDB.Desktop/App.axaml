@@ -6,7 +6,7 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceInclude Source="avares://BookDB.Desktop/Styles/Colors.axaml" />
+                <ResourceInclude Source="avares://BookDB.Desktop/Styles/Themes/Default.axaml" />
             </ResourceDictionary.MergedDictionaries>
 
             <!-- ControlTheme must live in ResourceDictionary (not Styles). Key = {x:Type} for implicit theming.
@@ -37,7 +37,7 @@
                                         <Path Grid.Column="1"
                                               x:Name="PART_chevron"
                                               Data="M 2 0 L 7 5 L 2 10"
-                                              Stroke="{StaticResource BrushTextSecondary}"
+                                              Stroke="{DynamicResource BrushTextSecondary}"
                                               StrokeThickness="1.5"
                                               StrokeLineCap="Round"
                                               Width="8"
@@ -78,14 +78,25 @@
     </Application.Resources>
 
     <Application.Styles>
-        <FluentTheme />
+        <FluentTheme>
+            <FluentTheme.Palettes>
+                <!-- Pin the accent to the app's blue (mirrors BrushPrimaryBlue) so native accent
+                     controls match the palette instead of drifting with the OS accent; flavours
+                     recolor the accent at startup. Only Accent is set — other colors keep Fluent
+                     defaults. -->
+                <ColorPaletteResources x:Key="Light" Accent="#1976d2" />
+                <!-- Dark variant (the Dark flavour): keep Fluent's dark chrome, just set the accent; the
+                     applier re-points it at the flavour's selection blue at startup. -->
+                <ColorPaletteResources x:Key="Dark" Accent="#1976d2" />
+            </FluentTheme.Palettes>
+        </FluentTheme>
         <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml" />
         <StyleInclude Source="avares://BookDB.Desktop/Styles/Grid.axaml" />
         <StyleInclude Source="avares://BookDB.Desktop/Styles/Badges.axaml" />
         <StyleInclude Source="avares://BookDB.Desktop/Styles/Buttons.axaml" />
         <StyleInclude Source="avares://BookDB.Desktop/Styles/Facets.axaml" />
         <Style Selector="GridSplitter">
-            <Setter Property="Background" Value="{StaticResource BrushBorder}" />
+            <Setter Property="Background" Value="{DynamicResource BrushBorder}" />
         </Style>
         <StyleInclude Source="avares://OxyPlot.Avalonia/Themes/Default.axaml"/>
     </Application.Styles>

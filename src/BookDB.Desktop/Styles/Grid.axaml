@@ -4,47 +4,47 @@
 
     <!-- Alternating row backgrounds (per C-01) -->
     <Style Selector="DataGridRow:nth-child(odd)">
-        <Setter Property="Background" Value="{StaticResource BrushBackground}" />
+        <Setter Property="Background" Value="{DynamicResource BrushBackground}" />
     </Style>
     <Style Selector="DataGridRow:nth-child(even)">
-        <Setter Property="Background" Value="{StaticResource BrushBackgroundAlt}" />
+        <Setter Property="Background" Value="{DynamicResource BrushBackgroundAlt}" />
     </Style>
 
     <!-- Row hover (per C-02) — must override both odd and even backgrounds -->
     <Style Selector="DataGridRow:pointerover">
-        <Setter Property="Background" Value="{StaticResource BrushRowHover}" />
+        <Setter Property="Background" Value="{DynamicResource BrushRowHover}" />
     </Style>
     <Style Selector="DataGridRow:pointerover /template/ Border#BackgroundBorder">
-        <Setter Property="Background" Value="{StaticResource BrushRowHover}" />
+        <Setter Property="Background" Value="{DynamicResource BrushRowHover}" />
     </Style>
 
     <!-- Row selection (per C-02) — blue background, white text -->
     <Style Selector="DataGridRow:selected">
-        <Setter Property="Background" Value="{StaticResource BrushRowSelected}" />
-        <Setter Property="Foreground" Value="{StaticResource BrushRowSelectedText}" />
+        <Setter Property="Background" Value="{DynamicResource BrushRowSelected}" />
+        <Setter Property="Foreground" Value="{DynamicResource BrushRowSelectedText}" />
     </Style>
     <Style Selector="DataGridRow:selected /template/ Border#BackgroundBorder">
-        <Setter Property="Background" Value="{StaticResource BrushRowSelected}" />
+        <Setter Property="Background" Value="{DynamicResource BrushRowSelected}" />
     </Style>
     <Style Selector="DataGridRow:selected TextBlock">
-        <Setter Property="Foreground" Value="{StaticResource BrushRowSelectedText}" />
+        <Setter Property="Foreground" Value="{DynamicResource BrushRowSelectedText}" />
     </Style>
 
     <!-- Overdue loan row — amber tint (per D-06); CSS class set by OverdueRowHighlightBehavior -->
     <Style Selector="DataGridRow.overdue">
-        <Setter Property="Background" Value="{StaticResource BrushRowOverdue}" />
+        <Setter Property="Background" Value="{DynamicResource BrushRowOverdue}" />
     </Style>
     <Style Selector="DataGridRow.overdue /template/ Border#BackgroundBorder">
-        <Setter Property="Background" Value="{StaticResource BrushRowOverdue}" />
+        <Setter Property="Background" Value="{DynamicResource BrushRowOverdue}" />
     </Style>
 
     <!-- Column header styling (per C-03) -->
     <Style Selector="DataGridColumnHeader">
-        <Setter Property="Background" Value="{StaticResource BrushBackgroundAlt}" />
-        <Setter Property="Foreground" Value="{StaticResource BrushTextPrimary}" />
+        <Setter Property="Background" Value="{DynamicResource BrushBackgroundAlt}" />
+        <Setter Property="Foreground" Value="{DynamicResource BrushTextPrimary}" />
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="FontSize" Value="13" />
-        <Setter Property="BorderBrush" Value="{StaticResource BrushPrimaryBlue}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BrushPrimaryBlue}" />
         <Setter Property="BorderThickness" Value="0,0,0,2" />
     </Style>
 
@@ -63,35 +63,35 @@
 
     <!-- Title: blue SemiBold normally, white when row selected -->
     <Style Selector="TextBlock.titleText">
-        <Setter Property="Foreground" Value="{StaticResource BrushPrimaryBlue}" />
+        <Setter Property="Foreground" Value="{DynamicResource BrushPrimaryBlue}" />
         <Setter Property="FontWeight" Value="SemiBold" />
     </Style>
     <Style Selector="DataGridRow:selected TextBlock.titleText">
-        <Setter Property="Foreground" Value="{StaticResource BrushRowSelectedText}" />
+        <Setter Property="Foreground" Value="{DynamicResource BrushRowSelectedText}" />
     </Style>
 
     <!-- Author: secondary grey normally, white when row selected -->
     <Style Selector="TextBlock.authorText">
-        <Setter Property="Foreground" Value="{StaticResource BrushTextSecondary}" />
+        <Setter Property="Foreground" Value="{DynamicResource BrushTextSecondary}" />
     </Style>
     <Style Selector="DataGridRow:selected TextBlock.authorText">
-        <Setter Property="Foreground" Value="{StaticResource BrushRowSelectedText}" />
+        <Setter Property="Foreground" Value="{DynamicResource BrushRowSelectedText}" />
     </Style>
 
     <!-- Year: tertiary grey normally, white when row selected -->
     <Style Selector="TextBlock.yearText">
-        <Setter Property="Foreground" Value="{StaticResource BrushTextTertiary}" />
+        <Setter Property="Foreground" Value="{DynamicResource BrushTextTertiary}" />
     </Style>
     <Style Selector="DataGridRow:selected TextBlock.yearText">
-        <Setter Property="Foreground" Value="{StaticResource BrushRowSelectedText}" />
+        <Setter Property="Foreground" Value="{DynamicResource BrushRowSelectedText}" />
     </Style>
 
     <!-- Rating: gold star color normally, white when row selected -->
     <Style Selector="TextBlock.ratingText">
-        <Setter Property="Foreground" Value="{StaticResource BrushStarFull}" />
+        <Setter Property="Foreground" Value="{DynamicResource BrushStarFull}" />
     </Style>
     <Style Selector="DataGridRow:selected TextBlock.ratingText">
-        <Setter Property="Foreground" Value="{StaticResource BrushRowSelectedText}" />
+        <Setter Property="Foreground" Value="{DynamicResource BrushRowSelectedText}" />
     </Style>
 
     <!-- 09.1 B — Sort indicator templates for sorted column headers.
@@ -113,7 +113,7 @@
                                Margin="6,0,0,0"
                                VerticalAlignment="Center">
                             <Image.Source>
-                                <svg:SvgImage Source="avares://BookDB.Desktop/Assets/Icons/arrow-up.svg" />
+                                <svg:SvgImage Source="avares://BookDB.Desktop/Assets/Icons/arrow-up.svg" Css="{DynamicResource IconCss}" />
                             </Image.Source>
                         </Image>
                         <ContentPresenter Content="{TemplateBinding Content}"
@@ -139,7 +139,7 @@
                                Margin="6,0,0,0"
                                VerticalAlignment="Center">
                             <Image.Source>
-                                <svg:SvgImage Source="avares://BookDB.Desktop/Assets/Icons/arrow-down.svg" />
+                                <svg:SvgImage Source="avares://BookDB.Desktop/Assets/Icons/arrow-down.svg" Css="{DynamicResource IconCss}" />
                             </Image.Source>
                         </Image>
                         <ContentPresenter Content="{TemplateBinding Content}"

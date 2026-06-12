@@ -28,6 +28,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IStartupProgressReporter, StartupProgressReporter>();
         services.AddSingleton<IResourceProvider, DesktopResourceProvider>();
         services.AddSingleton<IFileSystemService, FileSystemService>();
+        services.AddSingleton<IShortcutService, ShortcutService>();
         services.AddSingleton<IWindowService, WindowService>();
         // IFilePickerService uses TopLevel which requires the visual tree to be attached.
         // The factory is deferred: TopLevel is resolved on first picker call (not at DI construction),
@@ -77,6 +78,7 @@ public static class ServiceCollectionExtensions
         services.AddTransient<ReaderwareDbImportViewModel>();
         services.AddTransient<ManageLookupsViewModel>();
         services.AddTransient<SettingsWindowViewModel>();
+        services.AddTransient<MaintenanceViewModel>();
         services.AddTransient<StatisticsWindowViewModel>();
         services.AddTransient<HelpWindowViewModel>();
         services.AddTransient<CsvColumnPickerViewModel>();

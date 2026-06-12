@@ -74,6 +74,20 @@ Clique em **Concluir** para fechar o assistente. A sua lista de livros é atuali
 
 As imagens de capa incorporadas no arquivo de backup são importadas automaticamente e associadas a cada livro.
 
+## Várias imagens do mesmo tipo
+
+Um livro pode acabar com mais do que uma imagem do mesmo tipo — o Readerware costuma armazenar várias imagens de capa ou miniatura por livro, e estas podem ser importadas todas como o mesmo tipo (por exemplo, duas imagens de *Capa frontal*). O BookDB mantém todas as imagens, mas cada tipo mostra apenas uma na pré-visualização: a de ordem mais baixa.
+
+Estes livros são assinalados na lista com um emblema **!** na miniatura ("Tipos de imagem duplicados — consulte o separador Imagens").
+
+Para resolver, abra o livro para edição e vá ao separador **Imagens**. Sempre que um tipo tiver duas ou mais imagens, aparece a secção **Gerir todas as imagens**, que lista cada imagem. Para cada uma pode:
+
+- **Reatribuí-la a um tipo de imagem diferente** — por exemplo, alterar uma segunda *Capa frontal* para *Contracapa* ou *Lombada*.
+- **Movê-la para cima ou para baixo dentro do tipo** — a imagem do topo (de ordem mais baixa) torna-se a pré-visualização desse tipo.
+- **Remover a imagem**.
+
+Guarde o livro para manter as alterações. Quando cada tipo tiver no máximo uma imagem, o emblema **!** desaparece.
+
 ## Importar de uma base de dados ativa do Readerware
 
 Se não tem uma cópia de segurança, mas ainda tem a sua base de dados ativa do Readerware (a pasta `.rw4`, por ex. `MyBooks.rw4`), o BookDB pode lê-la diretamente:

@@ -75,6 +75,20 @@ Click **Finish** to close the wizard. Your book list refreshes automatically.
 
 Cover images embedded in the backup archive are imported automatically and associated with each book. **JPEG, PNG, GIF, and BMP** covers are supported.
 
+## Multiple Images of the Same Type
+
+A book can end up with more than one image of the same type — Readerware often stores several cover or thumbnail images per book, and they may all import as the same type (for example, two *Front cover* images). BookDB keeps every image, but each type shows only one in the preview: the one with the lowest order.
+
+Books like this are flagged in the book list with a **!** badge on the thumbnail ("Duplicate image types — check the Images tab").
+
+To sort them out, open the book for editing and go to the **Images** tab. Whenever a type holds two or more images, a **Manage all images** section appears, listing every image. For each one you can:
+
+- **Reassign it to a different image type** — for example, retype a second *Front cover* as *Back cover* or *Spine*.
+- **Move it up or down within the type** — the top (lowest-order) image becomes that type's preview.
+- **Remove the image** entirely.
+
+Save the book to keep your changes. Once each type has at most one image, the **!** badge disappears.
+
 ## Importing from a Live Readerware Database
 
 If you don't have a backup but still have your working Readerware database (the `.rw4` folder, e.g. `MyBooks.rw4`), BookDB can read it directly:

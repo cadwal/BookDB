@@ -36,14 +36,22 @@
             <MenuItem Header="{x:Static res:Resources.Menu_File}">
                 <MenuItem Header="{x:Static res:Resources.Menu_NewBook}"
                           Command="{Binding BookList.AddBookCommand}"
-                          InputGesture="Ctrl+N" />
+                          InputGesture="Ctrl+N">
+                    <MenuItem.Icon>
+                        <Image Width="16" Height="16">
+                            <Image.Source>
+                                <svg:SvgImage Source="avares://BookDB.Desktop/Assets/Icons/add.svg" Css="{DynamicResource IconCssSuccess}" />
+                            </Image.Source>
+                        </Image>
+                    </MenuItem.Icon>
+                </MenuItem>
                 <Separator />
                 <MenuItem Header="{x:Static res:Resources.Menu_ImportReaderware}"
                           Command="{Binding ImportFromReaderwareCommand}">
                     <MenuItem.Icon>
                         <Image Width="16" Height="16">
                             <Image.Source>
-                                <svg:SvgImage Source="avares://BookDB.Desktop/Assets/Icons/arrow-download.svg" />
+                                <svg:SvgImage Source="avares://BookDB.Desktop/Assets/Icons/arrow-download.svg" Css="{DynamicResource IconCssAccent}" />
                             </Image.Source>
                         </Image>
                     </MenuItem.Icon>
@@ -63,10 +71,26 @@
             <MenuItem Header="{x:Static res:Resources.Menu_Edit}">
                 <MenuItem Header="{x:Static res:Resources.Menu_EditBook}"
                           Command="{Binding BookList.EditBookCommand}"
-                          InputGesture="F2" />
+                          InputGesture="F2">
+                    <MenuItem.Icon>
+                        <Image Width="16" Height="16">
+                            <Image.Source>
+                                <svg:SvgImage Source="avares://BookDB.Desktop/Assets/Icons/edit.svg" Css="{DynamicResource IconCssAccent}" />
+                            </Image.Source>
+                        </Image>
+                    </MenuItem.Icon>
+                </MenuItem>
                 <MenuItem Header="{x:Static res:Resources.Menu_DeleteBooks}"
                           Command="{Binding BookList.DeleteBooksCommand}"
-                          InputGesture="Delete" />
+                          InputGesture="Delete">
+                    <MenuItem.Icon>
+                        <Image Width="16" Height="16">
+                            <Image.Source>
+                                <svg:SvgImage Source="avares://BookDB.Desktop/Assets/Icons/delete.svg" Css="{DynamicResource IconCssDanger}" />
+                            </Image.Source>
+                        </Image>
+                    </MenuItem.Icon>
+                </MenuItem>
                 <MenuItem Header="{x:Static res:Resources.Menu_DuplicateBook}"
                           Command="{Binding BookList.DuplicateBookCommand}"
                           InputGesture="Ctrl+D" />
@@ -125,7 +149,7 @@
                     <MenuItem.Icon>
                         <Image Width="16" Height="16">
                             <Image.Source>
-                                <svg:SvgImage Source="avares://BookDB.Desktop/Assets/Icons/arrow-sync.svg" />
+                                <svg:SvgImage Source="avares://BookDB.Desktop/Assets/Icons/arrow-sync.svg" Css="{DynamicResource IconCssAccent}" />
                             </Image.Source>
                         </Image>
                     </MenuItem.Icon>
@@ -135,7 +159,7 @@
                     <MenuItem.Icon>
                         <Image Width="16" Height="16">
                             <Image.Source>
-                                <svg:SvgImage Source="avares://BookDB.Desktop/Assets/Icons/arrow-sync.svg" />
+                                <svg:SvgImage Source="avares://BookDB.Desktop/Assets/Icons/arrow-sync.svg" Css="{DynamicResource IconCssAccent}" />
                             </Image.Source>
                         </Image>
                     </MenuItem.Icon>
@@ -146,7 +170,7 @@
                     <MenuItem.Icon>
                         <Image Width="16" Height="16">
                             <Image.Source>
-                                <svg:SvgImage Source="avares://BookDB.Desktop/Assets/Icons/arrow-download.svg" />
+                                <svg:SvgImage Source="avares://BookDB.Desktop/Assets/Icons/arrow-download.svg" Css="{DynamicResource IconCssAccent}" />
                             </Image.Source>
                         </Image>
                     </MenuItem.Icon>
@@ -156,7 +180,7 @@
                     <MenuItem.Icon>
                         <Image Width="16" Height="16">
                             <Image.Source>
-                                <svg:SvgImage Source="avares://BookDB.Desktop/Assets/Icons/arrow-download.svg" />
+                                <svg:SvgImage Source="avares://BookDB.Desktop/Assets/Icons/arrow-download.svg" Css="{DynamicResource IconCssAccent}" />
                             </Image.Source>
                         </Image>
                     </MenuItem.Icon>
@@ -169,6 +193,7 @@
                 <Separator/>
                 <MenuItem Header="{x:Static res:Resources.Menu_Statistics}"  Command="{Binding OpenStatisticsCommand}"/>
                 <Separator/>
+                <MenuItem Header="{x:Static res:Resources.Menu_Maintenance}"  Command="{Binding OpenMaintenanceCommand}"/>
                 <MenuItem Header="{x:Static res:Resources.Menu_Settings}"  Command="{Binding OpenSettingsCommand}"/>
             </MenuItem>
             <MenuItem x:Name="WindowMenuParent"
@@ -222,11 +247,13 @@
                         Command="{Binding BookList.AddBookCommand}"
                         ToolTip.Tip="{x:Static res:Resources.MainWindow_Toolbar_NewBook}">
                     <StackPanel Orientation="Horizontal" Spacing="4">
-                        <Image Width="20" Height="20">
-                            <Image.Source>
-                                <svg:SvgImage Source="avares://BookDB.Desktop/Assets/Icons/add.svg" />
-                            </Image.Source>
-                        </Image>
+                        <Border Background="{DynamicResource BrushIconChipSuccess}" CornerRadius="4" Padding="2">
+                            <Image Width="20" Height="20">
+                                <Image.Source>
+                                    <svg:SvgImage Source="avares://BookDB.Desktop/Assets/Icons/add.svg" Css="{DynamicResource IconCssSuccess}" />
+                                </Image.Source>
+                            </Image>
+                        </Border>
                         <TextBlock Text="{x:Static res:Resources.MainWindow_Toolbar_NewBook}"
                                    VerticalAlignment="Center"
                                    FontSize="13" />
@@ -238,7 +265,7 @@
                     <StackPanel Orientation="Horizontal" Spacing="4">
                         <Image Width="20" Height="20">
                             <Image.Source>
-                                <svg:SvgImage Source="avares://BookDB.Desktop/Assets/Icons/search.svg" />
+                                <svg:SvgImage Source="avares://BookDB.Desktop/Assets/Icons/search.svg" Css="{DynamicResource IconCss}" />
                             </Image.Source>
                         </Image>
                         <TextBlock Text="{x:Static res:Resources.MainWindow_Toolbar_CatalogByIsbn}"

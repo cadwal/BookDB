@@ -323,6 +323,16 @@ public sealed class WindowService : IWindowService
         await window.ShowDialog<object?>(GetMainWindow());
     }
 
+    public async Task ShowMaintenanceDialogAsync()
+    {
+        var viewModel = _serviceProvider.GetRequiredService<MaintenanceViewModel>();
+        var window = new MaintenanceDialog { DataContext = viewModel };
+        viewModel.CloseDialog = () => window.Close();
+        _secondaryWindows.Add(window);
+        window.Closed += (_, _) => _secondaryWindows.Remove(window);
+        await window.ShowDialog<object?>(GetMainWindow());
+    }
+
     public void OpenStatisticsWindow()
     {
         if (_statisticsWindow is { IsVisible: true })
@@ -609,8 +619,8 @@ public sealed class WindowService : IWindowService
         {
             Content = Localization.Resources.Delete_Confirm_Button,
             HorizontalAlignment = HorizontalAlignment.Stretch,
-            Background = new SolidColorBrush(Color.Parse("#C42B1C")),
-            Foreground = Brushes.White
+            Background = Helpers.Palette.Brush("BrushError", Brushes.Red),
+            Foreground = Helpers.Palette.Brush("BrushBadgeText", Brushes.White)
         };
         deleteBtn.Click += (_, _) => dialog.Close(true);
 

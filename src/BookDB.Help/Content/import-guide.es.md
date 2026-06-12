@@ -74,6 +74,20 @@ Haga clic en **Finalizar** para cerrar el asistente. Su lista de libros se actua
 
 Las imágenes de portada incrustadas en el archivo de copia de seguridad se importan automáticamente y se asocian a cada libro.
 
+## Varias imágenes del mismo tipo
+
+Un libro puede acabar con más de una imagen del mismo tipo — Readerware suele almacenar varias imágenes de portada o miniatura por libro, y es posible que todas se importen como el mismo tipo (por ejemplo, dos imágenes de *Portada*). BookDB conserva todas las imágenes, pero cada tipo muestra solo una en la vista previa: la que tiene el orden más bajo.
+
+Estos libros se señalan en la lista de libros con una insignia **!** en la miniatura ("Tipos de imagen duplicados — comprueba la pestaña Imágenes").
+
+Para resolverlo, abra el libro para editarlo y vaya a la pestaña **Imágenes**. Cuando un tipo tiene dos o más imágenes, aparece la sección **Administrar todas las imágenes**, que enumera cada imagen. Para cada una puede:
+
+- **Reasignarla a un tipo de imagen diferente** — por ejemplo, cambiar una segunda *Portada* a *Contraportada* o *Lomo*.
+- **Moverla hacia arriba o hacia abajo dentro del tipo** — la imagen superior (con el orden más bajo) se convierte en la vista previa de ese tipo.
+- **Eliminar la imagen**.
+
+Guarde el libro para conservar los cambios. Cuando cada tipo tenga como máximo una imagen, la insignia **!** desaparece.
+
 ## Importar desde una base de datos de Readerware activa
 
 Si no tiene una copia de seguridad pero todavía tiene su base de datos de Readerware activa (la carpeta `.rw4`, p. ej. `MyBooks.rw4`), BookDB puede leerla directamente:

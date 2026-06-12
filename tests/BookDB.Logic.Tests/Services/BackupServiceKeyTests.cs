@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using BookDB.Data;
 using BookDB.Data.DbContexts;
 using BookDB.Logic.Services;
 using BookDB.Models;
@@ -59,7 +60,8 @@ public sealed class BackupServiceKeyTests
     private static BackupService MakeService(ISettingsService settingsService)
     {
         var appSettings = new AppSettings { ActiveLibraryPath = System.IO.Path.GetTempFileName() };
-        return new BackupService(new ThrowingDbContextFactory(), appSettings, settingsService, new NullResourceProvider());
+        return new BackupService(
+            new ThrowingDbContextFactory(), appSettings, settingsService, new NullResourceProvider(), new DataChangeTracker());
     }
 
     // Records every key passed to GetAsync so tests can assert on them.
