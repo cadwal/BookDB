@@ -7,9 +7,22 @@ namespace BookDB.Desktop;
 
 internal sealed class Program
 {
+    /// <summary>The single-instance gate for this process; consumed by <see cref="App"/> to wire window activation.</summary>
+    internal static SingleInstanceGate? InstanceGate { get; private set; }
+
     [STAThread]
     public static void Main(string[] args)
     {
+        var gate = SingleInstanceGate.TryAcquire(AppHost.GetAppDataPath());
+        if (!gate.IsPrimary)
+        {
+            // Another instance is already running and has been signalled to come forward — exit quietly.
+            gate.Dispose();
+            return;
+        }
+
+        InstanceGate = gate;
+
         AppDomain.CurrentDomain.UnhandledException += (_, e) =>
             AppHost.HandleUnhandledException(e.ExceptionObject as Exception);
 
@@ -19,7 +32,14 @@ internal sealed class Program
             e.SetObserved();
         };
 
-        BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+        try
+        {
+            BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+        }
+        finally
+        {
+            gate.Dispose();
+        }
     }
 
     private static AppBuilder BuildAvaloniaApp()

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/semver-spec
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-06-15
+
+### Fixed
+- Launching BookDB while it is already running no longer opens a second copy — the window that's already open comes to the front instead (Windows and Linux, including Raspberry Pi)
+- Start Menu and desktop shortcuts created from Settings → Application access now show the BookDB icon instead of a blank one (Windows)
+
 ## [1.1.0] - 2026-06-12
 
 ### Added
@@ -40,6 +46,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/semver-spec
 - Multi-language UI: EN, SV, DE, ES, FR, NL, IT, PT-BR, PT-PT
 - Help system with per-screen contextual help
 
-[Unreleased]: https://github.com/cadwal/BookDB/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/cadwal/BookDB/compare/v1.2.0...HEAD
 [1.1.0]: https://github.com/cadwal/BookDB/releases/tag/v1.1.0
 [1.0.0]: https://github.com/cadwal/BookDB/releases/tag/v1.0.0
+[1.2.0]: https://github.com/cadwal/BookDB/releases/tag/v1.2.0

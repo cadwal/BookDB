@@ -32,11 +32,15 @@ public sealed class AppHost : IAsyncDisposable
         _host = host;
     }
 
+    /// <summary>The per-user app-data directory; shared by startup so the single-instance gate and the
+    /// host agree on one location.</summary>
+    internal static string GetAppDataPath() => Path.Combine(
+        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+        "BookDB");
+
     public static AppHost Build()
     {
-        var appDataPath = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-            "BookDB");
+        var appDataPath = GetAppDataPath();
 
         Directory.CreateDirectory(appDataPath);
 

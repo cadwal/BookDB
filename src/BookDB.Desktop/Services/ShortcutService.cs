@@ -51,7 +51,7 @@ public sealed class ShortcutService : IShortcutService
             link.SetPath(target);
             var workingDir = Path.GetDirectoryName(target);
             if (!string.IsNullOrEmpty(workingDir)) link.SetWorkingDirectory(workingDir);
-            link.SetIconLocation(target, 0);
+            link.SetIconLocation(WriteWindowsIcon() ?? target, 0);
             ((IPersistFile)link).Save(lnkPath, true);
 
             return new ShortcutResult(
@@ -105,9 +105,12 @@ public sealed class ShortcutService : IShortcutService
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory), AppName + ".lnk");
 
     /// <summary>
-    /// Prefer winget's stable "bookdb" launcher shim (survives package updates). If it isn't present
-    /// and we are running from a versioned winget package folder, fall back to the executable but
-    /// flag it as unstable so the UI can suggest an administrator reinstall.
+    /// Prefer winget's stable "bookdb" launcher symlink — it survives package updates, and
+    /// launching a shortcut through it works (verified on v1.1.0) even though the terminal
+    /// `bookdb` alias does not. Explorer cannot extract an icon from the symlink, which is why
+    /// the shortcut icon comes from <see cref="WriteWindowsIcon"/> instead of the target. If the
+    /// symlink isn't present and we are running from a versioned winget package folder, fall back
+    /// to the executable but flag it as unstable so the UI can suggest an administrator reinstall.
     /// </summary>
     [SupportedOSPlatform("windows")]
     private static (string target, bool unstable) ResolveWindowsTarget()
@@ -120,6 +123,30 @@ public sealed class ShortcutService : IShortcutService
         var wingetPackages = Path.Combine(local, "Microsoft", "WinGet", "Packages");
         var unstable = exe.StartsWith(wingetPackages, StringComparison.OrdinalIgnoreCase);
         return (exe, unstable);
+    }
+
+    /// <summary>Extracts the bundled .ico to %APPDATA%\BookDB\bookdb.ico and returns its path —
+    /// a location that stays valid across winget updates, unlike the versioned package folder.
+    /// Returns null on failure so the caller can fall back to the target executable.</summary>
+    [SupportedOSPlatform("windows")]
+    private static string? WriteWindowsIcon()
+    {
+        try
+        {
+            var dir = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), AppName);
+            Directory.CreateDirectory(dir);
+            var iconPath = Path.Combine(dir, "bookdb.ico");
+            using var src = AssetLoader.Open(new Uri("avares://BookDB.Desktop/Assets/book.ico"));
+            using var dst = File.Create(iconPath);
+            src.CopyTo(dst);
+            return iconPath;
+        }
+        catch (Exception ex)
+        {
+            Log.Warning("ShortcutService: could not extract Windows icon ({Error}); using the target executable", ex.Message);
+            return null;
+        }
     }
 
     [SupportedOSPlatform("windows")]

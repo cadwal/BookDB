@@ -69,6 +69,11 @@ public partial class App : Application
             mainWindow.Show();
             splash.Close();
 
+            // A second launch signals this instance over the gate's pipe (off the UI thread); marshal the
+            // window-raise back onto the UI thread.
+            Program.InstanceGate?.SetActivationHandler(() =>
+                Dispatcher.UIThread.Post(() => Helpers.WindowActivator.BringToFront(mainWindow)));
+
             var shutdownInProgress = false;
             desktop.ShutdownRequested += async (_, args) =>
             {
