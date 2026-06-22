@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/semver-spec
 
 ## [Unreleased]
 
+## [1.2.1] - 2026-06-22
+
+### Security
+- Updated the bundled SQLite native library to a patched version, resolving a known high-severity advisory (GHSA-2m69-gcr7-jv3q) in the version pulled in transitively by the database layer
+
 ## [1.2.0] - 2026-06-15
 
 ### Fixed
@@ -46,7 +51,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/semver-spec
 - Multi-language UI: EN, SV, DE, ES, FR, NL, IT, PT-BR, PT-PT
 - Help system with per-screen contextual help
 
-[Unreleased]: https://github.com/cadwal/BookDB/compare/v1.2.0...HEAD
+[Unreleased]: https://github.com/cadwal/BookDB/compare/v1.2.1...HEAD
 [1.1.0]: https://github.com/cadwal/BookDB/releases/tag/v1.1.0
 [1.0.0]: https://github.com/cadwal/BookDB/releases/tag/v1.0.0
 [1.2.0]: https://github.com/cadwal/BookDB/releases/tag/v1.2.0
+[1.2.1]: https://github.com/cadwal/BookDB/releases/tag/v1.2.1

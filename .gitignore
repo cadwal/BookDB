@@ -42,3 +42,6 @@ research/
 pyproject.toml
 .python-version
 uv.lock
+
+# Local test/publish output (reproducible build artifacts, not committed)
+publish/
