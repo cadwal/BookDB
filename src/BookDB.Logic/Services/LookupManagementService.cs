@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using BookDB.Data.DbContexts;
+using BookDB.Data.Interfaces;
 using BookDB.Logic.Helpers;
 using BookDB.Models.Entities;
 using BookDB.Models.Interfaces;
@@ -38,10 +39,12 @@ public sealed class LookupManagementService : ILookupManagementService
     private const string AuthorRoleCode = "Author";
 
     private readonly IDbContextFactory<BookDbContext> _factory;
+    private readonly ILookupNameMatcher _nameMatcher;
 
-    public LookupManagementService(IDbContextFactory<BookDbContext> factory)
+    public LookupManagementService(IDbContextFactory<BookDbContext> factory, ILookupNameMatcher nameMatcher)
     {
         _factory = factory;
+        _nameMatcher = nameMatcher;
     }
 
     public async Task<int> GetPublisherBookCountAsync(int publisherId, CancellationToken ct = default)
@@ -89,47 +92,46 @@ public sealed class LookupManagementService : ILookupManagementService
     public async Task<int> AddCollectionAsync(string name, CancellationToken ct = default)
     {
         var trimmed = ValidateName(name);
-        await using var db = await _factory.CreateDbContextAsync(ct);
-        await using var tx = await db.Database.BeginTransactionAsync(ct);
-        if (await db.Collections.AnyAsync(
-                c => EF.Functions.Collate(c.Name, "NOCASE") == EF.Functions.Collate(trimmed, "NOCASE"), ct))
-            throw new InvalidOperationException($"A Collection with the name '{trimmed}' already exists.");
-        // Append at the end of the existing sort order.
-        var maxSort = await db.Collections.MaxAsync(c => (int?)c.SortOrder, ct) ?? -1;
-        var entity = new Collection { Name = trimmed, SortOrder = maxSort + 1 };
-        db.Collections.Add(entity);
-        await db.SaveChangesAsync(ct);
-        await tx.CommitAsync(ct);
-        return entity.CollectionId;
+        return await InTransactionAsync(async db =>
+        {
+            if (await db.Collections.AnyAsync(_nameMatcher.NameEquals<Collection>(trimmed), ct))
+                throw new InvalidOperationException($"A Collection with the name '{trimmed}' already exists.");
+            // Append at the end of the existing sort order.
+            var maxSort = await db.Collections.MaxAsync(c => (int?)c.SortOrder, ct) ?? -1;
+            var entity = new Collection { Name = trimmed, SortOrder = maxSort + 1 };
+            db.Collections.Add(entity);
+            await db.SaveChangesAsync(ct);
+            return entity.CollectionId;
+        }, ct);
     }
 
     public async Task MergeCollectionsAsync(int sourceId, int targetId, CancellationToken ct = default)
     {
         if (sourceId == targetId) return;
-        await using var db = await _factory.CreateDbContextAsync(ct);
-        await using var tx = await db.Database.BeginTransactionAsync(ct);
-        // Move the source's books to the target, then delete the source.
-        // CategoryCollection rows for the source are removed by ON DELETE CASCADE.
-        await db.Books
-            .Where(b => b.CollectionId == sourceId)
-            .ExecuteUpdateAsync(s => s.SetProperty(b => b.CollectionId, (int?)targetId), ct);
-        await db.Collections.Where(c => c.CollectionId == sourceId).ExecuteDeleteAsync(ct);
-        await tx.CommitAsync(ct);
+        await InTransactionAsync(async db =>
+        {
+            // Move the source's books to the target, then delete the source.
+            // CategoryCollection rows for the source are removed by ON DELETE CASCADE.
+            await db.Books
+                .Where(b => b.CollectionId == sourceId)
+                .ExecuteUpdateAsync(s => s.SetProperty(b => b.CollectionId, (int?)targetId), ct);
+            await db.Collections.Where(c => c.CollectionId == sourceId).ExecuteDeleteAsync(ct);
+        }, ct);
     }
 
     public async Task ReorderCollectionsAsync(IReadOnlyList<int> orderedCollectionIds, CancellationToken ct = default)
     {
-        await using var db = await _factory.CreateDbContextAsync(ct);
-        await using var tx = await db.Database.BeginTransactionAsync(ct);
-        for (var i = 0; i < orderedCollectionIds.Count; i++)
+        await InTransactionAsync(async db =>
         {
-            var id = orderedCollectionIds[i];
-            var sortOrder = i;
-            await db.Collections
-                .Where(c => c.CollectionId == id)
-                .ExecuteUpdateAsync(s => s.SetProperty(c => c.SortOrder, sortOrder), ct);
-        }
-        await tx.CommitAsync(ct);
+            for (var i = 0; i < orderedCollectionIds.Count; i++)
+            {
+                var id = orderedCollectionIds[i];
+                var sortOrder = i;
+                await db.Collections
+                    .Where(c => c.CollectionId == id)
+                    .ExecuteUpdateAsync(s => s.SetProperty(c => c.SortOrder, sortOrder), ct);
+            }
+        }, ct);
     }
 
     public async Task<int> GetPersonBookContributionCountAsync(int personId, CancellationToken ct = default)
@@ -164,21 +166,21 @@ public sealed class LookupManagementService : ILookupManagementService
     public async Task UpdatePersonBioAsync(int personId, string? bio, string? birthDate, string? birthPlace,
         string? deathDate, string? deathPlace, string? website, CancellationToken ct = default)
     {
-        await using var db = await _factory.CreateDbContextAsync(ct);
-        await using var tx = await db.Database.BeginTransactionAsync(ct);
-        var count = await db.People
-            .Where(p => p.PersonId == personId)
-            .ExecuteUpdateAsync(s => s
-                .SetProperty(p => p.Bio, bio == null ? null : bio.Trim())
-                .SetProperty(p => p.BirthDate, birthDate == null ? null : birthDate.Trim())
-                .SetProperty(p => p.BirthPlace, birthPlace == null ? null : birthPlace.Trim())
-                .SetProperty(p => p.DeathDate, deathDate == null ? null : deathDate.Trim())
-                .SetProperty(p => p.DeathPlace, deathPlace == null ? null : deathPlace.Trim())
-                .SetProperty(p => p.Website, website == null ? null : website.Trim()),
-            ct);
-        if (count == 0)
-            throw new InvalidOperationException($"Person {personId} not found.");
-        await tx.CommitAsync(ct);
+        await InTransactionAsync(async db =>
+        {
+            var count = await db.People
+                .Where(p => p.PersonId == personId)
+                .ExecuteUpdateAsync(s => s
+                    .SetProperty(p => p.Bio, bio == null ? null : bio.Trim())
+                    .SetProperty(p => p.BirthDate, birthDate == null ? null : birthDate.Trim())
+                    .SetProperty(p => p.BirthPlace, birthPlace == null ? null : birthPlace.Trim())
+                    .SetProperty(p => p.DeathDate, deathDate == null ? null : deathDate.Trim())
+                    .SetProperty(p => p.DeathPlace, deathPlace == null ? null : deathPlace.Trim())
+                    .SetProperty(p => p.Website, website == null ? null : website.Trim()),
+                ct);
+            if (count == 0)
+                throw new InvalidOperationException($"Person {personId} not found.");
+        }, ct);
     }
 
     public Task RenamePublisherAsync(int publisherId, string newName, CancellationToken ct = default)
@@ -251,108 +253,107 @@ public sealed class LookupManagementService : ILookupManagementService
 
     public async Task DeletePersonAsync(int personId, CancellationToken ct = default)
     {
-        await using var dbContext = await _factory.CreateDbContextAsync(ct);
-        await using var tx = await dbContext.Database.BeginTransactionAsync(ct);
-        var count = await dbContext.BookContributors.CountAsync(bc => bc.PersonId == personId, ct);
-        if (count > 0)
-            throw new InvalidOperationException($"Cannot delete Person — used in {count} books.");
-        await dbContext.People.Where(p => p.PersonId == personId).ExecuteDeleteAsync(ct);
-        await tx.CommitAsync(ct);
+        await InTransactionAsync(async dbContext =>
+        {
+            var count = await dbContext.BookContributors.CountAsync(bc => bc.PersonId == personId, ct);
+            if (count > 0)
+                throw new InvalidOperationException($"Cannot delete Person — used in {count} books.");
+            await dbContext.People.Where(p => p.PersonId == personId).ExecuteDeleteAsync(ct);
+        }, ct);
     }
 
     public async Task MergePublishersAsync(int sourceId, int targetId, CancellationToken ct = default)
     {
         if (sourceId == targetId) return;
-        await using var db = await _factory.CreateDbContextAsync(ct);
-        await using var tx = await db.Database.BeginTransactionAsync(ct);
-        await db.Books
-            .Where(b => b.PublisherId == sourceId)
-            .ExecuteUpdateAsync(s => s.SetProperty(b => b.PublisherId, (int?)targetId), ct);
-        await db.Publishers.Where(p => p.PublisherId == sourceId).ExecuteDeleteAsync(ct);
-        await tx.CommitAsync(ct);
+        await InTransactionAsync(async db =>
+        {
+            await db.Books
+                .Where(b => b.PublisherId == sourceId)
+                .ExecuteUpdateAsync(s => s.SetProperty(b => b.PublisherId, (int?)targetId), ct);
+            await db.Publishers.Where(p => p.PublisherId == sourceId).ExecuteDeleteAsync(ct);
+        }, ct);
     }
 
     public async Task MergeSeriesAsync(int sourceId, int targetId, CancellationToken ct = default)
     {
         if (sourceId == targetId) return;
-        await using var db = await _factory.CreateDbContextAsync(ct);
-        await using var tx = await db.Database.BeginTransactionAsync(ct);
-        await db.Books
-            .Where(b => b.SeriesId == sourceId)
-            .ExecuteUpdateAsync(s => s.SetProperty(b => b.SeriesId, (int?)targetId), ct);
-        await db.Series.Where(p => p.SeriesId == sourceId).ExecuteDeleteAsync(ct);
-        await tx.CommitAsync(ct);
+        await InTransactionAsync(async db =>
+        {
+            await db.Books
+                .Where(b => b.SeriesId == sourceId)
+                .ExecuteUpdateAsync(s => s.SetProperty(b => b.SeriesId, (int?)targetId), ct);
+            await db.Series.Where(p => p.SeriesId == sourceId).ExecuteDeleteAsync(ct);
+        }, ct);
     }
 
     public async Task MergeLocationsAsync(int sourceId, int targetId, CancellationToken ct = default)
     {
         if (sourceId == targetId) return;
-        await using var db = await _factory.CreateDbContextAsync(ct);
-        await using var tx = await db.Database.BeginTransactionAsync(ct);
-        await db.Books
-            .Where(b => b.LocationId == sourceId)
-            .ExecuteUpdateAsync(s => s.SetProperty(b => b.LocationId, (int?)targetId), ct);
-        await db.Locations.Where(l => l.LocationId == sourceId).ExecuteDeleteAsync(ct);
-        await tx.CommitAsync(ct);
+        await InTransactionAsync(async db =>
+        {
+            await db.Books
+                .Where(b => b.LocationId == sourceId)
+                .ExecuteUpdateAsync(s => s.SetProperty(b => b.LocationId, (int?)targetId), ct);
+            await db.Locations.Where(l => l.LocationId == sourceId).ExecuteDeleteAsync(ct);
+        }, ct);
     }
 
     public async Task MergeOwnersAsync(int sourceId, int targetId, CancellationToken ct = default)
     {
         if (sourceId == targetId) return;
-        await using var db = await _factory.CreateDbContextAsync(ct);
-        await using var tx = await db.Database.BeginTransactionAsync(ct);
-        await db.Books
-            .Where(b => b.OwnerId == sourceId)
-            .ExecuteUpdateAsync(s => s.SetProperty(b => b.OwnerId, (int?)targetId), ct);
-        await db.Owners.Where(o => o.OwnerId == sourceId).ExecuteDeleteAsync(ct);
-        await tx.CommitAsync(ct);
+        await InTransactionAsync(async db =>
+        {
+            await db.Books
+                .Where(b => b.OwnerId == sourceId)
+                .ExecuteUpdateAsync(s => s.SetProperty(b => b.OwnerId, (int?)targetId), ct);
+            await db.Owners.Where(o => o.OwnerId == sourceId).ExecuteDeleteAsync(ct);
+        }, ct);
     }
 
     public async Task MergeLanguagesAsync(int sourceId, int targetId, CancellationToken ct = default)
     {
         if (sourceId == targetId) return;
-        await using var db = await _factory.CreateDbContextAsync(ct);
-        await using var tx = await db.Database.BeginTransactionAsync(ct);
-        await db.Books
-            .Where(b => b.LanguageId == sourceId)
-            .ExecuteUpdateAsync(s => s.SetProperty(b => b.LanguageId, (int?)targetId), ct);
-        await db.Languages.Where(l => l.LanguageId == sourceId).ExecuteDeleteAsync(ct);
-        await tx.CommitAsync(ct);
+        await InTransactionAsync(async db =>
+        {
+            await db.Books
+                .Where(b => b.LanguageId == sourceId)
+                .ExecuteUpdateAsync(s => s.SetProperty(b => b.LanguageId, (int?)targetId), ct);
+            await db.Languages.Where(l => l.LanguageId == sourceId).ExecuteDeleteAsync(ct);
+        }, ct);
     }
 
     public async Task MergePersonsAsync(int sourcePersonId, int targetPersonId, CancellationToken ct = default)
     {
         if (sourcePersonId == targetPersonId) return;
-        await using var db = await _factory.CreateDbContextAsync(ct);
-        await using var tx = await db.Database.BeginTransactionAsync(ct);
-
-        // 1. Repoint source contributor rows to target.
-        await db.BookContributors
-            .Where(bc => bc.PersonId == sourcePersonId)
-            .ExecuteUpdateAsync(s => s.SetProperty(bc => bc.PersonId, targetPersonId), ct);
-
-        // 2. Deduplicate: after repoint, the target may now have multiple rows with the same
-        //    (BookId, ContributorRoleId). Keep the row with the smallest BookContributorId;
-        //    delete the rest. V001 schema has no unique index, so we handle it ourselves.
-        var targetRows = await db.BookContributors
-            .Where(bc => bc.PersonId == targetPersonId)
-            .ToListAsync(ct);
-        var duplicateIds = targetRows
-            .GroupBy(bc => new { bc.BookId, bc.ContributorRoleId })
-            .Where(g => g.Count() > 1)
-            .SelectMany(g => g.OrderBy(bc => bc.BookContributorId).Skip(1))
-            .Select(bc => bc.BookContributorId)
-            .ToList();
-        if (duplicateIds.Count > 0)
+        await InTransactionAsync(async db =>
         {
+            // 1. Repoint source contributor rows to target.
             await db.BookContributors
-                .Where(bc => duplicateIds.Contains(bc.BookContributorId))
-                .ExecuteDeleteAsync(ct);
-        }
+                .Where(bc => bc.PersonId == sourcePersonId)
+                .ExecuteUpdateAsync(s => s.SetProperty(bc => bc.PersonId, targetPersonId), ct);
 
-        // 3. Delete the source person row.
-        await db.People.Where(p => p.PersonId == sourcePersonId).ExecuteDeleteAsync(ct);
-        await tx.CommitAsync(ct);
+            // 2. Deduplicate: after repoint, the target may now have multiple rows with the same
+            //    (BookId, ContributorRoleId). Keep the row with the smallest BookContributorId;
+            //    delete the rest. V001 schema has no unique index, so we handle it ourselves.
+            var targetRows = await db.BookContributors
+                .Where(bc => bc.PersonId == targetPersonId)
+                .ToListAsync(ct);
+            var duplicateIds = targetRows
+                .GroupBy(bc => new { bc.BookId, bc.ContributorRoleId })
+                .Where(g => g.Count() > 1)
+                .SelectMany(g => g.OrderBy(bc => bc.BookContributorId).Skip(1))
+                .Select(bc => bc.BookContributorId)
+                .ToList();
+            if (duplicateIds.Count > 0)
+            {
+                await db.BookContributors
+                    .Where(bc => duplicateIds.Contains(bc.BookContributorId))
+                    .ExecuteDeleteAsync(ct);
+            }
+
+            // 3. Delete the source person row.
+            await db.People.Where(p => p.PersonId == sourcePersonId).ExecuteDeleteAsync(ct);
+        }, ct);
     }
 
     public async Task<(IReadOnlyList<CleanupProposal> Renames, IReadOnlyList<SplitProposal> Splits)>
@@ -399,17 +400,17 @@ public sealed class LookupManagementService : ILookupManagementService
     public async Task ApplyPersonNameCleanupAsync(IReadOnlyList<CleanupProposal> proposals, CancellationToken ct = default)
     {
         if (proposals is null || proposals.Count == 0) return;
-        await using var db = await _factory.CreateDbContextAsync(ct);
-        await using var tx = await db.Database.BeginTransactionAsync(ct);
-        foreach (var proposal in proposals)
+        await InTransactionAsync(async db =>
         {
-            await db.People
-                .Where(p => p.PersonId == proposal.PersonId)
-                .ExecuteUpdateAsync(s => s
-                    .SetProperty(p => p.DisplayName, proposal.ProposedDisplayName)
-                    .SetProperty(p => p.SortName, proposal.SuggestedSortName), ct);
-        }
-        await tx.CommitAsync(ct);
+            foreach (var proposal in proposals)
+            {
+                await db.People
+                    .Where(p => p.PersonId == proposal.PersonId)
+                    .ExecuteUpdateAsync(s => s
+                        .SetProperty(p => p.DisplayName, proposal.ProposedDisplayName)
+                        .SetProperty(p => p.SortName, proposal.SuggestedSortName), ct);
+            }
+        }, ct);
     }
 
     /// <summary>
@@ -422,70 +423,68 @@ public sealed class LookupManagementService : ILookupManagementService
         if (proposals is null || proposals.Count == 0) return;
         foreach (var proposal in proposals)
         {
-            await using var db = await _factory.CreateDbContextAsync(ct);
-            await using var tx = await db.Database.BeginTransactionAsync(ct);
-
-            // Load existing BookContributor rows for this person before any changes
-            var existingContributors = await db.BookContributors
-                .Where(bc => bc.PersonId == proposal.PersonId)
-                .ToListAsync(ct);
-
-            // Create N new Person records (one per accepted fragment)
-            var newPersonIds = new List<int>(proposal.Fragments.Count);
-            foreach (var fragment in proposal.Fragments)
+            await InTransactionAsync(async db =>
             {
-                if (string.IsNullOrWhiteSpace(fragment.ProposedDisplayName)) continue; // defensive guard
-                var existing = await db.People
-                    .FirstOrDefaultAsync(p => p.DisplayName == fragment.ProposedDisplayName, ct);
-                var newPerson = existing ?? new Person
-                {
-                    DisplayName = fragment.ProposedDisplayName,
-                    SortName = fragment.SuggestedSortName
-                };
-                if (existing is null)
-                {
-                    db.People.Add(newPerson);
-                    await db.SaveChangesAsync(ct); // flush to get PersonId
-                }
-                newPersonIds.Add(newPerson.PersonId);
-            }
+                // Load existing BookContributor rows for this person before any changes
+                var existingContributors = await db.BookContributors
+                    .Where(bc => bc.PersonId == proposal.PersonId)
+                    .ToListAsync(ct);
 
-            // For each new person, add BookContributor rows mirroring the original person's rows
-            // (all fragments get the same book links as the original).
-            // Skip pairs that already exist to avoid silent duplicates when a fragment name
-            // matches an existing Person who already has rows for these books.
-            foreach (var newPersonId in newPersonIds)
-            {
-                var alreadyLinked = (await db.BookContributors
-                    .Where(bc => bc.PersonId == newPersonId)
-                    .Select(bc => new { bc.BookId, bc.ContributorRoleId })
-                    .ToListAsync(ct))
-                    .Select(bc => (bc.BookId, bc.ContributorRoleId))
-                    .ToHashSet();
-
-                foreach (var bc in existingContributors)
+                // Create N new Person records (one per accepted fragment)
+                var newPersonIds = new List<int>(proposal.Fragments.Count);
+                foreach (var fragment in proposal.Fragments)
                 {
-                    if (alreadyLinked.Contains((bc.BookId, bc.ContributorRoleId))) continue;
-                    db.BookContributors.Add(new BookContributor
+                    if (string.IsNullOrWhiteSpace(fragment.ProposedDisplayName)) continue; // defensive guard
+                    var existing = await db.People
+                        .FirstOrDefaultAsync(p => p.DisplayName == fragment.ProposedDisplayName, ct);
+                    var newPerson = existing ?? new Person
                     {
-                        BookId = bc.BookId,
-                        PersonId = newPersonId,
-                        ContributorRoleId = bc.ContributorRoleId,
-                        SortOrder = bc.SortOrder
-                    });
+                        DisplayName = fragment.ProposedDisplayName,
+                        SortName = fragment.SuggestedSortName
+                    };
+                    if (existing is null)
+                    {
+                        db.People.Add(newPerson);
+                        await db.SaveChangesAsync(ct); // flush to get PersonId
+                    }
+                    newPersonIds.Add(newPerson.PersonId);
                 }
-            }
-            await db.SaveChangesAsync(ct);
 
-            // Delete the original BookContributor rows and the original Person
-            await db.BookContributors
-                .Where(bc => bc.PersonId == proposal.PersonId)
-                .ExecuteDeleteAsync(ct);
-            await db.People
-                .Where(p => p.PersonId == proposal.PersonId)
-                .ExecuteDeleteAsync(ct);
+                // For each new person, add BookContributor rows mirroring the original person's rows
+                // (all fragments get the same book links as the original).
+                // Skip pairs that already exist to avoid silent duplicates when a fragment name
+                // matches an existing Person who already has rows for these books.
+                foreach (var newPersonId in newPersonIds)
+                {
+                    var alreadyLinked = (await db.BookContributors
+                        .Where(bc => bc.PersonId == newPersonId)
+                        .Select(bc => new { bc.BookId, bc.ContributorRoleId })
+                        .ToListAsync(ct))
+                        .Select(bc => (bc.BookId, bc.ContributorRoleId))
+                        .ToHashSet();
 
-            await tx.CommitAsync(ct);
+                    foreach (var bc in existingContributors)
+                    {
+                        if (alreadyLinked.Contains((bc.BookId, bc.ContributorRoleId))) continue;
+                        db.BookContributors.Add(new BookContributor
+                        {
+                            BookId = bc.BookId,
+                            PersonId = newPersonId,
+                            ContributorRoleId = bc.ContributorRoleId,
+                            SortOrder = bc.SortOrder
+                        });
+                    }
+                }
+                await db.SaveChangesAsync(ct);
+
+                // Delete the original BookContributor rows and the original Person
+                await db.BookContributors
+                    .Where(bc => bc.PersonId == proposal.PersonId)
+                    .ExecuteDeleteAsync(ct);
+                await db.People
+                    .Where(p => p.PersonId == proposal.PersonId)
+                    .ExecuteDeleteAsync(ct);
+            }, ct);
         }
     }
 
@@ -503,33 +502,33 @@ public sealed class LookupManagementService : ILookupManagementService
 
     public async Task DeleteCategoryAsync(int categoryId, CancellationToken ct = default)
     {
-        await using var db = await _factory.CreateDbContextAsync(ct);
-        await using var tx = await db.Database.BeginTransactionAsync(ct);
-        var count = await db.BookCategories.CountAsync(bc => bc.CategoryId == categoryId, ct);
-        if (count > 0)
-            throw new InvalidOperationException($"Cannot delete Category — used by {count} books.");
-        await db.Categories.Where(c => c.CategoryId == categoryId).ExecuteDeleteAsync(ct);
-        await tx.CommitAsync(ct);
+        await InTransactionAsync(async db =>
+        {
+            var count = await db.BookCategories.CountAsync(bc => bc.CategoryId == categoryId, ct);
+            if (count > 0)
+                throw new InvalidOperationException($"Cannot delete Category — used by {count} books.");
+            await db.Categories.Where(c => c.CategoryId == categoryId).ExecuteDeleteAsync(ct);
+        }, ct);
     }
 
     public async Task MergeCategoriesAsync(int sourceId, int targetId, CancellationToken ct = default)
     {
         if (sourceId == targetId) return;
-        await using var db = await _factory.CreateDbContextAsync(ct);
-        await using var tx = await db.Database.BeginTransactionAsync(ct);
-        // Books already assigned to target — don't duplicate
-        var alreadyTargeted = await db.BookCategories
-            .Where(bc => bc.CategoryId == targetId)
-            .Select(bc => bc.BookId)
-            .ToListAsync(ct);
-        // Move source rows that don't already have the target
-        await db.BookCategories
-            .Where(bc => bc.CategoryId == sourceId && !alreadyTargeted.Contains(bc.BookId))
-            .ExecuteUpdateAsync(s => s.SetProperty(bc => bc.CategoryId, targetId), ct);
-        // Delete any remaining source rows (duplicates)
-        await db.BookCategories.Where(bc => bc.CategoryId == sourceId).ExecuteDeleteAsync(ct);
-        await db.Categories.Where(c => c.CategoryId == sourceId).ExecuteDeleteAsync(ct);
-        await tx.CommitAsync(ct);
+        await InTransactionAsync(async db =>
+        {
+            // Books already assigned to target — don't duplicate
+            var alreadyTargeted = await db.BookCategories
+                .Where(bc => bc.CategoryId == targetId)
+                .Select(bc => bc.BookId)
+                .ToListAsync(ct);
+            // Move source rows that don't already have the target
+            await db.BookCategories
+                .Where(bc => bc.CategoryId == sourceId && !alreadyTargeted.Contains(bc.BookId))
+                .ExecuteUpdateAsync(s => s.SetProperty(bc => bc.CategoryId, targetId), ct);
+            // Delete any remaining source rows (duplicates)
+            await db.BookCategories.Where(bc => bc.CategoryId == sourceId).ExecuteDeleteAsync(ct);
+            await db.Categories.Where(c => c.CategoryId == sourceId).ExecuteDeleteAsync(ct);
+        }, ct);
     }
 
     public async Task<int> GetPurchasePlaceBookCountAsync(int purchasePlaceId, CancellationToken ct = default)
@@ -550,13 +549,13 @@ public sealed class LookupManagementService : ILookupManagementService
     public async Task MergePurchasePlacesAsync(int sourceId, int targetId, CancellationToken ct = default)
     {
         if (sourceId == targetId) return;
-        await using var db = await _factory.CreateDbContextAsync(ct);
-        await using var tx = await db.Database.BeginTransactionAsync(ct);
-        await db.Books
-            .Where(b => b.PurchasePlaceId == sourceId)
-            .ExecuteUpdateAsync(s => s.SetProperty(b => b.PurchasePlaceId, (int?)targetId), ct);
-        await db.PurchasePlaces.Where(p => p.PurchasePlaceId == sourceId).ExecuteDeleteAsync(ct);
-        await tx.CommitAsync(ct);
+        await InTransactionAsync(async db =>
+        {
+            await db.Books
+                .Where(b => b.PurchasePlaceId == sourceId)
+                .ExecuteUpdateAsync(s => s.SetProperty(b => b.PurchasePlaceId, (int?)targetId), ct);
+            await db.PurchasePlaces.Where(p => p.PurchasePlaceId == sourceId).ExecuteDeleteAsync(ct);
+        }, ct);
     }
 
     private async Task RenameNamedEntityAsync<T>(
@@ -567,18 +566,19 @@ public sealed class LookupManagementService : ILookupManagementService
         where T : class, INamedLookup
     {
         var trimmed = ValidateName(newName);
-        await using var dbContext = await _factory.CreateDbContextAsync(ct);
-        await using var tx = await dbContext.Database.BeginTransactionAsync(ct);
-        var keyName = GetPrimaryKeyPropertyName<T>(dbContext);
-        var duplicate = await dbContext.Set<T>()
-            .AnyAsync(e => EF.Property<int>(e, keyName) != id &&
-                EF.Functions.Collate(e.Name, "NOCASE") == EF.Functions.Collate(trimmed, "NOCASE"), ct);
-        if (duplicate)
-            throw new InvalidOperationException($"{entityLabel} with the name '{trimmed}' already exists.");
-        await dbContext.Set<T>()
-            .Where(e => EF.Property<int>(e, keyName) == id)
-            .ExecuteUpdateAsync(s => s.SetProperty(e => e.Name, trimmed), ct);
-        await tx.CommitAsync(ct);
+        await InTransactionAsync(async dbContext =>
+        {
+            var keyName = GetPrimaryKeyPropertyName<T>(dbContext);
+            var duplicate = await dbContext.Set<T>()
+                .Where(e => EF.Property<int>(e, keyName) != id)
+                .Where(_nameMatcher.NameEquals<T>(trimmed))
+                .AnyAsync(ct);
+            if (duplicate)
+                throw new InvalidOperationException($"{entityLabel} with the name '{trimmed}' already exists.");
+            await dbContext.Set<T>()
+                .Where(e => EF.Property<int>(e, keyName) == id)
+                .ExecuteUpdateAsync(s => s.SetProperty(e => e.Name, trimmed), ct);
+        }, ct);
     }
 
     private async Task<int> AddNamedEntityAsync<T>(
@@ -589,15 +589,15 @@ public sealed class LookupManagementService : ILookupManagementService
         where T : class, INamedLookup
     {
         var trimmed = ValidateName(name);
-        await using var dbContext = await _factory.CreateDbContextAsync(ct);
-        await using var tx = await dbContext.Database.BeginTransactionAsync(ct);
-        if (await dbContext.Set<T>().AnyAsync(e => EF.Functions.Collate(e.Name, "NOCASE") == EF.Functions.Collate(trimmed, "NOCASE"), ct))
-            throw new InvalidOperationException($"{entityLabel} with the name '{trimmed}' already exists.");
-        var entity = factory(trimmed);
-        dbContext.Set<T>().Add(entity);
-        await dbContext.SaveChangesAsync(ct);
-        await tx.CommitAsync(ct);
-        return entity.Id;
+        return await InTransactionAsync(async dbContext =>
+        {
+            if (await dbContext.Set<T>().AnyAsync(_nameMatcher.NameEquals<T>(trimmed), ct))
+                throw new InvalidOperationException($"{entityLabel} with the name '{trimmed}' already exists.");
+            var entity = factory(trimmed);
+            dbContext.Set<T>().Add(entity);
+            await dbContext.SaveChangesAsync(ct);
+            return entity.Id;
+        }, ct);
     }
 
     private async Task DeleteNamedEntityAsync<T>(
@@ -607,17 +607,39 @@ public sealed class LookupManagementService : ILookupManagementService
         CancellationToken ct)
         where T : class, INamedLookup
     {
-        await using var dbContext = await _factory.CreateDbContextAsync(ct);
-        await using var tx = await dbContext.Database.BeginTransactionAsync(ct);
-        var count = await dbContext.Books.CountAsync(bookUsagePredicate, ct);
-        if (count > 0)
-            throw new InvalidOperationException($"Cannot delete {entityLabel} — used by {count} books.");
-        var keyName = GetPrimaryKeyPropertyName<T>(dbContext);
-        await dbContext.Set<T>()
-            .Where(e => EF.Property<int>(e, keyName) == id)
-            .ExecuteDeleteAsync(ct);
-        await tx.CommitAsync(ct);
+        await InTransactionAsync(async dbContext =>
+        {
+            var count = await dbContext.Books.CountAsync(bookUsagePredicate, ct);
+            if (count > 0)
+                throw new InvalidOperationException($"Cannot delete {entityLabel} — used by {count} books.");
+            var keyName = GetPrimaryKeyPropertyName<T>(dbContext);
+            await dbContext.Set<T>()
+                .Where(e => EF.Property<int>(e, keyName) == id)
+                .ExecuteDeleteAsync(ct);
+        }, ct);
     }
+
+    // Runs a unit of work inside a transaction the Postgres retrying execution strategy can re-run as a
+    // whole — a free-standing BeginTransaction throws under that strategy. On a transient failure the
+    // delegate re-executes from scratch (the rolled-back transaction left the database untouched), so the
+    // change tracker is cleared each attempt. A non-transient throw (e.g. a duplicate-name conflict) is not
+    // retried and propagates with the transaction rolled back.
+    private async Task<TResult> InTransactionAsync<TResult>(Func<BookDbContext, Task<TResult>> work, CancellationToken ct)
+    {
+        await using var db = await _factory.CreateDbContextAsync(ct);
+        var strategy = db.Database.CreateExecutionStrategy();
+        return await strategy.ExecuteAsync(async () =>
+        {
+            db.ChangeTracker.Clear();
+            await using var tx = await db.Database.BeginTransactionAsync(ct);
+            var result = await work(db);
+            await tx.CommitAsync(ct);
+            return result;
+        });
+    }
+
+    private Task InTransactionAsync(Func<BookDbContext, Task> work, CancellationToken ct) =>
+        InTransactionAsync(async db => { await work(db); return 0; }, ct);
 
     private static string ValidateName(string raw)
     {

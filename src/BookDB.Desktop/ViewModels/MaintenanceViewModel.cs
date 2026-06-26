@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Avalonia.Threading;
 using BookDB.Desktop.Localization;
 using BookDB.Logic.Services;
+using BookDB.Models;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Serilog;
@@ -19,6 +20,9 @@ public sealed partial class MaintenanceViewModel : ObservableObject
 {
     private readonly IDatabaseMaintenanceService _maintenanceService;
 
+    /// <summary>The "Move library" section hosted in this dialog's second tab.</summary>
+    public MoveLibraryViewModel MoveLibrary { get; }
+
     /// <summary>Closes the dialog. Set by <c>WindowService</c>.</summary>
     public Action? CloseDialog { get; set; }
 
@@ -30,8 +34,11 @@ public sealed partial class MaintenanceViewModel : ObservableObject
     [ObservableProperty]
     private string _logText = string.Empty;
 
-    public MaintenanceViewModel(IDatabaseMaintenanceService maintenanceService)
-        => _maintenanceService = maintenanceService;
+    public MaintenanceViewModel(IDatabaseMaintenanceService maintenanceService, MoveLibraryViewModel moveLibrary)
+    {
+        _maintenanceService = maintenanceService;
+        MoveLibrary = moveLibrary;
+    }
 
     private bool CanRun => !IsRunning;
 
@@ -75,16 +82,17 @@ public sealed partial class MaintenanceViewModel : ObservableObject
     {
         IsRunning = true;
         var progress = StepProgress();
+        // Show the backup location in step order (right after "creating a safety backup…"), not last.
+        var backupReport = new Progress<string>(path => Dispatcher.UIThread.Post(
+            () => AppendLine(string.Format(Resources.Maintenance_SafetyBackupSaved, path))));
         try
         {
             var result = await Task.Run(
-                () => _maintenanceService.OptimizeAndRepairAsync(CancellationToken.None, progress));
+                () => _maintenanceService.OptimizeAndRepairAsync(CancellationToken.None, progress, backupReport));
 
             if (result.Success)
             {
                 AppendLine(Resources.Maintenance_RepairDone);
-                if (!string.IsNullOrEmpty(result.SafetyBackupPath))
-                    AppendLine(string.Format(Resources.Maintenance_SafetyBackupSaved, result.SafetyBackupPath));
             }
             else
             {

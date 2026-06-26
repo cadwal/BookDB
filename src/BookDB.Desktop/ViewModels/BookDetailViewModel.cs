@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Avalonia.Media;
+using BookDB.Data.Interfaces;
 using BookDB.Desktop.Helpers;
 using BookDB.Desktop.Localization;
 using BookDB.Desktop.Messages;
@@ -130,11 +131,19 @@ public partial class BookDetailViewModel :
     public override async Task OnLoanHistoryTabActivatingAsync()
     {
         if (CurrentBook == null) return;
-        var history = await _loanService.GetLoanHistoryAsync(CurrentBook.BookId);
-        _loanHistory.Clear();
-        foreach (var row in history)
-            _loanHistory.Add(LoanHistoryRowViewModel.FromLoanHistoryRow(row));
-        OnPropertyChanged(nameof(LoanHistoryIsEmpty));
+        try
+        {
+            var history = await _loanService.GetLoanHistoryAsync(CurrentBook.BookId);
+            _loanHistory.Clear();
+            foreach (var row in history)
+                _loanHistory.Add(LoanHistoryRowViewModel.FromLoanHistoryRow(row));
+            OnPropertyChanged(nameof(LoanHistoryIsEmpty));
+        }
+        catch (Exception ex)
+        {
+            ReportIfConnectionLoss(ex);
+            Log.Error(ex, "Failed to load loan history for book {BookId}", CurrentBook.BookId);
+        }
     }
 
     public BookDetailViewModel(
@@ -144,9 +153,12 @@ public partial class BookDetailViewModel :
         ILookupService lookupService,
         IWindowService windowService,
         IFilePickerService filePickerService,
+        IRemoteWriteGuard writeGuard,
         IHttpClientFactory httpClientFactory,
-        ILoanService loanService)
-        : base(bookService, bookImageService, lookupService, filePickerService, windowService, httpClientFactory)
+        ILoanService loanService,
+        IConnectionHealthMonitor connectionMonitor,
+        IConnectionFailureClassifier connectionClassifier)
+        : base(bookService, bookImageService, lookupService, filePickerService, windowService, writeGuard, httpClientFactory, connectionMonitor, connectionClassifier)
     {
         _messenger = messenger;
         _loanService = loanService;
@@ -264,10 +276,10 @@ public partial class BookDetailViewModel :
     }
 
     [RelayCommand]
-    private void OpenFullDetails()
+    private async Task OpenFullDetails()
     {
         if (CurrentBook != null)
-            _windowService.OpenFullDetailsWindow(CurrentBook.BookId);
+            await _windowService.OpenFullDetailsWindowAsync(CurrentBook.BookId);
     }
 
     [RelayCommand]
@@ -367,6 +379,7 @@ public partial class BookDetailViewModel :
         }
         catch (Exception ex)
         {
+            ReportIfConnectionLoss(ex);
             Log.Error(ex, "Failed to load book {BookId}", bookId);
         }
     }

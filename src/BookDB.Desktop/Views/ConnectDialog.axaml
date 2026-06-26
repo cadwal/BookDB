@@ -1,0 +1,32 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:BookDB.Desktop.ViewModels"
+        xmlns:res="using:BookDB.Desktop.Localization"
+        x:Class="BookDB.Desktop.Views.ConnectDialog"
+        x:DataType="vm:ConnectDialogViewModel"
+        Title="{x:Static res:Resources.ConnectDialog_Header}"
+        Width="460" MinWidth="460"
+        SizeToContent="Height"
+        CanResize="False"
+        WindowStartupLocation="CenterOwner">
+  <StackPanel Margin="20" Spacing="14">
+
+    <TextBlock Text="{x:Static res:Resources.ConnectDialog_Header}"
+               FontSize="16" FontWeight="SemiBold" />
+
+    <TextBlock Text="{Binding BodyText}" TextWrapping="Wrap" />
+
+    <TextBlock Text="{x:Static res:Resources.ConnectDialog_Risk}"
+               TextWrapping="Wrap" Opacity="0.8" />
+
+    <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+      <Button Classes="accent"
+              Content="{x:Static res:Resources.ConnectDialog_Quit}"
+              Command="{Binding QuitCommand}"
+              IsDefault="True" />
+      <Button Content="{Binding ConnectAnywayText}"
+              Command="{Binding ConnectAnywayCommand}" />
+    </StackPanel>
+
+  </StackPanel>
+</Window>

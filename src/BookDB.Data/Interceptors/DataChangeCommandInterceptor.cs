@@ -30,6 +30,13 @@ public sealed class DataChangeCommandInterceptor : DbCommandInterceptor
         @"(?:^|;)\s*(?:INSERT|UPDATE|DELETE)\b",
         RegexOptions.IgnoreCase | RegexOptions.Multiline | RegexOptions.Compiled);
 
+    // The heartbeat writes its own ClientSession row on connect/refresh/exit; that is process presence, not
+    // library data, so it must not look like a change worth backing up. Heartbeat commands target only this
+    // table (a dedicated context, never batched with user writes), so a match means the whole command is one.
+    private static readonly Regex SessionTableWrite = new(
+        @"(?:INSERT\s+INTO|UPDATE|DELETE\s+FROM)\s+""?ClientSession""?\b",
+        RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
     private readonly IDataChangeTracker _tracker;
 
     public DataChangeCommandInterceptor(IDataChangeTracker tracker) => _tracker = tracker;
@@ -71,13 +78,13 @@ public sealed class DataChangeCommandInterceptor : DbCommandInterceptor
 
     private void Flag(DbCommand command)
     {
-        if (WriteStatement.IsMatch(command.CommandText))
+        if (WriteStatement.IsMatch(command.CommandText) && !SessionTableWrite.IsMatch(command.CommandText))
             _tracker.MarkChanged();
     }
 
     private void FlagIfWriteAffectedRows(DbCommand command, int rowsAffected)
     {
-        if (rowsAffected > 0 && WriteStatement.IsMatch(command.CommandText))
+        if (rowsAffected > 0 && WriteStatement.IsMatch(command.CommandText) && !SessionTableWrite.IsMatch(command.CommandText))
             _tracker.MarkChanged();
     }
 }

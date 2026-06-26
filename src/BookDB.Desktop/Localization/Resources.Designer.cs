@@ -2247,6 +2247,56 @@ namespace BookDB.Desktop.Localization
             get { return ResourceManager.GetString("Menu_RestoreBackup", resourceCulture) ?? "Restore from Backup..."; }
         }
 
+        public static string Menu_Backup
+        {
+            get { return ResourceManager.GetString("Menu_Backup", resourceCulture) ?? "Backup..."; }
+        }
+
+        public static string BackupDialog_Title
+        {
+            get { return ResourceManager.GetString("BackupDialog_Title", resourceCulture) ?? "Backup"; }
+        }
+
+        public static string BackupDialog_Format_Sqlite
+        {
+            get { return ResourceManager.GetString("BackupDialog_Format_Sqlite", resourceCulture) ?? "Database file (SQLite)"; }
+        }
+
+        public static string BackupDialog_Format_Csv
+        {
+            get { return ResourceManager.GetString("BackupDialog_Format_Csv", resourceCulture) ?? "CSV archive (portable)"; }
+        }
+
+        public static string BackupDialog_RemoteFallbackNote
+        {
+            get { return ResourceManager.GetString("BackupDialog_RemoteFallbackNote", resourceCulture) ?? "A remote database has no file backup; the CSV archive is used instead."; }
+        }
+
+        public static string BackupDialog_Confirm
+        {
+            get { return ResourceManager.GetString("BackupDialog_Confirm", resourceCulture) ?? "Back up"; }
+        }
+
+        public static string Settings_Database_SavedPasswordHint
+        {
+            get { return ResourceManager.GetString("Settings_Database_SavedPasswordHint", resourceCulture) ?? "A password is saved for this server — leave blank to keep it."; }
+        }
+
+        public static string Shutdown_CloseApplication
+        {
+            get { return ResourceManager.GetString("Shutdown_CloseApplication", resourceCulture) ?? "Close Application"; }
+        }
+
+        public static string Shutdown_CloseAndPause
+        {
+            get { return ResourceManager.GetString("Shutdown_CloseAndPause", resourceCulture) ?? "Close and Pause"; }
+        }
+
+        public static string Shutdown_KeepRunning
+        {
+            get { return ResourceManager.GetString("Shutdown_KeepRunning", resourceCulture) ?? "Keep Running"; }
+        }
+
         public static string Menu_Settings
         {
             get { return ResourceManager.GetString("Menu_Settings", resourceCulture) ?? "Settings..."; }
@@ -3837,7 +3887,7 @@ namespace BookDB.Desktop.Localization
 
         public static string Restore_Complete_Body
         {
-            get { return ResourceManager.GetString("Restore_Complete_Body", resourceCulture) ?? "The application will now close. Reopen it to use the restored library."; }
+            get { return ResourceManager.GetString("Restore_Complete_Body", resourceCulture) ?? "BookDB will now restart to load the restored library."; }
         }
 
         public static string Restore_Failed
@@ -4258,6 +4308,501 @@ namespace BookDB.Desktop.Localization
         public static string Maintenance_SafetyBackupSaved
         {
             get { return ResourceManager.GetString("Maintenance_SafetyBackupSaved", resourceCulture) ?? "Safety backup saved to: {0}"; }
+        }
+
+        public static string Settings_Tab_Database
+        {
+            get { return ResourceManager.GetString("Settings_Tab_Database", resourceCulture) ?? "Database"; }
+        }
+
+        public static string Settings_Database_BackendLabel
+        {
+            get { return ResourceManager.GetString("Settings_Database_BackendLabel", resourceCulture) ?? "Database backend"; }
+        }
+
+        public static string Settings_Database_Backend_Sqlite
+        {
+            get { return ResourceManager.GetString("Settings_Database_Backend_Sqlite", resourceCulture) ?? "Local file (SQLite)"; }
+        }
+
+        public static string Settings_Database_Backend_Postgres
+        {
+            get { return ResourceManager.GetString("Settings_Database_Backend_Postgres", resourceCulture) ?? "PostgreSQL server"; }
+        }
+
+        public static string Settings_Database_ServerSectionHeader
+        {
+            get { return ResourceManager.GetString("Settings_Database_ServerSectionHeader", resourceCulture) ?? "Server connection"; }
+        }
+
+        public static string Settings_Database_Host
+        {
+            get { return ResourceManager.GetString("Settings_Database_Host", resourceCulture) ?? "Host"; }
+        }
+
+        public static string Settings_Database_Port
+        {
+            get { return ResourceManager.GetString("Settings_Database_Port", resourceCulture) ?? "Port"; }
+        }
+
+        public static string Settings_Database_DatabaseName
+        {
+            get { return ResourceManager.GetString("Settings_Database_DatabaseName", resourceCulture) ?? "Database"; }
+        }
+
+        public static string Settings_Database_Username
+        {
+            get { return ResourceManager.GetString("Settings_Database_Username", resourceCulture) ?? "Username"; }
+        }
+
+        public static string Settings_Database_Password
+        {
+            get { return ResourceManager.GetString("Settings_Database_Password", resourceCulture) ?? "Password"; }
+        }
+
+        public static string Settings_Database_TlsLabel
+        {
+            get { return ResourceManager.GetString("Settings_Database_TlsLabel", resourceCulture) ?? "TLS / SSL mode"; }
+        }
+
+        public static string Settings_Database_Tls_Disable
+        {
+            get { return ResourceManager.GetString("Settings_Database_Tls_Disable", resourceCulture) ?? "Disable"; }
+        }
+
+        public static string Settings_Database_Tls_Prefer
+        {
+            get { return ResourceManager.GetString("Settings_Database_Tls_Prefer", resourceCulture) ?? "Prefer"; }
+        }
+
+        public static string Settings_Database_Tls_Require
+        {
+            get { return ResourceManager.GetString("Settings_Database_Tls_Require", resourceCulture) ?? "Require"; }
+        }
+
+        public static string Settings_Database_Tls_VerifyFull
+        {
+            get { return ResourceManager.GetString("Settings_Database_Tls_VerifyFull", resourceCulture) ?? "Verify full"; }
+        }
+
+        public static string Settings_Database_TlsDisableWarning
+        {
+            get { return ResourceManager.GetString("Settings_Database_TlsDisableWarning", resourceCulture) ?? "Disabling TLS sends the password and data unencrypted across the network. Use it only on a trusted local network."; }
+        }
+
+        public static string Settings_Database_KeyringUnavailable
+        {
+            get { return ResourceManager.GetString("Settings_Database_KeyringUnavailable", resourceCulture) ?? "PostgreSQL needs an operating-system credential store to keep the password safe, but none is available on this machine. BookDB will keep using the local SQLite database."; }
+        }
+
+        public static string Settings_Database_RestartNote
+        {
+            get { return ResourceManager.GetString("Settings_Database_RestartNote", resourceCulture) ?? "Switching the database takes effect after BookDB restarts."; }
+        }
+
+        public static string Settings_Database_Apply_PasswordRequired
+        {
+            get { return ResourceManager.GetString("Settings_Database_Apply_PasswordRequired", resourceCulture) ?? "Enter the database password before applying."; }
+        }
+
+        public static string Startup_Failure_Title
+        {
+            get { return ResourceManager.GetString("Startup_Failure_Title", resourceCulture) ?? "Cannot connect to the database"; }
+        }
+
+        public static string Startup_Failure_Intro
+        {
+            get { return ResourceManager.GetString("Startup_Failure_Intro", resourceCulture) ?? "BookDB could not reach the PostgreSQL server."; }
+        }
+
+        public static string Startup_Failure_Retry
+        {
+            get { return ResourceManager.GetString("Startup_Failure_Retry", resourceCulture) ?? "Retry"; }
+        }
+
+        public static string Startup_Failure_OpenSettings
+        {
+            get { return ResourceManager.GetString("Startup_Failure_OpenSettings", resourceCulture) ?? "Open settings"; }
+        }
+
+        public static string Startup_Failure_Quit
+        {
+            get { return ResourceManager.GetString("Startup_Failure_Quit", resourceCulture) ?? "Quit"; }
+        }
+
+        public static string Startup_Failure_RetriesExhausted
+        {
+            get { return ResourceManager.GetString("Startup_Failure_RetriesExhausted", resourceCulture) ?? "Retrying hasn't helped. Check that the server is running and review your connection settings."; }
+        }
+
+        public static string ConnectDialog_Header
+        {
+            get { return ResourceManager.GetString("ConnectDialog_Header", resourceCulture) ?? "Another client is connected"; }
+        }
+
+        public static string ConnectDialog_Body
+        {
+            get { return ResourceManager.GetString("ConnectDialog_Body", resourceCulture) ?? "BookDB is already open on {0} (last seen {1}, version {2})."; }
+        }
+
+        public static string ConnectDialog_Risk
+        {
+            get { return ResourceManager.GetString("ConnectDialog_Risk", resourceCulture) ?? "Opening a second client risks data conflicts. Only one client should access this database at a time."; }
+        }
+
+        public static string ConnectDialog_Quit
+        {
+            get { return ResourceManager.GetString("ConnectDialog_Quit", resourceCulture) ?? "Quit"; }
+        }
+
+        public static string ConnectDialog_ConnectAnyway
+        {
+            get { return ResourceManager.GetString("ConnectDialog_ConnectAnyway", resourceCulture) ?? "Connect anyway — I accept the risk"; }
+        }
+
+        public static string ConnectDialog_ConnectAnyway_Waiting
+        {
+            get { return ResourceManager.GetString("ConnectDialog_ConnectAnyway_Waiting", resourceCulture) ?? "Connect anyway ({0})"; }
+        }
+
+        public static string ConnectDialog_Age_Seconds
+        {
+            get { return ResourceManager.GetString("ConnectDialog_Age_Seconds", resourceCulture) ?? "{0} seconds ago"; }
+        }
+
+        public static string ConnectDialog_Age_Minutes
+        {
+            get { return ResourceManager.GetString("ConnectDialog_Age_Minutes", resourceCulture) ?? "{0} minutes ago"; }
+        }
+
+        public static string ConnectDialog_Age_Hours
+        {
+            get { return ResourceManager.GetString("ConnectDialog_Age_Hours", resourceCulture) ?? "{0} hours ago"; }
+        }
+
+        public static string ConnectDialog_Age_Days
+        {
+            get { return ResourceManager.GetString("ConnectDialog_Age_Days", resourceCulture) ?? "{0} days ago"; }
+        }
+
+        public static string Settings_RestartConfirm_Title
+        {
+            get { return ResourceManager.GetString("Settings_RestartConfirm_Title", resourceCulture) ?? "Restart required"; }
+        }
+
+        public static string Settings_RestartConfirm_Body
+        {
+            get { return ResourceManager.GetString("Settings_RestartConfirm_Body", resourceCulture) ?? "Some changes take effect only after a restart. Restart BookDB now?"; }
+        }
+
+        public static string Settings_Database_RestartConfirm_Body
+        {
+            get { return ResourceManager.GetString("Settings_Database_RestartConfirm_Body", resourceCulture) ?? "Switching to {0} requires restarting BookDB. The application will close and reopen now. Continue?"; }
+        }
+
+        public static string Settings_Database_TestConnection
+        {
+            get { return ResourceManager.GetString("Settings_Database_TestConnection", resourceCulture) ?? "Test connection"; }
+        }
+
+        public static string Settings_Database_Testing
+        {
+            get { return ResourceManager.GetString("Settings_Database_Testing", resourceCulture) ?? "Testing…"; }
+        }
+
+        public static string Settings_Database_TestSuccess
+        {
+            get { return ResourceManager.GetString("Settings_Database_TestSuccess", resourceCulture) ?? "Connected — PostgreSQL {0}, {1} books."; }
+        }
+
+        public static string Settings_Database_TestSuccessUninitialized
+        {
+            get { return ResourceManager.GetString("Settings_Database_TestSuccessUninitialized", resourceCulture) ?? "Connected — PostgreSQL {0}. No BookDB data found in this database yet."; }
+        }
+
+        public static string Settings_Database_TestError_Auth
+        {
+            get { return ResourceManager.GetString("Settings_Database_TestError_Auth", resourceCulture) ?? "Authentication failed — check the username and password."; }
+        }
+
+        public static string Settings_Database_TestError_Refused
+        {
+            get { return ResourceManager.GetString("Settings_Database_TestError_Refused", resourceCulture) ?? "Connection refused — check the host and port, and that the server is running."; }
+        }
+
+        public static string Settings_Database_TestError_Timeout
+        {
+            get { return ResourceManager.GetString("Settings_Database_TestError_Timeout", resourceCulture) ?? "Connection timed out — check the host and port, and your network."; }
+        }
+
+        public static string Settings_Database_TestError_Tls
+        {
+            get { return ResourceManager.GetString("Settings_Database_TestError_Tls", resourceCulture) ?? "TLS/SSL error — check the TLS mode and the server's certificate."; }
+        }
+
+        public static string Settings_Database_TestError_Unknown
+        {
+            get { return ResourceManager.GetString("Settings_Database_TestError_Unknown", resourceCulture) ?? "Could not connect: {0}"; }
+        }
+
+        public static string Settings_Database_TestError_UnsupportedVersion
+        {
+            get { return ResourceManager.GetString("Settings_Database_TestError_UnsupportedVersion", resourceCulture) ?? "BookDB requires PostgreSQL {0} or later — this server is {1}."; }
+        }
+
+        public static string WriteFailure_Title
+        {
+            get { return ResourceManager.GetString("WriteFailure_Title", resourceCulture) ?? "Couldn't save changes"; }
+        }
+
+        public static string WriteFailure_Retry_Button
+        {
+            get { return ResourceManager.GetString("WriteFailure_Retry_Button", resourceCulture) ?? "Retry"; }
+        }
+
+        public static string WriteFailure_Discard_Button
+        {
+            get { return ResourceManager.GetString("WriteFailure_Discard_Button", resourceCulture) ?? "Discard changes"; }
+        }
+
+        public static string ConnectionLost_Title
+        {
+            get { return ResourceManager.GetString("ConnectionLost_Title", resourceCulture) ?? "Database connection lost"; }
+        }
+
+        public static string ConnectionLost_Body
+        {
+            get { return ResourceManager.GetString("ConnectionLost_Body", resourceCulture) ?? "The database has been unreachable for several minutes. You can keep waiting while reconnection is retried, or quit the application."; }
+        }
+
+        public static string ConnectionLost_Quit_Button
+        {
+            get { return ResourceManager.GetString("ConnectionLost_Quit_Button", resourceCulture) ?? "Quit"; }
+        }
+
+        public static string ConnectionLost_KeepWaiting_Button
+        {
+            get { return ResourceManager.GetString("ConnectionLost_KeepWaiting_Button", resourceCulture) ?? "Keep waiting"; }
+        }
+
+        public static string StatusBar_Connection_Reconnecting
+        {
+            get { return ResourceManager.GetString("StatusBar_Connection_Reconnecting", resourceCulture) ?? "Reconnecting to the database…"; }
+        }
+
+        public static string StatusBar_Connection_Lost
+        {
+            get { return ResourceManager.GetString("StatusBar_Connection_Lost", resourceCulture) ?? "Database connection lost"; }
+        }
+
+        public static string MoveLibrary_Header
+        {
+            get { return ResourceManager.GetString("MoveLibrary_Header", resourceCulture) ?? "Move library"; }
+        }
+
+        public static string MoveLibrary_Intro
+        {
+            get { return ResourceManager.GetString("MoveLibrary_Intro", resourceCulture) ?? "Copy the entire library to the other database backend. The current database is the source; choose and check the target before moving. A safety backup is taken automatically before any data is written."; }
+        }
+
+        public static string MoveLibrary_SourceLabel
+        {
+            get { return ResourceManager.GetString("MoveLibrary_SourceLabel", resourceCulture) ?? "Current database (source):"; }
+        }
+
+        public static string MoveLibrary_Source_Sqlite
+        {
+            get { return ResourceManager.GetString("MoveLibrary_Source_Sqlite", resourceCulture) ?? "Local SQLite — {0}"; }
+        }
+
+        public static string MoveLibrary_Source_Postgres
+        {
+            get { return ResourceManager.GetString("MoveLibrary_Source_Postgres", resourceCulture) ?? "PostgreSQL — {0}"; }
+        }
+
+        public static string MoveLibrary_TargetLabel
+        {
+            get { return ResourceManager.GetString("MoveLibrary_TargetLabel", resourceCulture) ?? "Move to:"; }
+        }
+
+        public static string MoveLibrary_Target_Postgres
+        {
+            get { return ResourceManager.GetString("MoveLibrary_Target_Postgres", resourceCulture) ?? "PostgreSQL server"; }
+        }
+
+        public static string MoveLibrary_Target_Sqlite
+        {
+            get { return ResourceManager.GetString("MoveLibrary_Target_Sqlite", resourceCulture) ?? "Local SQLite file"; }
+        }
+
+        public static string MoveLibrary_Check
+        {
+            get { return ResourceManager.GetString("MoveLibrary_Check", resourceCulture) ?? "Check target"; }
+        }
+
+        public static string MoveLibrary_Target_Empty
+        {
+            get { return ResourceManager.GetString("MoveLibrary_Target_Empty", resourceCulture) ?? "Target is empty — ready to receive the library."; }
+        }
+
+        public static string MoveLibrary_Target_HasData
+        {
+            get { return ResourceManager.GetString("MoveLibrary_Target_HasData", resourceCulture) ?? "⚠ Target already contains {0} books — Move will REPLACE all data."; }
+        }
+
+        public static string MoveLibrary_Acknowledge
+        {
+            get { return ResourceManager.GetString("MoveLibrary_Acknowledge", resourceCulture) ?? "I understand — replace all data in the target database"; }
+        }
+
+        public static string MoveLibrary_SwitchActive
+        {
+            get { return ResourceManager.GetString("MoveLibrary_SwitchActive", resourceCulture) ?? "Switch the active database to the target when finished"; }
+        }
+
+        public static string MoveLibrary_Move
+        {
+            get { return ResourceManager.GetString("MoveLibrary_Move", resourceCulture) ?? "Move library"; }
+        }
+
+        public static string MoveLibrary_ProgressHeader
+        {
+            get { return ResourceManager.GetString("MoveLibrary_ProgressHeader", resourceCulture) ?? "Progress"; }
+        }
+
+        public static string MoveLibrary_Progress_Table
+        {
+            get { return ResourceManager.GetString("MoveLibrary_Progress_Table", resourceCulture) ?? "{0}: {1}"; }
+        }
+
+        public static string MoveLibrary_Progress_TableRunning
+        {
+            get { return ResourceManager.GetString("MoveLibrary_Progress_TableRunning", resourceCulture) ?? "{0}: {1} / {2}"; }
+        }
+
+        public static string MoveLibrary_SafetyBackupSaved
+        {
+            get { return ResourceManager.GetString("MoveLibrary_SafetyBackupSaved", resourceCulture) ?? "Safety backup saved: {0}"; }
+        }
+
+        public static string MoveLibrary_TargetBackupSaved
+        {
+            get { return ResourceManager.GetString("MoveLibrary_TargetBackupSaved", resourceCulture) ?? "Target safety backup saved: {0}"; }
+        }
+
+        public static string MoveLibrary_Complete
+        {
+            get { return ResourceManager.GetString("MoveLibrary_Complete", resourceCulture) ?? "Migration complete — all record counts match."; }
+        }
+
+        public static string MoveLibrary_CountMismatch
+        {
+            get { return ResourceManager.GetString("MoveLibrary_CountMismatch", resourceCulture) ?? "⚠ Migration finished but record counts do not match; switching the active database is blocked."; }
+        }
+
+        public static string MoveLibrary_Failed
+        {
+            get { return ResourceManager.GetString("MoveLibrary_Failed", resourceCulture) ?? "Migration failed at {0}. The target holds partial data and must not be used. Your data is safe in the backup: {1}"; }
+        }
+
+        public static string MoveLibrary_Phase_Preparing
+        {
+            get { return ResourceManager.GetString("MoveLibrary_Phase_Preparing", resourceCulture) ?? "Preparing target…"; }
+        }
+
+        public static string MoveLibrary_Phase_Copying
+        {
+            get { return ResourceManager.GetString("MoveLibrary_Phase_Copying", resourceCulture) ?? "Copying data…"; }
+        }
+
+        public static string MoveLibrary_Phase_Finalizing
+        {
+            get { return ResourceManager.GetString("MoveLibrary_Phase_Finalizing", resourceCulture) ?? "Finalizing…"; }
+        }
+
+        public static string MoveLibrary_Phase_Verifying
+        {
+            get { return ResourceManager.GetString("MoveLibrary_Phase_Verifying", resourceCulture) ?? "Verifying record counts…"; }
+        }
+
+        public static string MoveLibrary_Table_Books
+        {
+            get { return ResourceManager.GetString("MoveLibrary_Table_Books", resourceCulture) ?? "Books"; }
+        }
+
+        public static string MoveLibrary_Table_CoverImages
+        {
+            get { return ResourceManager.GetString("MoveLibrary_Table_CoverImages", resourceCulture) ?? "Cover images"; }
+        }
+
+        public static string MoveLibrary_Table_Loans
+        {
+            get { return ResourceManager.GetString("MoveLibrary_Table_Loans", resourceCulture) ?? "Loans"; }
+        }
+
+        public static string MoveLibrary_Table_Borrowers
+        {
+            get { return ResourceManager.GetString("MoveLibrary_Table_Borrowers", resourceCulture) ?? "Borrowers"; }
+        }
+
+        public static string MoveLibrary_Table_People
+        {
+            get { return ResourceManager.GetString("MoveLibrary_Table_People", resourceCulture) ?? "People"; }
+        }
+
+        public static string MoveLibrary_Table_Publishers
+        {
+            get { return ResourceManager.GetString("MoveLibrary_Table_Publishers", resourceCulture) ?? "Publishers"; }
+        }
+
+        public static string Restore_UnknownFormat
+        {
+            get { return ResourceManager.GetString("Restore_UnknownFormat", resourceCulture) ?? "The selected file is not a recognised BookDB backup (no library database or CSV archive inside)."; }
+        }
+
+        public static string Restore_SqliteIntoRemote
+        {
+            get { return ResourceManager.GetString("Restore_SqliteIntoRemote", resourceCulture) ?? "This is a local SQLite file backup and can't be restored into the current remote database. Use a CSV archive backup, or switch to the local database first."; }
+        }
+
+        public static string Restore_AdoptBackend_Title
+        {
+            get { return ResourceManager.GetString("Restore_AdoptBackend_Title", resourceCulture) ?? "Apply the backup's database connection?"; }
+        }
+
+        public static string Restore_AdoptBackend_Body
+        {
+            get { return ResourceManager.GetString("Restore_AdoptBackend_Body", resourceCulture) ?? "This backup was created on a {0} database. Switch the active database to that connection and restart? Choosing No keeps your current database."; }
+        }
+
+        public static string RestoreTarget_Title
+        {
+            get { return ResourceManager.GetString("RestoreTarget_Title", resourceCulture) ?? "Where to restore"; }
+        }
+
+        public static string RestoreTarget_Body
+        {
+            get { return ResourceManager.GetString("RestoreTarget_Body", resourceCulture) ?? "This backup was created on the PostgreSQL server {0}. Restore the data into that server, or into your current database?"; }
+        }
+
+        public static string RestoreTarget_Archived
+        {
+            get { return ResourceManager.GetString("RestoreTarget_Archived", resourceCulture) ?? "Restore into the backup's server"; }
+        }
+
+        public static string RestoreTarget_Current
+        {
+            get { return ResourceManager.GetString("RestoreTarget_Current", resourceCulture) ?? "Restore into the current database"; }
+        }
+
+        public static string RestoreTarget_Cancel
+        {
+            get { return ResourceManager.GetString("RestoreTarget_Cancel", resourceCulture) ?? "Cancel"; }
+        }
+
+        public static string Restore_NoCredentialsForTarget
+        {
+            get { return ResourceManager.GetString("Restore_NoCredentialsForTarget", resourceCulture) ?? "No saved credentials for the backup's database server. Configure it in Settings → Database first, then try again."; }
         }
     }
 }

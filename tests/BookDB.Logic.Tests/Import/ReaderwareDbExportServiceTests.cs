@@ -159,7 +159,8 @@ public class ReaderwareDbExportServiceTests : IDisposable
         var toolDir = CreateTempDir();
         Directory.CreateDirectory(Path.Combine(toolDir, "jre", "bin"));
         Directory.CreateDirectory(Path.Combine(toolDir, "lib"));
-        await File.WriteAllTextAsync(Path.Combine(toolDir, "jre", "bin", "java.exe"), "",
+        await File.WriteAllTextAsync(
+            Path.Combine(toolDir, "jre", "bin", ReaderwareDbExportService.JavaExecutableName), "",
             TestContext.Current.CancellationToken);
         await File.WriteAllTextAsync(Path.Combine(toolDir, "lib", "hsqldb.jar"), "",
             TestContext.Current.CancellationToken);

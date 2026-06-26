@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches: ["main", "feature/**"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  DOTNET_VERSION: "10.x"
+
+jobs:
+  # Builds and tests the whole solution — including the PostgreSQL provider — across the release OS
+  # matrix (R43: Npgsql is fully managed, prove it builds and tests everywhere). The Testcontainers
+  # PostgreSQL tests run for real on the Linux runners, where Docker is preinstalled; on Windows and
+  # macOS runners no Linux-container daemon is reachable, so the fixture skips them cleanly (R40).
+  build-test:
+    name: build-test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    # x64 Linux (the real Postgres gate) and Windows (primary dev OS) block; ARM/macOS are best-effort,
+    # matching the release workflow's treatment of those runners.
+    continue-on-error: ${{ matrix.os == 'ubuntu-24.04-arm' || matrix.os == 'macos-latest' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, ubuntu-24.04-arm, windows-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10  # v6.0.3
+
+      - uses: actions/setup-dotnet@9a946fdbd5fb07b82b2f5a4466058b876ab72bb2  # v5.3.0
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore
+        run: dotnet restore BookDB.slnx
+
+      - name: Build
+        run: dotnet build BookDB.slnx -c Release --no-restore
+
+      - name: Test
+        run: dotnet test BookDB.slnx -c Release --no-build --verbosity normal

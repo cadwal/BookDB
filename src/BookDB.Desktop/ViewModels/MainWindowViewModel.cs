@@ -6,11 +6,15 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Avalonia.Threading;
 using BookDB.Desktop.Helpers;
 using BookDB.Desktop.Messages;
 using BookDB.Desktop.Services;
+using BookDB.Data.Interfaces;
+using BookDB.Data.PostgreSQL;
 using BookDB.Help;
 using BookDB.Logic.Services;
+using BookDB.Models;
 using BookDB.Models.Interfaces;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -28,6 +32,14 @@ public partial class MainWindowViewModel : ObservableObject
     private readonly ICsvExportService _csvExportService;
     private readonly ISettingsService _settingsService;
     private readonly IPrintService _printService;
+    private readonly IApplicationRestartService _restartService;
+    private readonly IConnectionHealthMonitor _connectionMonitor;
+    private readonly IConnectionFailureClassifier _connectionClassifier;
+    private readonly ICsvArchiveRestoreService _csvRestore;
+    private readonly IBootstrapConfigService _bootstrapConfig;
+    private readonly AppSettings _appSettings;
+    private readonly IMigrationTargetBuilder _targetBuilder;
+    private readonly ISecretStore _secretStore;
 
     public FilterPanelViewModel FilterPanel { get; }
     public BookListViewModel BookList { get; }
@@ -55,6 +67,45 @@ public partial class MainWindowViewModel : ObservableObject
     /// True when the batch queue is either running or minimized — shows the status bar section.
     /// </summary>
     public bool ShowBatchStatusBar => IsBatchQueueRunning || IsBatchWindowMinimized;
+
+    /// <summary>Status-bar indicator for a mid-session connection loss; empty and hidden while healthy.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ShowConnectionStatus))]
+    private string _connectionStatusText = string.Empty;
+
+    // Drive the status-bar pill's appearance: amber + pulsing while retrying, red + steady once lost.
+    [ObservableProperty]
+    private bool _isConnectionDegraded;
+
+    [ObservableProperty]
+    private bool _isConnectionLost;
+
+    public bool ShowConnectionStatus => !string.IsNullOrEmpty(ConnectionStatusText);
+
+    private void UpdateConnectionStatus()
+    {
+        var state = _connectionMonitor.State;
+        IsConnectionDegraded = state == ConnectionHealth.Degraded;
+        IsConnectionLost = state == ConnectionHealth.Lost;
+        ConnectionStatusText = state switch
+        {
+            ConnectionHealth.Degraded => Localization.Resources.StatusBar_Connection_Reconnecting,
+            ConnectionHealth.Lost => Localization.Resources.StatusBar_Connection_Lost,
+            _ => string.Empty,
+        };
+    }
+
+    private async Task HandleConnectionEscalationAsync()
+    {
+        if (await _windowService.ShowConnectionLostEscalationDialogAsync())
+            Exit();
+    }
+
+    // A read-heavy operation (backup, export, print) that fails on a dropped remote connection drives the
+    // shared status-bar indicator; the monitor then retries in the background. Returns true when the failure
+    // was a connection loss so the caller can skip its generic error dialog.
+    private bool ReportIfConnectionLoss(Exception ex) =>
+        _connectionMonitor.ReportIfConnectionLoss(_connectionClassifier, ex);
 
     [ObservableProperty]
     private double _filterPanelWidth = 200.0;
@@ -140,7 +191,15 @@ public partial class MainWindowViewModel : ObservableObject
         IBackupService backupService,
         ICsvExportService csvExportService,
         ISettingsService settingsService,
-        IPrintService printService)
+        IPrintService printService,
+        IApplicationRestartService restartService,
+        IConnectionHealthMonitor connectionMonitor,
+        IConnectionFailureClassifier connectionClassifier,
+        ICsvArchiveRestoreService csvRestore,
+        IBootstrapConfigService bootstrapConfig,
+        AppSettings appSettings,
+        IMigrationTargetBuilder targetBuilder,
+        ISecretStore secretStore)
     {
         FilterPanel = filterPanel;
         BookList = bookList;
@@ -153,6 +212,17 @@ public partial class MainWindowViewModel : ObservableObject
         _csvExportService = csvExportService;
         _settingsService = settingsService;
         _printService = printService;
+        _restartService = restartService;
+        _connectionMonitor = connectionMonitor;
+        _connectionClassifier = connectionClassifier;
+        _csvRestore = csvRestore;
+        _bootstrapConfig = bootstrapConfig;
+        _appSettings = appSettings;
+        _targetBuilder = targetBuilder;
+        _secretStore = secretStore;
+        _connectionMonitor.StateChanged += (_, _) => Dispatcher.UIThread.Post(UpdateConnectionStatus);
+        _connectionMonitor.Reconnected += (_, _) => Dispatcher.UIThread.Post(() => _ = BookList.LoadBooksAsync());
+        _connectionMonitor.Escalated += (_, _) => Dispatcher.UIThread.Post(() => _ = HandleConnectionEscalationAsync());
 
         messenger.Register<BookCountChangedMessage>(this, (r, m) =>
         {
@@ -366,9 +436,9 @@ public partial class MainWindowViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void OpenStatistics()
+    private async Task OpenStatistics()
     {
-        _windowService.OpenStatisticsWindow();
+        await _windowService.OpenStatisticsWindowAsync();
     }
 
     [RelayCommand]
@@ -401,26 +471,37 @@ public partial class MainWindowViewModel : ObservableObject
         _windowService.OpenHelpWindow(HelpTab.DataSources);
 
     [RelayCommand]
-    private async Task BackupSqliteAsync()
+    private async Task BackupAsync()
     {
-        await BackupCoreAsync(
-            Localization.Resources.Backup_Header_Sqlite,
-            "Backup (SQLite)",
-            _backupService.GetCandidateSqlitePath,
-            (folder, progress, fileName) => _backupService.BackupSqliteAsync(folder, progress: progress, explicitFileName: fileName));
-    }
+        // One entry point mirroring the single Restore item: pick the format (defaulting to the configured
+        // auto-backup format), then branch with the same capability fallback the auto-backup uses — a remote
+        // backend has no file backup, so the SQLite choice resolves to the CSV archive.
+        var configFormat = await _settingsService.GetAsync("AutoBackup.Format") ?? BackupFormatDialogViewModel.SqliteFormat;
+        var defaultFolder = await _settingsService.GetAsync("LastBackupFolder") ?? string.Empty;
+        var chosen = await _windowService.ShowBackupFormatDialogAsync(_backupService.SupportsFileBackup, configFormat, defaultFolder);
+        if (chosen is null)
+            return;
+        var (format, folder) = chosen.Value;
+        await _settingsService.SetAsync("LastBackupFolder", folder);
 
-    [RelayCommand]
-    private async Task BackupCsvArchiveAsync()
-    {
-        await BackupCoreAsync(
-            Localization.Resources.Backup_Header_CsvArchive,
-            "Backup (CSV Archive)",
-            _backupService.GetCandidateCsvArchivePath,
-            (folder, progress, fileName) => _backupService.BackupCsvArchiveAsync(folder, progress: progress, explicitFileName: fileName));
+        if (format == BackupFormatDialogViewModel.CsvFormat || !_backupService.SupportsFileBackup)
+            await BackupCoreAsync(
+                folder,
+                Localization.Resources.Backup_Header_CsvArchive,
+                "Backup (CSV Archive)",
+                _backupService.GetCandidateCsvArchivePath,
+                (f, progress, fileName) => _backupService.BackupCsvArchiveAsync(f, progress: progress, explicitFileName: fileName));
+        else
+            await BackupCoreAsync(
+                folder,
+                Localization.Resources.Backup_Header_Sqlite,
+                "Backup (SQLite)",
+                _backupService.GetCandidateSqlitePath,
+                (f, progress, fileName) => _backupService.BackupSqliteAsync(f, progress: progress, explicitFileName: fileName));
     }
 
     private async Task BackupCoreAsync(
+        string folder,
         string progressLabel,
         string logContext,
         Func<string, string> getCandidatePath,
@@ -428,13 +509,6 @@ public partial class MainWindowViewModel : ObservableObject
     {
         try
         {
-            var folder = await _settingsService.GetAsync("LastBackupFolder");
-            if (string.IsNullOrEmpty(folder))
-                folder = await _filePickerService.PickFolderAsync(Localization.Resources.FilePicker_ChooseBackupDestination);
-            if (string.IsNullOrEmpty(folder))
-                return;
-            await _settingsService.SetAsync("LastBackupFolder", folder);
-
             var candidatePath = getCandidatePath(folder);
             string? explicitFileName = null;
             if (File.Exists(candidatePath))
@@ -447,7 +521,10 @@ public partial class MainWindowViewModel : ObservableObject
 
             var (progressWindow, progress) = AppDialogs.ShowProgressWindow(progressLabel);
             string writtenPath;
-            try { writtenPath = await performBackup(folder, progress, explicitFileName); }
+            // Run off the UI thread so the progress window can paint: the SQLite backup does its WAL-flush /
+            // file-copy / zip synchronously, which would otherwise block the UI thread and leave the just-shown
+            // window unpainted (transparent) until it closes. Progress reports marshal back via Progress<T>.
+            try { writtenPath = await Task.Run(() => performBackup(folder, progress, explicitFileName)); }
             finally { progressWindow.Close(); }
 
             AppDialogs.ShowInfoDialog(string.Format(Localization.Resources.Backup_Saved, Path.GetFileName(writtenPath)));
@@ -455,7 +532,9 @@ public partial class MainWindowViewModel : ObservableObject
         catch (Exception ex)
         {
             Log.Error(ex, "{Context} failed", logContext);
-            AppDialogs.ShowInfoDialog(string.Format(Localization.Resources.Backup_Failed, ex.Message));
+            // A connection loss is surfaced on the status indicator; otherwise show the backup-failed dialog.
+            if (!ReportIfConnectionLoss(ex))
+                AppDialogs.ShowInfoDialog(string.Format(Localization.Resources.Backup_Failed, ex.Message));
         }
     }
 
@@ -468,7 +547,14 @@ public partial class MainWindowViewModel : ObservableObject
             if (string.IsNullOrEmpty(backupZipPath))
                 return;
 
-            // Safety backup is mandatory — cannot be skipped
+            var kind = RestoreArchiveInspector.Detect(backupZipPath);
+            if (kind == RestoreArchiveKind.Unknown)
+            {
+                AppDialogs.ShowInfoDialog(Localization.Resources.Restore_UnknownFormat);
+                return;
+            }
+
+            // Safety backup is mandatory — cannot be skipped.
             var safetyConfirmed = await AppDialogs.ShowConfirmDialogAsync(
                 Localization.Resources.Restore_Confirm_Title,
                 Localization.Resources.Restore_Confirm_Body);
@@ -479,26 +565,165 @@ public partial class MainWindowViewModel : ObservableObject
             if (string.IsNullOrEmpty(safetyFolder))
                 return;
 
-            var safetyPath = Path.Combine(safetyFolder, "safety-backup.zip");
-
-            var restoreConfirmed = await AppDialogs.ShowConfirmDialogAsync(
-                Localization.Resources.Restore_Replace_Title,
-                Localization.Resources.Restore_Replace_Body);
-            if (restoreConfirmed != true)
-                return;
-
-            var (progressWindow, progress) = AppDialogs.ShowProgressWindow(Localization.Resources.Restore_Header);
-            try { await _backupService.RestoreAsync(backupZipPath, safetyPath, progress: progress); }
-            finally { progressWindow.Close(); }
-
-            await AppDialogs.ShowConfirmDialogAsync(Localization.Resources.Restore_Complete_Title, Localization.Resources.Restore_Complete_Body);
-            Environment.Exit(0);
+            if (kind == RestoreArchiveKind.SqliteFile)
+                await RestoreSqliteFileAsync(backupZipPath, safetyFolder);
+            else
+                await RestoreCsvArchiveAsync(backupZipPath, safetyFolder);
         }
         catch (Exception ex)
         {
             Log.Error(ex, "Restore failed");
             AppDialogs.ShowInfoDialog(string.Format(Localization.Resources.Restore_Failed, ex.Message));
         }
+    }
+
+    // A SQLite file backup replaces the local database file; it cannot be applied to a remote backend.
+    private async Task RestoreSqliteFileAsync(string backupZipPath, string safetyFolder)
+    {
+        if (_appSettings.Backend != DatabaseBackend.Sqlite)
+        {
+            AppDialogs.ShowInfoDialog(Localization.Resources.Restore_SqliteIntoRemote);
+            return;
+        }
+
+        var restoreConfirmed = await AppDialogs.ShowConfirmDialogAsync(
+            Localization.Resources.Restore_Replace_Title,
+            Localization.Resources.Restore_Replace_Body);
+        if (restoreConfirmed != true)
+            return;
+
+        var safetyPath = Path.Combine(safetyFolder, "safety-backup.zip");
+        var (progressWindow, progress) = AppDialogs.ShowProgressWindow(Localization.Resources.Restore_Header);
+        try { await _backupService.RestoreAsync(backupZipPath, safetyPath, progress: progress); }
+        finally { progressWindow.Close(); }
+
+        await AppDialogs.ShowConfirmDialogAsync(Localization.Resources.Restore_Complete_Title, Localization.Resources.Restore_Complete_Body);
+        _restartService.Restart();
+    }
+
+    // A CSV archive is imported into the active backend, or — when the backup names a different PostgreSQL server —
+    // directly into that server, so the restored data lands where the backup's connection points.
+    private async Task RestoreCsvArchiveAsync(string backupZipPath, string safetyFolder)
+    {
+        var archivedConfig = RestoreArchiveInspector.ReadConfig(backupZipPath);
+
+        IMigrationTarget? directTarget = null;
+        if (TryDescribeArchivedPostgres(archivedConfig, out var serverDescription, out var options))
+        {
+            var choice = await AppDialogs.ShowRestoreTargetDialogAsync(serverDescription);
+            if (choice == AppDialogs.RestoreTargetChoice.Cancel)
+                return;
+            if (choice == AppDialogs.RestoreTargetChoice.Archived)
+            {
+                var password = _secretStore.Get(options!.AccountKey);
+                if (string.IsNullOrEmpty(password))
+                {
+                    AppDialogs.ShowInfoDialog(Localization.Resources.Restore_NoCredentialsForTarget);
+                    return;
+                }
+                directTarget = await _targetBuilder.BuildAsync(
+                    DatabaseBackend.PostgreSql, PostgresConnectionStringFactory.Build(options, password));
+            }
+        }
+
+        try
+        {
+            // A restore replaces the current library (the archive's preserved keys can't merge onto existing
+            // rows); combining libraries is the Import feature's job.
+            var confirmReplace = await AppDialogs.ShowConfirmDialogAsync(
+                Localization.Resources.Restore_Replace_Title, Localization.Resources.Restore_Replace_Body);
+            if (confirmReplace != true)
+                return;
+
+            var (progressWindow, progress) = AppDialogs.ShowProgressWindow(Localization.Resources.Restore_Header);
+            RestoreResult result;
+            try
+            {
+                var migrationProgress = new Progress<MigrationProgress>(p => progress.Report(DescribeRestoreProgress(p)));
+                var target = directTarget is null ? null
+                    : new RestoreTargetServices(directTarget.Factory, directTarget.Resync, directTarget.Backup);
+                result = await _csvRestore.RestoreAsync(
+                    backupZipPath, safetyFolder, progress: migrationProgress, target: target);
+            }
+            finally { progressWindow.Close(); }
+
+            if (result.Data.Outcome != MigrationOutcome.Completed)
+            {
+                AppDialogs.ShowInfoDialog(string.Format(Localization.Resources.Restore_Failed, result.Data.ErrorMessage ?? string.Empty));
+                return;
+            }
+
+            var confirm = new RestoreConfirmationViewModel(archivedConfig ?? new BootstrapConfig(), _bootstrapConfig, _restartService);
+            if (directTarget is not null)
+            {
+                // The data was restored into the archived server — make it the active database and restart.
+                await AppDialogs.ShowConfirmDialogAsync(
+                    Localization.Resources.Restore_Complete_Title, Localization.Resources.Restore_Complete_Body);
+                confirm.ApplyCommand.Execute(null);
+                return;
+            }
+
+            // Active-backend restore: apply preference keys, and offer (never auto-apply) the archive's backend.
+            if (archivedConfig is not null && confirm.HasBackendChange)
+            {
+                var adopt = await AppDialogs.ShowConfirmDialogAsync(
+                    Localization.Resources.Restore_AdoptBackend_Title,
+                    string.Format(Localization.Resources.Restore_AdoptBackend_Body, confirm.ArchivedBackendName));
+                if (adopt == true)
+                    confirm.ApplyCommand.Execute(null);
+                else
+                    confirm.KeepCurrentCommand.Execute(null);
+            }
+            else
+            {
+                // No backend change: still restart to load the restored data, but tell the user first
+                // instead of restarting silently.
+                await AppDialogs.ShowConfirmDialogAsync(
+                    Localization.Resources.Restore_Complete_Title, Localization.Resources.Restore_Complete_Body);
+                confirm.KeepCurrentCommand.Execute(null);
+            }
+        }
+        finally
+        {
+            if (directTarget is not null)
+                await directTarget.DisposeAsync();
+        }
+    }
+
+    // The backup can be restored into the server it came from when its config names a PostgreSQL host that is not
+    // already the active database.
+    private bool TryDescribeArchivedPostgres(BootstrapConfig? config, out string description, out PostgresOptions? options)
+    {
+        description = string.Empty;
+        options = null;
+        if (config is null
+            || !Enum.TryParse(config.Backend, ignoreCase: true, out DatabaseBackend backend)
+            || backend != DatabaseBackend.PostgreSql
+            || string.IsNullOrWhiteSpace(config.Postgres.Host))
+            return false;
+
+        var current = _bootstrapConfig.Load();
+        var currentIsSameServer =
+            Enum.TryParse(current.Backend, ignoreCase: true, out DatabaseBackend currentBackend)
+            && currentBackend == DatabaseBackend.PostgreSql
+            && current.Postgres.AccountKey == config.Postgres.AccountKey;
+        if (currentIsSameServer)
+            return false;
+
+        options = config.Postgres;
+        description = $"{config.Postgres.Host}/{config.Postgres.Database}";
+        return true;
+    }
+
+    private static string DescribeRestoreProgress(MigrationProgress p)
+    {
+        // Show a running count while a table imports (and per-batch for images), and its final tally when it
+        // completes, so the window keeps moving instead of only flashing completed tables.
+        if (p.Phase == MigrationPhase.Copying && p.Table is { } table && Localization.MigrationText.TryDescribe(table, out var label))
+            return p.Total > 0 && p.Copied < p.Total
+                ? string.Format(Localization.Resources.MoveLibrary_Progress_TableRunning, label, p.Copied, p.Total)
+                : string.Format(Localization.Resources.MoveLibrary_Progress_Table, label, p.Total);
+        return Localization.MigrationText.Describe(p.Phase);
     }
 
     [RelayCommand]
@@ -534,6 +759,7 @@ public partial class MainWindowViewModel : ObservableObject
         catch (Exception ex)
         {
             Log.Error(ex, "Export CSV failed");
+            ReportIfConnectionLoss(ex);
         }
     }
 
@@ -558,7 +784,8 @@ public partial class MainWindowViewModel : ObservableObject
         catch (Exception ex)
         {
             Log.Error(ex, "Print list failed");
-            AppDialogs.ShowInfoDialog(string.Format(Localization.Resources.PrintList_Failed, ex.Message));
+            if (!ReportIfConnectionLoss(ex))
+                AppDialogs.ShowInfoDialog(string.Format(Localization.Resources.PrintList_Failed, ex.Message));
         }
     }
 

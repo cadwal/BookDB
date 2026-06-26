@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using BookDB.Data.DbContexts;
+using BookDB.Data.Interfaces;
 using BookDB.Models;
 using BookDB.Models.Interfaces;
 using CsvHelper;
@@ -27,25 +28,44 @@ public sealed class BackupService : IBackupService
     private readonly ISettingsService _settingsService;
     private readonly IResourceProvider _resources;
     private readonly IDataChangeTracker _changeTracker;
+    private readonly IBackupStrategy _backupStrategy;
 
     public BackupService(
         IDbContextFactory<BookDbContext> factory,
         AppSettings appSettings,
         ISettingsService settingsService,
         IResourceProvider resources,
-        IDataChangeTracker changeTracker)
+        IDataChangeTracker changeTracker,
+        IBackupStrategy backupStrategy)
     {
         _factory = factory;
         _appSettings = appSettings;
         _settingsService = settingsService;
         _resources = resources;
         _changeTracker = changeTracker;
+        _backupStrategy = backupStrategy;
     }
+
+    public bool SupportsFileBackup => _backupStrategy.SupportsFileBackup;
 
     // Localised status text for user-facing progress windows. Log messages stay in English.
     private string L(string key) => _resources.GetString(key) ?? key;
     private string L(string key, params object[] args)
         => string.Format(_resources.GetString(key) ?? key, args);
+
+    // File-based backup/restore requires a local SQLite database file. A non-SQLite backend uses the
+    // CSV-archive path instead, so this never resolves to null for the operations that call it.
+    private string SqliteLibraryPath =>
+        _appSettings.SqliteLibraryPath
+        ?? throw new InvalidOperationException(
+            "A local SQLite database path is required for file-based backup or restore.");
+
+    // config.json is bundled into every backup so a restore can carry the backend and preferences;
+    // guarded in case a backup runs before the file has been written.
+    private string? ExistingConfigPath =>
+        !string.IsNullOrEmpty(_appSettings.ConfigPath) && File.Exists(_appSettings.ConfigPath)
+            ? _appSettings.ConfigPath
+            : null;
 
     public string GetCandidateSqlitePath(string destFolder)
     {
@@ -62,39 +82,31 @@ public sealed class BackupService : IBackupService
     public async Task<string> BackupSqliteAsync(string destFolder, CancellationToken ct = default, string? explicitFileName = null, IProgress<string>? progress = null)
     {
         destFolder = Path.GetFullPath(destFolder);
+        // Resolve the file name here (provider-neutral naming/collision logic) and let the SQLite strategy do
+        // the engine-specific work — the WAL flush, the file copy, and the zip. The strategy reports resource
+        // keys; localize them before they reach the user-facing progress window.
+        var fileName = explicitFileName ?? Path.GetFileName(ResolvePath(GetCandidateSqlitePath(destFolder)));
+        var localized = progress is null ? null : new LocalizingProgress(progress, L);
 
-        progress?.Report(L("Backup_Status_FlushingLog"));
-        await using var dbContext = await _factory.CreateDbContextAsync(ct);
-        await dbContext.Database.ExecuteSqlRawAsync("PRAGMA wal_checkpoint(FULL)", ct);
-
-        var zipPath = explicitFileName != null
-            ? Path.Combine(destFolder, explicitFileName)
-            : ResolvePath(GetCandidateSqlitePath(destFolder));
-
-        progress?.Report(L("Backup_Status_CopyingDatabase"));
-        var tempCopy = Path.Combine(Path.GetTempPath(), $"bookdb_sqlitecopy_{Guid.NewGuid():N}.db");
-        try
-        {
-            await using (var src = new FileStream(
-                _appSettings.ActiveLibraryPath,
-                FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-            await using (var dst = new FileStream(tempCopy, FileMode.Create, FileAccess.Write, FileShare.None))
-            {
-                await src.CopyToAsync(dst, ct);
-            }
-
-            progress?.Report(L("Backup_Status_CreatingArchive"));
-            using var archive = ZipFile.Open(zipPath, ZipArchiveMode.Create);
-            archive.CreateEntryFromFile(tempCopy, "library.db");
-        }
-        finally
-        {
-            try { File.Delete(tempCopy); } catch { /* best effort */ }
-        }
-
-        Log.Information("BackupService: SQLite backup written to {ZipPath}", zipPath);
+        var zipPath = await _backupStrategy.BackupAsync(destFolder, ct, fileName, localized);
         await RecordBackupCompletedAsync(ct);
         return zipPath;
+    }
+
+    // Forwards a resource key from the strategy to the user's progress as a localized string, inline so the
+    // reporting order and timing match a direct report.
+    private sealed class LocalizingProgress : IProgress<string>
+    {
+        private readonly IProgress<string> _inner;
+        private readonly Func<string, string> _localize;
+
+        public LocalizingProgress(IProgress<string> inner, Func<string, string> localize)
+        {
+            _inner = inner;
+            _localize = localize;
+        }
+
+        public void Report(string key) => _inner.Report(_localize(key));
     }
 
     public async Task<string> BackupCsvArchiveAsync(string destFolder, CancellationToken ct = default, string? explicitFileName = null, IProgress<string>? progress = null)
@@ -228,6 +240,9 @@ public sealed class BackupService : IBackupService
                     progress?.Report(L("Backup_Status_ExportingCoverImagesCount", imageIndex, images.Count));
             }
 
+            if (ExistingConfigPath is { } configPath)
+                File.Copy(configPath, Path.Combine(tempDir, "config.json"));
+
             progress?.Report(L("Backup_Status_CreatingArchive"));
             ZipFile.CreateFromDirectory(tempDir, zipPath);
 
@@ -271,7 +286,7 @@ public sealed class BackupService : IBackupService
                 throw new InvalidOperationException("The backup zip does not contain library.db.");
 
             progress?.Report(L("Restore_Status_ReplacingLibrary"));
-            var activeLibraryPath = Path.GetFullPath(_appSettings.ActiveLibraryPath);
+            var activeLibraryPath = Path.GetFullPath(SqliteLibraryPath);
             File.Copy(extractedDb, activeLibraryPath, overwrite: true);
 
             Log.Information("BackupService: Restore complete — active library replaced from {BackupZipPath}", backupZipPath);
@@ -329,7 +344,9 @@ public sealed class BackupService : IBackupService
 
         try
         {
-            if (format == "CsvArchive")
+            // The SQLite file format is only available when the active backend supports a file backup;
+            // a remote backend always falls back to the engine-neutral CSV archive.
+            if (format == "CsvArchive" || !_backupStrategy.SupportsFileBackup)
                 await BackupCsvArchiveAsync(folder, ct, progress: progress);
             else
                 await BackupSqliteAsync(folder, ct, progress: progress);

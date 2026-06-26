@@ -21,11 +21,19 @@ public class MainWindowViewModelTests
         var settingsService = (ISettingsService)factory.LookupService;
         var filterPanel = new FilterPanelViewModel(messenger, factory.BookService, factory.BookSearchService, settingsService, windowService);
         var loanService = NSubstitute.Substitute.For<ILoanService>();
-        var bookList = new BookListViewModel(messenger, factory.BookService, factory.BookSearchService, factory.BookImageService, windowService, settingsService, factory.LookupService, new TestLookupServiceFactory.NullClipboardService(), loanService);
-        var bookDetail = new BookDetailViewModel(messenger, factory.BookService, factory.BookImageService, factory.LookupService, windowService, filePickerService, NSubstitute.Substitute.For<System.Net.Http.IHttpClientFactory>(), loanService);
+        var bookList = new BookListViewModel(messenger, factory.BookService, factory.BookSearchService, factory.BookImageService, windowService, settingsService, factory.LookupService, new TestLookupServiceFactory.NullClipboardService(), loanService, NSubstitute.Substitute.For<BookDB.Logic.Services.IConnectionHealthMonitor>(), NSubstitute.Substitute.For<BookDB.Data.Interfaces.IConnectionFailureClassifier>());
+        var bookDetail = new BookDetailViewModel(messenger, factory.BookService, factory.BookImageService, factory.LookupService, windowService, filePickerService, new Helpers.PassThroughWriteGuard(), NSubstitute.Substitute.For<System.Net.Http.IHttpClientFactory>(), loanService, NSubstitute.Substitute.For<BookDB.Logic.Services.IConnectionHealthMonitor>(), NSubstitute.Substitute.For<BookDB.Data.Interfaces.IConnectionFailureClassifier>());
         var collectionSelector = new CollectionSelectorViewModel(messenger);
         var vm = new MainWindowViewModel(filterPanel, bookList, bookDetail, collectionSelector, factory.LookupService, windowService, messenger,
-            filePickerService, new TestLookupServiceFactory.NullBackupService(), new TestLookupServiceFactory.NullCsvExportService(), settingsService, new TestLookupServiceFactory.NullPrintService());
+            filePickerService, new TestLookupServiceFactory.NullBackupService(), new TestLookupServiceFactory.NullCsvExportService(), settingsService, new TestLookupServiceFactory.NullPrintService(),
+            NSubstitute.Substitute.For<BookDB.Desktop.Services.IApplicationRestartService>(),
+            NSubstitute.Substitute.For<BookDB.Logic.Services.IConnectionHealthMonitor>(),
+            NSubstitute.Substitute.For<BookDB.Data.Interfaces.IConnectionFailureClassifier>(),
+            NSubstitute.Substitute.For<BookDB.Logic.Services.ICsvArchiveRestoreService>(),
+            NSubstitute.Substitute.For<BookDB.Desktop.Services.IBootstrapConfigService>(),
+            new BookDB.Models.AppSettings(),
+            NSubstitute.Substitute.For<BookDB.Desktop.Services.IMigrationTargetBuilder>(),
+            NSubstitute.Substitute.For<BookDB.Data.Interfaces.ISecretStore>());
         return (vm, factory);
     }
 

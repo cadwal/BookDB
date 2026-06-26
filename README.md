@@ -37,11 +37,10 @@ With this application you can maintain a book database. It supports:
 - Statistics and searching
 - **Import from a Readerware Books backup** — preserving all data from the final version
 
-The application uses a **SQLite3 database**, so tooling exists in almost any programming language on almost any platform to let you use the data in any form you like.
+The application uses a **SQLite3 database** by default, so tooling exists in almost any programming language on almost any platform to let you use the data in any form you like. Optionally, it can keep the library on a **PostgreSQL server** instead, so the same catalog is reachable from more than one machine — SQLite stays the default and needs no setup, and you can move the library between the two in either direction. A PostgreSQL backend requires **PostgreSQL 12 or later**.
 
 ## What it does not do
 
-- Remote database / remote server
 - Mobile apps
 
 Compared to Readerware, the metadata sources supported are limited.

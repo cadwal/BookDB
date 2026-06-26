@@ -2054,6 +2054,36 @@ Mogelijke duplicaten: {3}  |  Met omslag: {4}</value>
   <data name="About_AppName" xml:space="preserve">
     <value>BookDB</value>
   </data>
+  <data name="Menu_Backup" xml:space="preserve">
+    <value>Back-up...</value>
+  </data>
+  <data name="BackupDialog_Title" xml:space="preserve">
+    <value>Back-up</value>
+  </data>
+  <data name="BackupDialog_Format_Sqlite" xml:space="preserve">
+    <value>Databasebestand (SQLite)</value>
+  </data>
+  <data name="BackupDialog_Format_Csv" xml:space="preserve">
+    <value>CSV-archief (overdraagbaar)</value>
+  </data>
+  <data name="BackupDialog_RemoteFallbackNote" xml:space="preserve">
+    <value>Een externe database heeft geen bestandsback-up; in plaats daarvan wordt het CSV-archief gebruikt.</value>
+  </data>
+  <data name="BackupDialog_Confirm" xml:space="preserve">
+    <value>Back-up maken</value>
+  </data>
+  <data name="Settings_Database_SavedPasswordHint" xml:space="preserve">
+    <value>Er is een wachtwoord opgeslagen voor deze server — laat leeg om het te behouden.</value>
+  </data>
+  <data name="Shutdown_CloseApplication" xml:space="preserve">
+    <value>Toepassing sluiten</value>
+  </data>
+  <data name="Shutdown_CloseAndPause" xml:space="preserve">
+    <value>Sluiten en pauzeren</value>
+  </data>
+  <data name="Shutdown_KeepRunning" xml:space="preserve">
+    <value>Blijven uitvoeren</value>
+  </data>
   <data name="Splash_Status_Initializing" xml:space="preserve">
     <value>Opstarten…</value>
   </data>
@@ -2151,7 +2181,7 @@ Mogelijke duplicaten: {3}  |  Met omslag: {4}</value>
     <value>Herstel voltooid</value>
   </data>
   <data name="Restore_Complete_Body" xml:space="preserve">
-    <value>De applicatie wordt nu afgesloten. Open het opnieuw om de herstelde bibliotheek te gebruiken.</value>
+    <value>BookDB wordt nu opnieuw gestart om de herstelde bibliotheek te laden.</value>
   </data>
   <data name="Restore_Failed" xml:space="preserve">
     <value>Herstel mislukt: {0}. Je oorspronkelijke bibliotheek is niet gewijzigd.</value>
@@ -2542,5 +2572,302 @@ Mogelijke duplicaten: {3}  |  Met omslag: {4}</value>
   </data>
   <data name="Maintenance_SafetyBackupSaved" xml:space="preserve">
     <value>Back-up opgeslagen in: {0}</value>
+  </data>
+  <data name="Settings_Tab_Database" xml:space="preserve">
+    <value>Database</value>
+  </data>
+  <data name="Settings_Database_BackendLabel" xml:space="preserve">
+    <value>Database-engine</value>
+  </data>
+  <data name="Settings_Database_Backend_Sqlite" xml:space="preserve">
+    <value>Lokaal bestand (SQLite)</value>
+  </data>
+  <data name="Settings_Database_Backend_Postgres" xml:space="preserve">
+    <value>PostgreSQL-server</value>
+  </data>
+  <data name="Settings_Database_ServerSectionHeader" xml:space="preserve">
+    <value>Serververbinding</value>
+  </data>
+  <data name="Settings_Database_Host" xml:space="preserve">
+    <value>Host</value>
+  </data>
+  <data name="Settings_Database_Port" xml:space="preserve">
+    <value>Poort</value>
+  </data>
+  <data name="Settings_Database_DatabaseName" xml:space="preserve">
+    <value>Database</value>
+  </data>
+  <data name="Settings_Database_Username" xml:space="preserve">
+    <value>Gebruikersnaam</value>
+  </data>
+  <data name="Settings_Database_Password" xml:space="preserve">
+    <value>Wachtwoord</value>
+  </data>
+  <data name="Settings_Database_TlsLabel" xml:space="preserve">
+    <value>TLS/SSL-modus</value>
+  </data>
+  <data name="Settings_Database_Tls_Disable" xml:space="preserve">
+    <value>Uitschakelen</value>
+  </data>
+  <data name="Settings_Database_Tls_Prefer" xml:space="preserve">
+    <value>Voorkeur</value>
+  </data>
+  <data name="Settings_Database_Tls_Require" xml:space="preserve">
+    <value>Vereisen</value>
+  </data>
+  <data name="Settings_Database_Tls_VerifyFull" xml:space="preserve">
+    <value>Volledig verifiëren</value>
+  </data>
+  <data name="Settings_Database_TlsDisableWarning" xml:space="preserve">
+    <value>Als u TLS uitschakelt, worden het wachtwoord en de gegevens onversleuteld over het netwerk verzonden. Gebruik dit alleen op een vertrouwd lokaal netwerk.</value>
+  </data>
+  <data name="Settings_Database_KeyringUnavailable" xml:space="preserve">
+    <value>PostgreSQL heeft een referentieopslag van het besturingssysteem nodig om het wachtwoord veilig te bewaren, maar die is niet beschikbaar op deze computer. BookDB blijft de lokale SQLite-database gebruiken.</value>
+  </data>
+  <data name="Settings_Database_RestartNote" xml:space="preserve">
+    <value>Het wijzigen van de database wordt van kracht nadat BookDB opnieuw is gestart.</value>
+  </data>
+  <data name="Settings_Database_Apply_PasswordRequired" xml:space="preserve">
+    <value>Voer het databasewachtwoord in voordat u toepast.</value>
+  </data>
+  <data name="Startup_Failure_Title" xml:space="preserve">
+    <value>Kan geen verbinding met de database maken</value>
+  </data>
+  <data name="Startup_Failure_Intro" xml:space="preserve">
+    <value>BookDB kon de PostgreSQL-server niet bereiken.</value>
+  </data>
+  <data name="Startup_Failure_Retry" xml:space="preserve">
+    <value>Opnieuw proberen</value>
+  </data>
+  <data name="Startup_Failure_OpenSettings" xml:space="preserve">
+    <value>Instellingen openen</value>
+  </data>
+  <data name="Startup_Failure_Quit" xml:space="preserve">
+    <value>Afsluiten</value>
+  </data>
+  <data name="Startup_Failure_RetriesExhausted" xml:space="preserve">
+    <value>Opnieuw proberen heeft niet geholpen. Controleer of de server draait en bekijk je verbindingsinstellingen.</value>
+  </data>
+  <data name="ConnectDialog_Header" xml:space="preserve">
+    <value>Er is een andere client verbonden</value>
+  </data>
+  <data name="ConnectDialog_Body" xml:space="preserve">
+    <value>BookDB is al geopend op {0} (laatst gezien {1}, versie {2}).</value>
+  </data>
+  <data name="ConnectDialog_Risk" xml:space="preserve">
+    <value>Een tweede client openen kan leiden tot gegevensconflicten. Er zou maar één client tegelijk toegang tot deze database mogen hebben.</value>
+  </data>
+  <data name="ConnectDialog_Quit" xml:space="preserve">
+    <value>Afsluiten</value>
+  </data>
+  <data name="ConnectDialog_ConnectAnyway" xml:space="preserve">
+    <value>Toch verbinden — ik accepteer het risico</value>
+  </data>
+  <data name="ConnectDialog_ConnectAnyway_Waiting" xml:space="preserve">
+    <value>Toch verbinden ({0})</value>
+  </data>
+  <data name="ConnectDialog_Age_Seconds" xml:space="preserve">
+    <value>{0} seconden geleden</value>
+  </data>
+  <data name="ConnectDialog_Age_Minutes" xml:space="preserve">
+    <value>{0} minuten geleden</value>
+  </data>
+  <data name="ConnectDialog_Age_Hours" xml:space="preserve">
+    <value>{0} uur geleden</value>
+  </data>
+  <data name="ConnectDialog_Age_Days" xml:space="preserve">
+    <value>{0} dagen geleden</value>
+  </data>
+  <data name="Settings_RestartConfirm_Title" xml:space="preserve">
+    <value>Herstart vereist</value>
+  </data>
+  <data name="Settings_RestartConfirm_Body" xml:space="preserve">
+    <value>Sommige wijzigingen worden pas na een herstart toegepast. BookDB nu opnieuw starten?</value>
+  </data>
+  <data name="Settings_Database_RestartConfirm_Body" xml:space="preserve">
+    <value>Overschakelen naar {0} vereist een herstart van BookDB. De toepassing wordt nu afgesloten en opnieuw geopend. Doorgaan?</value>
+  </data>
+  <data name="Settings_Database_TestConnection" xml:space="preserve">
+    <value>Verbinding testen</value>
+  </data>
+  <data name="Settings_Database_Testing" xml:space="preserve">
+    <value>Bezig met testen…</value>
+  </data>
+  <data name="Settings_Database_TestSuccess" xml:space="preserve">
+    <value>Verbonden — PostgreSQL {0}, {1} boeken.</value>
+  </data>
+  <data name="Settings_Database_TestSuccessUninitialized" xml:space="preserve">
+    <value>Verbonden — PostgreSQL {0}. Nog geen BookDB-gegevens gevonden in deze database.</value>
+  </data>
+  <data name="Settings_Database_TestError_Auth" xml:space="preserve">
+    <value>Verificatie mislukt — controleer de gebruikersnaam en het wachtwoord.</value>
+  </data>
+  <data name="Settings_Database_TestError_Refused" xml:space="preserve">
+    <value>Verbinding geweigerd — controleer de host en poort, en of de server actief is.</value>
+  </data>
+  <data name="Settings_Database_TestError_Timeout" xml:space="preserve">
+    <value>Time-out van verbinding — controleer de host en poort, en uw netwerk.</value>
+  </data>
+  <data name="Settings_Database_TestError_Tls" xml:space="preserve">
+    <value>TLS/SSL-fout — controleer de TLS-modus en het certificaat van de server.</value>
+  </data>
+  <data name="Settings_Database_TestError_Unknown" xml:space="preserve">
+    <value>Kan geen verbinding maken: {0}</value>
+  </data>
+  <data name="Settings_Database_TestError_UnsupportedVersion" xml:space="preserve">
+    <value>BookDB vereist PostgreSQL {0} of nieuwer — deze server is {1}.</value>
+  </data>
+  <data name="WriteFailure_Title" xml:space="preserve">
+    <value>Kan wijzigingen niet opslaan</value>
+  </data>
+  <data name="WriteFailure_Retry_Button" xml:space="preserve">
+    <value>Opnieuw proberen</value>
+  </data>
+  <data name="WriteFailure_Discard_Button" xml:space="preserve">
+    <value>Wijzigingen verwerpen</value>
+  </data>
+  <data name="ConnectionLost_Title" xml:space="preserve">
+    <value>Databaseverbinding verbroken</value>
+  </data>
+  <data name="ConnectionLost_Body" xml:space="preserve">
+    <value>De database is al enkele minuten onbereikbaar. U kunt blijven wachten terwijl opnieuw verbinding wordt geprobeerd, of de toepassing afsluiten.</value>
+  </data>
+  <data name="ConnectionLost_Quit_Button" xml:space="preserve">
+    <value>Afsluiten</value>
+  </data>
+  <data name="ConnectionLost_KeepWaiting_Button" xml:space="preserve">
+    <value>Blijven wachten</value>
+  </data>
+  <data name="StatusBar_Connection_Reconnecting" xml:space="preserve">
+    <value>Opnieuw verbinden met de database…</value>
+  </data>
+  <data name="StatusBar_Connection_Lost" xml:space="preserve">
+    <value>Databaseverbinding verbroken</value>
+  </data>
+  <data name="MoveLibrary_Header" xml:space="preserve">
+    <value>Bibliotheek verplaatsen</value>
+  </data>
+  <data name="MoveLibrary_Intro" xml:space="preserve">
+    <value>Kopieert de volledige bibliotheek naar de andere database-backend. De huidige database is de bron; kies en controleer het doel voordat u verplaatst. Vóór het schrijven wordt automatisch een veiligheidsback-up gemaakt.</value>
+  </data>
+  <data name="MoveLibrary_SourceLabel" xml:space="preserve">
+    <value>Huidige database (bron):</value>
+  </data>
+  <data name="MoveLibrary_Source_Sqlite" xml:space="preserve">
+    <value>Lokale SQLite — {0}</value>
+  </data>
+  <data name="MoveLibrary_Source_Postgres" xml:space="preserve">
+    <value>PostgreSQL — {0}</value>
+  </data>
+  <data name="MoveLibrary_TargetLabel" xml:space="preserve">
+    <value>Verplaatsen naar:</value>
+  </data>
+  <data name="MoveLibrary_Target_Postgres" xml:space="preserve">
+    <value>PostgreSQL-server</value>
+  </data>
+  <data name="MoveLibrary_Target_Sqlite" xml:space="preserve">
+    <value>Lokaal SQLite-bestand</value>
+  </data>
+  <data name="MoveLibrary_Check" xml:space="preserve">
+    <value>Doel controleren</value>
+  </data>
+  <data name="MoveLibrary_Target_Empty" xml:space="preserve">
+    <value>Doel is leeg — klaar om de bibliotheek te ontvangen.</value>
+  </data>
+  <data name="MoveLibrary_Target_HasData" xml:space="preserve">
+    <value>⚠ Doel bevat al {0} boeken — Verplaatsen VERVANGT alle gegevens.</value>
+  </data>
+  <data name="MoveLibrary_Acknowledge" xml:space="preserve">
+    <value>Ik begrijp het — vervang alle gegevens in de doeldatabase</value>
+  </data>
+  <data name="MoveLibrary_SwitchActive" xml:space="preserve">
+    <value>Schakel de actieve database na afloop over naar het doel</value>
+  </data>
+  <data name="MoveLibrary_Move" xml:space="preserve">
+    <value>Bibliotheek verplaatsen</value>
+  </data>
+  <data name="MoveLibrary_ProgressHeader" xml:space="preserve">
+    <value>Voortgang</value>
+  </data>
+  <data name="MoveLibrary_Progress_Table" xml:space="preserve">
+    <value>{0}: {1}</value>
+  </data>
+  <data name="MoveLibrary_Progress_TableRunning" xml:space="preserve">
+    <value>{0}: {1} / {2}</value>
+  </data>
+  <data name="MoveLibrary_SafetyBackupSaved" xml:space="preserve">
+    <value>Veiligheidsback-up opgeslagen: {0}</value>
+  </data>
+  <data name="MoveLibrary_TargetBackupSaved" xml:space="preserve">
+    <value>Veiligheidsback-up van doel opgeslagen: {0}</value>
+  </data>
+  <data name="MoveLibrary_Complete" xml:space="preserve">
+    <value>Migratie voltooid — alle recordaantallen komen overeen.</value>
+  </data>
+  <data name="MoveLibrary_CountMismatch" xml:space="preserve">
+    <value>⚠ Migratie voltooid maar de recordaantallen komen niet overeen; overschakelen van de actieve database is geblokkeerd.</value>
+  </data>
+  <data name="MoveLibrary_Failed" xml:space="preserve">
+    <value>Migratie mislukt bij {0}. Het doel bevat gedeeltelijke gegevens en mag niet worden gebruikt. Uw gegevens zijn veilig in de back-up: {1}</value>
+  </data>
+  <data name="MoveLibrary_Phase_Preparing" xml:space="preserve">
+    <value>Doel voorbereiden…</value>
+  </data>
+  <data name="MoveLibrary_Phase_Copying" xml:space="preserve">
+    <value>Gegevens kopiëren…</value>
+  </data>
+  <data name="MoveLibrary_Phase_Finalizing" xml:space="preserve">
+    <value>Afronden…</value>
+  </data>
+  <data name="MoveLibrary_Phase_Verifying" xml:space="preserve">
+    <value>Recordaantallen verifiëren…</value>
+  </data>
+  <data name="MoveLibrary_Table_Books" xml:space="preserve">
+    <value>Boeken</value>
+  </data>
+  <data name="MoveLibrary_Table_CoverImages" xml:space="preserve">
+    <value>Omslagafbeeldingen</value>
+  </data>
+  <data name="MoveLibrary_Table_Loans" xml:space="preserve">
+    <value>Uitleningen</value>
+  </data>
+  <data name="MoveLibrary_Table_Borrowers" xml:space="preserve">
+    <value>Leners</value>
+  </data>
+  <data name="MoveLibrary_Table_People" xml:space="preserve">
+    <value>Personen</value>
+  </data>
+  <data name="MoveLibrary_Table_Publishers" xml:space="preserve">
+    <value>Uitgevers</value>
+  </data>
+  <data name="Restore_UnknownFormat" xml:space="preserve">
+    <value>Het geselecteerde bestand is geen herkende BookDB-back-up (geen bibliotheekdatabase of CSV-archief erin).</value>
+  </data>
+  <data name="Restore_SqliteIntoRemote" xml:space="preserve">
+    <value>Dit is een lokale SQLite-bestandsback-up en kan niet worden teruggezet in de huidige externe database. Gebruik een CSV-archief of schakel eerst over naar de lokale database.</value>
+  </data>
+  <data name="Restore_AdoptBackend_Title" xml:space="preserve">
+    <value>Databaseverbinding van de back-up toepassen?</value>
+  </data>
+  <data name="Restore_AdoptBackend_Body" xml:space="preserve">
+    <value>Deze back-up is gemaakt op een {0}-database. De actieve database naar die verbinding overschakelen en opnieuw starten? Bij Nee blijft uw huidige database behouden.</value>
+  </data>
+  <data name="RestoreTarget_Title" xml:space="preserve">
+    <value>Waar herstellen</value>
+  </data>
+  <data name="RestoreTarget_Body" xml:space="preserve">
+    <value>Deze back-up is gemaakt op de PostgreSQL-server {0}. De gegevens herstellen naar die server of naar uw huidige database?</value>
+  </data>
+  <data name="RestoreTarget_Archived" xml:space="preserve">
+    <value>Herstellen naar de server van de back-up</value>
+  </data>
+  <data name="RestoreTarget_Current" xml:space="preserve">
+    <value>Herstellen naar de huidige database</value>
+  </data>
+  <data name="RestoreTarget_Cancel" xml:space="preserve">
+    <value>Annuleren</value>
+  </data>
+  <data name="Restore_NoCredentialsForTarget" xml:space="preserve">
+    <value>Geen opgeslagen referenties voor de databaseserver van de back-up. Configureer deze eerst in Instellingen → Database en probeer het opnieuw.</value>
   </data>
 </root>

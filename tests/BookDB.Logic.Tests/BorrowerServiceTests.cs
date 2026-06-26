@@ -29,7 +29,7 @@ public sealed class BorrowerServiceTests : IDisposable
 
         var upgrader = SqliteExtensions.SqliteDatabase(DeployChanges.To, connectionString)
             .WithScriptsEmbeddedInAssembly(
-                Assembly.GetAssembly(typeof(BookDbContext))!,
+                Assembly.GetAssembly(typeof(BookDB.Data.Sqlite.SqliteDbUpRunner))!,
                 name => name.Contains(".Migrations."))
             .LogToNowhere()
             .Build();
@@ -42,7 +42,7 @@ public sealed class BorrowerServiceTests : IDisposable
             .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
             .Options;
         _factory = new TestBookDbContextFactory(options);
-        _sut = new BorrowerService(_factory);
+        _sut = new BorrowerService(_factory, new BookDB.Data.Sqlite.SqliteConstraintViolationClassifier());
     }
 
     public void Dispose()
@@ -50,6 +50,31 @@ public sealed class BorrowerServiceTests : IDisposable
         GC.Collect();
         GC.WaitForPendingFinalizers();
         try { File.Delete(_dbPath); } catch { /* best effort */ }
+    }
+
+    [Fact]
+    public async Task SearchAsync_MatchesRegardlessOfCase()
+    {
+        await using var db = await _factory.CreateDbContextAsync(TestContext.Current.CancellationToken);
+        db.Borrowers.Add(new Borrower { FirstName = "Alice", LastName = "Andersson" });
+        await db.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var results = await _sut.SearchAsync("alice anders", TestContext.Current.CancellationToken);
+
+        Assert.Contains(results, b => b.LastName == "Andersson");
+    }
+
+    [Fact]
+    public async Task SearchAsync_TreatsWildcardsLiterally()
+    {
+        await using var db = await _factory.CreateDbContextAsync(TestContext.Current.CancellationToken);
+        db.Borrowers.Add(new Borrower { FirstName = "Real", LastName = "Person" });
+        await db.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // A bare "%" must be escaped to a literal, so it matches only names that actually contain '%'.
+        var results = await _sut.SearchAsync("%", TestContext.Current.CancellationToken);
+
+        Assert.DoesNotContain(results, b => b.LastName == "Person");
     }
 
     [Fact]

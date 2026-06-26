@@ -18,6 +18,7 @@ namespace BookDB.Logic.Tests.Services;
 public sealed class BackupServiceTests : IDisposable
 {
     private readonly string _dbPath;
+    private readonly string _configPath;
     private readonly TestBookDbContextFactory _factory;
     private readonly BackupService _sut;
     private readonly LookupService _settings;
@@ -31,7 +32,7 @@ public sealed class BackupServiceTests : IDisposable
 
         var upgrader = SqliteExtensions.SqliteDatabase(DeployChanges.To, connectionString)
             .WithScriptsEmbeddedInAssembly(
-                Assembly.GetAssembly(typeof(BookDbContext))!,
+                Assembly.GetAssembly(typeof(BookDB.Data.Sqlite.SqliteDbUpRunner))!,
                 name => name.Contains(".Migrations."))
             .LogToNowhere()
             .Build();
@@ -47,10 +48,13 @@ public sealed class BackupServiceTests : IDisposable
 
         _factory = new TestBookDbContextFactory(options);
 
-        var appSettings = new AppSettings { ActiveLibraryPath = _dbPath };
+        _configPath = Path.Combine(Path.GetTempPath(), $"bookdb_backup_config_{Guid.NewGuid():N}.json");
+        File.WriteAllText(_configPath, "{\"version\":1,\"backend\":\"Sqlite\",\"language\":\"sv\"}");
+        var appSettings = new AppSettings { SqliteLibraryPath = _dbPath, ConfigPath = _configPath };
         _settings = new LookupService(_factory, new NullResourceProvider());
         _changeTracker = new DataChangeTracker();
-        _sut = new BackupService(_factory, appSettings, _settings, new NullResourceProvider(), _changeTracker);
+        _sut = new BackupService(_factory, appSettings, _settings, new NullResourceProvider(), _changeTracker,
+            new BookDB.Data.Sqlite.SqliteBackupStrategy(_factory, appSettings));
 
         _tempWorkDir = Path.Combine(Path.GetTempPath(), $"bookdb_backup_workdir_{Guid.NewGuid():N}");
         Directory.CreateDirectory(_tempWorkDir);
@@ -61,6 +65,7 @@ public sealed class BackupServiceTests : IDisposable
         GC.Collect();
         GC.WaitForPendingFinalizers();
         try { File.Delete(_dbPath); } catch { /* best effort */ }
+        try { File.Delete(_configPath); } catch { /* best effort */ }
         try { Directory.Delete(_tempWorkDir, recursive: true); } catch { /* best effort */ }
     }
 
@@ -107,10 +112,12 @@ public sealed class BackupServiceTests : IDisposable
         var entryNames = archive.Entries.Select(e => e.Name).ToHashSet(StringComparer.OrdinalIgnoreCase);
 
         // Every DbSet on the context must have a matching per-table CSV, so a newly added
-        // table can never be silently absent from the backup archive.
+        // table can never be silently absent from the backup archive. ClientSession is the one
+        // deliberate exception — it is live process presence, not library data, and is never backed up.
         var expected = typeof(BookDbContext).GetProperties()
             .Where(p => p.PropertyType.IsGenericType
-                && p.PropertyType.GetGenericTypeDefinition() == typeof(DbSet<>))
+                && p.PropertyType.GetGenericTypeDefinition() == typeof(DbSet<>)
+                && p.Name != nameof(BookDbContext.ClientSessions))
             .Select(p => $"{p.Name}.csv")
             .ToList();
 
@@ -118,6 +125,38 @@ public sealed class BackupServiceTests : IDisposable
         var missing = expected.Where(name => !entryNames.Contains(name)).ToList();
         Assert.True(missing.Count == 0,
             $"CSV archive is missing per-table files: {string.Join(", ", missing)}");
+    }
+
+    [Fact]
+    public async Task BackupSqliteAsync_IncludesConfigJsonAtArchiveRootWithMatchingContent()
+    {
+        var ct = TestContext.Current.CancellationToken;
+
+        await _sut.BackupSqliteAsync(_tempWorkDir, ct);
+
+        var zip = Directory.GetFiles(_tempWorkDir, "*.zip").Single();
+        using var archive = ZipFile.OpenRead(zip);
+        var entry = archive.Entries.SingleOrDefault(e => e.FullName == "config.json");
+        Assert.NotNull(entry);
+
+        using var reader = new StreamReader(entry!.Open());
+        Assert.Equal(await File.ReadAllTextAsync(_configPath, ct), reader.ReadToEnd());
+    }
+
+    [Fact]
+    public async Task BackupCsvArchiveAsync_IncludesConfigJsonAtArchiveRootWithMatchingContent()
+    {
+        var ct = TestContext.Current.CancellationToken;
+
+        await _sut.BackupCsvArchiveAsync(_tempWorkDir, ct);
+
+        var zip = Directory.GetFiles(_tempWorkDir, "*.zip").Single();
+        using var archive = ZipFile.OpenRead(zip);
+        var entry = archive.Entries.SingleOrDefault(e => e.FullName == "config.json");
+        Assert.NotNull(entry);
+
+        using var reader = new StreamReader(entry!.Open());
+        Assert.Equal(await File.ReadAllTextAsync(_configPath, ct), reader.ReadToEnd());
     }
 
     [Fact]
@@ -245,5 +284,34 @@ public sealed class BackupServiceTests : IDisposable
         Assert.False(_changeTracker.HasChanges);
         var lastRun = await _settings.GetAsync("AutoBackup.LastRun", ct);
         Assert.False(string.IsNullOrWhiteSpace(lastRun));
+    }
+
+    [Fact]
+    public async Task AutoBackupIfEnabledAsync_FallsBackToCsvArchive_WhenBackendHasNoFileBackup()
+    {
+        var ct = TestContext.Current.CancellationToken;
+        // A remote backend reports SupportsFileBackup=false; auto-backup must use the CSV archive even though
+        // the saved format preference is the default SQLite.
+        var appSettings = new AppSettings { SqliteLibraryPath = _dbPath, ConfigPath = _configPath };
+        var remoteSut = new BackupService(
+            _factory, appSettings, _settings, new NullResourceProvider(), _changeTracker, new NoFileBackupStrategy());
+
+        await EnableAutoBackupAsync();
+        _changeTracker.MarkChanged();
+
+        await remoteSut.AutoBackupIfEnabledAsync(ct);
+
+        Assert.Single(Directory.GetFiles(_tempWorkDir, "bookdb-csv-*.zip"));
+    }
+
+    // A backend with no client-side file backup (e.g. remote PostgreSQL).
+    private sealed class NoFileBackupStrategy : BookDB.Data.Interfaces.IBackupStrategy
+    {
+        public bool SupportsFileBackup => false;
+
+        public Task<string> BackupAsync(
+            string destFolder, System.Threading.CancellationToken ct, string? explicitFileName = null,
+            IProgress<string>? progress = null) =>
+            throw new InvalidOperationException("File backup must not be called when SupportsFileBackup is false.");
     }
 }

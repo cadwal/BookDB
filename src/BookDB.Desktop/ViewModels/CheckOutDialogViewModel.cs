@@ -40,22 +40,22 @@ public partial class CheckOutDialogViewModel : ObservableObject
     private readonly IBorrowerService _borrowerService;
 
     private int _bookId;
+    private IReadOnlyList<Borrower> _allBorrowers = [];
 
     public Action<bool?>? CloseDialog { get; set; }
 
     // AsyncPopulator lets Avalonia manage the items collection — avoids the
     // ArgumentOutOfRangeException caused by calling Clear() while the dropdown
-    // SelectionModel still holds an index into the old list.
+    // SelectionModel still holds an index into the old list. The populator filters an in-memory snapshot
+    // loaded once at open: a per-keystroke remote query would complete after later keystrokes and reset the
+    // box to the stale (shorter) search text, dropping characters on a high-latency backend.
     public Func<string, CancellationToken, Task<IEnumerable<object?>?>> BorrowerPopulator { get; }
-
-    [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(ConfirmCommand))]
-    private IBorrowerSuggestion? _selectedBorrower;
 
     [ObservableProperty]
     private DateTimeOffset? _dueDate;
 
     [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(ConfirmCommand))]
     private string _searchText = string.Empty;
 
     [ObservableProperty]
@@ -68,71 +68,58 @@ public partial class CheckOutDialogViewModel : ObservableObject
         BorrowerPopulator = PopulateBorrowersAsync;
     }
 
-    partial void OnSearchTextChanged(string value)
+    // The dropdown only suggests; it is intentionally not bound to a SelectedItem. Picking a row just fills
+    // the text box (via ValueMemberBinding), so the typed text is the single source of truth — which avoids
+    // the AutoCompleteBox feedback loop where auto-selecting the "add new" suggestion (its value equals the
+    // input) and then clearing that stale selection on the next keystroke reset the box to the prior text.
+    private Task<IEnumerable<object?>?> PopulateBorrowersAsync(string text, CancellationToken ct)
     {
-        // When the user edits the text after having made a selection, clear the stale selection.
-        if (SelectedBorrower is not null &&
-            !string.Equals(value, SelectedBorrower.ValueText, StringComparison.OrdinalIgnoreCase))
-        {
-            SelectedBorrower = null;
-        }
-    }
+        if (text.Length < 1) return Task.FromResult<IEnumerable<object?>?>(null);
 
-    private async Task<IEnumerable<object?>?> PopulateBorrowersAsync(string text, CancellationToken ct)
-    {
-        if (text.Length < 1) return null;
-        try
-        {
-            var results = await _borrowerService.SearchAsync(text);
-            if (ct.IsCancellationRequested) return null;
+        var matches = _allBorrowers
+            .Where(b =>
+                (b.FirstName + " " + b.LastName).Contains(text, StringComparison.OrdinalIgnoreCase) ||
+                (b.LastName + ", " + b.FirstName).Contains(text, StringComparison.OrdinalIgnoreCase))
+            .OrderBy(b => b.LastName).ThenBy(b => b.FirstName)
+            .Take(20)
+            .ToList();
 
-            bool exactMatch = results.Any(b =>
-                string.Equals((b.FirstName + " " + b.LastName).Trim(), text, StringComparison.OrdinalIgnoreCase));
+        bool exactMatch = matches.Any(b =>
+            string.Equals((b.FirstName + " " + b.LastName).Trim(), text, StringComparison.OrdinalIgnoreCase));
 
-            var suggestions = new List<IBorrowerSuggestion>();
-            foreach (var b in results)
-                suggestions.Add(new ExistingBorrowerSuggestion(b));
-            if (!exactMatch)
-                suggestions.Add(new NewBorrowerSuggestion(text));
+        var suggestions = new List<IBorrowerSuggestion>();
+        foreach (var b in matches)
+            suggestions.Add(new ExistingBorrowerSuggestion(b));
+        if (!exactMatch)
+            suggestions.Add(new NewBorrowerSuggestion(text));
 
-            return suggestions.Cast<object?>();
-        }
-        catch (OperationCanceledException) { return null; }
-        catch (Exception ex)
-        {
-            Log.Error(ex, "Failed to populate borrower suggestions for text '{Text}'", text);
-            return null;
-        }
+        return Task.FromResult<IEnumerable<object?>?>(suggestions.Cast<object?>());
     }
 
     public async Task InitializeAsync(int bookId)
     {
         _bookId = bookId;
-        SelectedBorrower = null;
         DueDate = DateTimeOffset.Now;
         SearchText = string.Empty;
         StatusMessage = null;
-        await Task.CompletedTask;
+        _allBorrowers = await _borrowerService.GetAllAsync();
     }
 
-    private bool CanConfirm() => SelectedBorrower is not null;
+    private bool CanConfirm() => !string.IsNullOrWhiteSpace(SearchText);
 
     [RelayCommand(CanExecute = nameof(CanConfirm))]
     private async Task ConfirmAsync()
     {
-        if (SelectedBorrower is null) return;
+        var name = SearchText.Trim();
+        if (name.Length == 0) return;
         try
         {
-            int borrowerId;
-            if (SelectedBorrower is NewBorrowerSuggestion newSug)
-            {
-                var created = await _borrowerService.CreateAsync(newSug.InputName, statusId: 0);
-                borrowerId = created.BorrowerId;
-            }
-            else
-            {
-                borrowerId = ((ExistingBorrowerSuggestion)SelectedBorrower).Borrower.BorrowerId;
-            }
+            // Text is the source of truth: an exact (case-insensitive) name match reuses that borrower,
+            // anything else is created as a new one.
+            var existing = _allBorrowers.FirstOrDefault(b =>
+                string.Equals((b.FirstName + " " + b.LastName).Trim(), name, StringComparison.OrdinalIgnoreCase));
+            var borrowerId = existing?.BorrowerId
+                ?? (await _borrowerService.CreateAsync(name)).BorrowerId;
 
             var dueDate = DueDate?.LocalDateTime;
             await _loanService.CheckOutAsync(_bookId, borrowerId, dueDate);

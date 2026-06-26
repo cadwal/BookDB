@@ -92,7 +92,7 @@ Speichern Sie das Buch, um Ihre Änderungen zu übernehmen. Sobald jeder Typ hö
 
 Wenn Sie keine Sicherung haben, aber noch Ihre aktive Readerware-Datenbank (den `.rw4`-Ordner, z. B. `MyBooks.rw4`), kann BookDB sie direkt lesen:
 
-1. Öffnen Sie **Extras > Readerware-Datenbank importieren…**.
+1. Öffnen Sie **Datei > Readerware-Datenbank importieren…**.
 2. Klicken Sie auf **Durchsuchen** und wählen Sie Ihren `.rw4`-Datenbankordner.
 3. Klicken Sie auf **Konvertieren**. BookDB kopiert die Datenbank zuerst — Ihr Original wird nie geöffnet oder verändert — und konvertiert sie in einen Sicherungsordner.
 4. Klicken Sie nach Abschluss der Konvertierung auf **Importassistent öffnen**, um mit denselben oben beschriebenen Schritten (Vorschau, Einstellungen, Import) fortzufahren.

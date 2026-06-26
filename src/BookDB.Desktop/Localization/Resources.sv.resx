@@ -2081,6 +2081,36 @@ Möjliga dubletter: {3}  |  Med omslag: {4}</value>
   <data name="About_AppName" xml:space="preserve">
     <value>BookDB</value>
   </data>
+  <data name="Menu_Backup" xml:space="preserve">
+    <value>Säkerhetskopiering...</value>
+  </data>
+  <data name="BackupDialog_Title" xml:space="preserve">
+    <value>Säkerhetskopiering</value>
+  </data>
+  <data name="BackupDialog_Format_Sqlite" xml:space="preserve">
+    <value>Databasfil (SQLite)</value>
+  </data>
+  <data name="BackupDialog_Format_Csv" xml:space="preserve">
+    <value>CSV-arkiv (portabelt)</value>
+  </data>
+  <data name="BackupDialog_RemoteFallbackNote" xml:space="preserve">
+    <value>En fjärrdatabas har ingen filsäkerhetskopia; CSV-arkivet används i stället.</value>
+  </data>
+  <data name="BackupDialog_Confirm" xml:space="preserve">
+    <value>Säkerhetskopiera</value>
+  </data>
+  <data name="Settings_Database_SavedPasswordHint" xml:space="preserve">
+    <value>Ett lösenord är sparat för den här servern – lämna tomt för att behålla det.</value>
+  </data>
+  <data name="Shutdown_CloseApplication" xml:space="preserve">
+    <value>Stäng programmet</value>
+  </data>
+  <data name="Shutdown_CloseAndPause" xml:space="preserve">
+    <value>Stäng och pausa</value>
+  </data>
+  <data name="Shutdown_KeepRunning" xml:space="preserve">
+    <value>Fortsätt köra</value>
+  </data>
   <data name="Splash_Status_Initializing" xml:space="preserve">
     <value>Startar…</value>
   </data>
@@ -2178,7 +2208,7 @@ Möjliga dubletter: {3}  |  Med omslag: {4}</value>
     <value>Återställning klar</value>
   </data>
   <data name="Restore_Complete_Body" xml:space="preserve">
-    <value>Programmet stängs nu. Öppna det igen för att använda det återställda biblioteket.</value>
+    <value>BookDB startas nu om för att läsa in det återställda biblioteket.</value>
   </data>
   <data name="Restore_Failed" xml:space="preserve">
     <value>Återställningen misslyckades: {0}. Ditt ursprungliga bibliotek ändrades inte.</value>
@@ -2569,5 +2599,302 @@ Möjliga dubletter: {3}  |  Med omslag: {4}</value>
   </data>
   <data name="Maintenance_SafetyBackupSaved" xml:space="preserve">
     <value>Säkerhetskopia sparad till: {0}</value>
+  </data>
+  <data name="Settings_Tab_Database" xml:space="preserve">
+    <value>Databas</value>
+  </data>
+  <data name="Settings_Database_BackendLabel" xml:space="preserve">
+    <value>Databasbackend</value>
+  </data>
+  <data name="Settings_Database_Backend_Sqlite" xml:space="preserve">
+    <value>Lokal fil (SQLite)</value>
+  </data>
+  <data name="Settings_Database_Backend_Postgres" xml:space="preserve">
+    <value>PostgreSQL-server</value>
+  </data>
+  <data name="Settings_Database_ServerSectionHeader" xml:space="preserve">
+    <value>Serveranslutning</value>
+  </data>
+  <data name="Settings_Database_Host" xml:space="preserve">
+    <value>Värd</value>
+  </data>
+  <data name="Settings_Database_Port" xml:space="preserve">
+    <value>Port</value>
+  </data>
+  <data name="Settings_Database_DatabaseName" xml:space="preserve">
+    <value>Databas</value>
+  </data>
+  <data name="Settings_Database_Username" xml:space="preserve">
+    <value>Användarnamn</value>
+  </data>
+  <data name="Settings_Database_Password" xml:space="preserve">
+    <value>Lösenord</value>
+  </data>
+  <data name="Settings_Database_TlsLabel" xml:space="preserve">
+    <value>TLS/SSL-läge</value>
+  </data>
+  <data name="Settings_Database_Tls_Disable" xml:space="preserve">
+    <value>Inaktivera</value>
+  </data>
+  <data name="Settings_Database_Tls_Prefer" xml:space="preserve">
+    <value>Föredra</value>
+  </data>
+  <data name="Settings_Database_Tls_Require" xml:space="preserve">
+    <value>Kräv</value>
+  </data>
+  <data name="Settings_Database_Tls_VerifyFull" xml:space="preserve">
+    <value>Verifiera fullständigt</value>
+  </data>
+  <data name="Settings_Database_TlsDisableWarning" xml:space="preserve">
+    <value>Att inaktivera TLS skickar lösenordet och data okrypterat över nätverket. Använd endast i ett betrott lokalt nätverk.</value>
+  </data>
+  <data name="Settings_Database_KeyringUnavailable" xml:space="preserve">
+    <value>PostgreSQL behöver operativsystemets autentiseringslager för att skydda lösenordet, men det finns inte på den här datorn. BookDB fortsätter att använda den lokala SQLite-databasen.</value>
+  </data>
+  <data name="Settings_Database_RestartNote" xml:space="preserve">
+    <value>Byte av databas börjar gälla efter att BookDB startats om.</value>
+  </data>
+  <data name="Settings_Database_Apply_PasswordRequired" xml:space="preserve">
+    <value>Ange databasens lösenord innan du verkställer.</value>
+  </data>
+  <data name="Startup_Failure_Title" xml:space="preserve">
+    <value>Det går inte att ansluta till databasen</value>
+  </data>
+  <data name="Startup_Failure_Intro" xml:space="preserve">
+    <value>BookDB kunde inte nå PostgreSQL-servern.</value>
+  </data>
+  <data name="Startup_Failure_Retry" xml:space="preserve">
+    <value>Försök igen</value>
+  </data>
+  <data name="Startup_Failure_OpenSettings" xml:space="preserve">
+    <value>Öppna inställningar</value>
+  </data>
+  <data name="Startup_Failure_Quit" xml:space="preserve">
+    <value>Avsluta</value>
+  </data>
+  <data name="Startup_Failure_RetriesExhausted" xml:space="preserve">
+    <value>Att försöka igen hjälpte inte. Kontrollera att servern är igång och se över dina anslutningsinställningar.</value>
+  </data>
+  <data name="ConnectDialog_Header" xml:space="preserve">
+    <value>En annan klient är ansluten</value>
+  </data>
+  <data name="ConnectDialog_Body" xml:space="preserve">
+    <value>BookDB är redan öppet på {0} (senast sedd {1}, version {2}).</value>
+  </data>
+  <data name="ConnectDialog_Risk" xml:space="preserve">
+    <value>Att öppna en andra klient riskerar datakonflikter. Endast en klient bör använda databasen åt gången.</value>
+  </data>
+  <data name="ConnectDialog_Quit" xml:space="preserve">
+    <value>Avsluta</value>
+  </data>
+  <data name="ConnectDialog_ConnectAnyway" xml:space="preserve">
+    <value>Anslut ändå – jag accepterar risken</value>
+  </data>
+  <data name="ConnectDialog_ConnectAnyway_Waiting" xml:space="preserve">
+    <value>Anslut ändå ({0})</value>
+  </data>
+  <data name="ConnectDialog_Age_Seconds" xml:space="preserve">
+    <value>för {0} sekunder sedan</value>
+  </data>
+  <data name="ConnectDialog_Age_Minutes" xml:space="preserve">
+    <value>för {0} minuter sedan</value>
+  </data>
+  <data name="ConnectDialog_Age_Hours" xml:space="preserve">
+    <value>för {0} timmar sedan</value>
+  </data>
+  <data name="ConnectDialog_Age_Days" xml:space="preserve">
+    <value>för {0} dagar sedan</value>
+  </data>
+  <data name="Settings_RestartConfirm_Title" xml:space="preserve">
+    <value>Omstart krävs</value>
+  </data>
+  <data name="Settings_RestartConfirm_Body" xml:space="preserve">
+    <value>Vissa ändringar börjar gälla först efter en omstart. Starta om BookDB nu?</value>
+  </data>
+  <data name="Settings_Database_RestartConfirm_Body" xml:space="preserve">
+    <value>Byte till {0} kräver att BookDB startas om. Programmet stängs och öppnas igen nu. Fortsätta?</value>
+  </data>
+  <data name="Settings_Database_TestConnection" xml:space="preserve">
+    <value>Testa anslutning</value>
+  </data>
+  <data name="Settings_Database_Testing" xml:space="preserve">
+    <value>Testar…</value>
+  </data>
+  <data name="Settings_Database_TestSuccess" xml:space="preserve">
+    <value>Ansluten — PostgreSQL {0}, {1} böcker.</value>
+  </data>
+  <data name="Settings_Database_TestSuccessUninitialized" xml:space="preserve">
+    <value>Ansluten — PostgreSQL {0}. Inga BookDB-data hittades i databasen ännu.</value>
+  </data>
+  <data name="Settings_Database_TestError_Auth" xml:space="preserve">
+    <value>Autentiseringen misslyckades — kontrollera användarnamn och lösenord.</value>
+  </data>
+  <data name="Settings_Database_TestError_Refused" xml:space="preserve">
+    <value>Anslutningen nekades — kontrollera värd och port, och att servern är igång.</value>
+  </data>
+  <data name="Settings_Database_TestError_Timeout" xml:space="preserve">
+    <value>Anslutningen tog för lång tid — kontrollera värd och port samt ditt nätverk.</value>
+  </data>
+  <data name="Settings_Database_TestError_Tls" xml:space="preserve">
+    <value>TLS/SSL-fel — kontrollera TLS-läget och serverns certifikat.</value>
+  </data>
+  <data name="Settings_Database_TestError_Unknown" xml:space="preserve">
+    <value>Det gick inte att ansluta: {0}</value>
+  </data>
+  <data name="Settings_Database_TestError_UnsupportedVersion" xml:space="preserve">
+    <value>BookDB kräver PostgreSQL {0} eller senare – den här servern är {1}.</value>
+  </data>
+  <data name="WriteFailure_Title" xml:space="preserve">
+    <value>Det gick inte att spara ändringarna</value>
+  </data>
+  <data name="WriteFailure_Retry_Button" xml:space="preserve">
+    <value>Försök igen</value>
+  </data>
+  <data name="WriteFailure_Discard_Button" xml:space="preserve">
+    <value>Kasta ändringar</value>
+  </data>
+  <data name="ConnectionLost_Title" xml:space="preserve">
+    <value>Anslutningen till databasen förlorades</value>
+  </data>
+  <data name="ConnectionLost_Body" xml:space="preserve">
+    <value>Databasen har varit oåtkomlig i flera minuter. Du kan fortsätta vänta medan återanslutning försöker igen, eller avsluta programmet.</value>
+  </data>
+  <data name="ConnectionLost_Quit_Button" xml:space="preserve">
+    <value>Avsluta</value>
+  </data>
+  <data name="ConnectionLost_KeepWaiting_Button" xml:space="preserve">
+    <value>Fortsätt vänta</value>
+  </data>
+  <data name="StatusBar_Connection_Reconnecting" xml:space="preserve">
+    <value>Återansluter till databasen…</value>
+  </data>
+  <data name="StatusBar_Connection_Lost" xml:space="preserve">
+    <value>Anslutningen till databasen förlorades</value>
+  </data>
+  <data name="MoveLibrary_Header" xml:space="preserve">
+    <value>Flytta biblioteket</value>
+  </data>
+  <data name="MoveLibrary_Intro" xml:space="preserve">
+    <value>Kopierar hela biblioteket till den andra databasbackenden. Den aktuella databasen är källan; välj och kontrollera målet innan du flyttar. En säkerhetskopia tas automatiskt innan någon data skrivs.</value>
+  </data>
+  <data name="MoveLibrary_SourceLabel" xml:space="preserve">
+    <value>Aktuell databas (källa):</value>
+  </data>
+  <data name="MoveLibrary_Source_Sqlite" xml:space="preserve">
+    <value>Lokal SQLite — {0}</value>
+  </data>
+  <data name="MoveLibrary_Source_Postgres" xml:space="preserve">
+    <value>PostgreSQL — {0}</value>
+  </data>
+  <data name="MoveLibrary_TargetLabel" xml:space="preserve">
+    <value>Flytta till:</value>
+  </data>
+  <data name="MoveLibrary_Target_Postgres" xml:space="preserve">
+    <value>PostgreSQL-server</value>
+  </data>
+  <data name="MoveLibrary_Target_Sqlite" xml:space="preserve">
+    <value>Lokal SQLite-fil</value>
+  </data>
+  <data name="MoveLibrary_Check" xml:space="preserve">
+    <value>Kontrollera målet</value>
+  </data>
+  <data name="MoveLibrary_Target_Empty" xml:space="preserve">
+    <value>Målet är tomt — redo att ta emot biblioteket.</value>
+  </data>
+  <data name="MoveLibrary_Target_HasData" xml:space="preserve">
+    <value>⚠ Målet innehåller redan {0} böcker — Flytta ERSÄTTER all data.</value>
+  </data>
+  <data name="MoveLibrary_Acknowledge" xml:space="preserve">
+    <value>Jag förstår — ersätt all data i måldatabasen</value>
+  </data>
+  <data name="MoveLibrary_SwitchActive" xml:space="preserve">
+    <value>Växla den aktiva databasen till målet när det är klart</value>
+  </data>
+  <data name="MoveLibrary_Move" xml:space="preserve">
+    <value>Flytta biblioteket</value>
+  </data>
+  <data name="MoveLibrary_ProgressHeader" xml:space="preserve">
+    <value>Förlopp</value>
+  </data>
+  <data name="MoveLibrary_Progress_Table" xml:space="preserve">
+    <value>{0}: {1}</value>
+  </data>
+  <data name="MoveLibrary_Progress_TableRunning" xml:space="preserve">
+    <value>{0}: {1} / {2}</value>
+  </data>
+  <data name="MoveLibrary_SafetyBackupSaved" xml:space="preserve">
+    <value>Säkerhetskopia sparad: {0}</value>
+  </data>
+  <data name="MoveLibrary_TargetBackupSaved" xml:space="preserve">
+    <value>Säkerhetskopia av målet sparad: {0}</value>
+  </data>
+  <data name="MoveLibrary_Complete" xml:space="preserve">
+    <value>Migreringen är klar — alla postantal stämmer överens.</value>
+  </data>
+  <data name="MoveLibrary_CountMismatch" xml:space="preserve">
+    <value>⚠ Migreringen slutfördes men postantalen stämmer inte överens; växling av den aktiva databasen är blockerad.</value>
+  </data>
+  <data name="MoveLibrary_Failed" xml:space="preserve">
+    <value>Migreringen misslyckades vid {0}. Målet innehåller ofullständig data och får inte användas. Dina data är säkra i säkerhetskopian: {1}</value>
+  </data>
+  <data name="MoveLibrary_Phase_Preparing" xml:space="preserve">
+    <value>Förbereder målet…</value>
+  </data>
+  <data name="MoveLibrary_Phase_Copying" xml:space="preserve">
+    <value>Kopierar data…</value>
+  </data>
+  <data name="MoveLibrary_Phase_Finalizing" xml:space="preserve">
+    <value>Slutför…</value>
+  </data>
+  <data name="MoveLibrary_Phase_Verifying" xml:space="preserve">
+    <value>Verifierar postantal…</value>
+  </data>
+  <data name="MoveLibrary_Table_Books" xml:space="preserve">
+    <value>Böcker</value>
+  </data>
+  <data name="MoveLibrary_Table_CoverImages" xml:space="preserve">
+    <value>Omslagsbilder</value>
+  </data>
+  <data name="MoveLibrary_Table_Loans" xml:space="preserve">
+    <value>Lån</value>
+  </data>
+  <data name="MoveLibrary_Table_Borrowers" xml:space="preserve">
+    <value>Låntagare</value>
+  </data>
+  <data name="MoveLibrary_Table_People" xml:space="preserve">
+    <value>Personer</value>
+  </data>
+  <data name="MoveLibrary_Table_Publishers" xml:space="preserve">
+    <value>Förlag</value>
+  </data>
+  <data name="Restore_UnknownFormat" xml:space="preserve">
+    <value>Den valda filen är inte en igenkänd BookDB-säkerhetskopia (ingen biblioteksdatabas eller CSV-arkiv inuti).</value>
+  </data>
+  <data name="Restore_SqliteIntoRemote" xml:space="preserve">
+    <value>Detta är en lokal SQLite-filsäkerhetskopia och kan inte återställas till den aktuella fjärrdatabasen. Använd ett CSV-arkiv eller växla först till den lokala databasen.</value>
+  </data>
+  <data name="Restore_AdoptBackend_Title" xml:space="preserve">
+    <value>Tillämpa säkerhetskopians databasanslutning?</value>
+  </data>
+  <data name="Restore_AdoptBackend_Body" xml:space="preserve">
+    <value>Den här säkerhetskopian skapades på en {0}-databas. Växla den aktiva databasen till den anslutningen och starta om? Om du väljer Nej behålls din nuvarande databas.</value>
+  </data>
+  <data name="RestoreTarget_Title" xml:space="preserve">
+    <value>Var ska återställas</value>
+  </data>
+  <data name="RestoreTarget_Body" xml:space="preserve">
+    <value>Den här säkerhetskopian skapades på PostgreSQL-servern {0}. Återställa data till den servern eller till din nuvarande databas?</value>
+  </data>
+  <data name="RestoreTarget_Archived" xml:space="preserve">
+    <value>Återställ till säkerhetskopians server</value>
+  </data>
+  <data name="RestoreTarget_Current" xml:space="preserve">
+    <value>Återställ till den nuvarande databasen</value>
+  </data>
+  <data name="RestoreTarget_Cancel" xml:space="preserve">
+    <value>Avbryt</value>
+  </data>
+  <data name="Restore_NoCredentialsForTarget" xml:space="preserve">
+    <value>Inga sparade autentiseringsuppgifter för säkerhetskopians databasserver. Konfigurera den först under Inställningar → Databas och försök igen.</value>
   </data>
 </root>

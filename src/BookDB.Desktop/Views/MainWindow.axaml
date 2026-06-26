@@ -46,6 +46,9 @@
                     </MenuItem.Icon>
                 </MenuItem>
                 <Separator />
+                <MenuItem Header="{x:Static res:Resources.Menu_Backup}" Command="{Binding BackupCommand}"/>
+                <MenuItem Header="{x:Static res:Resources.Menu_RestoreBackup}"  Command="{Binding RestoreCommand}"/>
+                <Separator />
                 <MenuItem Header="{x:Static res:Resources.Menu_ImportReaderware}"
                           Command="{Binding ImportFromReaderwareCommand}">
                     <MenuItem.Icon>
@@ -56,10 +59,16 @@
                         </Image>
                     </MenuItem.Icon>
                 </MenuItem>
-                <Separator />
-                <MenuItem Header="{x:Static res:Resources.Menu_BackupSqlite}"      Command="{Binding BackupSqliteCommand}"/>
-                <MenuItem Header="{x:Static res:Resources.Menu_BackupCsv}" Command="{Binding BackupCsvArchiveCommand}"/>
-                <MenuItem Header="{x:Static res:Resources.Menu_RestoreBackup}"  Command="{Binding RestoreCommand}"/>
+                <MenuItem Header="{x:Static res:Resources.Menu_ImportReaderwareDatabase}"
+                          Command="{Binding ImportFromReaderwareDatabaseCommand}">
+                    <MenuItem.Icon>
+                        <Image Width="16" Height="16">
+                            <Image.Source>
+                                <svg:SvgImage Source="avares://BookDB.Desktop/Assets/Icons/arrow-download.svg" Css="{DynamicResource IconCssAccent}" />
+                            </Image.Source>
+                        </Image>
+                    </MenuItem.Icon>
+                </MenuItem>
                 <Separator />
                 <MenuItem Header="{x:Static res:Resources.Menu_ExportCsv}"               Command="{Binding ExportCsvCommand}"/>
                 <MenuItem Header="{x:Static res:Resources.Menu_PrintList}"           Command="{Binding PrintListCommand}"/>
@@ -165,27 +174,6 @@
                     </MenuItem.Icon>
                 </MenuItem>
                 <Separator/>
-                <MenuItem Header="{x:Static res:Resources.Menu_ImportReaderware}"
-                          Command="{Binding ImportFromReaderwareCommand}">
-                    <MenuItem.Icon>
-                        <Image Width="16" Height="16">
-                            <Image.Source>
-                                <svg:SvgImage Source="avares://BookDB.Desktop/Assets/Icons/arrow-download.svg" Css="{DynamicResource IconCssAccent}" />
-                            </Image.Source>
-                        </Image>
-                    </MenuItem.Icon>
-                </MenuItem>
-                <MenuItem Header="{x:Static res:Resources.Menu_ImportReaderwareDatabase}"
-                          Command="{Binding ImportFromReaderwareDatabaseCommand}">
-                    <MenuItem.Icon>
-                        <Image Width="16" Height="16">
-                            <Image.Source>
-                                <svg:SvgImage Source="avares://BookDB.Desktop/Assets/Icons/arrow-download.svg" Css="{DynamicResource IconCssAccent}" />
-                            </Image.Source>
-                        </Image>
-                    </MenuItem.Icon>
-                </MenuItem>
-                <Separator/>
                 <MenuItem Header="{x:Static res:Resources.Menu_ManageLookups}"
                           Command="{Binding OpenManageLookupsCommand}"/>
                 <MenuItem Header="{x:Static res:Resources.Menu_ManageBorrowers}"
@@ -286,7 +274,8 @@
                     <ColumnDefinition Width="*" />     <!-- 0: collection selector -->
                     <ColumnDefinition Width="Auto" />  <!-- 1: book count -->
                     <ColumnDefinition Width="Auto" />  <!-- 2: batch queue -->
-                    <ColumnDefinition Width="Auto" />  <!-- 3: detail toggle -->
+                    <ColumnDefinition Width="Auto" />  <!-- 3: connection status -->
+                    <ColumnDefinition Width="Auto" />  <!-- 4: detail toggle -->
                 </Grid.ColumnDefinitions>
 
                 <!-- Left: collection selector -->
@@ -324,8 +313,56 @@
                             VerticalAlignment="Center" />
                 </StackPanel>
 
+                <!-- Connection-loss indicator (remote backend; visible only while degraded or lost):
+                     amber pill that pulses while retrying, turning red and steady once the connection is lost. -->
+                <Border Grid.Column="3"
+                        IsVisible="{Binding ShowConnectionStatus}"
+                        Classes.degraded="{Binding IsConnectionDegraded}"
+                        Classes.lost="{Binding IsConnectionLost}"
+                        Background="{DynamicResource BrushWarningBackground}"
+                        BorderBrush="{DynamicResource BrushWarning}"
+                        BorderThickness="1"
+                        CornerRadius="9"
+                        Padding="8,2"
+                        Margin="8,0"
+                        VerticalAlignment="Center">
+                    <Border.Styles>
+                        <!-- While retrying: gently pulse the warning icon so the state is noticeable. -->
+                        <Style Selector="Border.degraded Path">
+                            <Style.Animations>
+                                <Animation Duration="0:0:1.3" IterationCount="INFINITE" PlaybackDirection="Alternate">
+                                    <KeyFrame Cue="0%">
+                                        <Setter Property="Opacity" Value="1.0" />
+                                    </KeyFrame>
+                                    <KeyFrame Cue="100%">
+                                        <Setter Property="Opacity" Value="0.3" />
+                                    </KeyFrame>
+                                </Animation>
+                            </Style.Animations>
+                        </Style>
+                        <!-- Once lost: red border and icon, no pulse. -->
+                        <Style Selector="Border.lost">
+                            <Setter Property="BorderBrush" Value="{DynamicResource BrushError}" />
+                        </Style>
+                        <Style Selector="Border.lost Path">
+                            <Setter Property="Fill" Value="{DynamicResource BrushError}" />
+                        </Style>
+                    </Border.Styles>
+                    <StackPanel Orientation="Horizontal" Spacing="5" VerticalAlignment="Center">
+                        <Path Width="14" Height="13"
+                              Stretch="Uniform"
+                              VerticalAlignment="Center"
+                              Fill="{DynamicResource BrushWarning}"
+                              Data="M7,0 L14,13 L0,13 Z M6.3,4 H7.7 V8.5 H6.3 Z M6.3,9.8 H7.7 V11.2 H6.3 Z" />
+                        <TextBlock Text="{Binding ConnectionStatusText}"
+                                   FontSize="12"
+                                   FontWeight="SemiBold"
+                                   VerticalAlignment="Center" />
+                    </StackPanel>
+                </Border>
+
                 <!-- Right: detail panel toggle -->
-                <ToggleButton Grid.Column="3"
+                <ToggleButton Grid.Column="4"
                               IsChecked="{Binding DetailPanelVisible}"
                               Content="{Binding DetailPanelToggleChevron}"
                               VerticalAlignment="Center"

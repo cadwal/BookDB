@@ -21,12 +21,14 @@ public sealed class StatisticsService : IStatisticsService
         CancellationToken ct = default)
     {
         await using var dbContext = await _factory.CreateDbContextAsync(ct);
-        return await dbContext.Books
+        // Materialise the grouping as an anonymous row, then map to the tuple in memory. Projecting the tuple
+        // inside the query makes EF emit a SQL composite (ROW/record) that Npgsql cannot read back on Postgres.
+        var rows = await dbContext.Books
             .GroupBy(b => b.Added.Year)
             .Select(g => new { Year = g.Key, Count = g.Count() })
             .OrderBy(x => x.Year)
-            .Select(x => ValueTuple.Create(x.Year, x.Count))
             .ToListAsync(ct);
+        return rows.Select(x => (x.Year, x.Count)).ToList();
     }
 
     public async Task<IReadOnlyList<BreakdownRow>> GetBreakdownByFormatAsync(

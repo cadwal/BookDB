@@ -59,9 +59,10 @@ public sealed class BackupServiceKeyTests
 
     private static BackupService MakeService(ISettingsService settingsService)
     {
-        var appSettings = new AppSettings { ActiveLibraryPath = System.IO.Path.GetTempFileName() };
+        var appSettings = new AppSettings { SqliteLibraryPath = System.IO.Path.GetTempFileName() };
         return new BackupService(
-            new ThrowingDbContextFactory(), appSettings, settingsService, new NullResourceProvider(), new DataChangeTracker());
+            new ThrowingDbContextFactory(), appSettings, settingsService, new NullResourceProvider(), new DataChangeTracker(),
+            new BookDB.Data.Sqlite.SqliteBackupStrategy(new ThrowingDbContextFactory(), appSettings));
     }
 
     // Records every key passed to GetAsync so tests can assert on them.

@@ -31,7 +31,9 @@ public sealed class BookListContextMenuTests
             new TestLookupServiceFactory.NullSettingsService(),
             factory.LookupService,
             clipboard,
-            Substitute.For<ILoanService>());
+            Substitute.For<ILoanService>(),
+            Substitute.For<BookDB.Logic.Services.IConnectionHealthMonitor>(),
+            Substitute.For<BookDB.Data.Interfaces.IConnectionFailureClassifier>());
         return (vm, factory, clipboard);
     }
 

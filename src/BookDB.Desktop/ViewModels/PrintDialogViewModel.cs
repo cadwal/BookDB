@@ -6,6 +6,8 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using BookDB.Data.Interfaces;
+using BookDB.Desktop.Helpers;
 using BookDB.Desktop.Localization;
 using BookDB.Desktop.Services;
 using BookDB.Logic.Services;
@@ -105,15 +107,29 @@ public sealed partial class PrintDialogViewModel : ObservableObject
 
     private bool _isRenamingExisting;
 
+    private readonly IConnectionHealthMonitor _connectionMonitor;
+    private readonly IConnectionFailureClassifier _connectionClassifier;
+
     public PrintDialogViewModel(
         IPrintService printService,
         ISettingsService settingsService,
-        IFilePickerService filePickerService)
+        IFilePickerService filePickerService,
+        IConnectionHealthMonitor connectionMonitor,
+        IConnectionFailureClassifier connectionClassifier)
     {
         _printService = printService;
         _settingsService = settingsService;
         _filePickerService = filePickerService;
+        _connectionMonitor = connectionMonitor;
+        _connectionClassifier = connectionClassifier;
     }
+
+    // A print generation that fails on a dropped remote connection drives the shared status-bar indicator and
+    // shows the connection-lost message in the dialog rather than a generic print-failed error.
+    private string DescribeFailure(Exception ex) =>
+        _connectionMonitor.ReportIfConnectionLoss(_connectionClassifier, ex)
+            ? Resources.StatusBar_Connection_Lost
+            : string.Format(Resources.PrintList_Failed, ex.Message);
 
     public async Task InitializeAsync(
         IReadOnlySet<int>? collectionIds,
@@ -271,7 +287,7 @@ public sealed partial class PrintDialogViewModel : ObservableObject
         catch (Exception ex)
         {
             Log.Error(ex, "PrintDialogViewModel: Preview failed");
-            ErrorMessage = string.Format(Resources.PrintList_Failed, ex.Message);
+            ErrorMessage = DescribeFailure(ex);
         }
     }
 
@@ -315,7 +331,7 @@ public sealed partial class PrintDialogViewModel : ObservableObject
         catch (Exception ex)
         {
             Log.Error(ex, "PrintDialogViewModel: SaveAsPdf failed");
-            ErrorMessage = string.Format(Resources.PrintList_Failed, ex.Message);
+            ErrorMessage = DescribeFailure(ex);
         }
     }
 

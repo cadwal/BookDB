@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using BookDB.Data.Interfaces;
+using BookDB.Desktop.Helpers;
 using BookDB.Desktop.Localization;
 using BookDB.Desktop.Messages;
 using BookDB.Desktop.Services;
@@ -93,6 +95,19 @@ public partial class LookupTabViewModel : ObservableObject
         TableName = tableName;
         _messenger = messenger;
     }
+
+    // Set by ManageLookupsViewModel after construction (the tabs are not built through DI). When a lookup write
+    // fails on a dropped remote connection, route it to the shared status-bar indicator instead of reporting it
+    // as a generic save/delete/merge error.
+    public IConnectionHealthMonitor? ConnectionMonitor { get; set; }
+    public IConnectionFailureClassifier? ConnectionClassifier { get; set; }
+
+    // Returns true when the failure was a connection loss (already reported to the monitor), so the caller can
+    // show the connection-lost message rather than its operation-specific error. The dependencies are
+    // property-injected, so this no-ops until ManageLookupsViewModel has wired them.
+    private bool ReportIfConnectionLoss(Exception ex) =>
+        ConnectionMonitor is not null && ConnectionClassifier is not null
+        && ConnectionMonitor.ReportIfConnectionLoss(ConnectionClassifier, ex);
 
     public virtual async Task LoadAsync()
     {
@@ -209,7 +224,9 @@ public partial class LookupTabViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            StatusMessage = Resources.ManageLookups_ErrorSaveFailed;
+            StatusMessage = ReportIfConnectionLoss(ex)
+                ? Resources.StatusBar_Connection_Lost
+                : Resources.ManageLookups_ErrorSaveFailed;
             Log.Error(ex, "LookupTabViewModel({Table}): save failed unexpectedly", TableName);
         }
     }
@@ -252,7 +269,9 @@ public partial class LookupTabViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            StatusMessage = Resources.ManageLookups_ErrorDeleteFailed;
+            StatusMessage = ReportIfConnectionLoss(ex)
+                ? Resources.StatusBar_Connection_Lost
+                : Resources.ManageLookups_ErrorDeleteFailed;
             Log.Error(ex, "LookupTabViewModel({Table}): delete failed", TableName);
         }
     }
@@ -276,7 +295,9 @@ public partial class LookupTabViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            StatusMessage = Resources.ManageLookups_ErrorMergeFailed;
+            StatusMessage = ReportIfConnectionLoss(ex)
+                ? Resources.StatusBar_Connection_Lost
+                : Resources.ManageLookups_ErrorMergeFailed;
             Log.Error(ex, "LookupTabViewModel({Table}): merge failed", TableName);
         }
         finally

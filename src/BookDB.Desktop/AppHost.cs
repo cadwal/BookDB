@@ -2,6 +2,9 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using BookDB.Data.Interfaces;
+using BookDB.Data.PostgreSQL;
+using BookDB.Security;
 using BookDB.Desktop.Helpers;
 using BookDB.Desktop.Services;
 using BookDB.Desktop.Theming;
@@ -24,12 +27,51 @@ namespace BookDB.Desktop;
 public sealed class AppHost : IAsyncDisposable
 {
     private readonly IHost _host;
+    private readonly DatabaseBackend _backend;
+    private readonly PostgresOptions? _postgresOptions;
+    private readonly string? _postgresPassword;
 
     public IServiceProvider Services => _host.Services;
 
-    private AppHost(IHost host)
+    /// <summary>True when startup must verify the database is reachable before the host runs (remote backend only).</summary>
+    public bool RequiresStartupConnectivityCheck => _backend == DatabaseBackend.PostgreSql;
+
+    private AppHost(IHost host, DatabaseBackend backend, PostgresOptions? postgresOptions, string? postgresPassword)
     {
         _host = host;
+        _backend = backend;
+        _postgresOptions = postgresOptions;
+        _postgresPassword = postgresPassword;
+        CurrentServices = host.Services;
+    }
+
+    // Set once the host is built so the static unhandled-exception backstop can resolve the connection monitor.
+    private static IServiceProvider? CurrentServices { get; set; }
+
+    /// <summary>
+    /// If the exception is a dropped remote-DB connection, report it to the status-bar monitor and return true so
+    /// the caller can keep the app alive instead of treating it as fatal. Many interactive DB calls (backup
+    /// pre-reads, print preset saves, library move, etc.) are not individually guarded; this is the backstop that
+    /// turns a connection loss into the same non-fatal status-indicator UX as the explicitly guarded paths.
+    /// </summary>
+    internal static bool TryReportConnectionLoss(Exception? ex)
+    {
+        if (ex is null || CurrentServices is null)
+            return false;
+        var classifier = CurrentServices.GetService<IConnectionFailureClassifier>();
+        var monitor = CurrentServices.GetService<IConnectionHealthMonitor>();
+        if (classifier is null || monitor is null || !classifier.IsConnectionLoss(ex))
+            return false;
+        monitor.ReportConnectionFailure();
+        return true;
+    }
+
+    /// <summary>One-shot reachability probe for the configured PostgreSQL server, using the same options and
+    /// credential-store password the live connection uses. Only valid when <see cref="RequiresStartupConnectivityCheck"/>.</summary>
+    public Task<ConnectionProbeResult> ProbePostgresConnectionAsync(CancellationToken ct = default)
+    {
+        var prober = _host.Services.GetRequiredService<IPostgresConnectionProber>();
+        return prober.ProbeAsync(_postgresOptions!, _postgresPassword, ct);
     }
 
     /// <summary>The per-user app-data directory; shared by startup so the single-instance gate and the
@@ -44,33 +86,65 @@ public sealed class AppHost : IAsyncDisposable
 
         Directory.CreateDirectory(appDataPath);
 
-        var activeLibraryPath = Path.Combine(appDataPath, "library.db");
-        var connectionString = $"Data Source={activeLibraryPath}";
+        var configPath = Path.Combine(appDataPath, "config.json");
+        var defaultSqlitePath = Path.Combine(appDataPath, "library.db");
 
-        ApplyCultureBootstrap(activeLibraryPath, connectionString);
+        var config = LoadOrCreateBootstrapConfig(configPath, defaultSqlitePath);
 
-        var levelSwitch = ApplyLogLevelBootstrap(activeLibraryPath, connectionString);
+        var backend = ParseBackend(config.Backend);
+
+        // SQLite keeps a local file path; PostgreSQL builds its connection string from the config.json server
+        // parameters. The password is not stored in config.json — the credential store supplies it (until then
+        // it is omitted, which is sufficient for a passwordless/trust-auth server).
+        string? sqliteLibraryPath = null;
+        string connectionString;
+        string dbDescriptor;
+        PostgresOptions? postgresOptions = null;
+        string? postgresPassword = null;
+        if (backend == DatabaseBackend.PostgreSql)
+        {
+            postgresOptions = config.Postgres;
+            var (secretStore, _) = SecretStoreFactory.Create();
+            postgresPassword = secretStore.Get(config.Postgres.AccountKey);
+            connectionString = PostgresConnectionStringFactory.Build(config.Postgres, postgresPassword);
+            dbDescriptor = PostgresConnectionStringFactory.Sanitize(connectionString);
+        }
+        else
+        {
+            // SQLite is always the canonical library file at the default location — it is never a
+            // configurable path (copies come from backups).
+            sqliteLibraryPath = defaultSqlitePath;
+            connectionString = $"Data Source={sqliteLibraryPath}";
+            dbDescriptor = sqliteLibraryPath;
+        }
+
+        ApplyCultureBootstrap(config);
+
+        var levelSwitch = ApplyLogLevelBootstrap(config);
 
         Log.Logger = new LoggerConfiguration()
             .MinimumLevel.ControlledBy(levelSwitch)
             .WriteTo.File(
                 Path.Combine(appDataPath, "logs", "bookdb-.log"),
                 rollingInterval: RollingInterval.Day,
-                outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
+                outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}",
+                shared: true)
             .WriteTo.Console()
             .CreateLogger();
 
-        var flavour = ApplyThemeBootstrap(activeLibraryPath, connectionString);
+        var flavour = ApplyThemeBootstrap(config);
 
         var version = Assembly.GetExecutingAssembly()
             .GetCustomAttribute<AssemblyInformationalVersionAttribute>()
             ?.InformationalVersion ?? "unknown";
-        Log.Warning("Application started {Version} — DB: {DbPath} — Culture: {Culture} — Theme: {Theme}",
-            version, activeLibraryPath, CultureInfo.CurrentUICulture.Name, flavour);
+        Log.Warning("Application started {Version} — Backend: {Backend} — DB: {DbDescriptor} — Culture: {Culture} — Theme: {Theme}",
+            version, backend, dbDescriptor, CultureInfo.CurrentUICulture.Name, flavour);
 
         var appSettings = new AppSettings
         {
-            ActiveLibraryPath = activeLibraryPath,
+            Backend = backend,
+            SqliteLibraryPath = sqliteLibraryPath,
+            ConfigPath = configPath,
             ConnectionString = connectionString
         };
 
@@ -78,6 +152,7 @@ public sealed class AppHost : IAsyncDisposable
             .UseSerilog()
             .ConfigureServices(services =>
             {
+                services.AddSingleton<IBootstrapConfigService>(_ => new BootstrapConfigService(configPath));
                 services.AddBookDbDataServices(appSettings);
                 services.AddBookDbLogicServices();
                 services.AddBookDbDesktopServices();
@@ -86,7 +161,7 @@ public sealed class AppHost : IAsyncDisposable
             })
             .Build();
 
-        return new AppHost(host);
+        return new AppHost(host, backend, postgresOptions, postgresPassword);
     }
 
     public async Task<MainWindow> StartAsync()
@@ -130,7 +205,20 @@ public sealed class AppHost : IAsyncDisposable
         windowService.CloseAllSecondaryWindows();
 
         var viewModel = _host.Services.GetRequiredService<MainWindowViewModel>();
-        await viewModel.PersistSettingsAsync();
+
+        // Persisting settings hits the active database; on a remote backend that may be down at exit, so it
+        // is best-effort with a short timeout — a failed save must never block the shutdown.
+        using (var settingsCts = new CancellationTokenSource(TimeSpan.FromSeconds(5)))
+        {
+            try
+            {
+                await viewModel.PersistSettingsAsync(settingsCts.Token);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Persisting settings on shutdown failed — proceeding");
+            }
+        }
 
         // Auto-backup on close — only when one is configured AND actually due (data changed this session or
         // the recency window lapsed). 10-second timeout prevents a hang.
@@ -183,62 +271,82 @@ public sealed class AppHost : IAsyncDisposable
     }
 
     /// <summary>
-    /// Reads a single value from the Settings key/value table during startup, before DI (and thus
-    /// ISettingsService) exists. Returns null when the DB file is missing, the Settings table has not
-    /// been created yet, or the key is absent — callers fall back to their own defaults.
+    /// Loads the bootstrap config from <paramref name="configPath"/>. On first run (no file), seeds the
+    /// three pre-DI settings once from the existing SQLite Settings table when a library is present (the
+    /// v1→v2 upgrade), then writes the file so it is authoritative from then on.
     /// </summary>
-    private static string? ReadStartupSetting(string dbPath, string connectionString, string key)
+    internal static BootstrapConfig LoadOrCreateBootstrapConfig(string configPath, string sqliteDbPath)
     {
-        if (!File.Exists(dbPath)) return null;
+        var existing = BootstrapConfig.Load(configPath);
+        if (existing is not null)
+        {
+            return existing;
+        }
+
+        var config = new BootstrapConfig();
+        SeedSettingsFromSqlite(config, sqliteDbPath);
+        config.Save(configPath);
+        return config;
+    }
+
+    /// <summary>
+    /// One-time v1→v2 upgrade: copies Language/UiTheme/LogLevel from the legacy SQLite Settings key/value
+    /// table into <paramref name="config"/>. The Settings rows are left in place; config.json is the store
+    /// from now on. Best-effort — a missing file or Settings table leaves the defaults untouched.
+    /// </summary>
+    internal static void SeedSettingsFromSqlite(BootstrapConfig config, string sqliteDbPath)
+    {
+        if (!File.Exists(sqliteDbPath))
+        {
+            return;
+        }
 
         try
         {
-            using var conn = new SqliteConnection(connectionString);
+            using var conn = new SqliteConnection($"Data Source={sqliteDbPath}");
             conn.Open();
-            using var cmd = conn.CreateCommand();
-            cmd.CommandText = "SELECT Value FROM Settings WHERE Key = @key";
-            cmd.Parameters.AddWithValue("@key", key);
-            var scalar = cmd.ExecuteScalar();
-            return scalar is DBNull or null ? null : (string)scalar;
+            config.Language = ReadSettingValue(conn, "Language") ?? config.Language;
+            config.UiTheme  = ReadSettingValue(conn, "UiTheme")  ?? config.UiTheme;
+            config.LogLevel = ReadSettingValue(conn, "LogLevel") ?? config.LogLevel;
         }
         catch
         {
-            // DB exists but Settings table not yet created — ignore
-            return null;
+            // Settings table may not exist yet on a partially-initialised DB — keep defaults.
         }
     }
 
-    internal static void ApplyCultureBootstrap(string dbPath, string connectionString)
+    private static string? ReadSettingValue(SqliteConnection openConnection, string key)
     {
-        var stored = ReadStartupSetting(dbPath, connectionString, "Language");
+        using var cmd = openConnection.CreateCommand();
+        cmd.CommandText = "SELECT Value FROM Settings WHERE Key = @key";
+        cmd.Parameters.AddWithValue("@key", key);
+        var scalar = cmd.ExecuteScalar();
+        return scalar is DBNull or null ? null : (string)scalar;
+    }
+
+    /// <summary>
+    /// Maps the open <see cref="BootstrapConfig.Backend"/> string to the typed enum; an unknown or absent
+    /// value falls back to <see cref="DatabaseBackend.Sqlite"/> (unsupported on this build).
+    /// </summary>
+    internal static DatabaseBackend ParseBackend(string? backend)
+        => Enum.TryParse(backend, ignoreCase: true, out DatabaseBackend parsed)
+            ? parsed
+            : DatabaseBackend.Sqlite;
+
+    internal static void ApplyCultureBootstrap(BootstrapConfig config)
+    {
+        var stored = config.Language;
 
         if (stored is null)
         {
-            // First run: probe OS culture, fall back to "en" if no matching satellite
             var osCode = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
             var assemblyDir = Path.GetDirectoryName(
                 Assembly.GetExecutingAssembly().Location) ?? "";
             var satellite = Path.Combine(assemblyDir, osCode, "BookDB.Desktop.resources.dll");
             stored = File.Exists(satellite) ? osCode : "en";
-
-            // Persist best-effort (DB may not exist yet on truly first launch — DbUp hasn't run)
-            if (File.Exists(dbPath))
-            {
-                try
-                {
-                    using var conn = new SqliteConnection(connectionString);
-                    conn.Open();
-                    using var cmd = conn.CreateCommand();
-                    cmd.CommandText =
-                        "INSERT OR REPLACE INTO Settings (Key, Value) VALUES ('Language', @v)";
-                    cmd.Parameters.AddWithValue("@v", stored);
-                    cmd.ExecuteNonQuery();
-                }
-                catch { /* first-run persist is best-effort; Settings table may not exist yet */ }
-            }
         }
 
-        // Guard: invalid/malicious culture code in DB must not crash startup
+        // Guard: an invalid/malicious culture code must not crash startup.
         try
         {
             var culture = new CultureInfo(stored);
@@ -249,31 +357,33 @@ public sealed class AppHost : IAsyncDisposable
         }
         catch (CultureNotFoundException)
         {
-            // Stored code is invalid — fall back silently; default culture ("en") remains
+            // Stored code is invalid — fall back silently; default culture ("en") remains.
         }
     }
 
-    internal static LoggingLevelSwitch ApplyLogLevelBootstrap(string dbPath, string connectionString)
+    internal static LoggingLevelSwitch ApplyLogLevelBootstrap(BootstrapConfig config)
     {
-        var stored = ReadStartupSetting(dbPath, connectionString, "LogLevel");
-
-        var level = stored == "Verbose"
+        var level = config.LogLevel == "Verbose"
             ? LogEventLevel.Debug
-            : LogEventLevel.Warning;   // "Normal" or key absent
+            : LogEventLevel.Warning;   // "Normal", null, or unrecognised
 
         return new LoggingLevelSwitch(level);
     }
 
-    internal static ThemeFlavour ApplyThemeBootstrap(string dbPath, string connectionString)
+    internal static ThemeFlavour ApplyThemeBootstrap(BootstrapConfig config)
     {
-        var stored = ReadStartupSetting(dbPath, connectionString, "UiTheme");
-        var flavour = ThemeSettings.Parse(stored);
+        var flavour = ThemeSettings.Parse(config.UiTheme);
         ThemeApplier.Apply(flavour);
         return flavour;
     }
 
     internal static void HandleUnhandledException(Exception? ex)
     {
+        // A dropped remote DB connection is recoverable — surface it on the status indicator and keep going
+        // instead of treating it as a fatal crash.
+        if (TryReportConnectionLoss(ex))
+            return;
+
         try
         {
             Log.Fatal(ex, "Unhandled exception — application terminating");
@@ -290,6 +400,10 @@ public sealed class AppHost : IAsyncDisposable
         // org.freedesktop.DBus.Error.ServiceUnknown for com.canonical.AppMenu.Registrar. It is harmless
         // and surfaces here as an unobserved task exception — filter it out so it does not spam the log.
         if (IsBenignAppMenuRegistrarError(ex))
+            return;
+
+        // A dropped remote DB connection on a background task drives the status indicator, not a log error.
+        if (TryReportConnectionLoss(ex))
             return;
 
         try

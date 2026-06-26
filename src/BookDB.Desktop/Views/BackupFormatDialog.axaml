@@ -1,0 +1,49 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:BookDB.Desktop.ViewModels"
+        xmlns:res="using:BookDB.Desktop.Localization"
+        x:Class="BookDB.Desktop.Views.BackupFormatDialog"
+        x:DataType="vm:BackupFormatDialogViewModel"
+        Title="{x:Static res:Resources.BackupDialog_Title}"
+        Width="420" MinWidth="420"
+        SizeToContent="Height"
+        CanResize="False"
+        WindowStartupLocation="CenterOwner">
+    <StackPanel Margin="20" Spacing="10">
+        <RadioButton GroupName="backupFormat"
+                     Content="{x:Static res:Resources.BackupDialog_Format_Sqlite}"
+                     IsChecked="{Binding SqliteSelected, Mode=TwoWay}" />
+        <!-- Fallback note: only when the file format is chosen on a backend that can't do it. -->
+        <TextBlock Text="{x:Static res:Resources.BackupDialog_RemoteFallbackNote}"
+                   IsVisible="{Binding ShowRemoteFallbackNote}"
+                   TextWrapping="Wrap"
+                   FontSize="12"
+                   Margin="28,-2,0,0"
+                   Foreground="{DynamicResource BrushTextSecondary}" />
+        <RadioButton GroupName="backupFormat"
+                     Content="{x:Static res:Resources.BackupDialog_Format_Csv}"
+                     IsChecked="{Binding CsvSelected, Mode=TwoWay}" />
+        <!-- Destination: defaults to the auto-backup folder; Browse to change it, no separate pop-up. -->
+        <TextBlock Text="{x:Static res:Resources.Settings_Advanced_BackupFolder}"
+                   FontSize="12" Margin="0,6,0,0" />
+        <Grid ColumnDefinitions="*,Auto">
+            <TextBox Grid.Column="0"
+                     Text="{Binding DestinationFolder}"
+                     IsReadOnly="True"
+                     Watermark="{x:Static res:Resources.Settings_Advanced_BackupFolderWatermark}"
+                     Margin="0,0,8,0" />
+            <Button Grid.Column="1"
+                    Content="{x:Static res:Resources.Settings_Advanced_Browse}"
+                    Command="{Binding BrowseCommand}" />
+        </Grid>
+        <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right" Margin="0,8,0,0">
+            <Button Classes="accent"
+                    Content="{x:Static res:Resources.BackupDialog_Confirm}"
+                    Command="{Binding ConfirmCommand}"
+                    IsDefault="True" />
+            <Button Content="{x:Static res:Resources.Common_Cancel}"
+                    Command="{Binding CancelCommand}"
+                    IsCancel="True" />
+        </StackPanel>
+    </StackPanel>
+</Window>

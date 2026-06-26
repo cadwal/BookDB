@@ -36,12 +36,7 @@ public class BookDbContext(DbContextOptions<BookDbContext> options) : DbContext(
     public DbSet<BorrowerStatus> BorrowerStatuses { get; set; } = null!;
     public DbSet<Borrower> Borrowers { get; set; } = null!;
     public DbSet<Loan> Loans { get; set; } = null!;
-
-    protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
-    {
-        // SQLite has no native bool; store every bool (and bool?) property as an integer.
-        configurationBuilder.Properties<bool>().HaveConversion<int>();
-    }
+    public DbSet<ClientSession> ClientSessions { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -61,6 +56,10 @@ public class BookDbContext(DbContextOptions<BookDbContext> options) : DbContext(
 
         modelBuilder.Entity<Settings>()
             .HasKey(s => s.Key);
+
+        // SessionId is neither "Id" nor "ClientSessionId", so the key needs to be stated explicitly.
+        modelBuilder.Entity<ClientSession>()
+            .HasKey(cs => cs.SessionId);
 
         modelBuilder.Entity<BookImage>()
             .HasOne(bi => bi.BookImageType)

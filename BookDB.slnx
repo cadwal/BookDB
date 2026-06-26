@@ -6,15 +6,20 @@
   </Configurations>
   <Folder Name="/src/">
     <Project Path="src/BookDB.Data/BookDB.Data.csproj" />
+    <Project Path="src/BookDB.Data.Sqlite/BookDB.Data.Sqlite.csproj" />
+    <Project Path="src/BookDB.Data.PostgreSQL/BookDB.Data.PostgreSQL.csproj" />
     <Project Path="src/BookDB.Desktop/BookDB.Desktop.csproj" />
     <Project Path="src/BookDB.Help/BookDB.Help.csproj" />
     <Project Path="src/BookDB.Logic/BookDB.Logic.csproj" />
     <Project Path="src/BookDB.MetadataSources/BookDB.MetadataSources.csproj" />
     <Project Path="src/BookDB.Models/BookDB.Models.csproj" />
+    <Project Path="src/BookDB.Security/BookDB.Security.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/BookDB.Data.Tests/BookDB.Data.Tests.csproj" />
+    <Project Path="tests/BookDB.Data.PostgreSQL.Tests/BookDB.Data.PostgreSQL.Tests.csproj" />
     <Project Path="tests/BookDB.Desktop.Tests/BookDB.Desktop.Tests.csproj" />
     <Project Path="tests/BookDB.Logic.Tests/BookDB.Logic.Tests.csproj" />
+    <Project Path="tests/BookDB.Security.Tests/BookDB.Security.Tests.csproj" />
   </Folder>
 </Solution>

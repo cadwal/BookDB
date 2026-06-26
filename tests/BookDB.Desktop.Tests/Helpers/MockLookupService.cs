@@ -46,7 +46,7 @@ public sealed class TestLookupServiceFactory : IDisposable
 
         LookupService = new LookupService(_factory, new NullResourceProvider());
         BookService = new BookService(_factory);
-        BookSearchService = new BookSearchService(_factory);
+        BookSearchService = new BookSearchService(_factory, new BookDB.Data.Sqlite.SqliteBookSearchProvider(_factory));
         BookImageService = new BookImageService(_factory);
         BookMetadataService = new BookMetadataService(_factory);
     }
@@ -78,7 +78,7 @@ public sealed class TestLookupServiceFactory : IDisposable
         public Task<bool?> ShowAdvancedSearchDialogAsync(SavedSearch? searchToEdit = null) => Task.FromResult<bool?>(null);
         public Task<UnsavedChangesResult> ShowUnsavedChangesDialogAsync(string bookTitle) => Task.FromResult(UnsavedChangesResult.Discard);
         public Task<bool?> ShowDeleteConfirmationAsync(string message) => Task.FromResult<bool?>(null);
-        public void OpenFullDetailsWindow(int bookId) { }
+        public Task OpenFullDetailsWindowAsync(int bookId) => Task.CompletedTask;
         public Task<bool?> ShowLookupWizardDialogAsync() => Task.FromResult<bool?>(null);
         public Task<bool?> ShowMergeReviewDialogAsync(
             IReadOnlyList<BookMetadata> sources,
@@ -99,9 +99,9 @@ public sealed class TestLookupServiceFactory : IDisposable
         public Task StartBatchRecatalogAsync(IReadOnlyList<int> bookIds) => Task.CompletedTask;
         public void CloseAllSecondaryWindows() { }
         public Task ShowManageLookupsAsync(string? initialTab = null) => Task.CompletedTask;
-        public Task ShowSettingsAsync() => Task.CompletedTask;
+        public Task ShowSettingsAsync(Avalonia.Controls.Window? owner = null) => Task.CompletedTask;
         public Task ShowMaintenanceDialogAsync() => Task.CompletedTask;
-        public void OpenStatisticsWindow() { }
+        public Task OpenStatisticsWindowAsync() => Task.CompletedTask;
         public void OpenHelpWindow(HelpTab tab) { }
         public Task<IReadOnlyList<string>?> ShowCsvColumnPickerAsync(
             IReadOnlyList<string> allColumns,
@@ -120,6 +120,14 @@ public sealed class TestLookupServiceFactory : IDisposable
             int bookCount = 0) => Task.FromResult<PrintParameters?>(null);
         public Task<bool?> ShowCheckOutDialogAsync(int bookId) => Task.FromResult<bool?>(null);
         public Task ShowManageBorrowersAsync() => Task.CompletedTask;
+        public Task<(string Format, string Folder)?> ShowBackupFormatDialogAsync(bool supportsFileBackup, string configDefault, string defaultFolder) => Task.FromResult<(string, string)?>(null);
+        public Task<bool> ShowConnectDialogAsync(Avalonia.Controls.Window owner) => Task.FromResult(true);
+        public Task<StartupFailureOutcome> ShowStartupFailureDialogAsync(
+            BookDB.Data.Interfaces.ConnectionProbeResult initialResult,
+            System.Func<System.Threading.CancellationToken, Task<BookDB.Data.Interfaces.ConnectionProbeResult>> connect,
+            Avalonia.Controls.Window owner) => Task.FromResult(StartupFailureOutcome.Proceed);
+        public Task<WriteFailureChoice> ShowWriteFailureDialogAsync(string message) => Task.FromResult(WriteFailureChoice.Discard);
+        public Task<bool> ShowConnectionLostEscalationDialogAsync() => Task.FromResult(false);
     }
 
     public sealed class NullFilePickerService : IFilePickerService
@@ -142,6 +150,7 @@ public sealed class TestLookupServiceFactory : IDisposable
     {
         public Task<string> BackupSqliteAsync(string destFolder, CancellationToken ct = default, string? explicitFileName = null, IProgress<string>? progress = null) => Task.FromResult(string.Empty);
         public Task<string> BackupCsvArchiveAsync(string destFolder, CancellationToken ct = default, string? explicitFileName = null, IProgress<string>? progress = null) => Task.FromResult(string.Empty);
+        public bool SupportsFileBackup => true;
         public Task RestoreAsync(string backupZipPath, string safetyBackupPath, CancellationToken ct = default, IProgress<string>? progress = null) => Task.CompletedTask;
         public Task AutoBackupIfEnabledAsync(CancellationToken ct = default, IProgress<string>? progress = null) => Task.CompletedTask;
         public Task<bool> IsAutoBackupEnabledAsync(CancellationToken ct = default) => Task.FromResult(false);

@@ -10,6 +10,11 @@ public interface IBackupService
     // explicitFileName: if provided, uses that name exactly (enables overwrite); if null, auto-generates and auto-suffixes on conflict.
     Task<string> BackupSqliteAsync(string destFolder, CancellationToken ct = default, string? explicitFileName = null, IProgress<string>? progress = null);
     Task<string> BackupCsvArchiveAsync(string destFolder, CancellationToken ct = default, string? explicitFileName = null, IProgress<string>? progress = null);
+
+    /// <summary>True when the active backend supports a file-format (SQLite) backup; false for remote backends,
+    /// where only the engine-neutral CSV archive is available. Callers that take their own safety backup must
+    /// pick the CSV archive when this is false.</summary>
+    bool SupportsFileBackup { get; }
     Task RestoreAsync(string backupZipPath, string safetyBackupPath, CancellationToken ct = default, IProgress<string>? progress = null);
     Task AutoBackupIfEnabledAsync(CancellationToken ct = default, IProgress<string>? progress = null);
 

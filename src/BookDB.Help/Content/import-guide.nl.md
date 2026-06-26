@@ -92,7 +92,7 @@ Sla het boek op om uw wijzigingen te bewaren. Zodra elk type hooguit één afbee
 
 Als u geen back-up hebt maar nog wel uw actieve Readerware-database (de `.rw4`-map, bijv. `MyBooks.rw4`), kan BookDB die rechtstreeks lezen:
 
-1. Open **Extra > Readerware-database importeren…**.
+1. Open **Bestand > Readerware-database importeren…**.
 2. Klik op **Bladeren** en selecteer uw `.rw4`-databasemap.
 3. Klik op **Converteren**. BookDB kopieert eerst de database — uw origineel wordt nooit geopend of gewijzigd — en converteert die naar een back-upmap.
 4. Klik na het voltooien van de conversie op **Importwizard openen** om verder te gaan met dezelfde stappen voor voorbeeld, instellingen en import die hierboven zijn beschreven.

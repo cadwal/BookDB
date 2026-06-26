@@ -92,7 +92,7 @@ Guarde o livro para manter as alterações. Quando cada tipo tiver no máximo um
 
 Se não tem uma cópia de segurança, mas ainda tem a sua base de dados ativa do Readerware (a pasta `.rw4`, por ex. `MyBooks.rw4`), o BookDB pode lê-la diretamente:
 
-1. Abra **Ferramentas > Importar base de dados do Readerware…**.
+1. Abra **Ficheiro > Importar base de dados do Readerware…**.
 2. Clique em **Procurar** e selecione a sua pasta de base de dados `.rw4`.
 3. Clique em **Converter**. O BookDB copia primeiro a base de dados — o seu original nunca é aberto nem modificado — e converte-a numa pasta de cópia de segurança.
 4. Quando a conversão terminar, clique em **Abrir o assistente de importação** para continuar pelos mesmos passos de pré-visualização, definições e importação descritos acima.

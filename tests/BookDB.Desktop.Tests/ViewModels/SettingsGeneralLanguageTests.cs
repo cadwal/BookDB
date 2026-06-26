@@ -2,7 +2,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using BookDB.Desktop.Tests.Helpers;
 using BookDB.Desktop.ViewModels;
-using BookDB.Logic.Services;
 using Xunit;
 
 namespace BookDB.Desktop.Tests.ViewModels;
@@ -12,10 +11,10 @@ public sealed class SettingsGeneralLanguageTests
     [Fact]
     public async Task LoadAsync_PopulatesAvailableLanguages_WithEnglishAlwaysFirst()
     {
-        // AvailableLanguages always contains "en" as the first entry
         var settingsService = new TestLookupServiceFactory.NullSettingsService();
+        var bootstrapConfig = new InMemoryBootstrapConfigService();
         using var factory = new TestLookupServiceFactory();
-        var vm = new SettingsGeneralTabViewModel(settingsService, factory.LookupService);
+        var vm = new SettingsGeneralTabViewModel(settingsService, factory.LookupService, bootstrapConfig);
 
         await vm.LoadAsync(TestContext.Current.CancellationToken);
 
@@ -25,12 +24,12 @@ public sealed class SettingsGeneralLanguageTests
     }
 
     [Fact]
-    public async Task LoadAsync_WithNullStoredLanguage_SelectsEnglishByDefault()
+    public async Task LoadAsync_WithNoStoredLanguage_SelectsEnglishByDefault()
     {
-        // Null stored language => SelectedLanguage defaults to "en"
         var settingsService = new TestLookupServiceFactory.NullSettingsService();
+        var bootstrapConfig = new InMemoryBootstrapConfigService();   // Language null by default
         using var factory = new TestLookupServiceFactory();
-        var vm = new SettingsGeneralTabViewModel(settingsService, factory.LookupService);
+        var vm = new SettingsGeneralTabViewModel(settingsService, factory.LookupService, bootstrapConfig);
 
         await vm.LoadAsync(TestContext.Current.CancellationToken);
 
@@ -39,34 +38,33 @@ public sealed class SettingsGeneralLanguageTests
     }
 
     [Fact]
-    public async Task SaveAsync_PersistsSelectedLanguageViaCultureName()
+    public async Task LanguageChanged_FalseAfterLoad_TrueAfterSwitching()
     {
-        // SaveAsync writes SelectedLanguage.CultureName to ISettingsService key "Language"
-        var settingsStore = new InMemorySettingsService();
+        var settingsService = new TestLookupServiceFactory.NullSettingsService();
+        var bootstrapConfig = new InMemoryBootstrapConfigService();
         using var factory = new TestLookupServiceFactory();
-        var vm = new SettingsGeneralTabViewModel(settingsStore, factory.LookupService);
-
+        var vm = new SettingsGeneralTabViewModel(settingsService, factory.LookupService, bootstrapConfig);
         await vm.LoadAsync(TestContext.Current.CancellationToken);
 
+        Assert.False(vm.LanguageChanged);
+
+        vm.SelectedLanguage = new LanguageOption("de", "Deutsch");
+
+        Assert.True(vm.LanguageChanged);
+    }
+
+    [Fact]
+    public async Task SaveAsync_PersistsSelectedLanguageToConfig()
+    {
+        var settingsService = new TestLookupServiceFactory.NullSettingsService();
+        var bootstrapConfig = new InMemoryBootstrapConfigService();
+        using var factory = new TestLookupServiceFactory();
+        var vm = new SettingsGeneralTabViewModel(settingsService, factory.LookupService, bootstrapConfig);
+
+        await vm.LoadAsync(TestContext.Current.CancellationToken);
         vm.SelectedLanguage = vm.AvailableLanguages.First(l => l.CultureName == "en");
         await vm.SaveAsync(TestContext.Current.CancellationToken);
 
-        var stored = await settingsStore.GetAsync("Language", TestContext.Current.CancellationToken);
-        Assert.Equal("en", stored);
-    }
-
-    // Minimal in-memory ISettingsService for roundtrip tests
-    private sealed class InMemorySettingsService : ISettingsService
-    {
-        private readonly System.Collections.Generic.Dictionary<string, string?> _store = [];
-
-        public System.Threading.Tasks.Task<string?> GetAsync(string key, System.Threading.CancellationToken ct = default)
-            => System.Threading.Tasks.Task.FromResult(_store.TryGetValue(key, out var v) ? v : null);
-
-        public System.Threading.Tasks.Task SetAsync(string key, string? value, System.Threading.CancellationToken ct = default)
-        {
-            _store[key] = value;
-            return System.Threading.Tasks.Task.CompletedTask;
-        }
+        Assert.Equal("en", bootstrapConfig.Config.Language);
     }
 }

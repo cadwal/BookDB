@@ -775,6 +775,36 @@
   <data name="Menu_RestoreBackup" xml:space="preserve">
     <value>Restore from Backup...</value>
   </data>
+  <data name="Menu_Backup" xml:space="preserve">
+    <value>Backup...</value>
+  </data>
+  <data name="BackupDialog_Title" xml:space="preserve">
+    <value>Backup</value>
+  </data>
+  <data name="BackupDialog_Format_Sqlite" xml:space="preserve">
+    <value>Database file (SQLite)</value>
+  </data>
+  <data name="BackupDialog_Format_Csv" xml:space="preserve">
+    <value>CSV archive (portable)</value>
+  </data>
+  <data name="BackupDialog_RemoteFallbackNote" xml:space="preserve">
+    <value>A remote database has no file backup; the CSV archive is used instead.</value>
+  </data>
+  <data name="Settings_Database_SavedPasswordHint" xml:space="preserve">
+    <value>A password is saved for this server — leave blank to keep it.</value>
+  </data>
+  <data name="Shutdown_CloseApplication" xml:space="preserve">
+    <value>Close Application</value>
+  </data>
+  <data name="Shutdown_CloseAndPause" xml:space="preserve">
+    <value>Close and Pause</value>
+  </data>
+  <data name="Shutdown_KeepRunning" xml:space="preserve">
+    <value>Keep Running</value>
+  </data>
+  <data name="BackupDialog_Confirm" xml:space="preserve">
+    <value>Back up</value>
+  </data>
   <data name="Menu_Settings" xml:space="preserve">
     <value>Settings...</value>
   </data>
@@ -2181,7 +2211,7 @@ Potential duplicates: {3}  |  With covers: {4}</value>
     <value>Restore complete</value>
   </data>
   <data name="Restore_Complete_Body" xml:space="preserve">
-    <value>The application will now close. Reopen it to use the restored library.</value>
+    <value>BookDB will now restart to load the restored library.</value>
   </data>
   <data name="Restore_Failed" xml:space="preserve">
     <value>Restore failed: {0}. Your original library was not modified.</value>
@@ -2572,5 +2602,302 @@ Potential duplicates: {3}  |  With covers: {4}</value>
   </data>
   <data name="Maintenance_SafetyBackupSaved" xml:space="preserve">
     <value>Safety backup saved to: {0}</value>
+  </data>
+  <data name="Settings_Tab_Database" xml:space="preserve">
+    <value>Database</value>
+  </data>
+  <data name="Settings_Database_BackendLabel" xml:space="preserve">
+    <value>Database backend</value>
+  </data>
+  <data name="Settings_Database_Backend_Sqlite" xml:space="preserve">
+    <value>Local file (SQLite)</value>
+  </data>
+  <data name="Settings_Database_Backend_Postgres" xml:space="preserve">
+    <value>PostgreSQL server</value>
+  </data>
+  <data name="Settings_Database_ServerSectionHeader" xml:space="preserve">
+    <value>Server connection</value>
+  </data>
+  <data name="Settings_Database_Host" xml:space="preserve">
+    <value>Host</value>
+  </data>
+  <data name="Settings_Database_Port" xml:space="preserve">
+    <value>Port</value>
+  </data>
+  <data name="Settings_Database_DatabaseName" xml:space="preserve">
+    <value>Database</value>
+  </data>
+  <data name="Settings_Database_Username" xml:space="preserve">
+    <value>Username</value>
+  </data>
+  <data name="Settings_Database_Password" xml:space="preserve">
+    <value>Password</value>
+  </data>
+  <data name="Settings_Database_TlsLabel" xml:space="preserve">
+    <value>TLS / SSL mode</value>
+  </data>
+  <data name="Settings_Database_Tls_Disable" xml:space="preserve">
+    <value>Disable</value>
+  </data>
+  <data name="Settings_Database_Tls_Prefer" xml:space="preserve">
+    <value>Prefer</value>
+  </data>
+  <data name="Settings_Database_Tls_Require" xml:space="preserve">
+    <value>Require</value>
+  </data>
+  <data name="Settings_Database_Tls_VerifyFull" xml:space="preserve">
+    <value>Verify full</value>
+  </data>
+  <data name="Settings_Database_TlsDisableWarning" xml:space="preserve">
+    <value>Disabling TLS sends the password and data unencrypted across the network. Use it only on a trusted local network.</value>
+  </data>
+  <data name="Settings_Database_KeyringUnavailable" xml:space="preserve">
+    <value>PostgreSQL needs an operating-system credential store to keep the password safe, but none is available on this machine. BookDB will keep using the local SQLite database.</value>
+  </data>
+  <data name="Settings_Database_RestartNote" xml:space="preserve">
+    <value>Switching the database takes effect after BookDB restarts.</value>
+  </data>
+  <data name="Settings_Database_Apply_PasswordRequired" xml:space="preserve">
+    <value>Enter the database password before applying.</value>
+  </data>
+  <data name="Startup_Failure_Title" xml:space="preserve">
+    <value>Cannot connect to the database</value>
+  </data>
+  <data name="Startup_Failure_Intro" xml:space="preserve">
+    <value>BookDB could not reach the PostgreSQL server.</value>
+  </data>
+  <data name="Startup_Failure_Retry" xml:space="preserve">
+    <value>Retry</value>
+  </data>
+  <data name="Startup_Failure_OpenSettings" xml:space="preserve">
+    <value>Open settings</value>
+  </data>
+  <data name="Startup_Failure_Quit" xml:space="preserve">
+    <value>Quit</value>
+  </data>
+  <data name="Startup_Failure_RetriesExhausted" xml:space="preserve">
+    <value>Retrying hasn't helped. Check that the server is running and review your connection settings.</value>
+  </data>
+  <data name="ConnectDialog_Header" xml:space="preserve">
+    <value>Another client is connected</value>
+  </data>
+  <data name="ConnectDialog_Body" xml:space="preserve">
+    <value>BookDB is already open on {0} (last seen {1}, version {2}).</value>
+  </data>
+  <data name="ConnectDialog_Risk" xml:space="preserve">
+    <value>Opening a second client risks data conflicts. Only one client should access this database at a time.</value>
+  </data>
+  <data name="ConnectDialog_Quit" xml:space="preserve">
+    <value>Quit</value>
+  </data>
+  <data name="ConnectDialog_ConnectAnyway" xml:space="preserve">
+    <value>Connect anyway — I accept the risk</value>
+  </data>
+  <data name="ConnectDialog_ConnectAnyway_Waiting" xml:space="preserve">
+    <value>Connect anyway ({0})</value>
+  </data>
+  <data name="ConnectDialog_Age_Seconds" xml:space="preserve">
+    <value>{0} seconds ago</value>
+  </data>
+  <data name="ConnectDialog_Age_Minutes" xml:space="preserve">
+    <value>{0} minutes ago</value>
+  </data>
+  <data name="ConnectDialog_Age_Hours" xml:space="preserve">
+    <value>{0} hours ago</value>
+  </data>
+  <data name="ConnectDialog_Age_Days" xml:space="preserve">
+    <value>{0} days ago</value>
+  </data>
+  <data name="Settings_RestartConfirm_Title" xml:space="preserve">
+    <value>Restart required</value>
+  </data>
+  <data name="Settings_RestartConfirm_Body" xml:space="preserve">
+    <value>Some changes take effect only after a restart. Restart BookDB now?</value>
+  </data>
+  <data name="Settings_Database_RestartConfirm_Body" xml:space="preserve">
+    <value>Switching to {0} requires restarting BookDB. The application will close and reopen now. Continue?</value>
+  </data>
+  <data name="Settings_Database_TestConnection" xml:space="preserve">
+    <value>Test connection</value>
+  </data>
+  <data name="Settings_Database_Testing" xml:space="preserve">
+    <value>Testing…</value>
+  </data>
+  <data name="Settings_Database_TestSuccess" xml:space="preserve">
+    <value>Connected — PostgreSQL {0}, {1} books.</value>
+  </data>
+  <data name="Settings_Database_TestSuccessUninitialized" xml:space="preserve">
+    <value>Connected — PostgreSQL {0}. No BookDB data found in this database yet.</value>
+  </data>
+  <data name="Settings_Database_TestError_Auth" xml:space="preserve">
+    <value>Authentication failed — check the username and password.</value>
+  </data>
+  <data name="Settings_Database_TestError_Refused" xml:space="preserve">
+    <value>Connection refused — check the host and port, and that the server is running.</value>
+  </data>
+  <data name="Settings_Database_TestError_Timeout" xml:space="preserve">
+    <value>Connection timed out — check the host and port, and your network.</value>
+  </data>
+  <data name="Settings_Database_TestError_Tls" xml:space="preserve">
+    <value>TLS/SSL error — check the TLS mode and the server's certificate.</value>
+  </data>
+  <data name="Settings_Database_TestError_Unknown" xml:space="preserve">
+    <value>Could not connect: {0}</value>
+  </data>
+  <data name="Settings_Database_TestError_UnsupportedVersion" xml:space="preserve">
+    <value>BookDB requires PostgreSQL {0} or later — this server is {1}.</value>
+  </data>
+  <data name="WriteFailure_Title" xml:space="preserve">
+    <value>Couldn't save changes</value>
+  </data>
+  <data name="WriteFailure_Retry_Button" xml:space="preserve">
+    <value>Retry</value>
+  </data>
+  <data name="WriteFailure_Discard_Button" xml:space="preserve">
+    <value>Discard changes</value>
+  </data>
+  <data name="ConnectionLost_Title" xml:space="preserve">
+    <value>Database connection lost</value>
+  </data>
+  <data name="ConnectionLost_Body" xml:space="preserve">
+    <value>The database has been unreachable for several minutes. You can keep waiting while reconnection is retried, or quit the application.</value>
+  </data>
+  <data name="ConnectionLost_Quit_Button" xml:space="preserve">
+    <value>Quit</value>
+  </data>
+  <data name="ConnectionLost_KeepWaiting_Button" xml:space="preserve">
+    <value>Keep waiting</value>
+  </data>
+  <data name="StatusBar_Connection_Reconnecting" xml:space="preserve">
+    <value>Reconnecting to the database…</value>
+  </data>
+  <data name="StatusBar_Connection_Lost" xml:space="preserve">
+    <value>Database connection lost</value>
+  </data>
+  <data name="MoveLibrary_Header" xml:space="preserve">
+    <value>Move library</value>
+  </data>
+  <data name="MoveLibrary_Intro" xml:space="preserve">
+    <value>Copy the entire library to the other database backend. The current database is the source; choose and check the target before moving. A safety backup is taken automatically before any data is written.</value>
+  </data>
+  <data name="MoveLibrary_SourceLabel" xml:space="preserve">
+    <value>Current database (source):</value>
+  </data>
+  <data name="MoveLibrary_Source_Sqlite" xml:space="preserve">
+    <value>Local SQLite — {0}</value>
+  </data>
+  <data name="MoveLibrary_Source_Postgres" xml:space="preserve">
+    <value>PostgreSQL — {0}</value>
+  </data>
+  <data name="MoveLibrary_TargetLabel" xml:space="preserve">
+    <value>Move to:</value>
+  </data>
+  <data name="MoveLibrary_Target_Postgres" xml:space="preserve">
+    <value>PostgreSQL server</value>
+  </data>
+  <data name="MoveLibrary_Target_Sqlite" xml:space="preserve">
+    <value>Local SQLite file</value>
+  </data>
+  <data name="MoveLibrary_Check" xml:space="preserve">
+    <value>Check target</value>
+  </data>
+  <data name="MoveLibrary_Target_Empty" xml:space="preserve">
+    <value>Target is empty — ready to receive the library.</value>
+  </data>
+  <data name="MoveLibrary_Target_HasData" xml:space="preserve">
+    <value>⚠ Target already contains {0} books — Move will REPLACE all data.</value>
+  </data>
+  <data name="MoveLibrary_Acknowledge" xml:space="preserve">
+    <value>I understand — replace all data in the target database</value>
+  </data>
+  <data name="MoveLibrary_SwitchActive" xml:space="preserve">
+    <value>Switch the active database to the target when finished</value>
+  </data>
+  <data name="MoveLibrary_Move" xml:space="preserve">
+    <value>Move library</value>
+  </data>
+  <data name="MoveLibrary_ProgressHeader" xml:space="preserve">
+    <value>Progress</value>
+  </data>
+  <data name="MoveLibrary_Progress_Table" xml:space="preserve">
+    <value>{0}: {1}</value>
+  </data>
+  <data name="MoveLibrary_Progress_TableRunning" xml:space="preserve">
+    <value>{0}: {1} / {2}</value>
+  </data>
+  <data name="MoveLibrary_SafetyBackupSaved" xml:space="preserve">
+    <value>Safety backup saved: {0}</value>
+  </data>
+  <data name="MoveLibrary_TargetBackupSaved" xml:space="preserve">
+    <value>Target safety backup saved: {0}</value>
+  </data>
+  <data name="MoveLibrary_Complete" xml:space="preserve">
+    <value>Migration complete — all record counts match.</value>
+  </data>
+  <data name="MoveLibrary_CountMismatch" xml:space="preserve">
+    <value>⚠ Migration finished but record counts do not match; switching the active database is blocked.</value>
+  </data>
+  <data name="MoveLibrary_Failed" xml:space="preserve">
+    <value>Migration failed at {0}. The target holds partial data and must not be used. Your data is safe in the backup: {1}</value>
+  </data>
+  <data name="MoveLibrary_Phase_Preparing" xml:space="preserve">
+    <value>Preparing target…</value>
+  </data>
+  <data name="MoveLibrary_Phase_Copying" xml:space="preserve">
+    <value>Copying data…</value>
+  </data>
+  <data name="MoveLibrary_Phase_Finalizing" xml:space="preserve">
+    <value>Finalizing…</value>
+  </data>
+  <data name="MoveLibrary_Phase_Verifying" xml:space="preserve">
+    <value>Verifying record counts…</value>
+  </data>
+  <data name="MoveLibrary_Table_Books" xml:space="preserve">
+    <value>Books</value>
+  </data>
+  <data name="MoveLibrary_Table_CoverImages" xml:space="preserve">
+    <value>Cover images</value>
+  </data>
+  <data name="MoveLibrary_Table_Loans" xml:space="preserve">
+    <value>Loans</value>
+  </data>
+  <data name="MoveLibrary_Table_Borrowers" xml:space="preserve">
+    <value>Borrowers</value>
+  </data>
+  <data name="MoveLibrary_Table_People" xml:space="preserve">
+    <value>People</value>
+  </data>
+  <data name="MoveLibrary_Table_Publishers" xml:space="preserve">
+    <value>Publishers</value>
+  </data>
+  <data name="Restore_UnknownFormat" xml:space="preserve">
+    <value>The selected file is not a recognised BookDB backup (no library database or CSV archive inside).</value>
+  </data>
+  <data name="Restore_SqliteIntoRemote" xml:space="preserve">
+    <value>This is a local SQLite file backup and can't be restored into the current remote database. Use a CSV archive backup, or switch to the local database first.</value>
+  </data>
+  <data name="Restore_AdoptBackend_Title" xml:space="preserve">
+    <value>Apply the backup's database connection?</value>
+  </data>
+  <data name="Restore_AdoptBackend_Body" xml:space="preserve">
+    <value>This backup was created on a {0} database. Switch the active database to that connection and restart? Choosing No keeps your current database.</value>
+  </data>
+  <data name="RestoreTarget_Title" xml:space="preserve">
+    <value>Where to restore</value>
+  </data>
+  <data name="RestoreTarget_Body" xml:space="preserve">
+    <value>This backup was created on the PostgreSQL server {0}. Restore the data into that server, or into your current database?</value>
+  </data>
+  <data name="RestoreTarget_Archived" xml:space="preserve">
+    <value>Restore into the backup's server</value>
+  </data>
+  <data name="RestoreTarget_Current" xml:space="preserve">
+    <value>Restore into the current database</value>
+  </data>
+  <data name="RestoreTarget_Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Restore_NoCredentialsForTarget" xml:space="preserve">
+    <value>No saved credentials for the backup's database server. Configure it in Settings → Database first, then try again.</value>
   </data>
 </root>

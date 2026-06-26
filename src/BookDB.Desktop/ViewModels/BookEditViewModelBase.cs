@@ -5,6 +5,8 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using BookDB.Data.Interfaces;
+using BookDB.Desktop.Helpers;
 using BookDB.Desktop.Messages;
 using BookDB.Desktop.Services;
 using BookDB.Logic.Services;
@@ -23,6 +25,9 @@ public abstract partial class BookEditViewModelBase : ObservableObject
     protected readonly ILookupService _lookupService;
     protected readonly IFilePickerService _filePickerService;
     protected readonly IWindowService _windowService;
+    private readonly IRemoteWriteGuard _writeGuard;
+    private readonly IConnectionHealthMonitor _connectionMonitor;
+    private readonly IConnectionFailureClassifier _connectionClassifier;
     private bool _loadingInProgress;
     private bool _suppressContributorDirty;
 
@@ -127,12 +132,18 @@ public abstract partial class BookEditViewModelBase : ObservableObject
         ILookupService lookupService,
         IFilePickerService filePickerService,
         IWindowService windowService,
-        IHttpClientFactory httpClientFactory)
+        IRemoteWriteGuard writeGuard,
+        IHttpClientFactory httpClientFactory,
+        IConnectionHealthMonitor connectionMonitor,
+        IConnectionFailureClassifier connectionClassifier)
     {
         _bookService = bookService;
         _lookupService = lookupService;
         _filePickerService = filePickerService;
         _windowService = windowService;
+        _writeGuard = writeGuard;
+        _connectionMonitor = connectionMonitor;
+        _connectionClassifier = connectionClassifier;
         ImageEditor = new ImageEditorViewModel(bookImageService, filePickerService, httpClientFactory);
         ImageEditor.PropertyChanged += (_, _) =>
         {
@@ -145,29 +156,43 @@ public abstract partial class BookEditViewModelBase : ObservableObject
         CategoryRows.CollectionChanged += OnCategoryRowsCollectionChanged;
     }
 
+    // Shared by this base and its subclasses (BookDetail, FullDetails). Returns true when the failure was a
+    // connection loss so callers can react (e.g. close a window that would otherwise sit blank).
+    protected bool ReportIfConnectionLoss(Exception ex) =>
+        _connectionMonitor.ReportIfConnectionLoss(_connectionClassifier, ex);
+
     [RelayCommand(CanExecute = nameof(CanSave))]
     protected virtual async Task SaveAsync()
     {
         if (CurrentBook == null || string.IsNullOrWhiteSpace(EditTitle)) return;
         try
         {
-            CopyEditFieldsToBook(CurrentBook);
-            await _bookService.UpdateBookAsync(CurrentBook);
-            var contributorPairs = Contributors
-                .Where(r => !string.IsNullOrWhiteSpace(r.PersonName) && r.RoleId.HasValue)
-                .Select(r => (r.PersonName.Trim(), r.RoleId))
-                .ToList();
-            await _bookService.UpdateBookContributorsAsync(CurrentBook.BookId, contributorPairs);
-            var categoryIds = CategoryRows.Where(r => r.IsSelected).Select(r => r.CategoryId).ToList();
-            await _bookService.UpdateBookCategoriesAsync(CurrentBook.BookId, categoryIds);
-            await ImageEditor.FlushPendingAsync(CurrentBook.BookId);
+            // The write is wrapped so a mid-session connection loss prompts Retry / Discard instead of
+            // silently dropping the edit; ordinary errors fall through to the catch below.
+            var outcome = await _writeGuard.ExecuteAsync(async ct =>
+            {
+                CopyEditFieldsToBook(CurrentBook);
+                await _bookService.UpdateBookAsync(CurrentBook, ct);
+                var contributorPairs = Contributors
+                    .Where(r => !string.IsNullOrWhiteSpace(r.PersonName) && r.RoleId.HasValue)
+                    .Select(r => (r.PersonName.Trim(), r.RoleId))
+                    .ToList();
+                await _bookService.UpdateBookContributorsAsync(CurrentBook.BookId, contributorPairs, ct);
+                var categoryIds = CategoryRows.Where(r => r.IsSelected).Select(r => r.CategoryId).ToList();
+                await _bookService.UpdateBookCategoriesAsync(CurrentBook.BookId, categoryIds, ct);
+                await ImageEditor.FlushPendingAsync(CurrentBook.BookId);
+            });
+
+            // Either way the in-memory edit is resolved: saved, or discarded by the user's choice.
             HasUnsavedChanges = false;
+            if (outcome == WriteResult.Discarded)
+                return;
 
             // Reload book to refresh navigation properties (Publisher, Format, etc.)
             var refreshed = await _bookService.GetBookByIdAsync(CurrentBook.BookId);
             if (refreshed != null)
-                CurrentBook = refreshed;            
-                
+                CurrentBook = refreshed;
+
             WeakReferenceMessenger.Default.Send(new BookSavedMessage(CurrentBook.BookId));
         }
         catch (Exception ex)

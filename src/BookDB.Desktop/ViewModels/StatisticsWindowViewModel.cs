@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using BookDB.Data.Interfaces;
+using BookDB.Desktop.Helpers;
 using BookDB.Logic.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -22,6 +24,8 @@ public record BreakdownRowDisplay(string Label, int Count, double Percentage)
 public sealed partial class StatisticsWindowViewModel : ObservableObject
 {
     private readonly IStatisticsService _statisticsService;
+    private readonly IConnectionHealthMonitor _connectionMonitor;
+    private readonly IConnectionFailureClassifier _connectionClassifier;
 
     /// <summary>Set by WindowService to close the window.</summary>
     public Action? CloseWindow { get; set; }
@@ -47,13 +51,24 @@ public sealed partial class StatisticsWindowViewModel : ObservableObject
     public ObservableCollection<BreakdownRowDisplay> LanguageBreakdown { get; } = [];
     public ObservableCollection<BreakdownRowDisplay> PublishedYearBreakdown { get; } = [];
 
-    public StatisticsWindowViewModel(IStatisticsService statisticsService)
+    public StatisticsWindowViewModel(
+        IStatisticsService statisticsService,
+        IConnectionHealthMonitor connectionMonitor,
+        IConnectionFailureClassifier connectionClassifier)
     {
         _statisticsService = statisticsService;
+        _connectionMonitor = connectionMonitor;
+        _connectionClassifier = connectionClassifier;
     }
 
     [RelayCommand]
-    public async Task RefreshAsync()
+    public Task RefreshAsync() => TryRefreshAsync();
+
+    /// <summary>
+    /// Loads the statistics; returns false when the load failed because the remote connection is down (reported
+    /// to the status indicator) so the caller can avoid opening a blank statistics window.
+    /// </summary>
+    public async Task<bool> TryRefreshAsync()
     {
         try
         {
@@ -64,10 +79,15 @@ public sealed partial class StatisticsWindowViewModel : ObservableObject
             ReplaceCollection(CollectionBreakdown, await _statisticsService.GetBreakdownByCollectionAsync());
             ReplaceCollection(LanguageBreakdown, await _statisticsService.GetBreakdownByLanguageAsync());
             ReplaceCollection(PublishedYearBreakdown, await _statisticsService.GetBreakdownByPublishedYearAsync());
+            return true;
         }
         catch (Exception ex)
         {
             Log.Error(ex, "StatisticsWindowViewModel: RefreshAsync failed");
+            // A dropped remote connection drives the shared status-bar indicator; the monitor retries in the
+            // background. Other errors just leave the figures as they were.
+            _connectionMonitor.ReportIfConnectionLoss(_connectionClassifier, ex);
+            return false;
         }
     }
 

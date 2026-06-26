@@ -1,0 +1,139 @@
+using System;
+using System.Collections.Generic;
+using BookDB.Data.Interfaces;
+using BookDB.Models;
+using BookDB.Security;
+using GitCredentialManager;
+using Xunit;
+
+namespace BookDB.Security.Tests;
+
+/// <summary>
+/// Covers the credential-store wrapper, the startup availability probe and its no-store fallback, and the
+/// account-key format used to scope a server's password.
+/// </summary>
+public sealed class SecretStoreTests
+{
+    [Fact]
+    public void CredentialManagerSecretStore_RoundTripsUnderTheBookdbService()
+    {
+        var fake = new FakeCredentialStore();
+        var store = new CredentialManagerSecretStore(fake);
+
+        store.Set("user@host:5432/db", "hunter2");
+
+        Assert.Equal("hunter2", store.Get("user@host:5432/db"));
+        // GCM's Windows backend runs new Uri(service); a non-absolute-URL service throws UriFormatException.
+        Assert.True(Uri.TryCreate(fake.LastService, UriKind.Absolute, out _),
+            $"service must be an absolute URL for Git Credential Manager, was '{fake.LastService}'");
+
+        store.Delete("user@host:5432/db");
+        Assert.Null(store.Get("user@host:5432/db"));
+    }
+
+    [Fact]
+    public void CredentialManagerSecretStore_Get_ReturnsNull_ForUnknownAccount()
+    {
+        var store = new CredentialManagerSecretStore(new FakeCredentialStore());
+
+        Assert.Null(store.Get("nobody@nowhere:5432/db"));
+    }
+
+    [Fact]
+    public void NullSecretStore_GetReturnsNull_AndWritesAreSafeNoOps()
+    {
+        var store = new NullSecretStore();
+
+        store.Set("a", "b");   // must not throw
+        store.Delete("a");     // must not throw
+        Assert.Null(store.Get("a"));
+    }
+
+    [Fact]
+    public void Create_WithWorkingStore_IsAvailable_AndProbesWithARead()
+    {
+        var fake = new FakeCredentialStore();
+
+        var (store, availability) = SecretStoreFactory.Create(() => fake);
+
+        Assert.IsType<CredentialManagerSecretStore>(store);
+        Assert.True(availability.IsAvailable);
+        Assert.Null(availability.UnavailableReason);
+        Assert.True(fake.GetCalled, "The probe should perform a read to confirm the store responds.");
+    }
+
+    [Fact]
+    public void Create_WhenStoreUnavailable_FallsBackToNullStore_AndReportsReason()
+    {
+        var (store, availability) = SecretStoreFactory.Create(
+            () => throw new InvalidOperationException("no Secret Service"));
+
+        Assert.IsType<NullSecretStore>(store);
+        Assert.False(availability.IsAvailable);
+        Assert.Contains("no Secret Service", availability.UnavailableReason);
+    }
+
+    [Theory]
+    [InlineData("bookdb_user", "db.example.com", 6543, "library", "bookdb_user@db.example.com:6543/library")]
+    [InlineData("", "localhost", 5432, "bookdb", "@localhost:5432/bookdb")]
+    public void PostgresOptions_AccountKey_MatchesUserAtHostPortDatabase(
+        string username, string host, int port, string database, string expected)
+    {
+        var options = new PostgresOptions { Username = username, Host = host, Port = port, Database = database };
+
+        Assert.Equal(expected, options.AccountKey);
+    }
+
+    // In-memory ICredentialStore so the wrapper and probe can be tested without a real OS keychain.
+    private sealed class FakeCredentialStore : ICredentialStore
+    {
+        private readonly Dictionary<(string service, string account), string> _secrets = new();
+
+        public string? LastService { get; private set; }
+        public bool GetCalled { get; private set; }
+
+        public ICredential? Get(string service, string account)
+        {
+            GetCalled = true;
+            LastService = service;
+            return _secrets.TryGetValue((service, account), out var secret)
+                ? new FakeCredential(account, secret)
+                : null;
+        }
+
+        public void AddOrUpdate(string service, string account, string secret)
+        {
+            LastService = service;
+            _secrets[(service, account)] = secret;
+        }
+
+        public bool Remove(string service, string account)
+        {
+            LastService = service;
+            return _secrets.Remove((service, account));
+        }
+
+        public IList<string> GetAccounts(string service)
+        {
+            var accounts = new List<string>();
+            foreach (var key in _secrets.Keys)
+            {
+                if (key.service == service)
+                    accounts.Add(key.account);
+            }
+            return accounts;
+        }
+    }
+
+    private sealed class FakeCredential : ICredential
+    {
+        public FakeCredential(string account, string password)
+        {
+            Account = account;
+            Password = password;
+        }
+
+        public string Account { get; }
+        public string Password { get; }
+    }
+}

@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using BookDB.Data.Interfaces;
 using BookDB.Desktop.Messages;
 using BookDB.Desktop.Services;
 using BookDB.Logic.Services;
@@ -38,7 +39,9 @@ public sealed partial class ManageLookupsViewModel : ObservableObject
         ILookupService lookupService,
         IWindowService windowService,
         IMessenger messenger,
-        ISettingsService settingsService)
+        ISettingsService settingsService,
+        IConnectionHealthMonitor connectionMonitor,
+        IConnectionFailureClassifier connectionClassifier)
     {
         _service = service;
         _lookupService = lookupService;
@@ -54,6 +57,16 @@ public sealed partial class ManageLookupsViewModel : ObservableObject
         CategoryTab      = new CategoryTabViewModel(service, lookupService, windowService, messenger);
         PurchasePlaceTab = new PurchasePlaceTabViewModel(service, lookupService, windowService, messenger);
         CollectionTab    = new CollectionTabViewModel(service, lookupService, windowService, messenger, settingsService);
+
+        // Give every lookup tab the connection monitor/classifier so a write that fails on a dropped remote
+        // connection lights the shared status-bar indicator instead of a generic "save failed" message.
+        LookupTabViewModel[] tabs =
+            [PublisherTab, SeriesTab, LocationTab, OwnerTab, LanguageTab, CategoryTab, PurchasePlaceTab, CollectionTab];
+        foreach (var tab in tabs)
+        {
+            tab.ConnectionMonitor = connectionMonitor;
+            tab.ConnectionClassifier = connectionClassifier;
+        }
     }
 
     public async Task InitializeAsync(string? initialTab = null)

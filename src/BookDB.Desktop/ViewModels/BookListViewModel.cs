@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Media.Imaging;
 using Avalonia.Threading;
+using BookDB.Data.Interfaces;
 using BookDB.Desktop.Helpers;
 using BookDB.Desktop.Localization;
 using BookDB.Desktop.Messages;
@@ -38,6 +39,8 @@ public partial class BookListViewModel :
     private readonly ILookupService _lookupService;
     private readonly IClipboardService _clipboardService;
     private readonly ILoanService _loanService;
+    private readonly IConnectionHealthMonitor _connectionMonitor;
+    private readonly IConnectionFailureClassifier _connectionClassifier;
     private IReadOnlyList<Collection> _cachedCollections = [];
 
     // Active filter state
@@ -187,7 +190,9 @@ public partial class BookListViewModel :
         ISettingsService settingsService,
         ILookupService lookupService,
         IClipboardService clipboardService,
-        ILoanService loanService)
+        ILoanService loanService,
+        IConnectionHealthMonitor connectionMonitor,
+        IConnectionFailureClassifier connectionClassifier)
         : base(messenger)
     {
         _bookService = bookService;
@@ -198,6 +203,8 @@ public partial class BookListViewModel :
         _lookupService = lookupService;
         _clipboardService = clipboardService;
         _loanService = loanService;
+        _connectionMonitor = connectionMonitor;
+        _connectionClassifier = connectionClassifier;
         IsActive = true;
 
         Books.CollectionChanged += (_, _) => OnPropertyChanged(nameof(HasBooks));
@@ -358,10 +365,10 @@ public partial class BookListViewModel :
     private bool CanDuplicateBook() => SelectedBooks.Count == 1;
 
     [RelayCommand(CanExecute = nameof(CanOpenFullDetails))]
-    private void OpenFullDetails()
+    private async Task OpenFullDetails()
     {
         if (SelectedBooks.Count != 1) return;
-        _windowService.OpenFullDetailsWindow(SelectedBooks[0].BookId);
+        await _windowService.OpenFullDetailsWindowAsync(SelectedBooks[0].BookId);
     }
 
     private bool CanOpenFullDetails() => SelectedBooks.Count == 1;
@@ -645,6 +652,9 @@ public partial class BookListViewModel :
         }
         catch (Exception ex)
         {
+            // A read that fails on a dropped connection drives the health indicator; the monitor retries in
+            // the background and refreshes the view on reconnection. Other errors just log.
+            _connectionMonitor.ReportIfConnectionLoss(_connectionClassifier, ex);
             Log.Error(ex, "Failed to load books");
         }
     }

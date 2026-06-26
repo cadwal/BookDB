@@ -1,6 +1,7 @@
 using System;
 using BookDB.Desktop.Localization;
 using BookDB.Logic.Services;
+using BookDB.Models;
 using Xunit;
 
 namespace BookDB.Desktop.Tests.Localization;

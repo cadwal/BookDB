@@ -6,9 +6,11 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Layout;
 using Avalonia.Media;
+using BookDB.Data.Interfaces;
 using BookDB.Desktop.ViewModels;
 using BookDB.Desktop.Views;
 using BookDB.Help;
+using BookDB.Logic.Services;
 using BookDB.Models.Entities;
 using BookDB.Models.Metadata;
 using CommunityToolkit.Mvvm.Input;
@@ -87,7 +89,7 @@ public sealed class WindowService : IWindowService
         return await dialog.ShowDialog<bool?>(GetMainWindow());
     }
 
-    public void OpenFullDetailsWindow(int bookId)
+    public async Task OpenFullDetailsWindowAsync(int bookId)
     {
         if (_fullDetailsWindows.TryGetValue(bookId, out var existing) && existing.IsVisible)
         {
@@ -95,6 +97,10 @@ public sealed class WindowService : IWindowService
             return;
         }
         var viewModel = _serviceProvider.GetRequiredService<FullDetailsWindowViewModel>();
+        // Load before creating the window so a failed load (e.g. the remote DB is down) never leaves a blank
+        // window on screen — LoadBookAsync surfaces a connection loss on the status indicator instead.
+        if (!await viewModel.LoadBookAsync(bookId))
+            return;
         var window = new FullDetailsWindow { DataContext = viewModel };
         viewModel.CloseWindow = () => window.Close();
         _fullDetailsWindows[bookId] = window;
@@ -114,7 +120,6 @@ public sealed class WindowService : IWindowService
             _secondaryWindows.Remove(window);
             mainWindowViewModel.RemoveOpenWindow(openWindowEntry);
         };
-        _ = viewModel.LoadBookAsync(bookId);
     }
 
     public async Task<bool?> ShowLookupWizardDialogAsync()
@@ -312,15 +317,17 @@ public sealed class WindowService : IWindowService
         _manageLookupsWindow.Show(GetMainWindow());
     }
 
-    public async Task ShowSettingsAsync()
+    public async Task ShowSettingsAsync(Window? owner = null)
     {
         var viewModel = _serviceProvider.GetRequiredService<SettingsWindowViewModel>();
-        await viewModel.InitializeAsync();
         var window = new SettingsWindow { DataContext = viewModel };
         viewModel.CloseDialog = _ => window.Close();
         _secondaryWindows.Add(window);
         window.Closed += (_, _) => _secondaryWindows.Remove(window);
-        await window.ShowDialog<object?>(GetMainWindow());
+        // Load tab content after the window is shown: the per-database tabs query the database, so an unreachable
+        // server (the case where Settings is opened to switch backend) must not delay the window from appearing.
+        _ = viewModel.InitializeAsync();
+        await window.ShowDialog<object?>(owner ?? GetMainWindow());
     }
 
     public async Task ShowMaintenanceDialogAsync()
@@ -333,7 +340,7 @@ public sealed class WindowService : IWindowService
         await window.ShowDialog<object?>(GetMainWindow());
     }
 
-    public void OpenStatisticsWindow()
+    public async Task OpenStatisticsWindowAsync()
     {
         if (_statisticsWindow is { IsVisible: true })
         {
@@ -342,6 +349,10 @@ public sealed class WindowService : IWindowService
         }
 
         var viewModel = _serviceProvider.GetRequiredService<StatisticsWindowViewModel>();
+        // Load before showing so a failed load (e.g. the remote DB is down) never opens a blank statistics
+        // window — TryRefreshAsync surfaces a connection loss on the status indicator instead.
+        if (!await viewModel.TryRefreshAsync())
+            return;
         var window = new StatisticsWindow { DataContext = viewModel };
         viewModel.CloseWindow = () => _statisticsWindow?.Close();
         _statisticsWindow = window;
@@ -354,7 +365,6 @@ public sealed class WindowService : IWindowService
             mainWindowViewModel.RemoveOpenWindow(statisticsEntry);
         };
         _statisticsWindow.Show(GetMainWindow());
-        _ = viewModel.RefreshAsync(); // fire-and-forget; load data after window is shown
     }
 
     public void OpenHelpWindow(HelpTab tab)
@@ -432,14 +442,16 @@ public sealed class WindowService : IWindowService
 
     public async Task<bool?> ShowBatchShutdownWarningAsync()
     {
-        var dialog = Helpers.AppDialogs.BuildShutdownWarningDialog("Close and Pause", "Keep Running");
+        var dialog = Helpers.AppDialogs.BuildShutdownWarningDialog(
+            Localization.Resources.Shutdown_CloseAndPause, Localization.Resources.Shutdown_KeepRunning);
         Window owner = (Window?)_batchQueueWindow ?? GetMainWindow();
         return await dialog.ShowDialog<bool?>(owner);
     }
 
     public async Task<bool?> ShowMainShutdownWarningAsync()
     {
-        var dialog = Helpers.AppDialogs.BuildShutdownWarningDialog();
+        var dialog = Helpers.AppDialogs.BuildShutdownWarningDialog(
+            Localization.Resources.Shutdown_CloseApplication, Localization.Resources.Shutdown_KeepRunning);
         return await dialog.ShowDialog<bool?>(GetMainWindow());
     }
 
@@ -574,6 +586,17 @@ public sealed class WindowService : IWindowService
         return await dialog.ShowDialog<bool?>(GetMainWindow());
     }
 
+    public async Task<(string Format, string Folder)?> ShowBackupFormatDialogAsync(
+        bool supportsFileBackup, string configDefault, string defaultFolder)
+    {
+        var filePicker = _serviceProvider.GetRequiredService<BookDB.Models.Interfaces.IFilePickerService>();
+        var viewModel = new ViewModels.BackupFormatDialogViewModel(supportsFileBackup, configDefault, defaultFolder, filePicker);
+        var dialog = new Views.BackupFormatDialog { DataContext = viewModel };
+        viewModel.CloseDialog = _ => dialog.Close();
+        await dialog.ShowDialog(GetMainWindow());
+        return viewModel.Result is null ? null : (viewModel.Result, viewModel.DestinationFolder);
+    }
+
     public async Task ShowManageBorrowersAsync()
     {
         if (_manageBorrowersWindow is { IsVisible: true })
@@ -653,4 +676,41 @@ public sealed class WindowService : IWindowService
         dialog.Content = root;
         return dialog;
     }
+
+    public async Task<bool> ShowConnectDialogAsync(Window owner)
+    {
+        var heartbeat = _serviceProvider.GetRequiredService<IHeartbeatService>();
+        if (!heartbeat.IsEnabled)
+            return true;
+
+        var sessions = await heartbeat.GetActiveSessionsAsync();
+        if (sessions.Count == 0)
+            return true;
+
+        var viewModel = new ConnectDialogViewModel(sessions, _serviceProvider.GetRequiredService<TimeProvider>());
+        var dialog = new ConnectDialog { DataContext = viewModel };
+        viewModel.CloseDialog = () => dialog.Close();
+        viewModel.StartCountdown();
+        await dialog.ShowDialog(owner);
+        return viewModel.Result == ConnectChoice.ConnectAnyway;
+    }
+
+    public async Task<StartupFailureOutcome> ShowStartupFailureDialogAsync(
+        ConnectionProbeResult initialResult,
+        Func<System.Threading.CancellationToken, Task<ConnectionProbeResult>> connect,
+        Window owner)
+    {
+        var viewModel = new StartupFailureViewModel(initialResult, connect);
+        var dialog = new StartupFailureDialog { DataContext = viewModel };
+        viewModel.CloseDialog = () => dialog.Close();
+        await dialog.ShowDialog(owner);
+        // Closing the window with no explicit choice is treated as Quit — never proceed on a bad connection.
+        return viewModel.Outcome ?? StartupFailureOutcome.Quit;
+    }
+
+    public Task<WriteFailureChoice> ShowWriteFailureDialogAsync(string message) =>
+        Helpers.AppDialogs.ShowWriteFailureDialogAsync(message);
+
+    public Task<bool> ShowConnectionLostEscalationDialogAsync() =>
+        Helpers.AppDialogs.ShowConnectionLostEscalationDialogAsync();
 }

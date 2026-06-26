@@ -21,9 +21,38 @@
     <!-- Standard (unclassed) buttons follow the palette via DynamicResource so they stay legible in
          every flavour — Fluent's own button brushes don't react to our palette, which left them grey-on-grey
          in High contrast. The accent and custom button classes opt out and keep their own look. -->
-    <Style Selector="Button:not(.accent):not(.iconButton):not(.primaryButton):not(.secondaryButton)">
+    <Style Selector="Button:not(.accent):not(.iconButton):not(.primaryButton):not(.secondaryButton):not(.accentOutline)">
         <Setter Property="BorderBrush" Value="{DynamicResource BrushBorderInput}" />
         <Setter Property="Foreground" Value="{DynamicResource BrushTextPrimary}" />
+    </Style>
+
+    <!-- Accent-outline button: highlights an important contextual action (e.g. Test connection, Check
+         target) with the accent colour as a border + text, so it stands out from neutral buttons without
+         the weight of the solid-accent primary action (Save/Move). When its command is unavailable it
+         falls back to Fluent's neutral disabled look (transparent fill, grey text/border) — the same
+         disabled appearance as every other button. -->
+    <Style Selector="Button.accentOutline">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BrushPrimaryBlue}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Foreground" Value="{DynamicResource BrushPrimaryBlue}" />
+    </Style>
+    <Style Selector="Button.accentOutline:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource BrushRowHover}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BrushPrimaryBlue}" />
+        <Setter Property="Foreground" Value="{DynamicResource BrushPrimaryBlueDark}" />
+    </Style>
+    <Style Selector="Button.accentOutline:pressed /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource BrushRowHover}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BrushPrimaryBlueDark}" />
+        <Setter Property="Foreground" Value="{DynamicResource BrushPrimaryBlueDark}" />
+    </Style>
+    <!-- Disabled: drop the accent for the neutral grey outline used by the other buttons, so it still
+         reads as a (disabled) button instead of floating grey text. Foreground stays Fluent's
+         ButtonForegroundDisabled, matching every other disabled button. -->
+    <Style Selector="Button.accentOutline:disabled /template/ ContentPresenter">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BrushBorderInput}" />
     </Style>
 
     <!-- Icon button: transparent background, hover/active feedback, compact sizing -->

@@ -93,7 +93,7 @@ Save the book to keep your changes. Once each type has at most one image, the **
 
 If you don't have a backup but still have your working Readerware database (the `.rw4` folder, e.g. `MyBooks.rw4`), BookDB can read it directly:
 
-1. Open **Tools > Import Readerware database…**.
+1. Open **File > Import Readerware database…**.
 2. Click **Browse** and select your `.rw4` database folder.
 3. Click **Convert**. BookDB copies the database first — your original is never opened or modified — and converts it into a backup folder.
 4. When conversion finishes, click **Open import wizard** to continue through the same preview, settings, and import steps described above.

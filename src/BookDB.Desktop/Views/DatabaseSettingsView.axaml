@@ -1,0 +1,123 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:BookDB.Desktop.ViewModels"
+             xmlns:res="using:BookDB.Desktop.Localization"
+             x:Class="BookDB.Desktop.Views.DatabaseSettingsView"
+             x:DataType="vm:DatabaseSettingsViewModel">
+
+  <ScrollViewer Padding="16" AllowAutoHide="False"
+                VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+    <!-- MinHeight is the form's natural height. It pins the scrollable extent so the tab keeps its
+         height when the window is short (scrolling instead of clipping, regardless of how many rows
+         the tab headers wrap to) and works around an Avalonia ScrollViewer quirk that under-measures
+         wrapping content and otherwise leaves the last lines unreachable when scrolled to the bottom. -->
+    <StackPanel Spacing="12" MinHeight="500">
+
+      <!-- Backend choice -->
+      <TextBlock Text="{x:Static res:Resources.Settings_Database_BackendLabel}"
+                 FontSize="12" FontWeight="SemiBold"/>
+
+      <RadioButton GroupName="DbBackend"
+                   Content="{x:Static res:Resources.Settings_Database_Backend_Sqlite}"
+                   IsChecked="{Binding IsSqliteSelected}"/>
+
+      <RadioButton GroupName="DbBackend"
+                   Content="{x:Static res:Resources.Settings_Database_Backend_Postgres}"
+                   IsChecked="{Binding IsPostgreSqlSelected}"
+                   IsEnabled="{Binding IsKeyringAvailable}"/>
+
+      <!-- Keyring unavailable note -->
+      <TextBlock Text="{Binding KeyringUnavailableMessage}"
+                 IsVisible="{Binding !IsKeyringAvailable}"
+                 FontSize="11"
+                 Foreground="{DynamicResource SystemControlErrorTextForegroundBrush}"
+                 TextWrapping="Wrap"/>
+
+      <!-- Server connection -->
+      <TextBlock Text="{x:Static res:Resources.Settings_Database_ServerSectionHeader}"
+                 FontSize="12" FontWeight="SemiBold"
+                 Margin="0,8,0,0"
+                 IsEnabled="{Binding IsPostgreSqlSelected}"/>
+
+      <Grid ColumnDefinitions="160,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto"
+            IsEnabled="{Binding IsPostgreSqlSelected}"
+            HorizontalAlignment="Stretch">
+
+        <TextBlock Grid.Row="0" Grid.Column="0" Text="{x:Static res:Resources.Settings_Database_Host}"
+                   FontSize="12" VerticalAlignment="Center" Margin="0,0,8,8"/>
+        <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Host}" Margin="0,0,0,8"/>
+
+        <TextBlock Grid.Row="1" Grid.Column="0" Text="{x:Static res:Resources.Settings_Database_Port}"
+                   FontSize="12" VerticalAlignment="Center" Margin="0,0,8,8"/>
+        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Port}" Margin="0,0,0,8"/>
+
+        <TextBlock Grid.Row="2" Grid.Column="0" Text="{x:Static res:Resources.Settings_Database_DatabaseName}"
+                   FontSize="12" VerticalAlignment="Center" Margin="0,0,8,8"/>
+        <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding DatabaseName}" Margin="0,0,0,8"/>
+
+        <TextBlock Grid.Row="3" Grid.Column="0" Text="{x:Static res:Resources.Settings_Database_Username}"
+                   FontSize="12" VerticalAlignment="Center" Margin="0,0,8,8"/>
+        <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding Username}" Margin="0,0,0,8"/>
+
+        <TextBlock Grid.Row="4" Grid.Column="0" Text="{x:Static res:Resources.Settings_Database_Password}"
+                   FontSize="12" VerticalAlignment="Center" Margin="0,0,8,8"/>
+        <StackPanel Grid.Row="4" Grid.Column="1" Margin="0,0,0,8">
+          <TextBox Text="{Binding Password}" PasswordChar="•"/>
+          <!-- A saved password lets Save proceed without re-entry; the field stays blank by design. -->
+          <TextBlock Text="{x:Static res:Resources.Settings_Database_SavedPasswordHint}"
+                     IsVisible="{Binding HasSavedPassword}"
+                     FontSize="11" Opacity="0.7" TextWrapping="Wrap" Margin="0,4,0,0"/>
+        </StackPanel>
+
+        <TextBlock Grid.Row="5" Grid.Column="0" Text="{x:Static res:Resources.Settings_Database_TlsLabel}"
+                   FontSize="12" VerticalAlignment="Center" Margin="0,0,8,0"/>
+        <ComboBox Grid.Row="5" Grid.Column="1"
+                  ItemsSource="{Binding AvailableSslModes}"
+                  SelectedItem="{Binding SelectedSslMode}"
+                  DisplayMemberBinding="{Binding DisplayName}"
+                  HorizontalAlignment="Stretch"/>
+      </Grid>
+
+      <!-- TLS disable warning -->
+      <TextBlock Text="{x:Static res:Resources.Settings_Database_TlsDisableWarning}"
+                 IsVisible="{Binding ShowTlsDisableWarning}"
+                 FontSize="11"
+                 Foreground="{DynamicResource SystemControlErrorTextForegroundBrush}"
+                 TextWrapping="Wrap"/>
+
+      <!-- Test connection -->
+      <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,4,0,0">
+        <Button Content="{x:Static res:Resources.Settings_Database_TestConnection}"
+                Command="{Binding TestConnectionCommand}"
+                Classes="accentOutline"/>
+        <TextBlock Text="{x:Static res:Resources.Settings_Database_Testing}"
+                   IsVisible="{Binding IsTesting}"
+                   VerticalAlignment="Center" FontSize="11" Opacity="0.7"/>
+      </StackPanel>
+
+      <TextBlock Text="{Binding TestResultMessage}"
+                 IsVisible="{Binding HasTestResult}"
+                 Classes.error="{Binding TestResultIsError}"
+                 FontSize="11" TextWrapping="Wrap">
+        <TextBlock.Styles>
+          <Style Selector="TextBlock.error">
+            <Setter Property="Foreground" Value="{DynamicResource SystemControlErrorTextForegroundBrush}"/>
+          </Style>
+        </TextBlock.Styles>
+      </TextBlock>
+
+      <!-- Restart hint: a backend/connection change is committed by the window's Save, which then prompts a restart. -->
+      <TextBlock Text="{x:Static res:Resources.Settings_Database_RestartNote}"
+                 FontSize="11" Opacity="0.6" TextWrapping="Wrap"
+                 Margin="0,4,0,0"/>
+
+      <!-- Inline validation error raised by Save when the PostgreSQL connection is missing its password. -->
+      <TextBlock Text="{Binding ApplyErrorMessage}"
+                 IsVisible="{Binding HasApplyError}"
+                 FontSize="11" TextWrapping="Wrap"
+                 Foreground="{DynamicResource SystemControlErrorTextForegroundBrush}"/>
+
+    </StackPanel>
+  </ScrollViewer>
+
+</UserControl>

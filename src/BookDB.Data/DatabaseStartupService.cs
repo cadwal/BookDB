@@ -1,90 +1,41 @@
 using System;
-using System.IO;
-using System.Linq;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using BookDB.Data.Interfaces;
 using BookDB.Models;
-using DbUp;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 
 namespace BookDB.Data;
 
 public sealed class DatabaseStartupService : IHostedService
 {
-    private readonly string _connectionString;
-    private readonly ILogger<DatabaseStartupService> _logger;
+    private readonly IDbUpRunner _runner;
     private readonly IStartupProgressReporter _progress;
 
-    public DatabaseStartupService(
-        string connectionString,
-        ILogger<DatabaseStartupService> logger,
-        IStartupProgressReporter progress)
+    public DatabaseStartupService(IDbUpRunner runner, IStartupProgressReporter progress)
     {
-        _connectionString = connectionString;
-        _logger = logger;
+        _runner = runner;
         _progress = progress;
     }
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
-        var dbPath = ParseDbPath(_connectionString);
-        if (!string.IsNullOrEmpty(dbPath))
-        {
-            var dir = Path.GetDirectoryName(dbPath);
-            if (!string.IsNullOrEmpty(dir))
-            {
-                Directory.CreateDirectory(dir);
-            }
+        var progress = new SynchronousProgress<(int applied, int total)>(
+            value => _progress.Report(StartupStage.ApplyingMigrations, value.applied, value.total));
 
-        }
-
-        var upgrader = SqliteExtensions.SqliteDatabase(
-                DeployChanges.To,
-                _connectionString)
-            .WithScriptsEmbeddedInAssembly(
-                Assembly.GetAssembly(typeof(DatabaseStartupService))!,
-                name => name.Contains(".Migrations."))
-            .LogTo(new SerilogDbUpLog(_logger))
-            .Build();
-
-        var pendingCount = upgrader.GetScriptsToExecute().Count;
-        _progress.Report(StartupStage.ApplyingMigrations, 0, pendingCount);
-
-        // PerformUpgrade is synchronous and CPU/IO-bound. Run it off the calling thread so the
-        // splash screen (which lives on the UI thread) keeps animating while migrations apply.
-        var result = await Task.Run(() => upgrader.PerformUpgrade(), cancellationToken);
-        if (!result.Successful)
-        {
-            throw new InvalidOperationException(
-                $"Database upgrade failed: {result.Error?.Message}",
-                result.Error);
-        }
-
-        _progress.Report(StartupStage.ApplyingMigrations, pendingCount, pendingCount);
-
-        _logger.LogWarning(
-            "Database migration complete — {ScriptsExecuted} script(s) applied",
-            result.Scripts.Count());
+        await _runner.RunAsync(progress, cancellationToken);
     }
 
-    public Task StopAsync(CancellationToken cancellationToken)
-    {
-        return Task.CompletedTask;
-    }
+    public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 
-    private static string ParseDbPath(string connectionString)
+    // Forwards inline rather than posting to a captured SynchronizationContext, so progress reaches the
+    // splash reporter on the same thread and timing as before the runner was extracted.
+    private sealed class SynchronousProgress<T> : IProgress<T>
     {
-        foreach (var part in connectionString.Split(';'))
-        {
-            var trimmed = part.Trim();
-            if (trimmed.StartsWith("Data Source=", StringComparison.OrdinalIgnoreCase))
-            {
-                return trimmed.Substring("Data Source=".Length);
-            }
-        }
+        private readonly Action<T> _handler;
 
-        return string.Empty;
+        public SynchronousProgress(Action<T> handler) => _handler = handler;
+
+        public void Report(T value) => _handler(value);
     }
 }

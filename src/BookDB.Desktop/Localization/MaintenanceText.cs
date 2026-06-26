@@ -1,5 +1,6 @@
 using System;
 using BookDB.Logic.Services;
+using BookDB.Models;
 
 namespace BookDB.Desktop.Localization;
 

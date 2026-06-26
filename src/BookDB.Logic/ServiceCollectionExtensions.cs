@@ -1,9 +1,11 @@
+using System;
 using BookDB.Logic.Import;
 using BookDB.Logic.Services;
 using BookDB.MetadataSources.Registration;
 using BookDB.MetadataSources.Services;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace BookDB.Logic;
 
@@ -45,6 +47,18 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IDatabaseMaintenanceService, DatabaseMaintenanceService>();
         services.AddSingleton<ICsvExportService, CsvExportService>();
         services.AddSingleton<IPrintService, PrintService>();
+
+        services.TryAddSingleton(TimeProvider.System);
+        services.AddSingleton<HeartbeatService>();
+        services.AddSingleton<IHeartbeatService>(sp => sp.GetRequiredService<HeartbeatService>());
+        services.AddHostedService(sp => sp.GetRequiredService<HeartbeatService>());
+
+        services.AddSingleton<IConnectionReachabilityProbe, DbContextReachabilityProbe>();
+        services.AddSingleton<ConnectionHealthMonitor>();
+        services.AddSingleton<IConnectionHealthMonitor>(sp => sp.GetRequiredService<ConnectionHealthMonitor>());
+
+        services.AddSingleton<ILibraryMigrationService, LibraryMigrationService>();
+        services.AddSingleton<ICsvArchiveRestoreService, CsvArchiveRestoreService>();
         return services;
     }
 }

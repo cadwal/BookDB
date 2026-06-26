@@ -2,6 +2,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:BookDB.Desktop.ViewModels"
         xmlns:res="using:BookDB.Desktop.Localization"
+        xmlns:behaviors="using:BookDB.Desktop.Behaviors"
+        xmlns:i="using:Avalonia.Xaml.Interactivity"
         x:Class="BookDB.Desktop.Views.CheckOutDialog"
         x:DataType="vm:CheckOutDialogViewModel"
         Title="{x:Static res:Resources.CheckOut_Title}"
@@ -19,8 +21,12 @@
                              FilterMode="None"
                              ValueMemberBinding="{ReflectionBinding ValueText}"
                              AsyncPopulator="{Binding BorrowerPopulator}"
-                             Text="{Binding SearchText, Mode=TwoWay}"
-                             SelectedItem="{Binding SelectedBorrower, Mode=TwoWay}">
+                             Text="{Binding SearchText, Mode=TwoWay}">
+                <i:Interaction.Behaviors>
+                    <!-- Focus the inner TextBox on open; without it Avalonia's AutoCompleteBox
+                         leaves the embedded TextBox unfocused and the first keystroke is lost. -->
+                    <behaviors:FocusOnLoadedBehavior/>
+                </i:Interaction.Behaviors>
                 <AutoCompleteBox.ItemTemplate>
                     <DataTemplate x:DataType="vm:IBorrowerSuggestion">
                         <TextBlock Text="{Binding DisplayText}" />

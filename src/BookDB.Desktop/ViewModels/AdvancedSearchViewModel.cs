@@ -5,6 +5,8 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using BookDB.Data.Interfaces;
+using BookDB.Desktop.Helpers;
 using BookDB.Desktop.Localization;
 using BookDB.Desktop.Messages;
 using BookDB.Logic.Services;
@@ -95,6 +97,8 @@ public partial class AdvancedSearchViewModel : ObservableObject
     private readonly IBookService _bookService;
     private readonly IBookSearchService _bookSearchService;
     private readonly ILookupService _lookupService;
+    private readonly IConnectionHealthMonitor _connectionMonitor;
+    private readonly IConnectionFailureClassifier _connectionClassifier;
 
     // Callback provided by WindowService/dialog code-behind to close with a result
     private Action<bool?>? _closeAction;
@@ -132,12 +136,16 @@ public partial class AdvancedSearchViewModel : ObservableObject
         IMessenger messenger,
         IBookService bookService,
         IBookSearchService bookSearchService,
-        ILookupService lookupService)
+        ILookupService lookupService,
+        IConnectionHealthMonitor connectionMonitor,
+        IConnectionFailureClassifier connectionClassifier)
     {
         _messenger = messenger;
         _bookService = bookService;
         _bookSearchService = bookSearchService;
         _lookupService = lookupService;
+        _connectionMonitor = connectionMonitor;
+        _connectionClassifier = connectionClassifier;
 
         // Start with one empty condition row
         AddConditionRow(new SearchConditionViewModel());
@@ -265,6 +273,7 @@ public partial class AdvancedSearchViewModel : ObservableObject
         }
         catch (Exception ex)
         {
+            _connectionMonitor.ReportIfConnectionLoss(_connectionClassifier, ex);
             Log.Error(ex, "Advanced search failed");
         }
     }
@@ -279,6 +288,7 @@ public partial class AdvancedSearchViewModel : ObservableObject
         }
         catch (Exception ex)
         {
+            _connectionMonitor.ReportIfConnectionLoss(_connectionClassifier, ex);
             Log.Error(ex, "Advanced search test failed");
         }
     }

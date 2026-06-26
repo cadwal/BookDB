@@ -1,5 +1,9 @@
 using System;
 using BookDB.Data;
+using BookDB.Data.Interfaces;
+using BookDB.Data.PostgreSQL;
+using BookDB.Data.Sqlite;
+using BookDB.Security;
 using BookDB.Desktop.Services;
 using BookDB.Desktop.ViewModels;
 using BookDB.Desktop.Views;
@@ -17,7 +21,24 @@ public static class ServiceCollectionExtensions
         this IServiceCollection services, AppSettings appSettings)
     {
         services.AddSingleton(appSettings);
-        services.AddBookDbData(appSettings.ConnectionString);
+
+        switch (appSettings.Backend)
+        {
+            case DatabaseBackend.Sqlite:
+                services.AddSqliteProvider(appSettings.ConnectionString);
+                break;
+            case DatabaseBackend.PostgreSql:
+                services.AddPostgresProvider(appSettings.ConnectionString);
+                break;
+            default:
+                throw new NotSupportedException(
+                    $"Database backend '{appSettings.Backend}' is not supported yet.");
+        }
+
+        services.AddSecretStore();
+        // Backend-independent: a user on SQLite must be able to test a PostgreSQL server before switching.
+        services.AddSingleton<IPostgresConnectionProber, PostgresConnectionProber>();
+        services.AddBookDbData();
         return services;
     }
 
@@ -30,6 +51,9 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IFileSystemService, FileSystemService>();
         services.AddSingleton<IShortcutService, ShortcutService>();
         services.AddSingleton<IWindowService, WindowService>();
+        services.AddSingleton<IRemoteWriteGuard, RemoteWriteGuard>();
+        services.AddSingleton<IMigrationTargetBuilder, MigrationTargetBuilder>();
+        services.AddSingleton<IApplicationRestartService, ApplicationRestartService>();
         // IFilePickerService uses TopLevel which requires the visual tree to be attached.
         // The factory is deferred: TopLevel is resolved on first picker call (not at DI construction),
         // by which time the MainWindow is shown and TopLevel is available.
@@ -79,6 +103,7 @@ public static class ServiceCollectionExtensions
         services.AddTransient<ManageLookupsViewModel>();
         services.AddTransient<SettingsWindowViewModel>();
         services.AddTransient<MaintenanceViewModel>();
+        services.AddTransient<MoveLibraryViewModel>();
         services.AddTransient<StatisticsWindowViewModel>();
         services.AddTransient<HelpWindowViewModel>();
         services.AddTransient<CsvColumnPickerViewModel>();

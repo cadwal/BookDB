@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using BookDB.Data.Interfaces;
 using BookDB.Desktop.Helpers;
 using BookDB.Desktop.Messages;
 using BookDB.Desktop.Services;
@@ -33,9 +34,12 @@ public partial class FullDetailsWindowViewModel : BookEditViewModelBase, ICloseG
         IFilePickerService filePickerService,
         IMessenger messenger,
         IWindowService windowService,
+        IRemoteWriteGuard writeGuard,
         IHttpClientFactory httpClientFactory,
-        ILoanService loanService)
-        : base(bookService, bookImageService, lookupService, filePickerService, windowService, httpClientFactory)
+        ILoanService loanService,
+        IConnectionHealthMonitor connectionMonitor,
+        IConnectionFailureClassifier connectionClassifier)
+        : base(bookService, bookImageService, lookupService, filePickerService, windowService, writeGuard, httpClientFactory, connectionMonitor, connectionClassifier)
     {
         _messenger = messenger;
         _loanService = loanService;
@@ -103,13 +107,17 @@ public partial class FullDetailsWindowViewModel : BookEditViewModelBase, ICloseG
         }
     }
 
-    public async Task LoadBookAsync(int bookId)
+    /// <summary>
+    /// Loads the book; returns false when nothing could be loaded (book missing, or the remote connection is
+    /// down — reported to the status indicator) so the caller can avoid opening a blank window.
+    /// </summary>
+    public async Task<bool> LoadBookAsync(int bookId)
     {
         try
         {
             var book = await _bookService.GetBookByIdAsync(bookId);
             CurrentBook = book;
-            if (book == null) return;
+            if (book == null) return false;
 
             await LoadLookupsAsync();
             CopyBookToEditFields();
@@ -121,10 +129,13 @@ public partial class FullDetailsWindowViewModel : BookEditViewModelBase, ICloseG
             _loanHistory.Clear();
             foreach (var row in history)
                 _loanHistory.Add(LoanHistoryRowViewModel.FromLoanHistoryRow(row));
+            return true;
         }
         catch (Exception ex)
         {
             Log.Error(ex, "FullDetailsWindowViewModel: Failed to load book {BookId}", bookId);
+            ReportIfConnectionLoss(ex);
+            return false;
         }
     }
 
@@ -140,6 +151,7 @@ public partial class FullDetailsWindowViewModel : BookEditViewModelBase, ICloseG
         }
         catch (Exception ex)
         {
+            ReportIfConnectionLoss(ex);
             Log.Error(ex, "FullDetailsWindowViewModel: Failed to reload loan history for book {BookId}", CurrentBook.BookId);
         }
     }

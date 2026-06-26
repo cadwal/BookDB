@@ -92,7 +92,7 @@ Salva il libro per mantenere le modifiche. Quando ogni tipo contiene al massimo 
 
 Se non hai un backup ma disponi ancora del tuo database Readerware attivo (la cartella `.rw4`, ad es. `MyBooks.rw4`), BookDB può leggerlo direttamente:
 
-1. Apri **Strumenti > Importa database di Readerware…**.
+1. Apri **File > Importa database di Readerware…**.
 2. Fai clic su **Sfoglia** e seleziona la cartella del database `.rw4`.
 3. Fai clic su **Converti**. BookDB copia prima il database — l'originale non viene mai aperto né modificato — e lo converte in una cartella di backup.
 4. Al termine della conversione, fai clic su **Apri la procedura guidata di importazione** per proseguire con gli stessi passaggi di anteprima, impostazioni e importazione descritti sopra.

@@ -92,7 +92,7 @@ Enregistrez le livre pour conserver vos modifications. Lorsque chaque type ne co
 
 Si vous n'avez pas de sauvegarde mais que vous disposez encore de votre base de données Readerware active (le dossier `.rw4`, par ex. `MyBooks.rw4`), BookDB peut la lire directement :
 
-1. Ouvrez **Outils > Importer une base de données Readerware…**.
+1. Ouvrez **Fichier > Importer une base de données Readerware…**.
 2. Cliquez sur **Parcourir** et sélectionnez votre dossier de base de données `.rw4`.
 3. Cliquez sur **Convertir**. BookDB copie d'abord la base de données — votre original n'est jamais ouvert ni modifié — et la convertit en un dossier de sauvegarde.
 4. Une fois la conversion terminée, cliquez sur **Ouvrir l'assistant d'importation** pour poursuivre avec les mêmes étapes d'aperçu, de paramètres et d'importation décrites ci-dessus.

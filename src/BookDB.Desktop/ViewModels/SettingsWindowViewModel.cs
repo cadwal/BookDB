@@ -7,10 +7,13 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using BookDB.Data.Interfaces;
 using BookDB.Desktop.Messages;
 using BookDB.Desktop.Localization;
+using BookDB.Desktop.Services;
 using BookDB.Desktop.Theming;
 using BookDB.Logic.Services;
+using BookDB.Models;
 using BookDB.Models.Entities;
 using BookDB.Models.Interfaces;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -28,6 +31,7 @@ public sealed partial class SettingsWindowViewModel : ObservableObject
 {
     private readonly ISettingsService _settingsService;
     private readonly ILookupService _lookupService;
+    private readonly IApplicationRestartService _restartService;
     private readonly IMessenger _messenger;
 
     public Action<bool?>? CloseDialog { get; set; }
@@ -43,25 +47,37 @@ public sealed partial class SettingsWindowViewModel : ObservableObject
     public SettingsAdvancedTabViewModel AdvancedTab { get; }
     public SettingsApplicationAccessTabViewModel ApplicationAccessTab { get; }
     public SettingsAppearanceTabViewModel AppearanceTab { get; }
+    public DatabaseSettingsViewModel DatabaseTab { get; }
 
     public SettingsWindowViewModel(
         ISettingsService settingsService,
         ILookupService lookupService,
         IFilePickerService filePickerService,
         IShortcutService shortcutService,
+        IBootstrapConfigService bootstrapConfig,
+        SecretStoreAvailability secretStoreAvailability,
+        IPostgresConnectionProber connectionProber,
+        ISecretStore secretStore,
+        IApplicationRestartService restartService,
+        AppSettings appSettings,
         IMessenger messenger)
     {
         _settingsService = settingsService;
         _lookupService   = lookupService;
+        _restartService  = restartService;
         _messenger       = messenger;
 
-        GeneralTab  = new SettingsGeneralTabViewModel(settingsService, lookupService);
+        GeneralTab  = new SettingsGeneralTabViewModel(settingsService, lookupService, bootstrapConfig);
         BrowseTab   = new SettingsBrowseTabViewModel(settingsService);
         LookupTab   = new SettingsLookupTabViewModel(settingsService);
         ImportTab   = new SettingsImportTabViewModel(settingsService, filePickerService);
-        AdvancedTab = new SettingsAdvancedTabViewModel(settingsService, filePickerService);
+        AdvancedTab = new SettingsAdvancedTabViewModel(
+            settingsService, filePickerService, bootstrapConfig,
+            supportsFileBackup: appSettings.Backend == DatabaseBackend.Sqlite);
         ApplicationAccessTab = new SettingsApplicationAccessTabViewModel(shortcutService);
-        AppearanceTab = new SettingsAppearanceTabViewModel(settingsService);
+        AppearanceTab = new SettingsAppearanceTabViewModel(bootstrapConfig);
+        DatabaseTab = new DatabaseSettingsViewModel(
+            bootstrapConfig, secretStoreAvailability, connectionProber, secretStore);
     }
 
     public async Task InitializeAsync(CancellationToken ct = default)
@@ -75,6 +91,7 @@ public sealed partial class SettingsWindowViewModel : ObservableObject
             await AdvancedTab.LoadAsync(ct);
             await ApplicationAccessTab.LoadAsync(ct);
             await AppearanceTab.LoadAsync(ct);
+            await DatabaseTab.LoadAsync(ct);
         }
         catch (Exception ex)
         {
@@ -82,9 +99,42 @@ public sealed partial class SettingsWindowViewModel : ObservableObject
         }
     }
 
+    // The Database tab is the last TabItem in SettingsWindow.axaml; Save focuses it to surface a blocking error.
+    private const int DatabaseTabIndex = 7;
+
     [RelayCommand]
     private async Task SaveAsync()
     {
+        // A backend/connection change is config.json-only and forces a restart. It is handled on its own path:
+        // the per-database preference tabs target the current backend — which may be the unreachable server the
+        // user is switching away from — and are re-read from the new backend after the restart, so they are
+        // skipped. This keeps Save from hanging on writes to a dead database during outage recovery.
+        if (DatabaseTab.IsDirty)
+        {
+            if (!DatabaseTab.ValidateForSave())
+            {
+                SelectedTabIndex = DatabaseTabIndex;
+                return;
+            }
+            try
+            {
+                await DatabaseTab.SaveAsync();
+                _messenger.Send(new SettingsSavedMessage());
+                if (DatabaseTab.DbChanged
+                    && await _restartService.ConfirmRestartAsync(Resources.Settings_RestartConfirm_Body))
+                {
+                    _restartService.Restart(); // replaces the process — nothing after this runs
+                    return;
+                }
+                CloseDialog?.Invoke(true);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "SettingsWindowViewModel: SaveAsync (backend switch) failed");
+            }
+            return;
+        }
+
         try
         {
             await GeneralTab.SaveAsync();
@@ -95,7 +145,13 @@ public sealed partial class SettingsWindowViewModel : ObservableObject
             await ApplicationAccessTab.SaveAsync();
             await AppearanceTab.SaveAsync();
             _messenger.Send(new SettingsSavedMessage());
+
+            // Language, theme and log level are read once at startup, so each only takes effect after a restart.
+            var restartNeeded = GeneralTab.LanguageChanged || AppearanceTab.ThemeChanged || AdvancedTab.LogLevelChanged;
             CloseDialog?.Invoke(true);
+
+            if (restartNeeded && await _restartService.ConfirmRestartAsync(Resources.Settings_RestartConfirm_Body))
+                _restartService.Restart();
         }
         catch (Exception ex)
         {
@@ -127,6 +183,12 @@ public sealed partial class SettingsGeneralTabViewModel : ObservableObject
 {
     private readonly ISettingsService _settingsService;
     private readonly ILookupService _lookupService;
+    private readonly IBootstrapConfigService _bootstrapConfig;
+
+    private string _loadedLanguageCode = "en";
+
+    /// <summary>True when the user picked a language different from the one loaded — a restart-requiring change.</summary>
+    public bool LanguageChanged => SelectedLanguage is not null && SelectedLanguage.CultureName != _loadedLanguageCode;
 
     [ObservableProperty]
     private int? _defaultCollectionId;
@@ -138,10 +200,14 @@ public sealed partial class SettingsGeneralTabViewModel : ObservableObject
 
     public ObservableCollection<LanguageOption> AvailableLanguages { get; } = [];
 
-    public SettingsGeneralTabViewModel(ISettingsService settingsService, ILookupService lookupService)
+    public SettingsGeneralTabViewModel(
+        ISettingsService settingsService,
+        ILookupService lookupService,
+        IBootstrapConfigService bootstrapConfig)
     {
         _settingsService = settingsService;
         _lookupService = lookupService;
+        _bootstrapConfig = bootstrapConfig;
     }
 
     public async Task LoadAsync(CancellationToken ct = default)
@@ -179,9 +245,9 @@ public sealed partial class SettingsGeneralTabViewModel : ObservableObject
             }
             catch { /* read-only directory or scan error — show only "en" */ }
 
-            var storedLanguage = await _settingsService.GetAsync("Language", ct);
+            _loadedLanguageCode = _bootstrapConfig.Load().Language ?? "en";
             SelectedLanguage = AvailableLanguages.FirstOrDefault(l =>
-                l.CultureName == (storedLanguage ?? "en"))
+                l.CultureName == _loadedLanguageCode)
                 ?? AvailableLanguages.FirstOrDefault();
         }
         catch (Exception ex)
@@ -199,9 +265,12 @@ public sealed partial class SettingsGeneralTabViewModel : ObservableObject
                 DefaultCollectionId.HasValue ? DefaultCollectionId.Value.ToString() : null,
                 ct);
 
-            // Persist language selection
+            // config.json owns the language, not the Settings table (unlike DefaultCollectionId above)
             if (SelectedLanguage is not null)
-                await _settingsService.SetAsync("Language", SelectedLanguage.CultureName, ct);
+            {
+                var cultureName = SelectedLanguage.CultureName;
+                _bootstrapConfig.Update(c => c.Language = cultureName);
+            }
         }
         catch (Exception ex)
         {
@@ -392,6 +461,14 @@ public sealed partial class SettingsAdvancedTabViewModel : ObservableObject
 {
     private readonly ISettingsService _settingsService;
     private readonly IFilePickerService _filePickerService;
+    private readonly IBootstrapConfigService _bootstrapConfig;
+
+    private string _loadedLogLevel = "Normal";
+
+    /// <summary>True when the user picked a log level different from the one loaded — a restart-requiring change.</summary>
+    public bool LogLevelChanged => SelectedLogLevel is not null && SelectedLogLevel.Value != _loadedLogLevel;
+
+    private readonly bool _supportsFileBackup;
 
     [ObservableProperty]
     private bool _autoBackupEnabled;
@@ -404,6 +481,10 @@ public sealed partial class SettingsAdvancedTabViewModel : ObservableObject
 
     public IReadOnlyList<string> BackupFormats { get; } = ["SQLite", "CsvArchive"];
 
+    /// <summary>Shown on a remote backend that can't do a file backup, so the constraint is visible regardless of
+    /// the selected format — a SQLite auto-backup there falls back to CSV.</summary>
+    public bool ShowRemoteBackupNote => !_supportsFileBackup;
+
     [ObservableProperty]
     private LogLevelOption? _selectedLogLevel;
 
@@ -413,10 +494,16 @@ public sealed partial class SettingsAdvancedTabViewModel : ObservableObject
         new LogLevelOption("Verbose", Resources.Settings_Advanced_Logging_Level_Verbose),
     ];
 
-    public SettingsAdvancedTabViewModel(ISettingsService settingsService, IFilePickerService filePickerService)
+    public SettingsAdvancedTabViewModel(
+        ISettingsService settingsService,
+        IFilePickerService filePickerService,
+        IBootstrapConfigService bootstrapConfig,
+        bool supportsFileBackup)
     {
         _settingsService = settingsService;
         _filePickerService = filePickerService;
+        _bootstrapConfig = bootstrapConfig;
+        _supportsFileBackup = supportsFileBackup;
     }
 
     [RelayCommand]
@@ -455,8 +542,8 @@ public sealed partial class SettingsAdvancedTabViewModel : ObservableObject
             AutoBackupFormat = await _settingsService.GetAsync("AutoBackup.Format", ct) ?? "SQLite";
             AutoBackupFolder = await _settingsService.GetAsync("LastBackupFolder", ct) ?? string.Empty;
 
-            var storedLevel = await _settingsService.GetAsync("LogLevel", ct) ?? "Normal";
-            SelectedLogLevel = AvailableLogLevels.FirstOrDefault(l => l.Value == storedLevel)
+            _loadedLogLevel = _bootstrapConfig.Load().LogLevel ?? "Normal";
+            SelectedLogLevel = AvailableLogLevels.FirstOrDefault(l => l.Value == _loadedLogLevel)
                 ?? AvailableLogLevels.First();
         }
         catch (Exception ex)
@@ -475,7 +562,10 @@ public sealed partial class SettingsAdvancedTabViewModel : ObservableObject
                 await _settingsService.SetAsync("LastBackupFolder", AutoBackupFolder, ct);
 
             if (SelectedLogLevel is not null)
-                await _settingsService.SetAsync("LogLevel", SelectedLogLevel.Value, ct);
+            {
+                var level = SelectedLogLevel.Value;
+                _bootstrapConfig.Update(c => c.LogLevel = level);
+            }
         }
         catch (Exception ex)
         {
@@ -574,7 +664,12 @@ public sealed partial class SettingsApplicationAccessTabViewModel : ObservableOb
 
 public sealed partial class SettingsAppearanceTabViewModel : ObservableObject
 {
-    private readonly ISettingsService _settingsService;
+    private readonly IBootstrapConfigService _bootstrapConfig;
+
+    private ThemeFlavour _loadedFlavour;
+
+    /// <summary>True when the user picked a flavour different from the one loaded — a restart-requiring change.</summary>
+    public bool ThemeChanged => SelectedFlavour is not null && SelectedFlavour.Flavour != _loadedFlavour;
 
     [ObservableProperty]
     private ThemeFlavourOption? _selectedFlavour;
@@ -587,35 +682,40 @@ public sealed partial class SettingsAppearanceTabViewModel : ObservableObject
         new ThemeFlavourOption(ThemeFlavour.Dark,         Resources.Settings_Appearance_Flavour_Dark),
     ];
 
-    public SettingsAppearanceTabViewModel(ISettingsService settingsService)
+    public SettingsAppearanceTabViewModel(IBootstrapConfigService bootstrapConfig)
     {
-        _settingsService = settingsService;
+        _bootstrapConfig = bootstrapConfig;
     }
 
-    public async Task LoadAsync(CancellationToken ct = default)
+    public Task LoadAsync(CancellationToken ct = default)
     {
         try
         {
-            var stored = await ThemeSettings.LoadAsync(_settingsService, ct);
-            SelectedFlavour = AvailableFlavours.FirstOrDefault(f => f.Flavour == stored)
+            _loadedFlavour = ThemeSettings.Parse(_bootstrapConfig.Load().UiTheme);
+            SelectedFlavour = AvailableFlavours.FirstOrDefault(f => f.Flavour == _loadedFlavour)
                 ?? AvailableFlavours.First();
         }
         catch (Exception ex)
         {
             Log.Error(ex, "SettingsAppearanceTabViewModel: LoadAsync failed");
         }
+        return Task.CompletedTask;
     }
 
-    public async Task SaveAsync(CancellationToken ct = default)
+    public Task SaveAsync(CancellationToken ct = default)
     {
         try
         {
             if (SelectedFlavour is not null)
-                await ThemeSettings.SaveAsync(_settingsService, SelectedFlavour.Flavour, ct);
+            {
+                var value = ThemeSettings.ToStorageValue(SelectedFlavour.Flavour);
+                _bootstrapConfig.Update(c => c.UiTheme = value);
+            }
         }
         catch (Exception ex)
         {
             Log.Error(ex, "SettingsAppearanceTabViewModel: SaveAsync failed");
         }
+        return Task.CompletedTask;
     }
 }

@@ -22,6 +22,9 @@ namespace BookDB.Desktop;
 /// </remarks>
 internal sealed class SingleInstanceGate : IDisposable
 {
+    /// <summary>Command-line flag marking a process spawned by the forced restart; it waits for the outgoing instance to release the lock.</summary>
+    internal const string RelaunchArgument = "--relaunch";
+
     private readonly string _pipeName;
     private readonly FileStream? _lockStream;
     private readonly CancellationTokenSource? _cts;
@@ -49,9 +52,11 @@ internal sealed class SingleInstanceGate : IDisposable
     /// Attempts to become the single instance for <paramref name="appDataPath"/>. When this returns a
     /// non-primary gate, the running instance has already been signalled to activate and the caller should
     /// exit. Never throws — an unexpected error fails open (the caller starts as an unguarded primary)
-    /// rather than blocking the user from launching their app.
+    /// rather than blocking the user from launching their app. <paramref name="waitForLock"/> is non-zero
+    /// only for a relaunch: it retries the lock while the outgoing instance shuts down, instead of treating
+    /// the still-held lock as a rival instance and exiting.
     /// </summary>
-    public static SingleInstanceGate TryAcquire(string appDataPath)
+    public static SingleInstanceGate TryAcquire(string appDataPath, TimeSpan waitForLock = default)
     {
         var pipeName = "BookDB-SingleInstance-" + ShortHash(appDataPath);
 
@@ -59,8 +64,19 @@ internal sealed class SingleInstanceGate : IDisposable
         {
             Directory.CreateDirectory(appDataPath);
             var lockPath = Path.Combine(appDataPath, ".instance.lock");
-            var lockStream = new FileStream(lockPath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
-            return new SingleInstanceGate(pipeName, lockStream, isPrimary: true);
+            var deadline = DateTime.UtcNow + waitForLock;
+            while (true)
+            {
+                try
+                {
+                    var lockStream = new FileStream(lockPath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
+                    return new SingleInstanceGate(pipeName, lockStream, isPrimary: true);
+                }
+                catch (IOException) when (DateTime.UtcNow < deadline)
+                {
+                    Thread.Sleep(100);
+                }
+            }
         }
         catch (IOException)
         {

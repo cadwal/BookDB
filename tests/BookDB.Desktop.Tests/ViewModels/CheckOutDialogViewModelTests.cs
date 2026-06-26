@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using BookDB.Desktop.ViewModels;
 using BookDB.Logic.Services;
@@ -8,7 +11,8 @@ using Xunit;
 namespace BookDB.Desktop.Tests.ViewModels;
 
 /// <summary>
-/// Tests for CheckOutDialogViewModel CanConfirm gating.
+/// CheckOutDialogViewModel CanConfirm gating. The typed text is the single source of truth (no SelectedItem
+/// binding), so Check Out is enabled whenever the borrower box is non-empty.
 /// </summary>
 public sealed class CheckOutDialogViewModelTests
 {
@@ -16,12 +20,14 @@ public sealed class CheckOutDialogViewModelTests
     {
         var loanService = Substitute.For<ILoanService>();
         var borrowerService = Substitute.For<IBorrowerService>();
+        borrowerService.GetAllAsync(Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult<IReadOnlyList<Borrower>>(Array.Empty<Borrower>()));
         var vm = new CheckOutDialogViewModel(loanService, borrowerService);
         return (vm, loanService, borrowerService);
     }
 
     [Fact]
-    public async Task CanConfirm_DisabledWhenNoBorrowerSelected()
+    public async Task CanConfirm_DisabledWhenSearchTextEmpty()
     {
         var (vm, _, _) = CreateSut();
         await vm.InitializeAsync(1);
@@ -29,11 +35,11 @@ public sealed class CheckOutDialogViewModelTests
     }
 
     [Fact]
-    public async Task CanConfirm_EnabledWhenBorrowerSelected()
+    public async Task CanConfirm_EnabledWhenSearchTextEntered()
     {
         var (vm, _, _) = CreateSut();
         await vm.InitializeAsync(1);
-        vm.SelectedBorrower = new ExistingBorrowerSuggestion(new Borrower { BorrowerId = 1, FirstName = "A" });
+        vm.SearchText = "Anna Svensson";
         Assert.True(vm.ConfirmCommand.CanExecute(null));
     }
 }

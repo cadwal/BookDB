@@ -30,7 +30,7 @@ public sealed class DataChangeCommandInterceptorTests : IDisposable
 
         var upgrader = SqliteExtensions.SqliteDatabase(DbUp.DeployChanges.To, connectionString)
             .WithScriptsEmbeddedInAssembly(
-                Assembly.GetAssembly(typeof(DatabaseStartupService))!,
+                Assembly.GetAssembly(typeof(BookDB.Data.Sqlite.SqliteDbUpRunner))!,
                 name => name.Contains(".Migrations."))
             .Build();
 
@@ -128,6 +128,25 @@ public sealed class DataChangeCommandInterceptorTests : IDisposable
         await ctx.SaveChangesAsync(ct);
 
         Assert.True(_tracker.HasChanges);
+    }
+
+    [Fact]
+    public async Task ClientSessionWrites_DoNotFlagTracker()
+    {
+        var ct = TestContext.Current.CancellationToken;
+        await using var ctx = new BookDbContext(_options);
+
+        // Heartbeat presence is not library data — its insert/update/delete must not look like a change.
+        ctx.ClientSessions.Add(new ClientSession
+        {
+            SessionId = "s1", Hostname = "h", UserName = "u", AppVersion = "1.0", StartedAt = DateTime.UtcNow, LastSeenAt = DateTime.UtcNow,
+        });
+        await ctx.SaveChangesAsync(ct);
+        await ctx.ClientSessions.Where(s => s.SessionId == "s1")
+            .ExecuteUpdateAsync(s => s.SetProperty(c => c.LastSeenAt, DateTime.UtcNow), ct);
+        await ctx.ClientSessions.Where(s => s.SessionId == "s1").ExecuteDeleteAsync(ct);
+
+        Assert.False(_tracker.HasChanges);
     }
 
     [Fact]

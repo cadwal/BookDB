@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 
 namespace BookDB.Data;
 
-internal sealed class SerilogDbUpLog : IUpgradeLog
+public sealed class SerilogDbUpLog : IUpgradeLog
 {
     private readonly ILogger<DatabaseStartupService> _logger;
 

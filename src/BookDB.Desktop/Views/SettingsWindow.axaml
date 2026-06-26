@@ -2,11 +2,12 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:BookDB.Desktop.ViewModels"
         xmlns:res="using:BookDB.Desktop.Localization"
+        xmlns:views="using:BookDB.Desktop.Views"
         x:Class="BookDB.Desktop.Views.SettingsWindow"
         x:DataType="vm:SettingsWindowViewModel"
         Title="{x:Static res:Resources.Settings_WindowTitle}"
         Width="620" MinWidth="520"
-        Height="480" MinHeight="400"
+        Height="640" MinHeight="480"
         WindowStartupLocation="CenterOwner"
         ShowInTaskbar="False"
         CanResize="True">
@@ -196,11 +197,16 @@
                      TextWrapping="Wrap"
                      VerticalAlignment="Center"
                      Margin="0,0,8,8"/>
-          <ComboBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2"
-                    ItemsSource="{Binding BackupFormats}"
-                    SelectedItem="{Binding AutoBackupFormat}"
-                    HorizontalAlignment="Stretch"
-                    Margin="0,0,0,8"/>
+          <StackPanel Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Margin="0,0,0,8">
+            <ComboBox ItemsSource="{Binding BackupFormats}"
+                      SelectedItem="{Binding AutoBackupFormat}"
+                      HorizontalAlignment="Stretch"/>
+            <!-- Same fallback note as the manual Backup dialog: file format isn't available on a remote backend. -->
+            <TextBlock Text="{x:Static res:Resources.BackupDialog_RemoteFallbackNote}"
+                       IsVisible="{Binding ShowRemoteBackupNote}"
+                       FontSize="11" TextWrapping="Wrap" Margin="0,4,0,0"
+                       Foreground="{DynamicResource BrushTextSecondary}"/>
+          </StackPanel>
           <!-- Row 2: Auto-backup folder -->
           <TextBlock Grid.Row="2" Grid.Column="0"
                      Text="{x:Static res:Resources.Settings_Advanced_BackupFolder}"
@@ -375,8 +381,37 @@
       </StackPanel>
     </Border>
 
-    <!-- Tab control -->
-    <TabControl SelectedIndex="{Binding SelectedTabIndex}">
+    <TabControl SelectedIndex="{Binding SelectedTabIndex}"
+                HorizontalContentAlignment="Stretch"
+                VerticalContentAlignment="Stretch">
+
+      <!-- Fluent's TabControl measures the selected content with an unbounded height, so the content
+           is never handed the viewport height and a tab's ScrollViewer can't know when to scroll.
+           Re-template the content area as a Grid star row to bind it to the viewport; combined with
+           each tab content's own MinHeight, the ScrollViewer scrolls when the window is too short
+           (e.g. when the tab headers wrap to extra rows) instead of clipping. ColumnDefinitions="*"
+           keeps the content column from Auto-sizing (which would measure wrapping text unwrapped). -->
+      <TabControl.Template>
+        <ControlTemplate>
+          <Border Background="{TemplateBinding Background}"
+                  BorderBrush="{TemplateBinding BorderBrush}"
+                  BorderThickness="{TemplateBinding BorderThickness}"
+                  CornerRadius="{TemplateBinding CornerRadius}">
+            <Grid RowDefinitions="Auto,*" ColumnDefinitions="*">
+              <ItemsPresenter Name="PART_ItemsPresenter"
+                              Grid.Row="0"
+                              ItemsPanel="{TemplateBinding ItemsPanel}" />
+              <ContentPresenter Name="PART_SelectedContentHost"
+                                Grid.Row="1"
+                                Margin="{TemplateBinding Padding}"
+                                HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                Content="{TemplateBinding SelectedContent}"
+                                ContentTemplate="{TemplateBinding SelectedContentTemplate}" />
+            </Grid>
+          </Border>
+        </ControlTemplate>
+      </TabControl.Template>
 
       <TabItem Header="{x:Static res:Resources.Settings_Tab_General}">
         <ContentControl ContentTemplate="{StaticResource GeneralTabTemplate}"
@@ -411,6 +446,10 @@
       <TabItem Header="{x:Static res:Resources.Settings_Tab_ApplicationAccess}">
         <ContentControl ContentTemplate="{StaticResource ApplicationAccessTabTemplate}"
                         Content="{Binding ApplicationAccessTab}"/>
+      </TabItem>
+
+      <TabItem Header="{x:Static res:Resources.Settings_Tab_Database}">
+        <views:DatabaseSettingsView DataContext="{Binding DatabaseTab}"/>
       </TabItem>
 
     </TabControl>

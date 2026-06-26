@@ -4,8 +4,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using BookDB.Data.DbContexts;
+using BookDB.Data.Interfaces;
+using BookDB.Logic.Helpers;
 using BookDB.Models.Entities;
-using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookDB.Logic.Services;
@@ -13,10 +14,12 @@ namespace BookDB.Logic.Services;
 public sealed class BorrowerService : IBorrowerService
 {
     private readonly IDbContextFactory<BookDbContext> _factory;
+    private readonly IConstraintViolationClassifier _constraints;
 
-    public BorrowerService(IDbContextFactory<BookDbContext> factory)
+    public BorrowerService(IDbContextFactory<BookDbContext> factory, IConstraintViolationClassifier constraints)
     {
         _factory = factory;
+        _constraints = constraints;
     }
 
     public async Task<IReadOnlyList<Borrower>> GetAllAsync(CancellationToken ct = default)
@@ -31,11 +34,11 @@ public sealed class BorrowerService : IBorrowerService
     public async Task<IReadOnlyList<Borrower>> SearchAsync(string text, CancellationToken ct = default)
     {
         await using var db = await _factory.CreateDbContextAsync(ct);
-        var pattern = $"%{text}%";
+        var pattern = LikePattern.Contains(text);
         return await db.Borrowers
             .Where(b =>
-                EF.Functions.Like(b.FirstName + " " + b.LastName, pattern) ||
-                EF.Functions.Like(b.LastName + ", " + b.FirstName, pattern))
+                EF.Functions.Like((b.FirstName + " " + b.LastName).ToLower(), pattern, LikePattern.Escape) ||
+                EF.Functions.Like((b.LastName + ", " + b.FirstName).ToLower(), pattern, LikePattern.Escape))
             .OrderBy(b => b.LastName).ThenBy(b => b.FirstName)
             .Take(20)
             .ToListAsync(ct);
@@ -75,7 +78,7 @@ public sealed class BorrowerService : IBorrowerService
         {
             await db.SaveChangesAsync(ct);
         }
-        catch (DbUpdateException ex) when (ex.InnerException is SqliteException { SqliteErrorCode: 19 })
+        catch (DbUpdateException ex) when (_constraints.IsForeignKeyViolation(ex))
         {
             throw new InvalidOperationException("Cannot delete: this borrower has loan history.", ex);
         }

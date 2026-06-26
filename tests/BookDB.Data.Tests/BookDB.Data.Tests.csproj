@@ -24,6 +24,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\BookDB.Data\BookDB.Data.csproj" />
+    <ProjectReference Include="..\..\src\BookDB.Data.Sqlite\BookDB.Data.Sqlite.csproj" />
     <ProjectReference Include="..\..\src\BookDB.Models\BookDB.Models.csproj" />
   </ItemGroup>
 

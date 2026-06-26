@@ -2054,6 +2054,36 @@ Potenziali duplicati: {3}  |  Con copertine: {4}</value>
   <data name="About_AppName" xml:space="preserve">
     <value>BookDB</value>
   </data>
+  <data name="Menu_Backup" xml:space="preserve">
+    <value>Backup...</value>
+  </data>
+  <data name="BackupDialog_Title" xml:space="preserve">
+    <value>Backup</value>
+  </data>
+  <data name="BackupDialog_Format_Sqlite" xml:space="preserve">
+    <value>File di database (SQLite)</value>
+  </data>
+  <data name="BackupDialog_Format_Csv" xml:space="preserve">
+    <value>Archivio CSV (portatile)</value>
+  </data>
+  <data name="BackupDialog_RemoteFallbackNote" xml:space="preserve">
+    <value>Un database remoto non dispone di backup su file; viene invece usato l'archivio CSV.</value>
+  </data>
+  <data name="BackupDialog_Confirm" xml:space="preserve">
+    <value>Esegui backup</value>
+  </data>
+  <data name="Settings_Database_SavedPasswordHint" xml:space="preserve">
+    <value>È salvata una password per questo server: lasciare vuoto per mantenerla.</value>
+  </data>
+  <data name="Shutdown_CloseApplication" xml:space="preserve">
+    <value>Chiudi applicazione</value>
+  </data>
+  <data name="Shutdown_CloseAndPause" xml:space="preserve">
+    <value>Chiudi e sospendi</value>
+  </data>
+  <data name="Shutdown_KeepRunning" xml:space="preserve">
+    <value>Continua l'esecuzione</value>
+  </data>
   <data name="Splash_Status_Initializing" xml:space="preserve">
     <value>Avvio in corso…</value>
   </data>
@@ -2151,7 +2181,7 @@ Potenziali duplicati: {3}  |  Con copertine: {4}</value>
     <value>Ripristino completato</value>
   </data>
   <data name="Restore_Complete_Body" xml:space="preserve">
-    <value>L'applicazione si chiuderà ora. Riaprirla per utilizzare la libreria ripristinata.</value>
+    <value>BookDB verrà riavviato ora per caricare la libreria ripristinata.</value>
   </data>
   <data name="Restore_Failed" xml:space="preserve">
     <value>Ripristino non riuscito: {0}. La libreria originale non è stata modificata.</value>
@@ -2542,5 +2572,302 @@ Potenziali duplicati: {3}  |  Con copertine: {4}</value>
   </data>
   <data name="Maintenance_SafetyBackupSaved" xml:space="preserve">
     <value>Backup di sicurezza salvato in: {0}</value>
+  </data>
+  <data name="Settings_Tab_Database" xml:space="preserve">
+    <value>Database</value>
+  </data>
+  <data name="Settings_Database_BackendLabel" xml:space="preserve">
+    <value>Motore del database</value>
+  </data>
+  <data name="Settings_Database_Backend_Sqlite" xml:space="preserve">
+    <value>File locale (SQLite)</value>
+  </data>
+  <data name="Settings_Database_Backend_Postgres" xml:space="preserve">
+    <value>Server PostgreSQL</value>
+  </data>
+  <data name="Settings_Database_ServerSectionHeader" xml:space="preserve">
+    <value>Connessione al server</value>
+  </data>
+  <data name="Settings_Database_Host" xml:space="preserve">
+    <value>Host</value>
+  </data>
+  <data name="Settings_Database_Port" xml:space="preserve">
+    <value>Porta</value>
+  </data>
+  <data name="Settings_Database_DatabaseName" xml:space="preserve">
+    <value>Database</value>
+  </data>
+  <data name="Settings_Database_Username" xml:space="preserve">
+    <value>Nome utente</value>
+  </data>
+  <data name="Settings_Database_Password" xml:space="preserve">
+    <value>Password</value>
+  </data>
+  <data name="Settings_Database_TlsLabel" xml:space="preserve">
+    <value>Modalità TLS/SSL</value>
+  </data>
+  <data name="Settings_Database_Tls_Disable" xml:space="preserve">
+    <value>Disattiva</value>
+  </data>
+  <data name="Settings_Database_Tls_Prefer" xml:space="preserve">
+    <value>Preferisci</value>
+  </data>
+  <data name="Settings_Database_Tls_Require" xml:space="preserve">
+    <value>Richiedi</value>
+  </data>
+  <data name="Settings_Database_Tls_VerifyFull" xml:space="preserve">
+    <value>Verifica completa</value>
+  </data>
+  <data name="Settings_Database_TlsDisableWarning" xml:space="preserve">
+    <value>Disattivando TLS la password e i dati vengono inviati non crittografati sulla rete. Usare solo su una rete locale attendibile.</value>
+  </data>
+  <data name="Settings_Database_KeyringUnavailable" xml:space="preserve">
+    <value>PostgreSQL richiede un archivio delle credenziali del sistema operativo per conservare la password in modo sicuro, ma non ne è disponibile alcuno su questo computer. BookDB continuerà a usare il database locale SQLite.</value>
+  </data>
+  <data name="Settings_Database_RestartNote" xml:space="preserve">
+    <value>Il cambio del database ha effetto dopo il riavvio di BookDB.</value>
+  </data>
+  <data name="Settings_Database_Apply_PasswordRequired" xml:space="preserve">
+    <value>Immettere la password del database prima di applicare.</value>
+  </data>
+  <data name="Startup_Failure_Title" xml:space="preserve">
+    <value>Impossibile connettersi al database</value>
+  </data>
+  <data name="Startup_Failure_Intro" xml:space="preserve">
+    <value>BookDB non è riuscito a raggiungere il server PostgreSQL.</value>
+  </data>
+  <data name="Startup_Failure_Retry" xml:space="preserve">
+    <value>Riprova</value>
+  </data>
+  <data name="Startup_Failure_OpenSettings" xml:space="preserve">
+    <value>Apri impostazioni</value>
+  </data>
+  <data name="Startup_Failure_Quit" xml:space="preserve">
+    <value>Esci</value>
+  </data>
+  <data name="Startup_Failure_RetriesExhausted" xml:space="preserve">
+    <value>I nuovi tentativi non hanno aiutato. Verifica che il server sia in esecuzione e controlla le impostazioni di connessione.</value>
+  </data>
+  <data name="ConnectDialog_Header" xml:space="preserve">
+    <value>Un altro client è connesso</value>
+  </data>
+  <data name="ConnectDialog_Body" xml:space="preserve">
+    <value>BookDB è già aperto su {0} (visto l'ultima volta {1}, versione {2}).</value>
+  </data>
+  <data name="ConnectDialog_Risk" xml:space="preserve">
+    <value>L'apertura di un secondo client rischia di causare conflitti di dati. Un solo client dovrebbe accedere a questo database alla volta.</value>
+  </data>
+  <data name="ConnectDialog_Quit" xml:space="preserve">
+    <value>Esci</value>
+  </data>
+  <data name="ConnectDialog_ConnectAnyway" xml:space="preserve">
+    <value>Connetti comunque — accetto il rischio</value>
+  </data>
+  <data name="ConnectDialog_ConnectAnyway_Waiting" xml:space="preserve">
+    <value>Connetti comunque ({0})</value>
+  </data>
+  <data name="ConnectDialog_Age_Seconds" xml:space="preserve">
+    <value>{0} secondi fa</value>
+  </data>
+  <data name="ConnectDialog_Age_Minutes" xml:space="preserve">
+    <value>{0} minuti fa</value>
+  </data>
+  <data name="ConnectDialog_Age_Hours" xml:space="preserve">
+    <value>{0} ore fa</value>
+  </data>
+  <data name="ConnectDialog_Age_Days" xml:space="preserve">
+    <value>{0} giorni fa</value>
+  </data>
+  <data name="Settings_RestartConfirm_Title" xml:space="preserve">
+    <value>Riavvio necessario</value>
+  </data>
+  <data name="Settings_RestartConfirm_Body" xml:space="preserve">
+    <value>Alcune modifiche hanno effetto solo dopo un riavvio. Riavviare BookDB ora?</value>
+  </data>
+  <data name="Settings_Database_RestartConfirm_Body" xml:space="preserve">
+    <value>Il passaggio a {0} richiede il riavvio di BookDB. L'applicazione verrà chiusa e riaperta ora. Continuare?</value>
+  </data>
+  <data name="Settings_Database_TestConnection" xml:space="preserve">
+    <value>Prova connessione</value>
+  </data>
+  <data name="Settings_Database_Testing" xml:space="preserve">
+    <value>Prova in corso…</value>
+  </data>
+  <data name="Settings_Database_TestSuccess" xml:space="preserve">
+    <value>Connesso — PostgreSQL {0}, {1} libri.</value>
+  </data>
+  <data name="Settings_Database_TestSuccessUninitialized" xml:space="preserve">
+    <value>Connesso — PostgreSQL {0}. Nessun dato BookDB ancora presente in questo database.</value>
+  </data>
+  <data name="Settings_Database_TestError_Auth" xml:space="preserve">
+    <value>Autenticazione non riuscita — controlla nome utente e password.</value>
+  </data>
+  <data name="Settings_Database_TestError_Refused" xml:space="preserve">
+    <value>Connessione rifiutata — controlla host e porta e che il server sia in esecuzione.</value>
+  </data>
+  <data name="Settings_Database_TestError_Timeout" xml:space="preserve">
+    <value>Connessione scaduta — controlla host e porta e la tua rete.</value>
+  </data>
+  <data name="Settings_Database_TestError_Tls" xml:space="preserve">
+    <value>Errore TLS/SSL — controlla la modalità TLS e il certificato del server.</value>
+  </data>
+  <data name="Settings_Database_TestError_Unknown" xml:space="preserve">
+    <value>Impossibile connettersi: {0}</value>
+  </data>
+  <data name="Settings_Database_TestError_UnsupportedVersion" xml:space="preserve">
+    <value>BookDB richiede PostgreSQL {0} o successivo — questo server è {1}.</value>
+  </data>
+  <data name="WriteFailure_Title" xml:space="preserve">
+    <value>Impossibile salvare le modifiche</value>
+  </data>
+  <data name="WriteFailure_Retry_Button" xml:space="preserve">
+    <value>Riprova</value>
+  </data>
+  <data name="WriteFailure_Discard_Button" xml:space="preserve">
+    <value>Annulla modifiche</value>
+  </data>
+  <data name="ConnectionLost_Title" xml:space="preserve">
+    <value>Connessione al database persa</value>
+  </data>
+  <data name="ConnectionLost_Body" xml:space="preserve">
+    <value>Il database è irraggiungibile da diversi minuti. Puoi continuare ad attendere mentre viene ritentata la riconnessione, oppure uscire dall'applicazione.</value>
+  </data>
+  <data name="ConnectionLost_Quit_Button" xml:space="preserve">
+    <value>Esci</value>
+  </data>
+  <data name="ConnectionLost_KeepWaiting_Button" xml:space="preserve">
+    <value>Continua ad attendere</value>
+  </data>
+  <data name="StatusBar_Connection_Reconnecting" xml:space="preserve">
+    <value>Riconnessione al database…</value>
+  </data>
+  <data name="StatusBar_Connection_Lost" xml:space="preserve">
+    <value>Connessione al database persa</value>
+  </data>
+  <data name="MoveLibrary_Header" xml:space="preserve">
+    <value>Sposta libreria</value>
+  </data>
+  <data name="MoveLibrary_Intro" xml:space="preserve">
+    <value>Copia l'intera libreria nell'altro backend di database. Il database attuale è l'origine; scegli e verifica la destinazione prima di spostare. Prima di qualsiasi scrittura viene eseguito automaticamente un backup di sicurezza.</value>
+  </data>
+  <data name="MoveLibrary_SourceLabel" xml:space="preserve">
+    <value>Database attuale (origine):</value>
+  </data>
+  <data name="MoveLibrary_Source_Sqlite" xml:space="preserve">
+    <value>SQLite locale — {0}</value>
+  </data>
+  <data name="MoveLibrary_Source_Postgres" xml:space="preserve">
+    <value>PostgreSQL — {0}</value>
+  </data>
+  <data name="MoveLibrary_TargetLabel" xml:space="preserve">
+    <value>Sposta in:</value>
+  </data>
+  <data name="MoveLibrary_Target_Postgres" xml:space="preserve">
+    <value>Server PostgreSQL</value>
+  </data>
+  <data name="MoveLibrary_Target_Sqlite" xml:space="preserve">
+    <value>File SQLite locale</value>
+  </data>
+  <data name="MoveLibrary_Check" xml:space="preserve">
+    <value>Verifica destinazione</value>
+  </data>
+  <data name="MoveLibrary_Target_Empty" xml:space="preserve">
+    <value>La destinazione è vuota — pronta a ricevere la libreria.</value>
+  </data>
+  <data name="MoveLibrary_Target_HasData" xml:space="preserve">
+    <value>⚠ La destinazione contiene già {0} libri — Sposta SOSTITUIRÀ tutti i dati.</value>
+  </data>
+  <data name="MoveLibrary_Acknowledge" xml:space="preserve">
+    <value>Ho capito — sostituisci tutti i dati nel database di destinazione</value>
+  </data>
+  <data name="MoveLibrary_SwitchActive" xml:space="preserve">
+    <value>Imposta il database attivo sulla destinazione al termine</value>
+  </data>
+  <data name="MoveLibrary_Move" xml:space="preserve">
+    <value>Sposta libreria</value>
+  </data>
+  <data name="MoveLibrary_ProgressHeader" xml:space="preserve">
+    <value>Avanzamento</value>
+  </data>
+  <data name="MoveLibrary_Progress_Table" xml:space="preserve">
+    <value>{0}: {1}</value>
+  </data>
+  <data name="MoveLibrary_Progress_TableRunning" xml:space="preserve">
+    <value>{0}: {1} / {2}</value>
+  </data>
+  <data name="MoveLibrary_SafetyBackupSaved" xml:space="preserve">
+    <value>Backup di sicurezza salvato: {0}</value>
+  </data>
+  <data name="MoveLibrary_TargetBackupSaved" xml:space="preserve">
+    <value>Backup di sicurezza della destinazione salvato: {0}</value>
+  </data>
+  <data name="MoveLibrary_Complete" xml:space="preserve">
+    <value>Migrazione completata — tutti i conteggi dei record corrispondono.</value>
+  </data>
+  <data name="MoveLibrary_CountMismatch" xml:space="preserve">
+    <value>⚠ Migrazione terminata ma i conteggi dei record non corrispondono; il cambio del database attivo è bloccato.</value>
+  </data>
+  <data name="MoveLibrary_Failed" xml:space="preserve">
+    <value>Migrazione non riuscita in {0}. La destinazione contiene dati parziali e non deve essere usata. I tuoi dati sono al sicuro nel backup: {1}</value>
+  </data>
+  <data name="MoveLibrary_Phase_Preparing" xml:space="preserve">
+    <value>Preparazione destinazione…</value>
+  </data>
+  <data name="MoveLibrary_Phase_Copying" xml:space="preserve">
+    <value>Copia dei dati…</value>
+  </data>
+  <data name="MoveLibrary_Phase_Finalizing" xml:space="preserve">
+    <value>Finalizzazione…</value>
+  </data>
+  <data name="MoveLibrary_Phase_Verifying" xml:space="preserve">
+    <value>Verifica dei conteggi dei record…</value>
+  </data>
+  <data name="MoveLibrary_Table_Books" xml:space="preserve">
+    <value>Libri</value>
+  </data>
+  <data name="MoveLibrary_Table_CoverImages" xml:space="preserve">
+    <value>Immagini di copertina</value>
+  </data>
+  <data name="MoveLibrary_Table_Loans" xml:space="preserve">
+    <value>Prestiti</value>
+  </data>
+  <data name="MoveLibrary_Table_Borrowers" xml:space="preserve">
+    <value>Richiedenti</value>
+  </data>
+  <data name="MoveLibrary_Table_People" xml:space="preserve">
+    <value>Persone</value>
+  </data>
+  <data name="MoveLibrary_Table_Publishers" xml:space="preserve">
+    <value>Editori</value>
+  </data>
+  <data name="Restore_UnknownFormat" xml:space="preserve">
+    <value>Il file selezionato non è un backup BookDB riconosciuto (nessun database della libreria né archivio CSV all'interno).</value>
+  </data>
+  <data name="Restore_SqliteIntoRemote" xml:space="preserve">
+    <value>Questo è un backup di file SQLite locale e non può essere ripristinato nel database remoto attuale. Usa un archivio CSV o passa prima al database locale.</value>
+  </data>
+  <data name="Restore_AdoptBackend_Title" xml:space="preserve">
+    <value>Applicare la connessione al database del backup?</value>
+  </data>
+  <data name="Restore_AdoptBackend_Body" xml:space="preserve">
+    <value>Questo backup è stato creato su un database {0}. Impostare il database attivo su questa connessione e riavviare? Scegliendo No si mantiene il database attuale.</value>
+  </data>
+  <data name="RestoreTarget_Title" xml:space="preserve">
+    <value>Dove ripristinare</value>
+  </data>
+  <data name="RestoreTarget_Body" xml:space="preserve">
+    <value>Questo backup è stato creato sul server PostgreSQL {0}. Ripristinare i dati in quel server o nel database attuale?</value>
+  </data>
+  <data name="RestoreTarget_Archived" xml:space="preserve">
+    <value>Ripristina nel server del backup</value>
+  </data>
+  <data name="RestoreTarget_Current" xml:space="preserve">
+    <value>Ripristina nel database attuale</value>
+  </data>
+  <data name="RestoreTarget_Cancel" xml:space="preserve">
+    <value>Annulla</value>
+  </data>
+  <data name="Restore_NoCredentialsForTarget" xml:space="preserve">
+    <value>Nessuna credenziale salvata per il server del database del backup. Configuralo prima in Impostazioni → Database, quindi riprova.</value>
   </data>
 </root>

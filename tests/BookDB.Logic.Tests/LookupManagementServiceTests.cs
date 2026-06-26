@@ -27,7 +27,7 @@ public sealed class LookupManagementServiceTests : IDisposable
 
         var upgrader = SqliteExtensions.SqliteDatabase(DeployChanges.To, connectionString)
             .WithScriptsEmbeddedInAssembly(
-                Assembly.GetAssembly(typeof(BookDbContext))!,
+                Assembly.GetAssembly(typeof(BookDB.Data.Sqlite.SqliteDbUpRunner))!,
                 name => name.Contains(".Migrations."))
             .LogToNowhere()
             .Build();
@@ -39,7 +39,7 @@ public sealed class LookupManagementServiceTests : IDisposable
             .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
             .Options;
         _factory = new TestBookDbContextFactory(options);
-        _sut = new LookupManagementService(_factory);
+        _sut = new LookupManagementService(_factory, new BookDB.Data.Sqlite.SqliteLookupNameMatcher());
     }
 
     public void Dispose()
@@ -47,6 +47,54 @@ public sealed class LookupManagementServiceTests : IDisposable
         GC.Collect();
         GC.WaitForPendingFinalizers();
         try { File.Delete(_dbPath); } catch { /* best effort */ }
+    }
+
+    // -----------------------------------------------------------------------
+    // Case-insensitive duplicate detection
+    // -----------------------------------------------------------------------
+
+    [Fact]
+    public async Task AddCollectionAsync_RejectsCaseInsensitiveDuplicate()
+    {
+        var ct = TestContext.Current.CancellationToken;
+        await _sut.AddCollectionAsync("MyShelf", ct);
+
+        await Assert.ThrowsAsync<InvalidOperationException>(
+            () => _sut.AddCollectionAsync("myshelf", ct));
+    }
+
+    [Fact]
+    public async Task AddPublisherAsync_RejectsCaseInsensitiveDuplicate()
+    {
+        var ct = TestContext.Current.CancellationToken;
+        await _sut.AddPublisherAsync("Penguin", ct);
+
+        await Assert.ThrowsAsync<InvalidOperationException>(
+            () => _sut.AddPublisherAsync("PENGUIN", ct));
+    }
+
+    [Fact]
+    public async Task AddPublisherAsync_RejectsCaseInsensitiveDuplicate_WithNonAsciiUppercase()
+    {
+        // "ÅSA" and "Åsa" differ only in ASCII case. NOCASE folds the ASCII letters (Å stays Å on
+        // both sides) and treats them as the same name. A ToLower() comparison would miss this on
+        // SQLite: lower() leaves the column's Å alone while C# folds the parameter's Å to å.
+        var ct = TestContext.Current.CancellationToken;
+        await _sut.AddPublisherAsync("ÅSA", ct);
+
+        await Assert.ThrowsAsync<InvalidOperationException>(
+            () => _sut.AddPublisherAsync("Åsa", ct));
+    }
+
+    [Fact]
+    public async Task RenamePublisherAsync_RejectsRenameToCaseInsensitiveDuplicate()
+    {
+        var ct = TestContext.Current.CancellationToken;
+        await _sut.AddPublisherAsync("Penguin", ct);
+        var vintageId = await _sut.AddPublisherAsync("Vintage", ct);
+
+        await Assert.ThrowsAsync<InvalidOperationException>(
+            () => _sut.RenamePublisherAsync(vintageId, "penguin", ct));
     }
 
     // -----------------------------------------------------------------------

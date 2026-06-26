@@ -32,7 +32,7 @@ public sealed class BookSearchServiceTests : IDisposable
 
         var upgrader = SqliteExtensions.SqliteDatabase(DeployChanges.To, connectionString)
             .WithScriptsEmbeddedInAssembly(
-                Assembly.GetAssembly(typeof(BookDbContext))!,
+                Assembly.GetAssembly(typeof(BookDB.Data.Sqlite.SqliteDbUpRunner))!,
                 name => name.Contains(".Migrations."))
             .LogToNowhere()
             .Build();
@@ -45,7 +45,7 @@ public sealed class BookSearchServiceTests : IDisposable
             .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
             .Options;
         _factory = new TestBookDbContextFactory(options);
-        _sut = new BookSearchService(_factory);
+        _sut = new BookSearchService(_factory, new BookDB.Data.Sqlite.SqliteBookSearchProvider(_factory));
     }
 
     public void Dispose()

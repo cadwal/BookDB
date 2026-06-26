@@ -27,7 +27,9 @@ public sealed class LoanContextMenuTests
             new TestLookupServiceFactory.NullSettingsService(),
             factory.LookupService,
             new TestLookupServiceFactory.NullClipboardService(),
-            loanService);
+            loanService,
+            Substitute.For<BookDB.Logic.Services.IConnectionHealthMonitor>(),
+            Substitute.For<BookDB.Data.Interfaces.IConnectionFailureClassifier>());
         return (vm, factory);
     }
 

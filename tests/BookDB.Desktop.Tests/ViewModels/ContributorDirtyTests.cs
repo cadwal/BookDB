@@ -37,7 +37,8 @@ public sealed class ContributorDirtyTests
 
         var loanSvc = Substitute.For<ILoanService>();
         return new FullDetailsWindowViewModel(bookSvc, bookImgSvc, lookupSvc,
-                                              fileSvc, msgr, winSvc, httpFactory, loanSvc);
+                                              fileSvc, msgr, winSvc, new Helpers.PassThroughWriteGuard(), httpFactory, loanSvc,
+                                              Substitute.For<IConnectionHealthMonitor>(), Substitute.For<BookDB.Data.Interfaces.IConnectionFailureClassifier>());
     }
 
     [Fact]

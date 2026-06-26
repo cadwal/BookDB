@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Avalonia;
@@ -8,6 +9,7 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
 using BookDB.Desktop.Views;
 using Microsoft.Extensions.DependencyInjection;
+using Serilog;
 
 namespace BookDB.Desktop;
 
@@ -39,7 +41,10 @@ public partial class App : Application
             // Wired before StartAsync so the handler is active during startup.
             Dispatcher.UIThread.UnhandledException += (_, e) =>
             {
-                AppHost.HandleUnhandledException(e.Exception);
+                // A dropped remote DB connection from an unguarded interactive call is not fatal: surface it on
+                // the status indicator and keep running, rather than opening the crash log.
+                if (!AppHost.TryReportConnectionLoss(e.Exception))
+                    AppHost.HandleUnhandledException(e.Exception);
                 e.Handled = true;   // prevent Avalonia from also crashing the process
             };
 
@@ -47,6 +52,34 @@ public partial class App : Application
             // heavy startup jobs run. Its ViewModel is already subscribed to the progress reporter.
             var splash = _appHost.Services.GetRequiredService<SplashWindow>();
             splash.Show();
+
+            var windowService = _appHost.Services.GetRequiredService<Services.IWindowService>();
+
+            // Remote backend: verify the server is reachable before the host runs DbUp against it.
+            if (_appHost.RequiresStartupConnectivityCheck)
+            {
+                // The splash is Topmost so it floats over other apps during a normal launch; drop that while we
+                // show interactive recovery dialogs, or they would render behind it.
+                splash.Topmost = false;
+                var probe = await _appHost.ProbePostgresConnectionAsync();
+                while (!probe.IsSuccess)
+                {
+                    var outcome = await windowService.ShowStartupFailureDialogAsync(
+                        probe, _appHost.ProbePostgresConnectionAsync, splash);
+                    if (outcome == ViewModels.StartupFailureOutcome.Proceed)
+                        break;
+                    if (outcome == ViewModels.StartupFailureOutcome.Quit)
+                    {
+                        splash.Close();
+                        desktop.Shutdown();
+                        return;
+                    }
+
+                    // Open settings: the user can fix the connection (Apply restarts the app) — otherwise re-probe.
+                    await windowService.ShowSettingsAsync(splash);
+                    probe = await _appHost.ProbePostgresConnectionAsync();
+                }
+            }
 
             var sw = Stopwatch.StartNew();
             Views.MainWindow mainWindow;
@@ -65,6 +98,15 @@ public partial class App : Application
             if (remaining > 0)
                 await Task.Delay(remaining);
 
+            // Remote backend only: block if another live client already holds the database.
+            if (!await windowService.ShowConnectDialogAsync(splash))
+            {
+                splash.Close();
+                await _appHost.ShutdownAsync();   // removes this client's heartbeat row; no backup (nothing changed)
+                desktop.Shutdown();
+                return;
+            }
+
             desktop.MainWindow = mainWindow;
             mainWindow.Show();
             splash.Close();
@@ -81,8 +123,11 @@ public partial class App : Application
                 // Cancel so we can await async shutdown work (auto-backup etc.) before the process exits.
                 args.Cancel = true;
                 shutdownInProgress = true;
-                await _appHost.ShutdownAsync();
-                desktop.Shutdown();
+                // Shutdown work must never strand the app open: if it throws (e.g. a remote DB is down while
+                // persisting settings), still tear down so the window can close instead of hanging forever.
+                try { await _appHost.ShutdownAsync(); }
+                catch (Exception ex) { Log.Error(ex, "Shutdown work failed — exiting anyway"); }
+                finally { desktop.Shutdown(); }
             };
         }
 

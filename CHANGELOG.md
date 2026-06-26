@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/semver-spec
 
 ## [Unreleased]
 
+## [2.0.0] - 2026-06-26
+
+### Added
+- PostgreSQL database support: BookDB can now keep your library on a PostgreSQL server instead of the local file, so the same catalog is reachable from more than one machine. SQLite stays the default and needs no setup — remote databases are entirely opt-in. PostgreSQL **12 or later** is required (the full-text search column uses a stored generated column added in PostgreSQL 12); Test connection reports a clear message and refuses to proceed against an older server.
+- Settings → Database tab to choose the backend and enter the server details (host, port, database, user, password, TLS mode), with a Test connection button that reports the server version and book count before you commit. Switching the active database restarts the app to load it.
+- Passwords for remote databases are stored in your operating system's secret store (Windows Credential Manager, macOS Keychain, or Linux Secret Service) — never in plain text. On a system with no secret store available, the PostgreSQL option is disabled with an explanation and SQLite remains available.
+- Move library (Tools → Maintenance): copy your entire catalog between SQLite and PostgreSQL in either direction. It takes a safety backup first, checks the target isn't about to be overwritten unknowingly, shows per-table progress, verifies every row count matches, and can switch the active database to the target when it finishes.
+- Restore from a CSV archive backup: it replaces the current library, always taking a safety backup of the live database first, and runs the whole restore as one transaction so a failure leaves your data untouched. When the backup names a different PostgreSQL server, you can restore directly into that server so the data and its connection settings land together.
+- Multi-client warning: when using a remote database, BookDB notices if another client appears to be connected and offers to quit rather than risk two clients writing at once (with a "connect anyway" override). A crashed client ages out automatically and never locks you out.
+- Connection-loss handling for remote databases: a clear dialog if the server can't be reached at startup (with Retry / open Settings / Quit), automatic reconnection if the connection drops mid-session, and a Retry / Discard prompt if a save can't reach the server — so your edits are never silently lost.
+- The Maintenance tools (Tools → Maintenance) now adapt to the active database: on PostgreSQL they run a server-side connectivity and sanity check, VACUUM (ANALYZE), and report the database size, in place of the SQLite-only integrity check and file repair.
+
+### Changed
+- Auto-backup on close now uses the engine-neutral CSV archive when the active database is remote (the file-copy backup remains for local SQLite).
+
 ## [1.2.1] - 2026-06-22
 
 ### Security
@@ -51,8 +66,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/semver-spec
 - Multi-language UI: EN, SV, DE, ES, FR, NL, IT, PT-BR, PT-PT
 - Help system with per-screen contextual help
 
-[Unreleased]: https://github.com/cadwal/BookDB/compare/v1.2.1...HEAD
+[Unreleased]: https://github.com/cadwal/BookDB/compare/v2.0.0...HEAD
 [1.1.0]: https://github.com/cadwal/BookDB/releases/tag/v1.1.0
 [1.0.0]: https://github.com/cadwal/BookDB/releases/tag/v1.0.0
 [1.2.0]: https://github.com/cadwal/BookDB/releases/tag/v1.2.0
 [1.2.1]: https://github.com/cadwal/BookDB/releases/tag/v1.2.1
+[2.0.0]: https://github.com/cadwal/BookDB/releases/tag/v2.0.0

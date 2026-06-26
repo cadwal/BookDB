@@ -30,7 +30,7 @@ public sealed class BookImageServiceReorderTests : IDisposable
 
         var upgrader = SqliteExtensions.SqliteDatabase(DeployChanges.To, _connectionString)
             .WithScriptsEmbeddedInAssembly(
-                Assembly.GetAssembly(typeof(BookDbContext))!,
+                Assembly.GetAssembly(typeof(BookDB.Data.Sqlite.SqliteDbUpRunner))!,
                 name => name.Contains(".Migrations."))
             .LogToNowhere()
             .Build();

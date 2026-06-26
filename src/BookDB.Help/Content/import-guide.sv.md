@@ -92,7 +92,7 @@ Spara boken för att behålla ändringarna. När varje typ har högst en bild f�
 
 Om du inte har en säkerhetskopia men fortfarande har din aktiva Readerware-databas (`.rw4`-mappen, t.ex. `MyBooks.rw4`) kan BookDB läsa den direkt:
 
-1. Öppna **Verktyg > Importera Readerware-databas…**.
+1. Öppna **Arkiv > Importera Readerware-databas…**.
 2. Klicka på **Bläddra** och välj din `.rw4`-databasmapp.
 3. Klicka på **Konvertera**. BookDB kopierar först databasen — ditt original öppnas eller ändras aldrig — och konverterar den till en säkerhetskopie-mapp.
 4. När konverteringen är klar klickar du på **Öppna importguiden** för att fortsätta genom samma steg för förhandsgranskning, inställningar och import som beskrivs ovan.

@@ -56,7 +56,8 @@ public sealed class ManageLookupsViewModelTests
         lookupService.GetCollectionsAsync(Arg.Any<CancellationToken>())
             .Returns(Task.FromResult<IReadOnlyList<Collection>>(System.Array.Empty<Collection>()));
 
-        return new ManageLookupsViewModel(service, lookupService, windowService, messenger, settings);
+        return new ManageLookupsViewModel(service, lookupService, windowService, messenger, settings,
+            Substitute.For<IConnectionHealthMonitor>(), Substitute.For<BookDB.Data.Interfaces.IConnectionFailureClassifier>());
     }
 
     // InitializeAsync("Category") => SelectedTabIndex == 6

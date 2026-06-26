@@ -4,7 +4,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using BookDB.Data;
 using BookDB.Data.DbContexts;
-using BookDB.Data.Interceptors;
+using BookDB.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 
@@ -26,7 +26,7 @@ public sealed class TestDbFixture : IAsyncLifetime
                 DbUp.DeployChanges.To,
                 ConnectionString)
             .WithScriptsEmbeddedInAssembly(
-                Assembly.GetAssembly(typeof(DatabaseStartupService))!,
+                Assembly.GetAssembly(typeof(BookDB.Data.Sqlite.SqliteDbUpRunner))!,
                 name => name.Contains(".Migrations."))
             .Build();
 

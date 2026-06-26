@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
-namespace BookDB.Data.Interceptors;
+namespace BookDB.Data.Sqlite;
 
 public sealed class SqlitePragmaInterceptor : DbConnectionInterceptor
 {

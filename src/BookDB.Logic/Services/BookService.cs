@@ -289,16 +289,23 @@ public sealed class BookService : IBookService
     public async Task UpdateBookCategoriesAsync(int bookId, IReadOnlyList<int> categoryIds, CancellationToken ct = default)
     {
         await using var dbContext = await _factory.CreateDbContextAsync(ct);
-        await using var tx = await dbContext.Database.BeginTransactionAsync(ct);
-        await dbContext.BookCategories
-            .Where(bc => bc.BookId == bookId)
-            .ExecuteDeleteAsync(ct);
-        foreach (var catId in categoryIds)
+        // The delete+re-insert runs as one retriable transactional unit — a free-standing user transaction
+        // throws under the Postgres retrying execution strategy. The change tracker is reset each attempt.
+        var strategy = dbContext.Database.CreateExecutionStrategy();
+        await strategy.ExecuteAsync(async () =>
         {
-            dbContext.BookCategories.Add(new BookCategory { BookId = bookId, CategoryId = catId });
-        }
-        await dbContext.SaveChangesAsync(ct);
-        await tx.CommitAsync(ct);
+            dbContext.ChangeTracker.Clear();
+            await using var tx = await dbContext.Database.BeginTransactionAsync(ct);
+            await dbContext.BookCategories
+                .Where(bc => bc.BookId == bookId)
+                .ExecuteDeleteAsync(ct);
+            foreach (var catId in categoryIds)
+            {
+                dbContext.BookCategories.Add(new BookCategory { BookId = bookId, CategoryId = catId });
+            }
+            await dbContext.SaveChangesAsync(ct);
+            await tx.CommitAsync(ct);
+        });
     }
 
     public async Task<IReadOnlyList<string>> GetPeopleNamesAsync(
@@ -309,8 +316,8 @@ public sealed class BookService : IBookService
         var query = dbContext.People.AsNoTracking().AsQueryable();
         if (!string.IsNullOrWhiteSpace(prefix))
         {
-            var escaped = prefix.Replace("%", "[%]").Replace("_", "[_]");
-            query = query.Where(p => EF.Functions.Like(p.DisplayName, $"%{escaped}%"));
+            var pattern = LikePattern.Contains(prefix);
+            query = query.Where(p => EF.Functions.Like(p.DisplayName.ToLower(), pattern, LikePattern.Escape));
         }
         return await query
             .OrderBy(p => p.DisplayName)

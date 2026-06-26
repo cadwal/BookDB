@@ -12,7 +12,7 @@ public sealed class AdvancedSearchViewModelTests
         // AdvancedSearchViewModel constructor only stores the injected services and adds
         // one empty SearchConditionViewModel. Null services are safe for property-only tests.
         var messenger = new WeakReferenceMessenger();
-        return new AdvancedSearchViewModel(messenger, null!, null!, null!);
+        return new AdvancedSearchViewModel(messenger, null!, null!, null!, null!, null!);
     }
 
     // ---------------------------------------------------------------------------

@@ -1,0 +1,38 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:BookDB.Desktop.ViewModels"
+        xmlns:res="using:BookDB.Desktop.Localization"
+        x:Class="BookDB.Desktop.Views.StartupFailureDialog"
+        x:DataType="vm:StartupFailureViewModel"
+        Title="{x:Static res:Resources.Startup_Failure_Title}"
+        Width="460" MinWidth="460"
+        SizeToContent="Height"
+        CanResize="False"
+        WindowStartupLocation="CenterOwner">
+  <StackPanel Margin="20" Spacing="14">
+
+    <TextBlock Text="{x:Static res:Resources.Startup_Failure_Title}"
+               FontSize="16" FontWeight="SemiBold" />
+
+    <TextBlock Text="{x:Static res:Resources.Startup_Failure_Intro}" TextWrapping="Wrap" />
+
+    <TextBlock Text="{Binding Message}" TextWrapping="Wrap"
+               Foreground="{DynamicResource SystemControlErrorTextForegroundBrush}" />
+
+    <TextBlock Text="{x:Static res:Resources.Startup_Failure_RetriesExhausted}"
+               IsVisible="{Binding RetriesExhausted}"
+               TextWrapping="Wrap" Opacity="0.8" FontSize="12" />
+
+    <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+      <Button Classes="accent"
+              Content="{x:Static res:Resources.Startup_Failure_Retry}"
+              Command="{Binding RetryCommand}"
+              IsDefault="True" />
+      <Button Content="{x:Static res:Resources.Startup_Failure_OpenSettings}"
+              Command="{Binding OpenSettingsCommand}" />
+      <Button Content="{x:Static res:Resources.Startup_Failure_Quit}"
+              Command="{Binding QuitCommand}" />
+    </StackPanel>
+
+  </StackPanel>
+</Window>

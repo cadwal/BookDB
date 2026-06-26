@@ -33,7 +33,7 @@ public sealed class BookServiceContributorTests : IDisposable
 
         var upgrader = SqliteExtensions.SqliteDatabase(DeployChanges.To, _connectionString)
             .WithScriptsEmbeddedInAssembly(
-                Assembly.GetAssembly(typeof(BookDbContext))!,
+                Assembly.GetAssembly(typeof(BookDB.Data.Sqlite.SqliteDbUpRunner))!,
                 name => name.Contains(".Migrations."))
             .LogToNowhere()
             .Build();
@@ -270,12 +270,23 @@ public sealed class BookServiceContributorTests : IDisposable
 
         var names = await _sut.GetPeopleNamesAsync("ar", TestContext.Current.CancellationToken);
 
-        // "Arnold Smith" contains "ar" (case-insensitive default in SQLite LIKE)
-        // "Carlos Martin" contains "ar"
-        // "Barbara Jones" contains "ar" (barBARA)
+        // case-insensitive: "ar" matches Arnold, Carlos (mARtin), and Barbara (barBARA)
         Assert.Contains("Arnold Smith", names);
         Assert.Contains("Barbara Jones", names);
         Assert.Contains("Carlos Martin", names);
+    }
+
+    [Fact]
+    public async Task GetPeopleNamesAsync_TreatsWildcardsLiterally()
+    {
+        await using var setup = await _factory.CreateDbContextAsync(TestContext.Current.CancellationToken);
+        setup.People.Add(new Person { DisplayName = "Arnold Smith", SortName = "Smith, Arnold" });
+        await setup.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // A bare "%" must be escaped to a literal, not act as a match-everything wildcard.
+        var names = await _sut.GetPeopleNamesAsync("%", TestContext.Current.CancellationToken);
+
+        Assert.DoesNotContain("Arnold Smith", names);
     }
 
     // ---------------------------------------------------------------------------

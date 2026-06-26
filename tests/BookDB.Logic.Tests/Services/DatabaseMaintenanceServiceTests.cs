@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using BookDB.Data.DbContexts;
+using BookDB.Data.Interfaces;
 using BookDB.Logic.Services;
 using BookDB.Models;
 using DbUp;
@@ -28,7 +29,7 @@ public sealed class DatabaseMaintenanceServiceTests : IDisposable
 
         var upgrader = SqliteExtensions.SqliteDatabase(DeployChanges.To, connectionString)
             .WithScriptsEmbeddedInAssembly(
-                Assembly.GetAssembly(typeof(BookDbContext))!,
+                Assembly.GetAssembly(typeof(BookDB.Data.Sqlite.SqliteDbUpRunner))!,
                 name => name.Contains(".Migrations."))
             .LogToNowhere()
             .Build();
@@ -43,8 +44,9 @@ public sealed class DatabaseMaintenanceServiceTests : IDisposable
             .Options;
 
         _factory = new TestBookDbContextFactory(options);
-        var appSettings = new AppSettings { ActiveLibraryPath = _dbPath };
-        _sut = new DatabaseMaintenanceService(_factory, appSettings, _backup);
+        var appSettings = new AppSettings { SqliteLibraryPath = _dbPath };
+        _sut = new DatabaseMaintenanceService(
+            new BookDB.Data.Sqlite.SqliteMaintenanceProvider(_factory, appSettings), _backup);
     }
 
     public void Dispose()
@@ -109,6 +111,23 @@ public sealed class DatabaseMaintenanceServiceTests : IDisposable
         Assert.Equal(0, bookCount);
     }
 
+    [Fact]
+    public async Task OptimizeAndRepairAsync_RemoteBackend_TakesCsvSafetyBackup()
+    {
+        // A backend without a file-format backup (e.g. PostgreSQL) must fall back to the CSV archive for the
+        // pre-repair safety backup instead of throwing.
+        var backup = new StubBackupService { SupportsFile = false };
+        var sut = new DatabaseMaintenanceService(new StubMaintenanceProvider(), backup);
+
+        var result = await sut.OptimizeAndRepairAsync(TestContext.Current.CancellationToken);
+
+        Assert.True(result.Success);
+        Assert.True(backup.CsvUsed);
+        Assert.False(backup.SqliteUsed);
+        if (backup.LastBackupPath != null)
+            try { File.Delete(backup.LastBackupPath); } catch { /* best effort */ }
+    }
+
     // Synchronous IProgress so reported steps are captured deterministically (no SynchronizationContext hops).
     private sealed class RecordingProgress<T> : IProgress<T>
     {
@@ -116,26 +135,40 @@ public sealed class DatabaseMaintenanceServiceTests : IDisposable
         public void Report(T value) => Reports.Add(value);
     }
 
-    // Records the safety-backup call and writes a real file so the test can assert it exists.
+    // Records which safety-backup format was used and writes a real file so the test can assert it exists.
     private sealed class StubBackupService : IBackupService
     {
         public string? LastBackupPath { get; private set; }
+        public bool SupportsFile { get; init; } = true;
+        public bool SqliteUsed { get; private set; }
+        public bool CsvUsed { get; private set; }
 
         public Task<string> BackupSqliteAsync(
             string destFolder, CancellationToken ct = default,
             string? explicitFileName = null, IProgress<string>? progress = null)
         {
-            Directory.CreateDirectory(destFolder);
-            var path = Path.Combine(destFolder, explicitFileName ?? "backup.zip");
-            File.WriteAllText(path, "stub safety backup");
-            LastBackupPath = path;
-            return Task.FromResult(path);
+            SqliteUsed = true;
+            return Write(destFolder, explicitFileName ?? "backup.zip");
         }
 
         public Task<string> BackupCsvArchiveAsync(
             string destFolder, CancellationToken ct = default,
             string? explicitFileName = null, IProgress<string>? progress = null)
-            => throw new NotSupportedException();
+        {
+            CsvUsed = true;
+            return Write(destFolder, explicitFileName ?? "backup-csv.zip");
+        }
+
+        private Task<string> Write(string destFolder, string fileName)
+        {
+            Directory.CreateDirectory(destFolder);
+            var path = Path.Combine(destFolder, fileName);
+            File.WriteAllText(path, "stub safety backup");
+            LastBackupPath = path;
+            return Task.FromResult(path);
+        }
+
+        public bool SupportsFileBackup => SupportsFile;
 
         public Task RestoreAsync(
             string backupZipPath, string safetyBackupPath,
@@ -149,5 +182,16 @@ public sealed class DatabaseMaintenanceServiceTests : IDisposable
         public Task<bool> ShouldAutoBackupAsync(CancellationToken ct = default) => Task.FromResult(false);
         public string GetCandidateSqlitePath(string destFolder) => string.Empty;
         public string GetCandidateCsvArchivePath(string destFolder) => string.Empty;
+    }
+
+    // Reports a successful repair without touching a real database, so the safety-backup branch can be tested
+    // independently of any engine. CheckIntegrity is not exercised by the repair path.
+    private sealed class StubMaintenanceProvider : IMaintenanceProvider
+    {
+        public Task<MaintenanceCheckResult> CheckIntegrityAsync(IProgress<MaintenanceStep>? progress, CancellationToken ct)
+            => throw new NotSupportedException();
+
+        public Task<MaintenanceRepairResult> OptimizeAndRepairAsync(IProgress<MaintenanceStep>? progress, CancellationToken ct)
+            => Task.FromResult(new MaintenanceRepairResult(true, null, 0, 0, null));
     }
 }

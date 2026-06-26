@@ -35,7 +35,7 @@ public sealed class BookServiceTests : IDisposable
         // Run all migrations (V001–V005) via DbUp using same pattern as DatabaseStartupService
         var upgrader = SqliteExtensions.SqliteDatabase(DeployChanges.To, _connectionString)
             .WithScriptsEmbeddedInAssembly(
-                Assembly.GetAssembly(typeof(BookDbContext))!,
+                Assembly.GetAssembly(typeof(BookDB.Data.Sqlite.SqliteDbUpRunner))!,
                 name => name.Contains(".Migrations."))
             .LogToNowhere()
             .Build();
@@ -51,7 +51,7 @@ public sealed class BookServiceTests : IDisposable
 
         _factory = new TestBookDbContextFactory(options);
         _sut = new BookService(_factory);
-        _searchSut = new BookSearchService(_factory);
+        _searchSut = new BookSearchService(_factory, new BookDB.Data.Sqlite.SqliteBookSearchProvider(_factory));
     }
 
     public void Dispose()
