@@ -17,14 +17,21 @@
       <TextBlock Text="{x:Static res:Resources.Settings_Database_BackendLabel}"
                  FontSize="12" FontWeight="SemiBold"/>
 
-      <RadioButton GroupName="DbBackend"
-                   Content="{x:Static res:Resources.Settings_Database_Backend_Sqlite}"
-                   IsChecked="{Binding IsSqliteSelected}"/>
+      <StackPanel Orientation="Horizontal" Spacing="16">
+        <RadioButton GroupName="DbBackend"
+                     Content="{x:Static res:Resources.Settings_Database_Backend_Sqlite}"
+                     IsChecked="{Binding IsSqliteSelected}"/>
 
-      <RadioButton GroupName="DbBackend"
-                   Content="{x:Static res:Resources.Settings_Database_Backend_Postgres}"
-                   IsChecked="{Binding IsPostgreSqlSelected}"
-                   IsEnabled="{Binding IsKeyringAvailable}"/>
+        <RadioButton GroupName="DbBackend"
+                     Content="{x:Static res:Resources.Settings_Database_Backend_Postgres}"
+                     IsChecked="{Binding IsPostgreSqlSelected}"
+                     IsEnabled="{Binding IsKeyringAvailable}"/>
+
+        <RadioButton GroupName="DbBackend"
+                     Content="{x:Static res:Resources.Settings_Database_Backend_MySql}"
+                     IsChecked="{Binding IsMySqlSelected}"
+                     IsEnabled="{Binding IsKeyringAvailable}"/>
+      </StackPanel>
 
       <!-- Keyring unavailable note -->
       <TextBlock Text="{Binding KeyringUnavailableMessage}"
@@ -37,10 +44,10 @@
       <TextBlock Text="{x:Static res:Resources.Settings_Database_ServerSectionHeader}"
                  FontSize="12" FontWeight="SemiBold"
                  Margin="0,8,0,0"
-                 IsEnabled="{Binding IsPostgreSqlSelected}"/>
+                 IsEnabled="{Binding IsRemoteSelected}"/>
 
       <Grid ColumnDefinitions="160,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto"
-            IsEnabled="{Binding IsPostgreSqlSelected}"
+            IsEnabled="{Binding IsRemoteSelected}"
             HorizontalAlignment="Stretch">
 
         <TextBlock Grid.Row="0" Grid.Column="0" Text="{x:Static res:Resources.Settings_Database_Host}"

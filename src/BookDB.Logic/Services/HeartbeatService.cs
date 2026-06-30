@@ -50,7 +50,7 @@ public sealed class HeartbeatService : IHeartbeatService, IHostedService, IAsync
     {
         _factory = factory;
         _clock = clock;
-        IsEnabled = appSettings.Backend == DatabaseBackend.PostgreSql;
+        IsEnabled = appSettings.Backend.IsRemote();
         _hostname = Environment.MachineName;
         _userName = Environment.UserName;
         _appVersion = Assembly.GetEntryAssembly()

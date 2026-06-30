@@ -28,7 +28,7 @@ namespace BookDB.Logic.Services;
 /// <summary>
 /// Outcome of a CSV restore: the per-table data result plus the bootstrap config bundled in the archive (null if
 /// the archive predates config bundling). The caller applies the preference keys and confirms the backend/connection
-/// keys — the engine never auto-applies config.json (R38).
+/// keys — the engine never auto-applies config.json.
 /// </summary>
 public sealed record RestoreResult(MigrationResult Data, BootstrapConfig? ArchivedConfig);
 
@@ -247,7 +247,7 @@ public sealed class CsvArchiveRestoreService : ICsvArchiveRestoreService
         results.Add(new MigrationTableResult(MigrationTable.BookImage, rows.Count, restored));
     }
 
-    // Upserts only the user-preference Settings rows (DESIGN D8): machine-specific keys (geometry, column layout,
+    // Upserts only the user-preference Settings rows: machine-specific keys (geometry, column layout,
     // local paths) in the archive are skipped, and the live Settings table is never truncated, so the current
     // machine's layout and paths survive. Not added to the verified-count results — it is a selective merge.
     private static async Task ImportSettingsAsync(

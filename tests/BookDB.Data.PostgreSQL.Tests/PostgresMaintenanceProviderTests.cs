@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using BookDB.Data;
@@ -59,6 +60,7 @@ public sealed class PostgresMaintenanceProviderTests : IClassFixture<PostgresTes
         Assert.Contains(result.IntegrityMessages, m => m.Contains("PostgreSQL", StringComparison.OrdinalIgnoreCase));
         Assert.Contains(result.IntegrityMessages, m => m.StartsWith("Book:", StringComparison.Ordinal));
         Assert.Contains(MaintenanceStep.CheckingIntegrity, steps.Steps);
+        Assert.Contains("Book", result.TablesChecked);
     }
 
     [Fact]
@@ -77,5 +79,25 @@ public sealed class PostgresMaintenanceProviderTests : IClassFixture<PostgresTes
         Assert.True(result.SizeBeforeBytes > 0, "pg_database_size should be non-zero before VACUUM.");
         Assert.True(result.SizeAfterBytes > 0, "pg_database_size should be non-zero after VACUUM.");
         Assert.Contains(MaintenanceStep.Vacuum, steps.Steps);
+        Assert.Contains("Book", result.TablesOptimized);
+    }
+
+    [Fact]
+    public async Task CheckAndOptimize_CoverTheSameTables()
+    {
+        Assert.SkipUnless(_fixture.IsAvailable, _fixture.SkipReason);
+        var ct = TestContext.Current.CancellationToken;
+        var (sp, provider) = await BuildAsync(ct);
+        await using var scope = sp;
+
+        var check = await provider.CheckIntegrityAsync(null, ct);
+        var optimize = await provider.OptimizeAndRepairAsync(null, ct);
+
+        // The integrity check enumerates all base tables (not a hardcoded subset), so it reports the same tables
+        // the VACUUM pass covers — no "7 checked vs 33 optimized" mismatch.
+        Assert.Equal(
+            check.TablesChecked.OrderBy(t => t, StringComparer.Ordinal),
+            optimize.TablesOptimized.OrderBy(t => t, StringComparer.Ordinal));
+        Assert.True(check.TablesChecked.Count > 7, "the check must cover all base tables, not a hardcoded subset.");
     }
 }

@@ -53,6 +53,7 @@ public sealed partial class MaintenanceViewModel : ObservableObject
                 () => _maintenanceService.CheckIntegrityAsync(CancellationToken.None, progress));
 
             AppendLine(MaintenanceText.Describe(result.Status));
+            AppendTableList(Resources.Maintenance_TablesChecked, result.TablesChecked);
 
             if (result.Status == MaintenanceCheckStatus.IntegrityFailed)
             {
@@ -93,6 +94,7 @@ public sealed partial class MaintenanceViewModel : ObservableObject
             if (result.Success)
             {
                 AppendLine(Resources.Maintenance_RepairDone);
+                AppendTableList(Resources.Maintenance_TablesOptimized, result.TablesOptimized);
             }
             else
             {
@@ -118,6 +120,16 @@ public sealed partial class MaintenanceViewModel : ObservableObject
     private IProgress<MaintenanceStep> StepProgress()
         => new Progress<MaintenanceStep>(step =>
             Dispatcher.UIThread.Post(() => AppendLine(MaintenanceText.Describe(step))));
+
+    // Reports how many tables an operation covered (localized "<label>: N") and lists their names on the next
+    // indented line. No-op when the engine's operation isn't table-enumerable (empty list).
+    private void AppendTableList(string countFormat, System.Collections.Generic.IReadOnlyList<string> tables)
+    {
+        if (tables.Count == 0)
+            return;
+        AppendLine(string.Format(countFormat, tables.Count));
+        AppendLine("  " + string.Join(", ", tables));
+    }
 
     private void AppendLine(string line) => LogText += line + Environment.NewLine;
 }

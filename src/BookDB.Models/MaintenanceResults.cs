@@ -34,7 +34,12 @@ public enum MaintenanceCheckStatus
 public sealed record MaintenanceCheckResult(
     MaintenanceCheckStatus Status,
     IReadOnlyList<string> IntegrityMessages,
-    IReadOnlyList<string> ForeignKeyViolations);
+    IReadOnlyList<string> ForeignKeyViolations)
+{
+    /// <summary>The names of the tables the check covered, so the UI can report how many (and which) were checked.
+    /// Empty when the engine's check is not table-enumerable.</summary>
+    public IReadOnlyList<string> TablesChecked { get; init; } = [];
+}
 
 /// <summary>Result of the optimize/repair pass.</summary>
 public sealed record MaintenanceRepairResult(
@@ -42,4 +47,9 @@ public sealed record MaintenanceRepairResult(
     string? SafetyBackupPath,
     long SizeBeforeBytes,
     long SizeAfterBytes,
-    string? ErrorMessage);
+    string? ErrorMessage)
+{
+    /// <summary>The names of the tables the optimize pass covered, so the UI can report how many (and which) were
+    /// optimized. Empty when the engine's optimize is not table-enumerable.</summary>
+    public IReadOnlyList<string> TablesOptimized { get; init; } = [];
+}

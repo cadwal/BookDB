@@ -7,15 +7,17 @@ using Xunit;
 namespace BookDB.Logic.Tests;
 
 /// <summary>
-/// Permanent grep gate: provider-specific SQL idioms must stay inside their own provider project. A
-/// SQLite collation (<c>NOCASE</c>) or a <c>UseSqlite</c>/<c>UseNpgsql</c> call that leaks into Logic or the
-/// shared Data layer silently breaks the other backend — exactly the case-insensitive lookup bug this guards
-/// against. Scoped to <c>src</c> (test fixtures legitimately reference both providers).
+/// Permanent grep gate: provider-specific SQL idioms and drivers must stay inside their own provider project. A
+/// SQLite collation (<c>NOCASE</c>) or a <c>UseSqlite</c>/<c>UseNpgsql</c>/<c>UseMySql</c> call — or the
+/// <c>MySqlConnector</c> driver — leaking into Logic or the shared Data layer silently breaks the other backends,
+/// exactly the case-insensitive lookup bug this guards against. Scoped to <c>src</c> (test fixtures legitimately
+/// reference every provider).
 /// </summary>
 public sealed class ProviderIsolationGuardTests
 {
     private const string SqliteProject = "BookDB.Data.Sqlite";
     private const string PostgresProject = "BookDB.Data.PostgreSQL";
+    private const string MySqlProject = "BookDB.Data.MySql";
 
     public static IEnumerable<object[]> Gates() => new[]
     {
@@ -24,6 +26,8 @@ public sealed class ProviderIsolationGuardTests
         new object[] { "UseSqlite(", SqliteProject },
         new object[] { "EF.Functions.ILike", PostgresProject },
         new object[] { "UseNpgsql(", PostgresProject },
+        new object[] { "UseMySql(", MySqlProject },
+        new object[] { "MySqlConnector", MySqlProject },
     };
 
     [Theory]

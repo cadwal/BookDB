@@ -69,6 +69,54 @@ public sealed class RestoreConfirmationViewModelTests
     }
 
     [Fact]
+    public void HasBackendChange_True_WhenMySqlArchive_DiffersFromCurrent()
+    {
+        var vm = Create(
+            archived: new BootstrapConfig { Backend = "MySql" },
+            current: new BootstrapConfig { Backend = "Sqlite" });
+
+        Assert.True(vm.HasBackendChange);
+    }
+
+    [Fact]
+    public void HasBackendChange_True_WhenSameMySqlBackendButDifferentConnection()
+    {
+        var vm = Create(
+            archived: new BootstrapConfig { Backend = "MySql", MySql = new MySqlOptions { Host = "a", Username = "u", Database = "bookdb" } },
+            current: new BootstrapConfig { Backend = "MySql", MySql = new MySqlOptions { Host = "b", Username = "u", Database = "bookdb" } });
+
+        Assert.True(vm.HasBackendChange);
+    }
+
+    [Fact]
+    public void ArchivedBackendName_NamesMySql_ForMySqlArchive()
+    {
+        var vm = Create(
+            archived: new BootstrapConfig { Backend = "MySql" },
+            current: new BootstrapConfig { Backend = "Sqlite" });
+
+        Assert.Equal(BookDB.Desktop.Localization.Resources.Settings_Database_Backend_MySql, vm.ArchivedBackendName);
+    }
+
+    [Fact]
+    public void Apply_AdoptsArchivedMySqlConnection_ForMySqlArchive()
+    {
+        var archived = new BootstrapConfig
+        {
+            Backend = "MySql",
+            MySql = new MySqlOptions { Host = "maria", Username = "u", Database = "bookdb" },
+        };
+        var probe = CaptureUpdate(new BootstrapConfig { Backend = "Sqlite" });
+        var vm = Create(archived, new BootstrapConfig { Backend = "Sqlite" });
+
+        vm.ApplyCommand.Execute(null);
+
+        Assert.Equal("MySql", probe.Backend);
+        Assert.Equal("maria", probe.MySql.Host);
+        _restart.Received().Restart();
+    }
+
+    [Fact]
     public void KeepCurrent_AppliesPreferencesOnly_KeepsBackend_ThenRestarts()
     {
         var archived = new BootstrapConfig { Backend = "PostgreSql", Language = "fr" };

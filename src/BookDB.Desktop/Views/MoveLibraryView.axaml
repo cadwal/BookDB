@@ -26,15 +26,26 @@
       <TextBlock Text="{x:Static res:Resources.MoveLibrary_SourceLabel}" FontSize="12" FontWeight="SemiBold"/>
       <TextBlock Text="{Binding SourceDescription}" FontSize="12" Margin="0,0,0,4"/>
 
-      <!-- Target -->
-      <StackPanel Orientation="Horizontal" Spacing="6">
-        <TextBlock Text="{x:Static res:Resources.MoveLibrary_TargetLabel}" FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center"/>
-        <TextBlock Text="{Binding TargetBackendName}" FontSize="12" VerticalAlignment="Center"/>
+      <!-- Target (the source is fixed; offer every backend that isn't the source) -->
+      <TextBlock Text="{x:Static res:Resources.MoveLibrary_TargetLabel}" FontSize="12" FontWeight="SemiBold"/>
+      <StackPanel Orientation="Horizontal" Spacing="16">
+        <RadioButton GroupName="MoveTarget"
+                     Content="{x:Static res:Resources.MoveLibrary_Target_Sqlite}"
+                     IsChecked="{Binding TargetIsSqlite}"
+                     IsVisible="{Binding ShowSqliteTargetOption}"/>
+        <RadioButton GroupName="MoveTarget"
+                     Content="{x:Static res:Resources.MoveLibrary_Target_Postgres}"
+                     IsChecked="{Binding TargetIsPostgres}"
+                     IsVisible="{Binding ShowPostgresTargetOption}"/>
+        <RadioButton GroupName="MoveTarget"
+                     Content="{x:Static res:Resources.MoveLibrary_Target_MySql}"
+                     IsChecked="{Binding TargetIsMySql}"
+                     IsVisible="{Binding ShowMySqlTargetOption}"/>
       </StackPanel>
 
-      <!-- PostgreSQL target editor -->
+      <!-- Server target editor (PostgreSQL or MySQL/MariaDB) -->
       <Grid ColumnDefinitions="150,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto"
-            IsVisible="{Binding TargetIsPostgres}">
+            IsVisible="{Binding IsServerTarget}">
         <TextBlock Grid.Row="0" Grid.Column="0" Text="{x:Static res:Resources.Settings_Database_Host}" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,8"/>
         <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Host}" Margin="0,0,0,8"/>
         <TextBlock Grid.Row="1" Grid.Column="0" Text="{x:Static res:Resources.Settings_Database_Port}" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,8"/>
@@ -62,7 +73,7 @@
 
         <!-- Validation buttons -->
         <StackPanel Orientation="Horizontal" Spacing="8">
-          <Button Content="{x:Static res:Resources.Settings_Database_TestConnection}" Command="{Binding TestConnectionCommand}" IsVisible="{Binding TargetIsPostgres}" Classes="accentOutline"/>
+          <Button Content="{x:Static res:Resources.Settings_Database_TestConnection}" Command="{Binding TestConnectionCommand}" IsVisible="{Binding IsServerTarget}" Classes="accentOutline"/>
           <Button Content="{x:Static res:Resources.MoveLibrary_Check}" Command="{Binding CheckTargetCommand}" Classes="accentOutline"/>
           <TextBlock Text="{x:Static res:Resources.Settings_Database_Testing}" IsVisible="{Binding IsTesting}" VerticalAlignment="Center" FontSize="11" Opacity="0.7"/>
         </StackPanel>

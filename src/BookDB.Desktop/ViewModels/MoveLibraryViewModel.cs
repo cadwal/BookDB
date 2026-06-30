@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Avalonia.Threading;
 using BookDB.Data.DbContexts;
 using BookDB.Data.Interfaces;
+using BookDB.Data.MySql;
 using BookDB.Data.PostgreSQL;
 using BookDB.Desktop.Localization;
 using BookDB.Desktop.Services;
@@ -35,6 +36,7 @@ public sealed partial class MoveLibraryViewModel : ObservableObject
     private readonly AppSettings _appSettings;
     private readonly IBootstrapConfigService _bootstrapConfig;
     private readonly IPostgresConnectionProber _prober;
+    private readonly IMySqlConnectionProber _mySqlProber;
     private readonly IMigrationTargetBuilder _targetBuilder;
     private readonly ILibraryMigrationService _migrationService;
     private readonly IBackupService _backupService;
@@ -47,6 +49,7 @@ public sealed partial class MoveLibraryViewModel : ObservableObject
         AppSettings appSettings,
         IBootstrapConfigService bootstrapConfig,
         IPostgresConnectionProber prober,
+        IMySqlConnectionProber mySqlProber,
         IMigrationTargetBuilder targetBuilder,
         ILibraryMigrationService migrationService,
         IBackupService backupService,
@@ -58,6 +61,7 @@ public sealed partial class MoveLibraryViewModel : ObservableObject
         _appSettings = appSettings;
         _bootstrapConfig = bootstrapConfig;
         _prober = prober;
+        _mySqlProber = mySqlProber;
         _targetBuilder = targetBuilder;
         _migrationService = migrationService;
         _backupService = backupService;
@@ -65,25 +69,55 @@ public sealed partial class MoveLibraryViewModel : ObservableObject
         _secretStore = secretStore;
         _restartService = restartService;
 
-        // For v2 there is one alternative backend: the target is always whichever the source is not.
-        TargetBackend = appSettings.Backend == DatabaseBackend.Sqlite
+        _postgresSslModes = RemoteConnectionEditor.PostgresSslModes();
+        _mySqlSslModes = RemoteConnectionEditor.MySqlSslModes();
+
+        // The source is fixed; default the target to a sensible alternative the user can change.
+        _targetBackend = appSettings.Backend == DatabaseBackend.Sqlite
             ? DatabaseBackend.PostgreSql
             : DatabaseBackend.Sqlite;
-        SelectedSslMode = AvailableSslModes.First(s => s.Value == "Require");
+        SelectedSslMode = AvailableSslModes.First(s => s.Value == RemoteConnectionEditor.DefaultSslMode(_targetBackend));
         SourceDescription = DescribeSource();
     }
 
-    public bool TargetIsPostgres => TargetBackend == DatabaseBackend.PostgreSql;
-    public bool TargetIsSqlite => !TargetIsPostgres;
-    private DatabaseBackend TargetBackend { get; }
+    private DatabaseBackend _targetBackend;
+
+    public bool TargetIsSqlite
+    {
+        get => _targetBackend == DatabaseBackend.Sqlite;
+        set { if (value) SelectTarget(DatabaseBackend.Sqlite); }
+    }
+
+    public bool TargetIsPostgres
+    {
+        get => _targetBackend == DatabaseBackend.PostgreSql;
+        set { if (value) SelectTarget(DatabaseBackend.PostgreSql); }
+    }
+
+    public bool TargetIsMySql
+    {
+        get => _targetBackend == DatabaseBackend.MySql;
+        set { if (value) SelectTarget(DatabaseBackend.MySql); }
+    }
+
+    /// <summary>True for any server target (PostgreSQL or MySQL/MariaDB) — drives the shared connection panel and the credential gating.</summary>
+    public bool IsServerTarget => _targetBackend != DatabaseBackend.Sqlite;
+
+    // A backend is offered as a target only when it isn't the fixed source.
+    public bool ShowSqliteTargetOption => _appSettings.Backend != DatabaseBackend.Sqlite;
+    public bool ShowPostgresTargetOption => _appSettings.Backend != DatabaseBackend.PostgreSql;
+    public bool ShowMySqlTargetOption => _appSettings.Backend != DatabaseBackend.MySql;
 
     public string SourceDescription { get; }
 
-    public string TargetBackendName => TargetIsPostgres
-        ? Resources.MoveLibrary_Target_Postgres
-        : Resources.MoveLibrary_Target_Sqlite;
+    public string TargetBackendName => _targetBackend switch
+    {
+        DatabaseBackend.PostgreSql => Resources.MoveLibrary_Target_Postgres,
+        DatabaseBackend.MySql => Resources.MoveLibrary_Target_MySql,
+        _ => Resources.MoveLibrary_Target_Sqlite,
+    };
 
-    // --- Postgres target fields (reuse the Settings → Database editor's shape) ---
+    // --- Server target fields (reuse the Settings → Database editor's shape) ---
     [ObservableProperty] private string _host = string.Empty;
     [ObservableProperty] private string _port = "5432";
     [ObservableProperty] private string _databaseName = "bookdb";
@@ -91,13 +125,11 @@ public sealed partial class MoveLibraryViewModel : ObservableObject
     [ObservableProperty] private string _password = string.Empty;
     [ObservableProperty] private SslModeOption? _selectedSslMode;
 
-    public IReadOnlyList<SslModeOption> AvailableSslModes { get; } =
-    [
-        new SslModeOption("Disable",    Resources.Settings_Database_Tls_Disable),
-        new SslModeOption("Prefer",     Resources.Settings_Database_Tls_Prefer),
-        new SslModeOption("Require",    Resources.Settings_Database_Tls_Require),
-        new SslModeOption("VerifyFull", Resources.Settings_Database_Tls_VerifyFull),
-    ];
+    // Per-engine TLS token sets (Npgsql vs the MySQL driver); the same split as DatabaseSettingsViewModel.
+    private readonly IReadOnlyList<SslModeOption> _postgresSslModes;
+    private readonly IReadOnlyList<SslModeOption> _mySqlSslModes;
+
+    public IReadOnlyList<SslModeOption> AvailableSslModes => TargetIsMySql ? _mySqlSslModes : _postgresSslModes;
 
     // --- SQLite target ---
     // The SQLite backend is always the canonical local library file; it is never chosen (copies come
@@ -138,12 +170,10 @@ public sealed partial class MoveLibraryViewModel : ObservableObject
         TestResultMessage = null;
         try
         {
-            var result = await _prober.ProbeAsync(BuildOptions(), string.IsNullOrEmpty(Password) ? null : Password);
+            var result = await ProbeTargetAsync();
             TestResultIsError = !result.IsSuccess;
             TestResultMessage = result.Status == ConnectionProbeStatus.Success
-                ? (result.BookCount.HasValue
-                    ? string.Format(CultureInfo.CurrentCulture, Resources.Settings_Database_TestSuccess, result.ServerVersion, result.BookCount.Value)
-                    : string.Format(CultureInfo.CurrentCulture, Resources.Settings_Database_TestSuccessUninitialized, result.ServerVersion))
+                ? RemoteConnectionEditor.DescribeSuccess(result, TargetIsMySql)
                 : ConnectionErrorText.Describe(result.Status, result.ErrorDetail);
         }
         catch (Exception ex)
@@ -158,7 +188,7 @@ public sealed partial class MoveLibraryViewModel : ObservableObject
         }
     }
 
-    private bool CanTest() => TargetIsPostgres && !IsTesting && !IsRunning && !string.IsNullOrWhiteSpace(Host);
+    private bool CanTest() => IsServerTarget && !IsTesting && !IsRunning && !string.IsNullOrWhiteSpace(Host);
 
     [RelayCommand(CanExecute = nameof(CanCheck))]
     private async Task CheckTargetAsync()
@@ -167,8 +197,8 @@ public sealed partial class MoveLibraryViewModel : ObservableObject
         TargetChecked = false;
         try
         {
-            TargetRecordCount = TargetIsPostgres
-                ? await CheckPostgresAsync()
+            TargetRecordCount = IsServerTarget
+                ? await CheckServerAsync()
                 : CheckSqlite();
             TargetChecked = true;
         }
@@ -181,12 +211,12 @@ public sealed partial class MoveLibraryViewModel : ObservableObject
 
     private bool CanCheck() =>
         !IsRunning &&
-        (!TargetIsPostgres || (!string.IsNullOrWhiteSpace(Host) && !string.IsNullOrWhiteSpace(Username)));
+        (!IsServerTarget || (!string.IsNullOrWhiteSpace(Host) && !string.IsNullOrWhiteSpace(Username)));
 
     // A reachable server with no BookDB schema yet (BookCount null) counts as empty, not an error.
-    private async Task<long> CheckPostgresAsync()
+    private async Task<long> CheckServerAsync()
     {
-        var result = await _prober.ProbeAsync(BuildOptions(), string.IsNullOrEmpty(Password) ? null : Password);
+        var result = await ProbeTargetAsync();
         if (!result.IsSuccess)
             throw new InvalidOperationException(ConnectionErrorText.Describe(result.Status, result.ErrorDetail));
         return result.BookCount ?? 0;
@@ -214,7 +244,7 @@ public sealed partial class MoveLibraryViewModel : ObservableObject
     [RelayCommand(CanExecute = nameof(CanMove))]
     private async Task MoveAsync()
     {
-        // Safety backup first — never write to the target before the source is captured (R29).
+        // Safety backup first — never write to the target before the source is captured.
         var folder = await _filePicker.PickFolderAsync(Resources.FilePicker_ChooseSafetyBackupLocation);
         if (string.IsNullOrEmpty(folder))
             return;
@@ -244,11 +274,15 @@ public sealed partial class MoveLibraryViewModel : ObservableObject
             var safetyPath = await _backupService.BackupCsvArchiveAsync(folder);
             AppendLine(string.Format(CultureInfo.CurrentCulture, Resources.MoveLibrary_SafetyBackupSaved, safetyPath));
 
-            var connectionString = TargetIsPostgres
-                ? PostgresConnectionStringFactory.Build(BuildOptions(), string.IsNullOrEmpty(Password) ? null : Password)
-                : $"Data Source={DefaultSqlitePath}";
+            var password = string.IsNullOrEmpty(Password) ? null : Password;
+            var connectionString = _targetBackend switch
+            {
+                DatabaseBackend.PostgreSql => PostgresConnectionStringFactory.Build(BuildPostgresOptions(), password),
+                DatabaseBackend.MySql => MySqlConnectionStringFactory.Build(BuildMySqlOptions(), password),
+                _ => $"Data Source={DefaultSqlitePath}",
+            };
 
-            await using var target = await _targetBuilder.BuildAsync(TargetBackend, connectionString);
+            await using var target = await _targetBuilder.BuildAsync(_targetBackend, connectionString);
 
             // Snapshot the target too when it already holds data: the migration clears it, so capture an
             // engine-neutral backup of what is about to be replaced. A failure here aborts the move (caught
@@ -276,7 +310,7 @@ public sealed partial class MoveLibraryViewModel : ObservableObject
             if (!result.AllCountsMatch)
             {
                 AppendLine(Resources.MoveLibrary_CountMismatch);
-                return; // counts must match before the active database may be switched (R31)
+                return; // counts must match before the active database may be switched
             }
 
             AppendLine(Resources.MoveLibrary_Complete);
@@ -297,58 +331,121 @@ public sealed partial class MoveLibraryViewModel : ObservableObject
 
     private bool CanMove() =>
         !IsRunning && TargetChecked && (!TargetHasData || AcknowledgeReplace) &&
-        (!TargetIsPostgres || (!string.IsNullOrWhiteSpace(Host) && !string.IsNullOrWhiteSpace(Username) && !string.IsNullOrEmpty(Password)));
+        (!IsServerTarget || (!string.IsNullOrWhiteSpace(Host) && !string.IsNullOrWhiteSpace(Username) && !string.IsNullOrEmpty(Password)));
 
     private async Task SwitchActiveDatabaseAsync()
     {
-        var backendName = TargetIsPostgres
-            ? Resources.Settings_Database_Backend_Postgres
-            : Resources.Settings_Database_Backend_Sqlite;
+        var backendName = _targetBackend switch
+        {
+            DatabaseBackend.PostgreSql => Resources.Settings_Database_Backend_Postgres,
+            DatabaseBackend.MySql => Resources.Settings_Database_Backend_MySql,
+            _ => Resources.Settings_Database_Backend_Sqlite,
+        };
         var confirm = string.Format(CultureInfo.CurrentCulture, Resources.Settings_Database_RestartConfirm_Body, backendName);
         if (!await _restartService.ConfirmRestartAsync(confirm))
             return;
 
-        if (TargetIsPostgres)
+        switch (_targetBackend)
         {
-            var options = BuildOptions();
-            _secretStore.Set(options.AccountKey, Password);
-            _bootstrapConfig.Update(c =>
+            case DatabaseBackend.PostgreSql:
             {
-                c.Backend = DatabaseBackend.PostgreSql.ToString();
-                c.Postgres = options;
-            });
-        }
-        else
-        {
-            _bootstrapConfig.Update(c =>
+                var options = BuildPostgresOptions();
+                _secretStore.Set(options.AccountKey, Password);
+                _bootstrapConfig.Update(c =>
+                {
+                    c.Backend = DatabaseBackend.PostgreSql.ToString();
+                    c.Postgres = options;
+                });
+                break;
+            }
+            case DatabaseBackend.MySql:
             {
-                c.Backend = DatabaseBackend.Sqlite.ToString();
-            });
+                var options = BuildMySqlOptions();
+                _secretStore.Set(options.AccountKey, Password);
+                _bootstrapConfig.Update(c =>
+                {
+                    c.Backend = DatabaseBackend.MySql.ToString();
+                    c.MySql = options;
+                });
+                break;
+            }
+            default:
+                _bootstrapConfig.Update(c => c.Backend = DatabaseBackend.Sqlite.ToString());
+                break;
         }
 
         _restartService.Restart();
     }
 
-    private PostgresOptions BuildOptions() => new()
+    private Task<ConnectionProbeResult> ProbeTargetAsync()
     {
-        Host = Host.Trim(),
-        Port = int.TryParse(Port, NumberStyles.Integer, CultureInfo.InvariantCulture, out var port) ? port : 5432,
-        Database = DatabaseName.Trim(),
-        Username = Username.Trim(),
-        SslMode = SelectedSslMode?.Value ?? "Require",
-    };
+        var password = string.IsNullOrEmpty(Password) ? null : Password;
+        return TargetIsMySql
+            ? _mySqlProber.ProbeAsync(BuildMySqlOptions(), password)
+            : _prober.ProbeAsync(BuildPostgresOptions(), password);
+    }
+
+    private PostgresOptions BuildPostgresOptions() =>
+        RemoteConnectionEditor.BuildPostgresOptions(Host, Port, DatabaseName, Username, SelectedSslMode?.Value);
+
+    private MySqlOptions BuildMySqlOptions() =>
+        RemoteConnectionEditor.BuildMySqlOptions(Host, Port, DatabaseName, Username, SelectedSslMode?.Value);
+
+    // Switch the target backend: reset the validation it invalidates, move the TLS selection onto the new engine's
+    // list, and offer the new engine's default port when the field still holds the previous engine's default.
+    private void SelectTarget(DatabaseBackend backend)
+    {
+        if (_targetBackend == backend)
+            return;
+
+        var previous = _targetBackend;
+        _targetBackend = backend;
+
+        var newPortDefault = RemoteConnectionEditor.DefaultPort(backend);
+        var previousPortDefault = RemoteConnectionEditor.DefaultPort(previous);
+        if (string.IsNullOrWhiteSpace(Port) || Port == previousPortDefault)
+            Port = newPortDefault;
+
+        TargetChecked = false;
+        TestResultMessage = null;
+        CheckErrorMessage = null;
+
+        OnPropertyChanged(nameof(TargetIsSqlite));
+        OnPropertyChanged(nameof(TargetIsPostgres));
+        OnPropertyChanged(nameof(TargetIsMySql));
+        OnPropertyChanged(nameof(IsServerTarget));
+        OnPropertyChanged(nameof(TargetBackendName));
+        OnPropertyChanged(nameof(AvailableSslModes));
+        if (SelectedSslMode is null || AvailableSslModes.All(m => m.Value != SelectedSslMode.Value))
+            SelectedSslMode = AvailableSslModes.First(m => m.Value == RemoteConnectionEditor.DefaultSslMode(_targetBackend));
+
+        TestConnectionCommand.NotifyCanExecuteChanged();
+        CheckTargetCommand.NotifyCanExecuteChanged();
+        MoveCommand.NotifyCanExecuteChanged();
+    }
 
     private string DescribeSource()
     {
-        if (_appSettings.Backend == DatabaseBackend.PostgreSql)
+        switch (_appSettings.Backend)
         {
-            var pg = _bootstrapConfig.Load().Postgres;
-            return string.Format(CultureInfo.CurrentCulture, Resources.MoveLibrary_Source_Postgres, $"{pg.Host}/{pg.Database}");
+            case DatabaseBackend.PostgreSql:
+            {
+                var pg = _bootstrapConfig.Load().Postgres;
+                return string.Format(CultureInfo.CurrentCulture, Resources.MoveLibrary_Source_Postgres, $"{pg.Host}/{pg.Database}");
+            }
+            case DatabaseBackend.MySql:
+            {
+                var my = _bootstrapConfig.Load().MySql;
+                return string.Format(CultureInfo.CurrentCulture, Resources.MoveLibrary_Source_MySql, $"{my.Host}/{my.Database}");
+            }
+            default:
+            {
+                var file = string.IsNullOrEmpty(_appSettings.SqliteLibraryPath)
+                    ? "library.db"
+                    : Path.GetFileName(_appSettings.SqliteLibraryPath);
+                return string.Format(CultureInfo.CurrentCulture, Resources.MoveLibrary_Source_Sqlite, file);
+            }
         }
-        var file = string.IsNullOrEmpty(_appSettings.SqliteLibraryPath)
-            ? "library.db"
-            : Path.GetFileName(_appSettings.SqliteLibraryPath);
-        return string.Format(CultureInfo.CurrentCulture, Resources.MoveLibrary_Source_Sqlite, file);
     }
 
     private void AppendLine(string line) => LogText += line + Environment.NewLine;

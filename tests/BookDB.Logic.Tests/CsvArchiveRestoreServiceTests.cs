@@ -94,6 +94,32 @@ public sealed class CsvArchiveRestoreServiceTests : IDisposable
         await db.SaveChangesAsync(ct);
     }
 
+    // Seeds one book with many distinct-byte cover images, so a backup/restore round-trip crosses several of the
+    // engines' 50-image batches.
+    private static async Task SeedManyImagesAsync(TestBookDbContextFactory factory, int imageCount)
+    {
+        var ct = TestContext.Current.CancellationToken;
+        await using var db = factory.CreateDbContext();
+        var imageTypeId = await db.BookImageTypes.Select(t => t.BookImageTypeId).FirstAsync(ct);
+
+        var book = new Book { Title = "Gallery", Added = BookAdded, Updated = BookAdded };
+        db.Books.Add(book);
+        await db.SaveChangesAsync(ct);
+
+        for (var i = 0; i < imageCount; i++)
+            db.BookImages.Add(new BookImage
+            {
+                BookId = book.BookId,
+                ImageData = [(byte)i, (byte)(i >> 8), 0x4E, 0x47, (byte)i], // distinct per image, to catch a swap
+                MimeType = "image/png",
+                BookImageTypeId = imageTypeId,
+                IsPrimary = i == 0,
+                DisplayOrder = i,
+                Added = BookAdded,
+            });
+        await db.SaveChangesAsync(ct);
+    }
+
     private async Task<string> BuildArchiveAsync()
     {
         var source = BuildFactory(_sourcePath);
@@ -126,6 +152,33 @@ public sealed class CsvArchiveRestoreServiceTests : IDisposable
         var image = await db.BookImages.SingleAsync(ct);
         Assert.Equal(CoverBytes, image.ImageData);
         Assert.Equal(0, await db.ClientSessions.CountAsync(ct)); // never in the archive
+    }
+
+    [Fact]
+    public async Task Restore_RoundTrips_AllImages_AcrossMultipleBatches()
+    {
+        var ct = TestContext.Current.CancellationToken;
+        const int imageCount = 120; // > the 50-image batch size, so export and import both loop several times
+
+        var source = BuildFactory(_sourcePath);
+        await SeedManyImagesAsync(source, imageCount);
+        var archive = await BackupServiceFor(source, _sourcePath)
+            .BackupCsvArchiveAsync(_workDir, ct, explicitFileName: "images.zip");
+
+        var target = BuildFactory(_targetPath);
+        var result = await RestoreServiceFor(target).RestoreAsync(archive, _workDir, progress: null, ct: ct);
+        Assert.True(result.Data.Outcome == MigrationOutcome.Completed, $"failed at {result.Data.FailedTable}: {result.Data.ErrorMessage}");
+
+        await using var src = source.CreateDbContext();
+        await using var tgt = target.CreateDbContext();
+        var sourceImages = await src.BookImages.AsNoTracking().ToDictionaryAsync(i => i.BookImageId, i => i.ImageData, ct);
+        var targetImages = await tgt.BookImages.AsNoTracking().ToDictionaryAsync(i => i.BookImageId, i => i.ImageData, ct);
+
+        // Every cover round-trips with its exact bytes and key — none dropped, duplicated, or swapped at a batch boundary.
+        Assert.Equal(imageCount, targetImages.Count);
+        Assert.Equal(sourceImages.Count, targetImages.Count);
+        foreach (var (id, bytes) in sourceImages)
+            Assert.Equal(bytes, targetImages[id]);
     }
 
     [Fact]

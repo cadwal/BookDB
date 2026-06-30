@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using BookDB.Data.Interfaces;
+using BookDB.Data.MySql;
 using BookDB.Data.PostgreSQL;
 using BookDB.Security;
 using BookDB.Desktop.Helpers;
@@ -28,20 +29,23 @@ public sealed class AppHost : IAsyncDisposable
 {
     private readonly IHost _host;
     private readonly DatabaseBackend _backend;
-    private readonly PostgresOptions? _postgresOptions;
-    private readonly string? _postgresPassword;
+    // How to probe the configured remote server (null for a local backend). Built per backend in Build() so the
+    // probe carries the right options + credential-store password without AppHost holding per-backend fields that
+    // would grow with every new backend. Resolves its prober from the host's services at call time.
+    private readonly Func<IServiceProvider, CancellationToken, Task<ConnectionProbeResult>>? _probeConnection;
 
     public IServiceProvider Services => _host.Services;
 
     /// <summary>True when startup must verify the database is reachable before the host runs (remote backend only).</summary>
-    public bool RequiresStartupConnectivityCheck => _backend == DatabaseBackend.PostgreSql;
+    public bool RequiresStartupConnectivityCheck => _backend.IsRemote();
 
-    private AppHost(IHost host, DatabaseBackend backend, PostgresOptions? postgresOptions, string? postgresPassword)
+    private AppHost(
+        IHost host, DatabaseBackend backend,
+        Func<IServiceProvider, CancellationToken, Task<ConnectionProbeResult>>? probeConnection)
     {
         _host = host;
         _backend = backend;
-        _postgresOptions = postgresOptions;
-        _postgresPassword = postgresPassword;
+        _probeConnection = probeConnection;
         CurrentServices = host.Services;
     }
 
@@ -66,13 +70,14 @@ public sealed class AppHost : IAsyncDisposable
         return true;
     }
 
-    /// <summary>One-shot reachability probe for the configured PostgreSQL server, using the same options and
-    /// credential-store password the live connection uses. Only valid when <see cref="RequiresStartupConnectivityCheck"/>.</summary>
-    public Task<ConnectionProbeResult> ProbePostgresConnectionAsync(CancellationToken ct = default)
-    {
-        var prober = _host.Services.GetRequiredService<IPostgresConnectionProber>();
-        return prober.ProbeAsync(_postgresOptions!, _postgresPassword, ct);
-    }
+    /// <summary>One-shot reachability probe for the configured remote server, using the same options and
+    /// credential-store password the live connection uses. Only valid when
+    /// <see cref="RequiresStartupConnectivityCheck"/>.</summary>
+    public Task<ConnectionProbeResult> ProbeConnectionAsync(CancellationToken ct = default) =>
+        _probeConnection is null
+            ? throw new InvalidOperationException(
+                "ProbeConnectionAsync is only valid for a remote backend (RequiresStartupConnectivityCheck).")
+            : _probeConnection(_host.Services, ct);
 
     /// <summary>The per-user app-data directory; shared by startup so the single-instance gate and the
     /// host agree on one location.</summary>
@@ -93,21 +98,35 @@ public sealed class AppHost : IAsyncDisposable
 
         var backend = ParseBackend(config.Backend);
 
-        // SQLite keeps a local file path; PostgreSQL builds its connection string from the config.json server
-        // parameters. The password is not stored in config.json — the credential store supplies it (until then
-        // it is omitted, which is sufficient for a passwordless/trust-auth server).
+        // SQLite keeps a local file path; a remote backend builds its connection string from the config.json
+        // server parameters. The password is not stored in config.json — the credential store supplies it
+        // (until then it is omitted, which is sufficient for a passwordless/trust-auth server). The backend
+        // selects which options block (Postgres / MySql) and connection-string factory to use.
         string? sqliteLibraryPath = null;
         string connectionString;
         string dbDescriptor;
-        PostgresOptions? postgresOptions = null;
-        string? postgresPassword = null;
-        if (backend == DatabaseBackend.PostgreSql)
+        Func<IServiceProvider, CancellationToken, Task<ConnectionProbeResult>>? probeConnection = null;
+        if (backend.IsRemote())
         {
-            postgresOptions = config.Postgres;
             var (secretStore, _) = SecretStoreFactory.Create();
-            postgresPassword = secretStore.Get(config.Postgres.AccountKey);
-            connectionString = PostgresConnectionStringFactory.Build(config.Postgres, postgresPassword);
-            dbDescriptor = PostgresConnectionStringFactory.Sanitize(connectionString);
+            if (backend == DatabaseBackend.MySql)
+            {
+                var options = config.MySql;
+                var password = secretStore.Get(options.AccountKey);
+                connectionString = MySqlConnectionStringFactory.Build(options, password);
+                dbDescriptor = MySqlConnectionStringFactory.Sanitize(connectionString);
+                probeConnection = (services, ct) =>
+                    services.GetRequiredService<IMySqlConnectionProber>().ProbeAsync(options, password, ct);
+            }
+            else
+            {
+                var options = config.Postgres;
+                var password = secretStore.Get(options.AccountKey);
+                connectionString = PostgresConnectionStringFactory.Build(options, password);
+                dbDescriptor = PostgresConnectionStringFactory.Sanitize(connectionString);
+                probeConnection = (services, ct) =>
+                    services.GetRequiredService<IPostgresConnectionProber>().ProbeAsync(options, password, ct);
+            }
         }
         else
         {
@@ -161,7 +180,7 @@ public sealed class AppHost : IAsyncDisposable
             })
             .Build();
 
-        return new AppHost(host, backend, postgresOptions, postgresPassword);
+        return new AppHost(host, backend, probeConnection);
     }
 
     public async Task<MainWindow> StartAsync()

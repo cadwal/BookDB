@@ -8,6 +8,7 @@
     <Project Path="src/BookDB.Data/BookDB.Data.csproj" />
     <Project Path="src/BookDB.Data.Sqlite/BookDB.Data.Sqlite.csproj" />
     <Project Path="src/BookDB.Data.PostgreSQL/BookDB.Data.PostgreSQL.csproj" />
+    <Project Path="src/BookDB.Data.MySql/BookDB.Data.MySql.csproj" />
     <Project Path="src/BookDB.Desktop/BookDB.Desktop.csproj" />
     <Project Path="src/BookDB.Help/BookDB.Help.csproj" />
     <Project Path="src/BookDB.Logic/BookDB.Logic.csproj" />
@@ -18,6 +19,7 @@
   <Folder Name="/tests/">
     <Project Path="tests/BookDB.Data.Tests/BookDB.Data.Tests.csproj" />
     <Project Path="tests/BookDB.Data.PostgreSQL.Tests/BookDB.Data.PostgreSQL.Tests.csproj" />
+    <Project Path="tests/BookDB.Data.MySql.Tests/BookDB.Data.MySql.Tests.csproj" />
     <Project Path="tests/BookDB.Desktop.Tests/BookDB.Desktop.Tests.csproj" />
     <Project Path="tests/BookDB.Logic.Tests/BookDB.Logic.Tests.csproj" />
     <Project Path="tests/BookDB.Security.Tests/BookDB.Security.Tests.csproj" />

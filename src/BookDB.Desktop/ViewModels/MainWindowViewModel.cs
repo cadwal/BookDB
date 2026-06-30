@@ -11,6 +11,7 @@ using BookDB.Desktop.Helpers;
 using BookDB.Desktop.Messages;
 using BookDB.Desktop.Services;
 using BookDB.Data.Interfaces;
+using BookDB.Data.MySql;
 using BookDB.Data.PostgreSQL;
 using BookDB.Help;
 using BookDB.Logic.Services;
@@ -608,21 +609,21 @@ public partial class MainWindowViewModel : ObservableObject
         var archivedConfig = RestoreArchiveInspector.ReadConfig(backupZipPath);
 
         IMigrationTarget? directTarget = null;
-        if (TryDescribeArchivedPostgres(archivedConfig, out var serverDescription, out var options))
+        if (DescribeArchivedRemoteTarget(archivedConfig) is { } archivedTarget)
         {
-            var choice = await AppDialogs.ShowRestoreTargetDialogAsync(serverDescription);
+            var choice = await AppDialogs.ShowRestoreTargetDialogAsync(archivedTarget.Description);
             if (choice == AppDialogs.RestoreTargetChoice.Cancel)
                 return;
             if (choice == AppDialogs.RestoreTargetChoice.Archived)
             {
-                var password = _secretStore.Get(options!.AccountKey);
+                var password = _secretStore.Get(archivedTarget.AccountKey);
                 if (string.IsNullOrEmpty(password))
                 {
                     AppDialogs.ShowInfoDialog(Localization.Resources.Restore_NoCredentialsForTarget);
                     return;
                 }
                 directTarget = await _targetBuilder.BuildAsync(
-                    DatabaseBackend.PostgreSql, PostgresConnectionStringFactory.Build(options, password));
+                    archivedTarget.Backend, archivedTarget.ConnectionStringFor(password));
             }
         }
 
@@ -690,29 +691,46 @@ public partial class MainWindowViewModel : ObservableObject
         }
     }
 
-    // The backup can be restored into the server it came from when its config names a PostgreSQL host that is not
-    // already the active database.
-    private bool TryDescribeArchivedPostgres(BootstrapConfig? config, out string description, out PostgresOptions? options)
+    // A remote server the archive came from, offered as an alternative restore destination. The password is fetched
+    // lazily so the connection string is only assembled once the user has chosen the archived server.
+    private sealed record ArchivedRestoreTarget(
+        DatabaseBackend Backend, string Description, string AccountKey, Func<string, string> ConnectionStringFor);
+
+    // The backup can be restored into the server it came from when its config names a remote host that is not already
+    // the active database.
+    private ArchivedRestoreTarget? DescribeArchivedRemoteTarget(BootstrapConfig? config)
     {
-        description = string.Empty;
-        options = null;
-        if (config is null
-            || !Enum.TryParse(config.Backend, ignoreCase: true, out DatabaseBackend backend)
-            || backend != DatabaseBackend.PostgreSql
-            || string.IsNullOrWhiteSpace(config.Postgres.Host))
-            return false;
+        if (config is null || !Enum.TryParse(config.Backend, ignoreCase: true, out DatabaseBackend backend))
+            return null;
 
         var current = _bootstrapConfig.Load();
-        var currentIsSameServer =
-            Enum.TryParse(current.Backend, ignoreCase: true, out DatabaseBackend currentBackend)
-            && currentBackend == DatabaseBackend.PostgreSql
-            && current.Postgres.AccountKey == config.Postgres.AccountKey;
-        if (currentIsSameServer)
-            return false;
+        Enum.TryParse(current.Backend, ignoreCase: true, out DatabaseBackend currentBackend);
 
-        options = config.Postgres;
-        description = $"{config.Postgres.Host}/{config.Postgres.Database}";
-        return true;
+        switch (backend)
+        {
+            case DatabaseBackend.PostgreSql:
+            {
+                var options = config.Postgres;
+                if (string.IsNullOrWhiteSpace(options.Host)
+                    || (currentBackend == DatabaseBackend.PostgreSql && current.Postgres.AccountKey == options.AccountKey))
+                    return null;
+                return new ArchivedRestoreTarget(
+                    DatabaseBackend.PostgreSql, $"{options.Host}/{options.Database}", options.AccountKey,
+                    password => PostgresConnectionStringFactory.Build(options, password));
+            }
+            case DatabaseBackend.MySql:
+            {
+                var options = config.MySql;
+                if (string.IsNullOrWhiteSpace(options.Host)
+                    || (currentBackend == DatabaseBackend.MySql && current.MySql.AccountKey == options.AccountKey))
+                    return null;
+                return new ArchivedRestoreTarget(
+                    DatabaseBackend.MySql, $"{options.Host}/{options.Database}", options.AccountKey,
+                    password => MySqlConnectionStringFactory.Build(options, password));
+            }
+            default:
+                return null;
+        }
     }
 
     private static string DescribeRestoreProgress(MigrationProgress p)

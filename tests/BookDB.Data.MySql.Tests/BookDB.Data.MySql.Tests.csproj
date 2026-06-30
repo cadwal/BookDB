@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="coverlet.collector" Version="10.0.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.6.0" />
+    <PackageReference Include="Testcontainers.MySql" Version="4.12.0" />
+    <PackageReference Include="Testcontainers.MariaDb" Version="4.12.0" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.5">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="xunit.v3" Version="3.2.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\BookDB.Data.MySql\BookDB.Data.MySql.csproj" />
+    <!-- BackupService (the provider-neutral CSV archive) and the migration engine live in Logic. -->
+    <ProjectReference Include="..\..\src\BookDB.Logic\BookDB.Logic.csproj" />
+    <!-- SQLite is the lightweight universal partner for the cross-engine Move round-trip (mirrors how the
+         PostgreSQL test project references SQLite); a sibling remote provider is never referenced. -->
+    <ProjectReference Include="..\..\src\BookDB.Data.Sqlite\BookDB.Data.Sqlite.csproj" />
+  </ItemGroup>
+
+</Project>

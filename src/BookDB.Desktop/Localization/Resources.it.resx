@@ -2573,6 +2573,12 @@ Potenziali duplicati: {3}  |  Con copertine: {4}</value>
   <data name="Maintenance_SafetyBackupSaved" xml:space="preserve">
     <value>Backup di sicurezza salvato in: {0}</value>
   </data>
+  <data name="Maintenance_TablesChecked" xml:space="preserve">
+    <value>Tabelle controllate: {0}</value>
+  </data>
+  <data name="Maintenance_TablesOptimized" xml:space="preserve">
+    <value>Tabelle ottimizzate: {0}</value>
+  </data>
   <data name="Settings_Tab_Database" xml:space="preserve">
     <value>Database</value>
   </data>
@@ -2584,6 +2590,9 @@ Potenziali duplicati: {3}  |  Con copertine: {4}</value>
   </data>
   <data name="Settings_Database_Backend_Postgres" xml:space="preserve">
     <value>Server PostgreSQL</value>
+  </data>
+  <data name="Settings_Database_Backend_MySql" xml:space="preserve">
+    <value>Server MySQL / MariaDB</value>
   </data>
   <data name="Settings_Database_ServerSectionHeader" xml:space="preserve">
     <value>Connessione al server</value>
@@ -2618,11 +2627,20 @@ Potenziali duplicati: {3}  |  Con copertine: {4}</value>
   <data name="Settings_Database_Tls_VerifyFull" xml:space="preserve">
     <value>Verifica completa</value>
   </data>
+  <data name="Settings_Database_Tls_None" xml:space="preserve">
+    <value>Nessuno</value>
+  </data>
+  <data name="Settings_Database_Tls_Preferred" xml:space="preserve">
+    <value>Preferisci</value>
+  </data>
+  <data name="Settings_Database_Tls_Required" xml:space="preserve">
+    <value>Richiedi</value>
+  </data>
   <data name="Settings_Database_TlsDisableWarning" xml:space="preserve">
     <value>Disattivando TLS la password e i dati vengono inviati non crittografati sulla rete. Usare solo su una rete locale attendibile.</value>
   </data>
   <data name="Settings_Database_KeyringUnavailable" xml:space="preserve">
-    <value>PostgreSQL richiede un archivio delle credenziali del sistema operativo per conservare la password in modo sicuro, ma non ne è disponibile alcuno su questo computer. BookDB continuerà a usare il database locale SQLite.</value>
+    <value>Un database server richiede un archivio delle credenziali del sistema operativo per conservare la password in modo sicuro, ma non ne è disponibile alcuno su questo computer. BookDB continuerà a usare il database locale SQLite.</value>
   </data>
   <data name="Settings_Database_RestartNote" xml:space="preserve">
     <value>Il cambio del database ha effetto dopo il riavvio di BookDB.</value>
@@ -2634,7 +2652,7 @@ Potenziali duplicati: {3}  |  Con copertine: {4}</value>
     <value>Impossibile connettersi al database</value>
   </data>
   <data name="Startup_Failure_Intro" xml:space="preserve">
-    <value>BookDB non è riuscito a raggiungere il server PostgreSQL.</value>
+    <value>BookDB non è riuscito a raggiungere il server di database.</value>
   </data>
   <data name="Startup_Failure_Retry" xml:space="preserve">
     <value>Riprova</value>
@@ -2699,6 +2717,12 @@ Potenziali duplicati: {3}  |  Con copertine: {4}</value>
   <data name="Settings_Database_TestSuccessUninitialized" xml:space="preserve">
     <value>Connesso — PostgreSQL {0}. Nessun dato BookDB ancora presente in questo database.</value>
   </data>
+  <data name="Settings_Database_TestSuccess_MySql" xml:space="preserve">
+    <value>Connesso — {0}, {1} libri.</value>
+  </data>
+  <data name="Settings_Database_TestSuccessUninitialized_MySql" xml:space="preserve">
+    <value>Connesso — {0}. Nessun dato BookDB ancora presente in questo database.</value>
+  </data>
   <data name="Settings_Database_TestError_Auth" xml:space="preserve">
     <value>Autenticazione non riuscita — controlla nome utente e password.</value>
   </data>
@@ -2716,6 +2740,9 @@ Potenziali duplicati: {3}  |  Con copertine: {4}</value>
   </data>
   <data name="Settings_Database_TestError_UnsupportedVersion" xml:space="preserve">
     <value>BookDB richiede PostgreSQL {0} o successivo — questo server è {1}.</value>
+  </data>
+  <data name="Settings_Database_TestError_UnsupportedVersion_MySql" xml:space="preserve">
+    <value>BookDB richiede MySQL {0} o MariaDB {1} o successivo — questo server è {2}.</value>
   </data>
   <data name="WriteFailure_Title" xml:space="preserve">
     <value>Impossibile salvare le modifiche</value>
@@ -2759,6 +2786,9 @@ Potenziali duplicati: {3}  |  Con copertine: {4}</value>
   <data name="MoveLibrary_Source_Postgres" xml:space="preserve">
     <value>PostgreSQL — {0}</value>
   </data>
+  <data name="MoveLibrary_Source_MySql" xml:space="preserve">
+    <value>MySQL / MariaDB — {0}</value>
+  </data>
   <data name="MoveLibrary_TargetLabel" xml:space="preserve">
     <value>Sposta in:</value>
   </data>
@@ -2767,6 +2797,9 @@ Potenziali duplicati: {3}  |  Con copertine: {4}</value>
   </data>
   <data name="MoveLibrary_Target_Sqlite" xml:space="preserve">
     <value>File SQLite locale</value>
+  </data>
+  <data name="MoveLibrary_Target_MySql" xml:space="preserve">
+    <value>Server MySQL / MariaDB</value>
   </data>
   <data name="MoveLibrary_Check" xml:space="preserve">
     <value>Verifica destinazione</value>
@@ -2856,7 +2889,7 @@ Potenziali duplicati: {3}  |  Con copertine: {4}</value>
     <value>Dove ripristinare</value>
   </data>
   <data name="RestoreTarget_Body" xml:space="preserve">
-    <value>Questo backup è stato creato sul server PostgreSQL {0}. Ripristinare i dati in quel server o nel database attuale?</value>
+    <value>Questo backup è stato creato sul server di database {0}. Ripristinare i dati in quel server o nel database attuale?</value>
   </data>
   <data name="RestoreTarget_Archived" xml:space="preserve">
     <value>Ripristina nel server del backup</value>

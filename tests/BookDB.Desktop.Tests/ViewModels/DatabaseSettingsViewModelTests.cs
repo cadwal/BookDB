@@ -32,6 +32,26 @@ public sealed class DatabaseSettingsViewModelTests
         }
     }
 
+    /// <summary>Records the last MySQL probe call and returns a preset result.</summary>
+    private sealed class StubMySqlProber : IMySqlConnectionProber
+    {
+        private readonly ConnectionProbeResult _result;
+        public MySqlOptions? LastOptions { get; private set; }
+        public string? LastPassword { get; private set; }
+        public bool WasCalled { get; private set; }
+
+        public StubMySqlProber(ConnectionProbeResult result) => _result = result;
+
+        public Task<ConnectionProbeResult> ProbeAsync(
+            MySqlOptions options, string? password, CancellationToken ct = default)
+        {
+            WasCalled = true;
+            LastOptions = options;
+            LastPassword = password;
+            return Task.FromResult(_result);
+        }
+    }
+
     /// <summary>In-memory secret store recording the last write.</summary>
     private sealed class FakeSecretStore : ISecretStore
     {
@@ -57,6 +77,7 @@ public sealed class DatabaseSettingsViewModelTests
         InMemoryBootstrapConfigService config,
         bool keyringAvailable = true,
         IPostgresConnectionProber? prober = null,
+        IMySqlConnectionProber? mySqlProber = null,
         ISecretStore? secretStore = null)
     {
         var availability = keyringAvailable
@@ -66,6 +87,7 @@ public sealed class DatabaseSettingsViewModelTests
             config,
             availability,
             prober ?? new StubProber(DefaultProbe),
+            mySqlProber ?? new StubMySqlProber(DefaultProbe),
             secretStore ?? new FakeSecretStore());
     }
 
@@ -448,5 +470,146 @@ public sealed class DatabaseSettingsViewModelTests
         Assert.Equal("PostgreSql", config.Config.Backend);
         Assert.Null(secrets.LastSetSecret); // existing secret left untouched
         Assert.True(vm.DbChanged);
+    }
+
+    [Fact]
+    public void SelectingMySql_DeselectsSqliteAndPostgres()
+    {
+        var vm = CreateViewModel(new InMemoryBootstrapConfigService(), keyringAvailable: true);
+
+        vm.IsMySqlSelected = true;
+
+        Assert.True(vm.IsMySqlSelected);
+        Assert.False(vm.IsSqliteSelected);
+        Assert.False(vm.IsPostgreSqlSelected);
+        Assert.True(vm.IsRemoteSelected);
+    }
+
+    [Fact]
+    public void SelectingMySql_WithoutKeyring_IsVetoed()
+    {
+        var vm = CreateViewModel(new InMemoryBootstrapConfigService(), keyringAvailable: false);
+
+        vm.IsMySqlSelected = true;
+
+        Assert.False(vm.IsMySqlSelected);
+        Assert.True(vm.IsSqliteSelected);
+    }
+
+    [Fact]
+    public void SelectingMySql_OffersMySqlTlsModes_AndDefaultsToPreferred()
+    {
+        var vm = CreateViewModel(new InMemoryBootstrapConfigService(), keyringAvailable: true);
+
+        vm.IsMySqlSelected = true;
+
+        Assert.Equal(
+            new[] { "None", "Preferred", "Required" },
+            vm.AvailableSslModes.Select(m => m.Value));
+        Assert.Equal("Preferred", vm.SelectedSslMode!.Value);
+    }
+
+    [Fact]
+    public void SelectingMySql_DefaultsPortTo3306()
+    {
+        var vm = CreateViewModel(new InMemoryBootstrapConfigService(), keyringAvailable: true);
+
+        vm.IsMySqlSelected = true;
+
+        Assert.Equal("3306", vm.Port);
+    }
+
+    [Fact]
+    public async Task LoadAsync_WithStoredMySqlAndKeyring_SelectsMySqlAndPopulatesFields()
+    {
+        var config = new InMemoryBootstrapConfigService();
+        config.Config.Backend = "MySql";
+        config.Config.MySql.Host = "maria.example.com";
+        config.Config.MySql.Port = 3307;
+        config.Config.MySql.Database = "mylib";
+        config.Config.MySql.Username = "alice";
+        config.Config.MySql.SslMode = "Required";
+        var vm = CreateViewModel(config, keyringAvailable: true);
+
+        await vm.LoadAsync(TestContext.Current.CancellationToken);
+
+        Assert.True(vm.IsMySqlSelected);
+        Assert.False(vm.IsSqliteSelected);
+        Assert.False(vm.IsPostgreSqlSelected);
+        Assert.Equal("maria.example.com", vm.Host);
+        Assert.Equal("3307", vm.Port);
+        Assert.Equal("mylib", vm.DatabaseName);
+        Assert.Equal("alice", vm.Username);
+        Assert.Equal("Required", vm.SelectedSslMode!.Value);
+    }
+
+    [Fact]
+    public async Task TestConnection_MySql_UsesMySqlProber_AndPassesEnteredFields()
+    {
+        var mySqlProber = new StubMySqlProber(ConnectionProbeResult.Succeeded("MySQL 8.0.3", 7));
+        var vm = CreateViewModel(new InMemoryBootstrapConfigService(), keyringAvailable: true, mySqlProber: mySqlProber);
+        vm.IsMySqlSelected = true;
+        vm.Host = "maria.example.com";
+        vm.Port = "3307";
+        vm.DatabaseName = "mylib";
+        vm.Username = "alice";
+        vm.Password = "secret";
+        vm.SelectedSslMode = vm.AvailableSslModes.First(m => m.Value == "Required");
+
+        await vm.TestConnectionCommand.ExecuteAsync(null);
+
+        Assert.True(mySqlProber.WasCalled);
+        Assert.Equal("maria.example.com", mySqlProber.LastOptions!.Host);
+        Assert.Equal(3307, mySqlProber.LastOptions.Port);
+        Assert.Equal("mylib", mySqlProber.LastOptions.Database);
+        Assert.Equal("alice", mySqlProber.LastOptions.Username);
+        Assert.Equal("Required", mySqlProber.LastOptions.SslMode);
+        Assert.Equal("secret", mySqlProber.LastPassword);
+        Assert.False(vm.TestResultIsError);
+        Assert.Contains("MySQL 8.0.3", vm.TestResultMessage);
+        Assert.Contains("7", vm.TestResultMessage);
+    }
+
+    [Fact]
+    public async Task SaveAsync_SwitchToMySql_WritesConfigStoresSecret_AndMarksDbChanged()
+    {
+        var config = new InMemoryBootstrapConfigService();
+        var secrets = new FakeSecretStore();
+        var vm = CreateViewModel(config, keyringAvailable: true, secretStore: secrets);
+        await vm.LoadAsync(TestContext.Current.CancellationToken);
+
+        vm.IsMySqlSelected = true;
+        vm.Host = "maria.example.com";
+        vm.Port = "3307";
+        vm.DatabaseName = "mylib";
+        vm.Username = "alice";
+        vm.Password = "s3cret";
+        vm.SelectedSslMode = vm.AvailableSslModes.First(m => m.Value == "Required");
+
+        Assert.True(vm.ValidateForSave());
+        await vm.SaveAsync(TestContext.Current.CancellationToken);
+
+        Assert.Equal("MySql", config.Config.Backend);
+        Assert.Equal("maria.example.com", config.Config.MySql.Host);
+        Assert.Equal(3307, config.Config.MySql.Port);
+        Assert.Equal("mylib", config.Config.MySql.Database);
+        Assert.Equal("alice", config.Config.MySql.Username);
+        Assert.Equal("Required", config.Config.MySql.SslMode);
+        Assert.Equal("s3cret", secrets.LastSetSecret);
+        Assert.Equal("alice@maria.example.com:3307/mylib", secrets.LastSetAccount);
+        Assert.True(vm.DbChanged);
+    }
+
+    [Fact]
+    public void ValidateForSave_MySqlWithoutPasswordOrStoredSecret_ReturnsFalseWithInlineError()
+    {
+        var vm = CreateViewModel(new InMemoryBootstrapConfigService(), keyringAvailable: true);
+        vm.IsMySqlSelected = true;
+        vm.Host = "maria.example.com";
+        vm.Username = "alice";
+        vm.Password = string.Empty;
+
+        Assert.False(vm.ValidateForSave());
+        Assert.True(vm.HasApplyError);
     }
 }

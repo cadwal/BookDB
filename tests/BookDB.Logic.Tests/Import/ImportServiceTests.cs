@@ -324,6 +324,45 @@ public sealed class ImportServiceTests : IDisposable
         Assert.Contains(contributors, bc => bc.Person?.DisplayName == "Alice Writer" && bc.ContributorRole?.Code == "Author");
         Assert.Contains(contributors, bc => bc.Person?.DisplayName == "Bob Editor" && bc.ContributorRole?.Code == "Editor");
     }
+
+    [Fact]
+    public async Task ImportAsync_SplitsBracketedListContributor_FromReaderwareBackup()
+    {
+        // Bad source data: several authors catalogued into one field as a serialized "[A, B, C]" list. The import
+        // must split them into separate people, not import one mangled "[David Smith, …" author.
+        var book = new ParsedBook
+        {
+            RowKey = 1,
+            Title = "Bracketed Authors",
+            Isbn = "978-RW-BRACKET-001",
+            ResolvedContributors =
+            [
+                ("Author", "[David Smith, Sean McLachlan, Angus Konstam]", "[David Smith, Sean McLachlan, Angus Konstam]")
+            ]
+        };
+        var backup = new ParsedBackup { Books = [book] };
+
+        var svc = CreateImportService(backup);
+        var result = await svc.ImportAsync("mock-path", collectionId: 1, cancellationToken: TestContext.Current.CancellationToken);
+
+        Assert.Equal(1, result.Imported);
+        Assert.Empty(result.Errors);
+
+        await using var verifyDb = await _factory.CreateDbContextAsync(TestContext.Current.CancellationToken);
+        var importedBook = await verifyDb.Books.FirstAsync(b => b.Isbn == "978-RW-BRACKET-001", TestContext.Current.CancellationToken);
+
+        var contributors = await verifyDb.BookContributors
+            .Include(bc => bc.Person)
+            .Include(bc => bc.ContributorRole)
+            .Where(bc => bc.BookId == importedBook.BookId)
+            .ToListAsync(TestContext.Current.CancellationToken);
+
+        Assert.Equal(3, contributors.Count);
+        Assert.All(contributors, bc => Assert.Equal("Author", bc.ContributorRole?.Code));
+        Assert.Contains(contributors, bc => bc.Person?.DisplayName == "David Smith");
+        Assert.Contains(contributors, bc => bc.Person?.DisplayName == "Sean McLachlan");
+        Assert.Contains(contributors, bc => bc.Person?.DisplayName == "Angus Konstam");
+    }
             
     [Fact]
     public async Task ImportAsync_CreatesCategoryRows()

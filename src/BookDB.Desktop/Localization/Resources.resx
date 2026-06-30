@@ -2603,6 +2603,12 @@ Potential duplicates: {3}  |  With covers: {4}</value>
   <data name="Maintenance_SafetyBackupSaved" xml:space="preserve">
     <value>Safety backup saved to: {0}</value>
   </data>
+  <data name="Maintenance_TablesChecked" xml:space="preserve">
+    <value>Tables checked: {0}</value>
+  </data>
+  <data name="Maintenance_TablesOptimized" xml:space="preserve">
+    <value>Tables optimized: {0}</value>
+  </data>
   <data name="Settings_Tab_Database" xml:space="preserve">
     <value>Database</value>
   </data>
@@ -2614,6 +2620,9 @@ Potential duplicates: {3}  |  With covers: {4}</value>
   </data>
   <data name="Settings_Database_Backend_Postgres" xml:space="preserve">
     <value>PostgreSQL server</value>
+  </data>
+  <data name="Settings_Database_Backend_MySql" xml:space="preserve">
+    <value>MySQL / MariaDB server</value>
   </data>
   <data name="Settings_Database_ServerSectionHeader" xml:space="preserve">
     <value>Server connection</value>
@@ -2648,11 +2657,20 @@ Potential duplicates: {3}  |  With covers: {4}</value>
   <data name="Settings_Database_Tls_VerifyFull" xml:space="preserve">
     <value>Verify full</value>
   </data>
+  <data name="Settings_Database_Tls_None" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="Settings_Database_Tls_Preferred" xml:space="preserve">
+    <value>Preferred</value>
+  </data>
+  <data name="Settings_Database_Tls_Required" xml:space="preserve">
+    <value>Required</value>
+  </data>
   <data name="Settings_Database_TlsDisableWarning" xml:space="preserve">
     <value>Disabling TLS sends the password and data unencrypted across the network. Use it only on a trusted local network.</value>
   </data>
   <data name="Settings_Database_KeyringUnavailable" xml:space="preserve">
-    <value>PostgreSQL needs an operating-system credential store to keep the password safe, but none is available on this machine. BookDB will keep using the local SQLite database.</value>
+    <value>A server database needs an operating-system credential store to keep the password safe, but none is available on this machine. BookDB will keep using the local SQLite database.</value>
   </data>
   <data name="Settings_Database_RestartNote" xml:space="preserve">
     <value>Switching the database takes effect after BookDB restarts.</value>
@@ -2664,7 +2682,7 @@ Potential duplicates: {3}  |  With covers: {4}</value>
     <value>Cannot connect to the database</value>
   </data>
   <data name="Startup_Failure_Intro" xml:space="preserve">
-    <value>BookDB could not reach the PostgreSQL server.</value>
+    <value>BookDB could not reach the database server.</value>
   </data>
   <data name="Startup_Failure_Retry" xml:space="preserve">
     <value>Retry</value>
@@ -2729,6 +2747,12 @@ Potential duplicates: {3}  |  With covers: {4}</value>
   <data name="Settings_Database_TestSuccessUninitialized" xml:space="preserve">
     <value>Connected — PostgreSQL {0}. No BookDB data found in this database yet.</value>
   </data>
+  <data name="Settings_Database_TestSuccess_MySql" xml:space="preserve">
+    <value>Connected — {0}, {1} books.</value>
+  </data>
+  <data name="Settings_Database_TestSuccessUninitialized_MySql" xml:space="preserve">
+    <value>Connected — {0}. No BookDB data found in this database yet.</value>
+  </data>
   <data name="Settings_Database_TestError_Auth" xml:space="preserve">
     <value>Authentication failed — check the username and password.</value>
   </data>
@@ -2746,6 +2770,9 @@ Potential duplicates: {3}  |  With covers: {4}</value>
   </data>
   <data name="Settings_Database_TestError_UnsupportedVersion" xml:space="preserve">
     <value>BookDB requires PostgreSQL {0} or later — this server is {1}.</value>
+  </data>
+  <data name="Settings_Database_TestError_UnsupportedVersion_MySql" xml:space="preserve">
+    <value>BookDB requires MySQL {0} or MariaDB {1} or later — this server is {2}.</value>
   </data>
   <data name="WriteFailure_Title" xml:space="preserve">
     <value>Couldn't save changes</value>
@@ -2789,6 +2816,9 @@ Potential duplicates: {3}  |  With covers: {4}</value>
   <data name="MoveLibrary_Source_Postgres" xml:space="preserve">
     <value>PostgreSQL — {0}</value>
   </data>
+  <data name="MoveLibrary_Source_MySql" xml:space="preserve">
+    <value>MySQL / MariaDB — {0}</value>
+  </data>
   <data name="MoveLibrary_TargetLabel" xml:space="preserve">
     <value>Move to:</value>
   </data>
@@ -2797,6 +2827,9 @@ Potential duplicates: {3}  |  With covers: {4}</value>
   </data>
   <data name="MoveLibrary_Target_Sqlite" xml:space="preserve">
     <value>Local SQLite file</value>
+  </data>
+  <data name="MoveLibrary_Target_MySql" xml:space="preserve">
+    <value>MySQL / MariaDB server</value>
   </data>
   <data name="MoveLibrary_Check" xml:space="preserve">
     <value>Check target</value>
@@ -2886,7 +2919,7 @@ Potential duplicates: {3}  |  With covers: {4}</value>
     <value>Where to restore</value>
   </data>
   <data name="RestoreTarget_Body" xml:space="preserve">
-    <value>This backup was created on the PostgreSQL server {0}. Restore the data into that server, or into your current database?</value>
+    <value>This backup was created on the database server {0}. Restore the data into that server, or into your current database?</value>
   </data>
   <data name="RestoreTarget_Archived" xml:space="preserve">
     <value>Restore into the backup's server</value>

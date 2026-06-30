@@ -514,7 +514,7 @@ public partial class FilterPanelViewModel : ObservableRecipient,
 
         ActiveSavedSearch = null;
         OnFacetSelectionChanged();
-        Messenger.Send(new AdvancedSearchResultMessage(Array.Empty<long>()));
+        Messenger.Send(new AdvancedSearchResultMessage(null));
     }
 
     private static IEnumerable<FacetValueViewModel> GetAllValues(FacetGroupViewModel group) =>

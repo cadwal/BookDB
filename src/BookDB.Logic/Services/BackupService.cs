@@ -23,6 +23,11 @@ public sealed class BackupService : IBackupService
     // Auto-backup runs at least this often even when nothing changed (the user's recency threshold).
     private static readonly TimeSpan RecencyThreshold = TimeSpan.FromDays(7);
 
+    // Cover-image rows carry the BLOBs; exporting them in small batches keeps process memory bounded on large
+    // catalogs (mirrors the move/restore engines). Loading every image at once would hold the whole image set —
+    // each cover > 85 KB lands on the Large Object Heap — resident simultaneously.
+    private const int ImageBatchSize = 50;
+
     private readonly IDbContextFactory<BookDbContext> _factory;
     private readonly AppSettings _appSettings;
     private readonly ISettingsService _settingsService;
@@ -215,29 +220,45 @@ public sealed class BackupService : IBackupService
             progress?.Report(L("Backup_Status_ExportingCoverImages"));
             var imagesDir = Path.Combine(tempDir, "images");
             Directory.CreateDirectory(imagesDir);
-            var images = await dbContext.BookImages.AsNoTracking().ToListAsync(ct);
-            // Image metadata rows (book linkage, type, ordering) — the bytes go to images/ below.
-            await WriteCsvAsync(tempDir, "BookImages.csv", images.Select(i => new
-            {
-                i.BookImageId,
-                i.BookId,
-                i.BookImageTypeId,
-                i.MimeType,
-                i.IsPrimary,
-                i.DisplayOrder,
-                i.Added,
-            }));
-            var imageIndex = 0;
-            foreach (var image in images)
-            {
-                if (image.ImageData is { Length: > 0 })
+
+            // Image metadata (book linkage, type, ordering) — projected without ImageData so the BLOBs aren't
+            // pulled here; the bytes are streamed to images/ in batches below.
+            var imageMeta = await dbContext.BookImages.AsNoTracking()
+                .OrderBy(i => i.BookImageId)
+                .Select(i => new
                 {
-                    var imagePath = Path.Combine(imagesDir, $"{image.BookImageId}.jpg");
-                    await File.WriteAllBytesAsync(imagePath, image.ImageData, ct);
+                    i.BookImageId,
+                    i.BookId,
+                    i.BookImageTypeId,
+                    i.MimeType,
+                    i.IsPrimary,
+                    i.DisplayOrder,
+                    i.Added,
+                })
+                .ToListAsync(ct);
+            await WriteCsvAsync(tempDir, "BookImages.csv", imageMeta);
+
+            // Stream the cover bytes in batches so only ImageBatchSize BLOBs are resident at once; a fresh query
+            // per batch lets each batch's byte arrays be reclaimed before the next read.
+            var exported = 0;
+            for (int skip = 0; ; skip += ImageBatchSize)
+            {
+                var batch = await dbContext.BookImages.AsNoTracking()
+                    .OrderBy(i => i.BookImageId).Skip(skip).Take(ImageBatchSize)
+                    .Select(i => new { i.BookImageId, i.ImageData })
+                    .ToListAsync(ct);
+                if (batch.Count == 0)
+                    break;
+
+                foreach (var image in batch)
+                {
+                    if (image.ImageData is { Length: > 0 })
+                        await File.WriteAllBytesAsync(
+                            Path.Combine(imagesDir, $"{image.BookImageId}.jpg"), image.ImageData, ct);
                 }
-                imageIndex++;
-                if (imageIndex % 50 == 0)
-                    progress?.Report(L("Backup_Status_ExportingCoverImagesCount", imageIndex, images.Count));
+
+                exported += batch.Count;
+                progress?.Report(L("Backup_Status_ExportingCoverImagesCount", exported, imageMeta.Count));
             }
 
             if (ExistingConfigPath is { } configPath)

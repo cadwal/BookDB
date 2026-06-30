@@ -71,6 +71,10 @@ public sealed class DatabaseMaintenanceServiceTests : IDisposable
         Assert.Equal(
             new[] { MaintenanceStep.CheckingIntegrity, MaintenanceStep.CheckingForeignKeys },
             progress.Reports);
+        // The user tables are reported; SQLite internals and the FTS5 index + its shadow tables are excluded.
+        Assert.Contains("Book", result.TablesChecked);
+        Assert.DoesNotContain(result.TablesChecked, t => t.StartsWith("fts_books", StringComparison.Ordinal));
+        Assert.DoesNotContain(result.TablesChecked, t => t.StartsWith("sqlite_", StringComparison.Ordinal));
     }
 
     [Fact]
@@ -93,6 +97,8 @@ public sealed class DatabaseMaintenanceServiceTests : IDisposable
                 MaintenanceStep.Checkpoint,
             },
             progress.Reports);
+        Assert.Contains("Book", result.TablesOptimized);
+        Assert.DoesNotContain(result.TablesOptimized, t => t.StartsWith("fts_books", StringComparison.Ordinal));
     }
 
     [Fact]

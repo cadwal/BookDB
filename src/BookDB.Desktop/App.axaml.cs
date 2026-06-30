@@ -61,11 +61,11 @@ public partial class App : Application
                 // The splash is Topmost so it floats over other apps during a normal launch; drop that while we
                 // show interactive recovery dialogs, or they would render behind it.
                 splash.Topmost = false;
-                var probe = await _appHost.ProbePostgresConnectionAsync();
+                var probe = await _appHost.ProbeConnectionAsync();
                 while (!probe.IsSuccess)
                 {
                     var outcome = await windowService.ShowStartupFailureDialogAsync(
-                        probe, _appHost.ProbePostgresConnectionAsync, splash);
+                        probe, _appHost.ProbeConnectionAsync, splash);
                     if (outcome == ViewModels.StartupFailureOutcome.Proceed)
                         break;
                     if (outcome == ViewModels.StartupFailureOutcome.Quit)
@@ -76,8 +76,18 @@ public partial class App : Application
                     }
 
                     // Open settings: the user can fix the connection (Apply restarts the app) — otherwise re-probe.
-                    await windowService.ShowSettingsAsync(splash);
-                    probe = await _appHost.ProbePostgresConnectionAsync();
+                    // Guard it: if opening settings throws, an unhandled exception here escapes this async-void
+                    // startup path and is swallowed as a connection loss, stranding the app with no window. Log
+                    // and loop back to the failure dialog instead, so recovery always stays reachable.
+                    try
+                    {
+                        await windowService.ShowSettingsAsync(splash);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Error(ex, "Opening settings from the startup-failure recovery flow failed");
+                    }
+                    probe = await _appHost.ProbeConnectionAsync();
                 }
             }
 

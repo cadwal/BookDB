@@ -19,6 +19,13 @@ namespace BookDB.Data.Sqlite;
 /// </summary>
 public sealed class SqliteMaintenanceProvider : IMaintenanceProvider
 {
+    // Application tables only: exclude SQLite's internal sqlite_% tables and the FTS5 index fts_books plus its
+    // shadow tables (all named fts_books*), so the reported list is the tables the user recognises. integrity_check
+    // and VACUUM are whole-database, so this is "the tables covered", not a per-table operation list.
+    private const string UserTablesSql =
+        "SELECT name FROM sqlite_master WHERE type='table' " +
+        "AND name NOT LIKE 'sqlite_%' AND name NOT LIKE 'fts\\_books%' ESCAPE '\\' ORDER BY name";
+
     private readonly IDbContextFactory<BookDbContext> _factory;
     private readonly AppSettings _appSettings;
 
@@ -43,6 +50,8 @@ public sealed class SqliteMaintenanceProvider : IMaintenanceProvider
         var foreignKeys = await ReadRowsAsync(
             connection, "PRAGMA foreign_key_check;", FormatForeignKeyRow, ct);
 
+        var tables = await ReadRowsAsync(connection, UserTablesSql, r => r.GetString(0), ct);
+
         // integrity_check returns a single "ok" row when the database is sound.
         var integrityOk = integrity.Count == 1
             && string.Equals(integrity[0], "ok", StringComparison.OrdinalIgnoreCase);
@@ -57,7 +66,7 @@ public sealed class SqliteMaintenanceProvider : IMaintenanceProvider
             "SqliteMaintenanceProvider: integrity check status {Status} ({IntegrityRows} integrity rows, {FkRows} FK violations)",
             status, integrity.Count, foreignKeys.Count);
 
-        return new MaintenanceCheckResult(status, integrity, foreignKeys);
+        return new MaintenanceCheckResult(status, integrity, foreignKeys) { TablesChecked = tables };
     }
 
     public async Task<MaintenanceRepairResult> OptimizeAndRepairAsync(
@@ -75,6 +84,9 @@ public sealed class SqliteMaintenanceProvider : IMaintenanceProvider
             await dbContext.Database.OpenConnectionAsync(ct);
             var connection = dbContext.Database.GetDbConnection();
 
+            // REINDEX + VACUUM rebuild the whole file; list the tables covered so the UI can report them.
+            var tables = await ReadRowsAsync(connection, UserTablesSql, r => r.GetString(0), ct);
+
             progress?.Report(MaintenanceStep.Reindex);
             await ExecuteAsync(connection, "REINDEX;", ct);
 
@@ -88,10 +100,10 @@ public sealed class SqliteMaintenanceProvider : IMaintenanceProvider
 
             var sizeAfter = FileLength(dbPath);
             Log.Information(
-                "SqliteMaintenanceProvider: optimize/repair complete — {Before} -> {After} bytes",
-                sizeBefore, sizeAfter);
+                "SqliteMaintenanceProvider: optimize/repair complete — {Before} -> {After} bytes ({Tables} tables)",
+                sizeBefore, sizeAfter, tables.Count);
 
-            return new MaintenanceRepairResult(true, null, sizeBefore, sizeAfter, null);
+            return new MaintenanceRepairResult(true, null, sizeBefore, sizeAfter, null) { TablesOptimized = tables };
         }
         catch (Exception ex)
         {

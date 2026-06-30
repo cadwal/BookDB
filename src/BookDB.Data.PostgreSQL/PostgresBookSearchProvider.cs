@@ -22,7 +22,7 @@ namespace BookDB.Data.PostgreSQL;
 /// </summary>
 public sealed class PostgresBookSearchProvider : IBookSearchProvider
 {
-    private const string EscapeChar = "\\";
+    private const string EscapeChar = LikeEscaping.EscapeChar;
 
     private static readonly MethodInfo ILikeMethod = typeof(NpgsqlDbFunctionsExtensions).GetMethod(
         nameof(NpgsqlDbFunctionsExtensions.ILike),
@@ -120,13 +120,10 @@ public sealed class PostgresBookSearchProvider : IBookSearchProvider
             Expression.NotEqual(prop, Expression.Constant(null, typeof(string))),
             Expression.NotEqual(prop, Expression.Constant(string.Empty, typeof(string))));
 
-    private static string Escape(string value) =>
-        value.Replace(EscapeChar, EscapeChar + EscapeChar).Replace("%", EscapeChar + "%").Replace("_", EscapeChar + "_");
-
-    private static string ContainsPattern(string value) => $"%{Escape(value)}%";
-    private static string StartsWithPattern(string value) => $"{Escape(value)}%";
-    private static string EndsWithPattern(string value) => $"%{Escape(value)}";
-    private static string ExactPattern(string value) => Escape(value);
+    private static string ContainsPattern(string value) => $"%{LikeEscaping.Escape(value)}%";
+    private static string StartsWithPattern(string value) => $"{LikeEscaping.Escape(value)}%";
+    private static string EndsWithPattern(string value) => $"%{LikeEscaping.Escape(value)}";
+    private static string ExactPattern(string value) => LikeEscaping.Escape(value);
 
     public Expression<Func<Book, bool>>? BuildRelationPredicate(SearchField field, SearchOperator op, string value)
     {

@@ -2600,6 +2600,12 @@ Möjliga dubletter: {3}  |  Med omslag: {4}</value>
   <data name="Maintenance_SafetyBackupSaved" xml:space="preserve">
     <value>Säkerhetskopia sparad till: {0}</value>
   </data>
+  <data name="Maintenance_TablesChecked" xml:space="preserve">
+    <value>Kontrollerade tabeller: {0}</value>
+  </data>
+  <data name="Maintenance_TablesOptimized" xml:space="preserve">
+    <value>Optimerade tabeller: {0}</value>
+  </data>
   <data name="Settings_Tab_Database" xml:space="preserve">
     <value>Databas</value>
   </data>
@@ -2611,6 +2617,9 @@ Möjliga dubletter: {3}  |  Med omslag: {4}</value>
   </data>
   <data name="Settings_Database_Backend_Postgres" xml:space="preserve">
     <value>PostgreSQL-server</value>
+  </data>
+  <data name="Settings_Database_Backend_MySql" xml:space="preserve">
+    <value>MySQL-/MariaDB-server</value>
   </data>
   <data name="Settings_Database_ServerSectionHeader" xml:space="preserve">
     <value>Serveranslutning</value>
@@ -2645,11 +2654,20 @@ Möjliga dubletter: {3}  |  Med omslag: {4}</value>
   <data name="Settings_Database_Tls_VerifyFull" xml:space="preserve">
     <value>Verifiera fullständigt</value>
   </data>
+  <data name="Settings_Database_Tls_None" xml:space="preserve">
+    <value>Ingen</value>
+  </data>
+  <data name="Settings_Database_Tls_Preferred" xml:space="preserve">
+    <value>Föredra</value>
+  </data>
+  <data name="Settings_Database_Tls_Required" xml:space="preserve">
+    <value>Kräv</value>
+  </data>
   <data name="Settings_Database_TlsDisableWarning" xml:space="preserve">
     <value>Att inaktivera TLS skickar lösenordet och data okrypterat över nätverket. Använd endast i ett betrott lokalt nätverk.</value>
   </data>
   <data name="Settings_Database_KeyringUnavailable" xml:space="preserve">
-    <value>PostgreSQL behöver operativsystemets autentiseringslager för att skydda lösenordet, men det finns inte på den här datorn. BookDB fortsätter att använda den lokala SQLite-databasen.</value>
+    <value>En serverdatabas behöver operativsystemets autentiseringslager för att skydda lösenordet, men det finns inte på den här datorn. BookDB fortsätter att använda den lokala SQLite-databasen.</value>
   </data>
   <data name="Settings_Database_RestartNote" xml:space="preserve">
     <value>Byte av databas börjar gälla efter att BookDB startats om.</value>
@@ -2661,7 +2679,7 @@ Möjliga dubletter: {3}  |  Med omslag: {4}</value>
     <value>Det går inte att ansluta till databasen</value>
   </data>
   <data name="Startup_Failure_Intro" xml:space="preserve">
-    <value>BookDB kunde inte nå PostgreSQL-servern.</value>
+    <value>BookDB kunde inte nå databasservern.</value>
   </data>
   <data name="Startup_Failure_Retry" xml:space="preserve">
     <value>Försök igen</value>
@@ -2726,6 +2744,12 @@ Möjliga dubletter: {3}  |  Med omslag: {4}</value>
   <data name="Settings_Database_TestSuccessUninitialized" xml:space="preserve">
     <value>Ansluten — PostgreSQL {0}. Inga BookDB-data hittades i databasen ännu.</value>
   </data>
+  <data name="Settings_Database_TestSuccess_MySql" xml:space="preserve">
+    <value>Ansluten — {0}, {1} böcker.</value>
+  </data>
+  <data name="Settings_Database_TestSuccessUninitialized_MySql" xml:space="preserve">
+    <value>Ansluten — {0}. Inga BookDB-data hittades i databasen ännu.</value>
+  </data>
   <data name="Settings_Database_TestError_Auth" xml:space="preserve">
     <value>Autentiseringen misslyckades — kontrollera användarnamn och lösenord.</value>
   </data>
@@ -2743,6 +2767,9 @@ Möjliga dubletter: {3}  |  Med omslag: {4}</value>
   </data>
   <data name="Settings_Database_TestError_UnsupportedVersion" xml:space="preserve">
     <value>BookDB kräver PostgreSQL {0} eller senare – den här servern är {1}.</value>
+  </data>
+  <data name="Settings_Database_TestError_UnsupportedVersion_MySql" xml:space="preserve">
+    <value>BookDB kräver MySQL {0} eller MariaDB {1} eller senare – den här servern är {2}.</value>
   </data>
   <data name="WriteFailure_Title" xml:space="preserve">
     <value>Det gick inte att spara ändringarna</value>
@@ -2786,6 +2813,9 @@ Möjliga dubletter: {3}  |  Med omslag: {4}</value>
   <data name="MoveLibrary_Source_Postgres" xml:space="preserve">
     <value>PostgreSQL — {0}</value>
   </data>
+  <data name="MoveLibrary_Source_MySql" xml:space="preserve">
+    <value>MySQL / MariaDB — {0}</value>
+  </data>
   <data name="MoveLibrary_TargetLabel" xml:space="preserve">
     <value>Flytta till:</value>
   </data>
@@ -2794,6 +2824,9 @@ Möjliga dubletter: {3}  |  Med omslag: {4}</value>
   </data>
   <data name="MoveLibrary_Target_Sqlite" xml:space="preserve">
     <value>Lokal SQLite-fil</value>
+  </data>
+  <data name="MoveLibrary_Target_MySql" xml:space="preserve">
+    <value>MySQL-/MariaDB-server</value>
   </data>
   <data name="MoveLibrary_Check" xml:space="preserve">
     <value>Kontrollera målet</value>
@@ -2883,7 +2916,7 @@ Möjliga dubletter: {3}  |  Med omslag: {4}</value>
     <value>Var ska återställas</value>
   </data>
   <data name="RestoreTarget_Body" xml:space="preserve">
-    <value>Den här säkerhetskopian skapades på PostgreSQL-servern {0}. Återställa data till den servern eller till din nuvarande databas?</value>
+    <value>Den här säkerhetskopian skapades på databasservern {0}. Återställa data till den servern eller till din nuvarande databas?</value>
   </data>
   <data name="RestoreTarget_Archived" xml:space="preserve">
     <value>Återställ till säkerhetskopians server</value>

@@ -4310,6 +4310,16 @@ namespace BookDB.Desktop.Localization
             get { return ResourceManager.GetString("Maintenance_SafetyBackupSaved", resourceCulture) ?? "Safety backup saved to: {0}"; }
         }
 
+        public static string Maintenance_TablesChecked
+        {
+            get { return ResourceManager.GetString("Maintenance_TablesChecked", resourceCulture) ?? "Tables checked: {0}"; }
+        }
+
+        public static string Maintenance_TablesOptimized
+        {
+            get { return ResourceManager.GetString("Maintenance_TablesOptimized", resourceCulture) ?? "Tables optimized: {0}"; }
+        }
+
         public static string Settings_Tab_Database
         {
             get { return ResourceManager.GetString("Settings_Tab_Database", resourceCulture) ?? "Database"; }
@@ -4328,6 +4338,11 @@ namespace BookDB.Desktop.Localization
         public static string Settings_Database_Backend_Postgres
         {
             get { return ResourceManager.GetString("Settings_Database_Backend_Postgres", resourceCulture) ?? "PostgreSQL server"; }
+        }
+
+        public static string Settings_Database_Backend_MySql
+        {
+            get { return ResourceManager.GetString("Settings_Database_Backend_MySql", resourceCulture) ?? "MySQL / MariaDB server"; }
         }
 
         public static string Settings_Database_ServerSectionHeader
@@ -4385,6 +4400,21 @@ namespace BookDB.Desktop.Localization
             get { return ResourceManager.GetString("Settings_Database_Tls_VerifyFull", resourceCulture) ?? "Verify full"; }
         }
 
+        public static string Settings_Database_Tls_None
+        {
+            get { return ResourceManager.GetString("Settings_Database_Tls_None", resourceCulture) ?? "None"; }
+        }
+
+        public static string Settings_Database_Tls_Preferred
+        {
+            get { return ResourceManager.GetString("Settings_Database_Tls_Preferred", resourceCulture) ?? "Preferred"; }
+        }
+
+        public static string Settings_Database_Tls_Required
+        {
+            get { return ResourceManager.GetString("Settings_Database_Tls_Required", resourceCulture) ?? "Required"; }
+        }
+
         public static string Settings_Database_TlsDisableWarning
         {
             get { return ResourceManager.GetString("Settings_Database_TlsDisableWarning", resourceCulture) ?? "Disabling TLS sends the password and data unencrypted across the network. Use it only on a trusted local network."; }
@@ -4392,7 +4422,7 @@ namespace BookDB.Desktop.Localization
 
         public static string Settings_Database_KeyringUnavailable
         {
-            get { return ResourceManager.GetString("Settings_Database_KeyringUnavailable", resourceCulture) ?? "PostgreSQL needs an operating-system credential store to keep the password safe, but none is available on this machine. BookDB will keep using the local SQLite database."; }
+            get { return ResourceManager.GetString("Settings_Database_KeyringUnavailable", resourceCulture) ?? "A server database needs an operating-system credential store to keep the password safe, but none is available on this machine. BookDB will keep using the local SQLite database."; }
         }
 
         public static string Settings_Database_RestartNote
@@ -4412,7 +4442,7 @@ namespace BookDB.Desktop.Localization
 
         public static string Startup_Failure_Intro
         {
-            get { return ResourceManager.GetString("Startup_Failure_Intro", resourceCulture) ?? "BookDB could not reach the PostgreSQL server."; }
+            get { return ResourceManager.GetString("Startup_Failure_Intro", resourceCulture) ?? "BookDB could not reach the database server."; }
         }
 
         public static string Startup_Failure_Retry
@@ -4520,6 +4550,16 @@ namespace BookDB.Desktop.Localization
             get { return ResourceManager.GetString("Settings_Database_TestSuccessUninitialized", resourceCulture) ?? "Connected — PostgreSQL {0}. No BookDB data found in this database yet."; }
         }
 
+        public static string Settings_Database_TestSuccess_MySql
+        {
+            get { return ResourceManager.GetString("Settings_Database_TestSuccess_MySql", resourceCulture) ?? "Connected — {0}, {1} books."; }
+        }
+
+        public static string Settings_Database_TestSuccessUninitialized_MySql
+        {
+            get { return ResourceManager.GetString("Settings_Database_TestSuccessUninitialized_MySql", resourceCulture) ?? "Connected — {0}. No BookDB data found in this database yet."; }
+        }
+
         public static string Settings_Database_TestError_Auth
         {
             get { return ResourceManager.GetString("Settings_Database_TestError_Auth", resourceCulture) ?? "Authentication failed — check the username and password."; }
@@ -4548,6 +4588,11 @@ namespace BookDB.Desktop.Localization
         public static string Settings_Database_TestError_UnsupportedVersion
         {
             get { return ResourceManager.GetString("Settings_Database_TestError_UnsupportedVersion", resourceCulture) ?? "BookDB requires PostgreSQL {0} or later — this server is {1}."; }
+        }
+
+        public static string Settings_Database_TestError_UnsupportedVersion_MySql
+        {
+            get { return ResourceManager.GetString("Settings_Database_TestError_UnsupportedVersion_MySql", resourceCulture) ?? "BookDB requires MySQL {0} or MariaDB {1} or later — this server is {2}."; }
         }
 
         public static string WriteFailure_Title
@@ -4620,6 +4665,11 @@ namespace BookDB.Desktop.Localization
             get { return ResourceManager.GetString("MoveLibrary_Source_Postgres", resourceCulture) ?? "PostgreSQL — {0}"; }
         }
 
+        public static string MoveLibrary_Source_MySql
+        {
+            get { return ResourceManager.GetString("MoveLibrary_Source_MySql", resourceCulture) ?? "MySQL / MariaDB — {0}"; }
+        }
+
         public static string MoveLibrary_TargetLabel
         {
             get { return ResourceManager.GetString("MoveLibrary_TargetLabel", resourceCulture) ?? "Move to:"; }
@@ -4633,6 +4683,11 @@ namespace BookDB.Desktop.Localization
         public static string MoveLibrary_Target_Sqlite
         {
             get { return ResourceManager.GetString("MoveLibrary_Target_Sqlite", resourceCulture) ?? "Local SQLite file"; }
+        }
+
+        public static string MoveLibrary_Target_MySql
+        {
+            get { return ResourceManager.GetString("MoveLibrary_Target_MySql", resourceCulture) ?? "MySQL / MariaDB server"; }
         }
 
         public static string MoveLibrary_Check
@@ -4782,7 +4837,7 @@ namespace BookDB.Desktop.Localization
 
         public static string RestoreTarget_Body
         {
-            get { return ResourceManager.GetString("RestoreTarget_Body", resourceCulture) ?? "This backup was created on the PostgreSQL server {0}. Restore the data into that server, or into your current database?"; }
+            get { return ResourceManager.GetString("RestoreTarget_Body", resourceCulture) ?? "This backup was created on the database server {0}. Restore the data into that server, or into your current database?"; }
         }
 
         public static string RestoreTarget_Archived

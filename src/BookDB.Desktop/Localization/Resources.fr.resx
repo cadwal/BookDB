@@ -2573,6 +2573,12 @@ Doublons potentiels : {3}  |  Avec couvertures : {4}</value>
   <data name="Maintenance_SafetyBackupSaved" xml:space="preserve">
     <value>Sauvegarde de sécurité enregistrée dans : {0}</value>
   </data>
+  <data name="Maintenance_TablesChecked" xml:space="preserve">
+    <value>Tables vérifiées : {0}</value>
+  </data>
+  <data name="Maintenance_TablesOptimized" xml:space="preserve">
+    <value>Tables optimisées : {0}</value>
+  </data>
   <data name="Settings_Tab_Database" xml:space="preserve">
     <value>Base de données</value>
   </data>
@@ -2584,6 +2590,9 @@ Doublons potentiels : {3}  |  Avec couvertures : {4}</value>
   </data>
   <data name="Settings_Database_Backend_Postgres" xml:space="preserve">
     <value>Serveur PostgreSQL</value>
+  </data>
+  <data name="Settings_Database_Backend_MySql" xml:space="preserve">
+    <value>Serveur MySQL / MariaDB</value>
   </data>
   <data name="Settings_Database_ServerSectionHeader" xml:space="preserve">
     <value>Connexion au serveur</value>
@@ -2618,11 +2627,20 @@ Doublons potentiels : {3}  |  Avec couvertures : {4}</value>
   <data name="Settings_Database_Tls_VerifyFull" xml:space="preserve">
     <value>Vérification complète</value>
   </data>
+  <data name="Settings_Database_Tls_None" xml:space="preserve">
+    <value>Aucun</value>
+  </data>
+  <data name="Settings_Database_Tls_Preferred" xml:space="preserve">
+    <value>Préférer</value>
+  </data>
+  <data name="Settings_Database_Tls_Required" xml:space="preserve">
+    <value>Exiger</value>
+  </data>
   <data name="Settings_Database_TlsDisableWarning" xml:space="preserve">
     <value>Désactiver TLS envoie le mot de passe et les données non chiffrés sur le réseau. À utiliser uniquement sur un réseau local de confiance.</value>
   </data>
   <data name="Settings_Database_KeyringUnavailable" xml:space="preserve">
-    <value>PostgreSQL nécessite un magasin d'identifiants du système d'exploitation pour conserver le mot de passe en sécurité, mais aucun n'est disponible sur cet ordinateur. BookDB continuera à utiliser la base de données locale SQLite.</value>
+    <value>Une base de données serveur nécessite un magasin d'identifiants du système d'exploitation pour conserver le mot de passe en sécurité, mais aucun n'est disponible sur cet ordinateur. BookDB continuera à utiliser la base de données locale SQLite.</value>
   </data>
   <data name="Settings_Database_RestartNote" xml:space="preserve">
     <value>Le changement de base de données prend effet après le redémarrage de BookDB.</value>
@@ -2634,7 +2652,7 @@ Doublons potentiels : {3}  |  Avec couvertures : {4}</value>
     <value>Impossible de se connecter à la base de données</value>
   </data>
   <data name="Startup_Failure_Intro" xml:space="preserve">
-    <value>BookDB n'a pas pu joindre le serveur PostgreSQL.</value>
+    <value>BookDB n'a pas pu joindre le serveur de base de données.</value>
   </data>
   <data name="Startup_Failure_Retry" xml:space="preserve">
     <value>Réessayer</value>
@@ -2699,6 +2717,12 @@ Doublons potentiels : {3}  |  Avec couvertures : {4}</value>
   <data name="Settings_Database_TestSuccessUninitialized" xml:space="preserve">
     <value>Connecté — PostgreSQL {0}. Aucune donnée BookDB trouvée dans cette base de données pour l'instant.</value>
   </data>
+  <data name="Settings_Database_TestSuccess_MySql" xml:space="preserve">
+    <value>Connecté — {0}, {1} livres.</value>
+  </data>
+  <data name="Settings_Database_TestSuccessUninitialized_MySql" xml:space="preserve">
+    <value>Connecté — {0}. Aucune donnée BookDB trouvée dans cette base de données pour l'instant.</value>
+  </data>
   <data name="Settings_Database_TestError_Auth" xml:space="preserve">
     <value>Échec de l'authentification — vérifiez le nom d'utilisateur et le mot de passe.</value>
   </data>
@@ -2716,6 +2740,9 @@ Doublons potentiels : {3}  |  Avec couvertures : {4}</value>
   </data>
   <data name="Settings_Database_TestError_UnsupportedVersion" xml:space="preserve">
     <value>BookDB nécessite PostgreSQL {0} ou une version ultérieure — ce serveur est en {1}.</value>
+  </data>
+  <data name="Settings_Database_TestError_UnsupportedVersion_MySql" xml:space="preserve">
+    <value>BookDB nécessite MySQL {0} ou MariaDB {1} ou une version ultérieure — ce serveur est en {2}.</value>
   </data>
   <data name="WriteFailure_Title" xml:space="preserve">
     <value>Impossible d'enregistrer les modifications</value>
@@ -2759,6 +2786,9 @@ Doublons potentiels : {3}  |  Avec couvertures : {4}</value>
   <data name="MoveLibrary_Source_Postgres" xml:space="preserve">
     <value>PostgreSQL — {0}</value>
   </data>
+  <data name="MoveLibrary_Source_MySql" xml:space="preserve">
+    <value>MySQL / MariaDB — {0}</value>
+  </data>
   <data name="MoveLibrary_TargetLabel" xml:space="preserve">
     <value>Déplacer vers :</value>
   </data>
@@ -2767,6 +2797,9 @@ Doublons potentiels : {3}  |  Avec couvertures : {4}</value>
   </data>
   <data name="MoveLibrary_Target_Sqlite" xml:space="preserve">
     <value>Fichier SQLite local</value>
+  </data>
+  <data name="MoveLibrary_Target_MySql" xml:space="preserve">
+    <value>Serveur MySQL / MariaDB</value>
   </data>
   <data name="MoveLibrary_Check" xml:space="preserve">
     <value>Vérifier la cible</value>
@@ -2856,7 +2889,7 @@ Doublons potentiels : {3}  |  Avec couvertures : {4}</value>
     <value>Où restaurer</value>
   </data>
   <data name="RestoreTarget_Body" xml:space="preserve">
-    <value>Cette sauvegarde a été créée sur le serveur PostgreSQL {0}. Restaurer les données dans ce serveur ou dans votre base de données actuelle ?</value>
+    <value>Cette sauvegarde a été créée sur le serveur de base de données {0}. Restaurer les données dans ce serveur ou dans votre base de données actuelle ?</value>
   </data>
   <data name="RestoreTarget_Archived" xml:space="preserve">
     <value>Restaurer dans le serveur de la sauvegarde</value>

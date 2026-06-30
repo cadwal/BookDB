@@ -17,7 +17,7 @@ public enum SettingsRestoreClass
 }
 
 /// <summary>
-/// Classifies a Settings-table key for restore (DESIGN D8 / R38). Preference rows are applied; machine-specific
+/// Classifies a Settings-table key for restore. Preference rows are applied; machine-specific
 /// rows (window geometry, column/splitter layout, local file paths) are skipped so a restore into a different
 /// machine context does not import the source machine's layout or paths. Every key the app writes must be listed;
 /// <c>RestoreSettingsClassifierTests</c> scans the source and fails the build on an unclassified key.

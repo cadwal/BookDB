@@ -2573,6 +2573,12 @@ Mogelijke duplicaten: {3}  |  Met omslag: {4}</value>
   <data name="Maintenance_SafetyBackupSaved" xml:space="preserve">
     <value>Back-up opgeslagen in: {0}</value>
   </data>
+  <data name="Maintenance_TablesChecked" xml:space="preserve">
+    <value>Gecontroleerde tabellen: {0}</value>
+  </data>
+  <data name="Maintenance_TablesOptimized" xml:space="preserve">
+    <value>Geoptimaliseerde tabellen: {0}</value>
+  </data>
   <data name="Settings_Tab_Database" xml:space="preserve">
     <value>Database</value>
   </data>
@@ -2584,6 +2590,9 @@ Mogelijke duplicaten: {3}  |  Met omslag: {4}</value>
   </data>
   <data name="Settings_Database_Backend_Postgres" xml:space="preserve">
     <value>PostgreSQL-server</value>
+  </data>
+  <data name="Settings_Database_Backend_MySql" xml:space="preserve">
+    <value>MySQL-/MariaDB-server</value>
   </data>
   <data name="Settings_Database_ServerSectionHeader" xml:space="preserve">
     <value>Serververbinding</value>
@@ -2618,11 +2627,20 @@ Mogelijke duplicaten: {3}  |  Met omslag: {4}</value>
   <data name="Settings_Database_Tls_VerifyFull" xml:space="preserve">
     <value>Volledig verifiëren</value>
   </data>
+  <data name="Settings_Database_Tls_None" xml:space="preserve">
+    <value>Geen</value>
+  </data>
+  <data name="Settings_Database_Tls_Preferred" xml:space="preserve">
+    <value>Voorkeur</value>
+  </data>
+  <data name="Settings_Database_Tls_Required" xml:space="preserve">
+    <value>Vereisen</value>
+  </data>
   <data name="Settings_Database_TlsDisableWarning" xml:space="preserve">
     <value>Als u TLS uitschakelt, worden het wachtwoord en de gegevens onversleuteld over het netwerk verzonden. Gebruik dit alleen op een vertrouwd lokaal netwerk.</value>
   </data>
   <data name="Settings_Database_KeyringUnavailable" xml:space="preserve">
-    <value>PostgreSQL heeft een referentieopslag van het besturingssysteem nodig om het wachtwoord veilig te bewaren, maar die is niet beschikbaar op deze computer. BookDB blijft de lokale SQLite-database gebruiken.</value>
+    <value>Een serverdatabase heeft een referentieopslag van het besturingssysteem nodig om het wachtwoord veilig te bewaren, maar die is niet beschikbaar op deze computer. BookDB blijft de lokale SQLite-database gebruiken.</value>
   </data>
   <data name="Settings_Database_RestartNote" xml:space="preserve">
     <value>Het wijzigen van de database wordt van kracht nadat BookDB opnieuw is gestart.</value>
@@ -2634,7 +2652,7 @@ Mogelijke duplicaten: {3}  |  Met omslag: {4}</value>
     <value>Kan geen verbinding met de database maken</value>
   </data>
   <data name="Startup_Failure_Intro" xml:space="preserve">
-    <value>BookDB kon de PostgreSQL-server niet bereiken.</value>
+    <value>BookDB kon de databaseserver niet bereiken.</value>
   </data>
   <data name="Startup_Failure_Retry" xml:space="preserve">
     <value>Opnieuw proberen</value>
@@ -2699,6 +2717,12 @@ Mogelijke duplicaten: {3}  |  Met omslag: {4}</value>
   <data name="Settings_Database_TestSuccessUninitialized" xml:space="preserve">
     <value>Verbonden — PostgreSQL {0}. Nog geen BookDB-gegevens gevonden in deze database.</value>
   </data>
+  <data name="Settings_Database_TestSuccess_MySql" xml:space="preserve">
+    <value>Verbonden — {0}, {1} boeken.</value>
+  </data>
+  <data name="Settings_Database_TestSuccessUninitialized_MySql" xml:space="preserve">
+    <value>Verbonden — {0}. Nog geen BookDB-gegevens gevonden in deze database.</value>
+  </data>
   <data name="Settings_Database_TestError_Auth" xml:space="preserve">
     <value>Verificatie mislukt — controleer de gebruikersnaam en het wachtwoord.</value>
   </data>
@@ -2716,6 +2740,9 @@ Mogelijke duplicaten: {3}  |  Met omslag: {4}</value>
   </data>
   <data name="Settings_Database_TestError_UnsupportedVersion" xml:space="preserve">
     <value>BookDB vereist PostgreSQL {0} of nieuwer — deze server is {1}.</value>
+  </data>
+  <data name="Settings_Database_TestError_UnsupportedVersion_MySql" xml:space="preserve">
+    <value>BookDB vereist MySQL {0} of MariaDB {1} of nieuwer — deze server is {2}.</value>
   </data>
   <data name="WriteFailure_Title" xml:space="preserve">
     <value>Kan wijzigingen niet opslaan</value>
@@ -2759,6 +2786,9 @@ Mogelijke duplicaten: {3}  |  Met omslag: {4}</value>
   <data name="MoveLibrary_Source_Postgres" xml:space="preserve">
     <value>PostgreSQL — {0}</value>
   </data>
+  <data name="MoveLibrary_Source_MySql" xml:space="preserve">
+    <value>MySQL / MariaDB — {0}</value>
+  </data>
   <data name="MoveLibrary_TargetLabel" xml:space="preserve">
     <value>Verplaatsen naar:</value>
   </data>
@@ -2767,6 +2797,9 @@ Mogelijke duplicaten: {3}  |  Met omslag: {4}</value>
   </data>
   <data name="MoveLibrary_Target_Sqlite" xml:space="preserve">
     <value>Lokaal SQLite-bestand</value>
+  </data>
+  <data name="MoveLibrary_Target_MySql" xml:space="preserve">
+    <value>MySQL-/MariaDB-server</value>
   </data>
   <data name="MoveLibrary_Check" xml:space="preserve">
     <value>Doel controleren</value>
@@ -2856,7 +2889,7 @@ Mogelijke duplicaten: {3}  |  Met omslag: {4}</value>
     <value>Waar herstellen</value>
   </data>
   <data name="RestoreTarget_Body" xml:space="preserve">
-    <value>Deze back-up is gemaakt op de PostgreSQL-server {0}. De gegevens herstellen naar die server of naar uw huidige database?</value>
+    <value>Deze back-up is gemaakt op de databaseserver {0}. De gegevens herstellen naar die server of naar uw huidige database?</value>
   </data>
   <data name="RestoreTarget_Archived" xml:space="preserve">
     <value>Herstellen naar de server van de back-up</value>

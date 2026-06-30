@@ -108,6 +108,33 @@ public sealed class LibraryMigrationServiceTests : IDisposable
         await db.SaveChangesAsync(ct);
     }
 
+    // Seeds many books, each with a distinct-byte cover image, so a migration crosses the non-image table batch
+    // (CopyBatchSize, 100) and the image batch (ImageBatchSize, 50) several times.
+    private async Task SeedManyBooksWithImagesAsync(int count)
+    {
+        var ct = TestContext.Current.CancellationToken;
+        await using var db = _source.CreateDbContext();
+        var imageTypeId = await db.BookImageTypes.Select(t => t.BookImageTypeId).FirstAsync(ct);
+
+        var books = new Book[count];
+        for (var i = 0; i < count; i++)
+            books[i] = new Book { Title = $"Book {i}", Added = BookAdded, Updated = BookAdded };
+        db.Books.AddRange(books);
+        await db.SaveChangesAsync(ct);
+
+        for (var i = 0; i < count; i++)
+            db.BookImages.Add(new BookImage
+            {
+                BookId = books[i].BookId,
+                ImageData = [(byte)i, (byte)(i >> 8), 0x4E, 0x47, (byte)i], // distinct per image, to catch a swap
+                MimeType = "image/png",
+                BookImageTypeId = imageTypeId,
+                IsPrimary = true,
+                Added = BookAdded,
+            });
+        await db.SaveChangesAsync(ct);
+    }
+
     private async Task<MigrationResult> MigrateAsync()
     {
         var service = new LibraryMigrationService();
@@ -131,6 +158,30 @@ public sealed class LibraryMigrationServiceTests : IDisposable
         Assert.Equal(1, await db.BookImages.CountAsync(TestContext.Current.CancellationToken));
         Assert.Equal(1, await db.Loans.CountAsync(TestContext.Current.CancellationToken));
         Assert.Equal(1, await db.BookContributors.CountAsync(TestContext.Current.CancellationToken));
+    }
+
+    [Fact]
+    public async Task Migrate_LargeCatalog_RoundTripsEveryRowAndImage_AcrossBatches()
+    {
+        const int count = 120; // > CopyBatchSize (100) for Book and > ImageBatchSize (50) for BookImage
+        await SeedManyBooksWithImagesAsync(count);
+
+        var result = await MigrateAsync();
+
+        Assert.True(result.Outcome == MigrationOutcome.Completed, $"failed at {result.FailedTable}: {result.ErrorMessage}");
+        Assert.True(result.AllCountsMatch);
+
+        var ct = TestContext.Current.CancellationToken;
+        await using var src = _source.CreateDbContext();
+        await using var tgt = _target.CreateDbContext();
+        Assert.Equal(count, await tgt.Books.CountAsync(ct));
+
+        var sourceImages = await src.BookImages.AsNoTracking().ToDictionaryAsync(i => i.BookImageId, i => i.ImageData, ct);
+        var targetImages = await tgt.BookImages.AsNoTracking().ToDictionaryAsync(i => i.BookImageId, i => i.ImageData, ct);
+        // Every row and image copied across the batches, none dropped, duplicated, or swapped at a batch boundary.
+        Assert.Equal(count, targetImages.Count);
+        foreach (var (id, bytes) in sourceImages)
+            Assert.Equal(bytes, targetImages[id]);
     }
 
     [Fact]

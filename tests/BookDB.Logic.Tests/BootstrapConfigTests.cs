@@ -28,6 +28,14 @@ public class BootstrapConfigTests
                     Username = "ulf",
                     SslMode = "VerifyFull",
                 },
+                MySql = new MySqlOptions
+                {
+                    Host = "maria.example.lan",
+                    Port = 3307,
+                    Database = "library",
+                    Username = "ulf",
+                    SslMode = "Required",
+                },
                 Language = "sv",
                 UiTheme = "Dark",
                 LogLevel = "Verbose",
@@ -44,6 +52,11 @@ public class BootstrapConfigTests
             Assert.Equal("books", loaded.Postgres.Database);
             Assert.Equal("ulf", loaded.Postgres.Username);
             Assert.Equal("VerifyFull", loaded.Postgres.SslMode);
+            Assert.Equal("maria.example.lan", loaded.MySql.Host);
+            Assert.Equal(3307, loaded.MySql.Port);
+            Assert.Equal("library", loaded.MySql.Database);
+            Assert.Equal("ulf", loaded.MySql.Username);
+            Assert.Equal("Required", loaded.MySql.SslMode);
             Assert.Equal("sv", loaded.Language);
             Assert.Equal("Dark", loaded.UiTheme);
             Assert.Equal("Verbose", loaded.LogLevel);
@@ -125,8 +138,38 @@ public class BootstrapConfigTests
             Assert.NotNull(loaded);
             Assert.Equal(2, loaded!.Version);
             Assert.Equal("MySql", loaded.Backend);
+            Assert.Equal("maria.lan", loaded.MySql.Host);
+            Assert.Equal(3306, loaded.MySql.Port);
             Assert.Equal("pg.lan", loaded.Postgres.Host);
             Assert.Equal(5444, loaded.Postgres.Port);
+        }
+        finally
+        {
+            File.Delete(path);
+        }
+    }
+
+    [Fact]
+    public void Load_ConfigWithoutMySqlBlock_GetsDefaultsWithoutThrowing()
+    {
+        string path = NewTempPath();
+        try
+        {
+            File.WriteAllText(path, """
+                {
+                  "version": 1,
+                  "backend": "Sqlite",
+                  "postgres": { "host": "pg.lan", "port": 5444 }
+                }
+                """);
+
+            BootstrapConfig? loaded = BootstrapConfig.Load(path);
+
+            Assert.NotNull(loaded);
+            Assert.NotNull(loaded!.MySql);
+            Assert.Equal(3306, loaded.MySql.Port);
+            Assert.Equal("bookdb", loaded.MySql.Database);
+            Assert.Equal("Preferred", loaded.MySql.SslMode);
         }
         finally
         {

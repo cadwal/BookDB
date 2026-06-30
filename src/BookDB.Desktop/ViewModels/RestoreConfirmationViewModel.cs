@@ -9,7 +9,7 @@ namespace BookDB.Desktop.ViewModels;
 
 /// <summary>
 /// After a CSV restore, applies the archive's preference keys (language/theme/log level) and lets the user decide
-/// whether to also adopt the archive's backend + connection settings (R38: never auto-applied). Either choice
+/// whether to also adopt the archive's backend + connection settings (never auto-applied). Either choice
 /// restarts so the restored database — and any applied config — takes effect. The preference keys are applied on
 /// both paths; only the backend/connection requires explicit confirmation.
 /// </summary>
@@ -30,15 +30,19 @@ public sealed partial class RestoreConfirmationViewModel : ObservableObject
         var archivedBackend = ParseBackend(archived.Backend);
         HasBackendChange =
             archivedBackend != ParseBackend(current.Backend)
-            || (archivedBackend == DatabaseBackend.PostgreSql && archived.Postgres.AccountKey != current.Postgres.AccountKey);
+            || (archivedBackend == DatabaseBackend.PostgreSql && archived.Postgres.AccountKey != current.Postgres.AccountKey)
+            || (archivedBackend == DatabaseBackend.MySql && archived.MySql.AccountKey != current.MySql.AccountKey);
     }
 
     /// <summary>True when the archive's backend or connection differs from the live config, so the choice matters.</summary>
     public bool HasBackendChange { get; }
 
-    public string ArchivedBackendName => ParseBackend(_archived.Backend) == DatabaseBackend.PostgreSql
-        ? Resources.Settings_Database_Backend_Postgres
-        : Resources.Settings_Database_Backend_Sqlite;
+    public string ArchivedBackendName => ParseBackend(_archived.Backend) switch
+    {
+        DatabaseBackend.PostgreSql => Resources.Settings_Database_Backend_Postgres,
+        DatabaseBackend.MySql => Resources.Settings_Database_Backend_MySql,
+        _ => Resources.Settings_Database_Backend_Sqlite,
+    };
 
     public Action? CloseDialog { get; set; }
 
@@ -50,7 +54,12 @@ public sealed partial class RestoreConfirmationViewModel : ObservableObject
         {
             ApplyPreferences(c);
             c.Backend = _archived.Backend;
-            c.Postgres = _archived.Postgres;
+            // Adopt only the connection block matching the archive's backend; leave the others as configured.
+            switch (ParseBackend(_archived.Backend))
+            {
+                case DatabaseBackend.PostgreSql: c.Postgres = _archived.Postgres; break;
+                case DatabaseBackend.MySql: c.MySql = _archived.MySql; break;
+            }
         });
         CloseDialog?.Invoke();
         _restartService.Restart();

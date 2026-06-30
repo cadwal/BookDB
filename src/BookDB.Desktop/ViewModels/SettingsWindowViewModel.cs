@@ -13,7 +13,6 @@ using BookDB.Desktop.Localization;
 using BookDB.Desktop.Services;
 using BookDB.Desktop.Theming;
 using BookDB.Logic.Services;
-using BookDB.Models;
 using BookDB.Models.Entities;
 using BookDB.Models.Interfaces;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -57,9 +56,10 @@ public sealed partial class SettingsWindowViewModel : ObservableObject
         IBootstrapConfigService bootstrapConfig,
         SecretStoreAvailability secretStoreAvailability,
         IPostgresConnectionProber connectionProber,
+        IMySqlConnectionProber mySqlConnectionProber,
         ISecretStore secretStore,
         IApplicationRestartService restartService,
-        AppSettings appSettings,
+        IBackupStrategy backupStrategy,
         IMessenger messenger)
     {
         _settingsService = settingsService;
@@ -73,11 +73,11 @@ public sealed partial class SettingsWindowViewModel : ObservableObject
         ImportTab   = new SettingsImportTabViewModel(settingsService, filePickerService);
         AdvancedTab = new SettingsAdvancedTabViewModel(
             settingsService, filePickerService, bootstrapConfig,
-            supportsFileBackup: appSettings.Backend == DatabaseBackend.Sqlite);
+            supportsFileBackup: backupStrategy.SupportsFileBackup);
         ApplicationAccessTab = new SettingsApplicationAccessTabViewModel(shortcutService);
         AppearanceTab = new SettingsAppearanceTabViewModel(bootstrapConfig);
         DatabaseTab = new DatabaseSettingsViewModel(
-            bootstrapConfig, secretStoreAvailability, connectionProber, secretStore);
+            bootstrapConfig, secretStoreAvailability, connectionProber, mySqlConnectionProber, secretStore);
     }
 
     public async Task InitializeAsync(CancellationToken ct = default)

@@ -16,6 +16,7 @@ namespace BookDB.Desktop.Tests.ViewModels;
 public sealed class MoveLibraryViewModelTests
 {
     private readonly IPostgresConnectionProber _prober = Substitute.For<IPostgresConnectionProber>();
+    private readonly IMySqlConnectionProber _mySqlProber = Substitute.For<IMySqlConnectionProber>();
     private readonly IMigrationTargetBuilder _targetBuilder = Substitute.For<IMigrationTargetBuilder>();
     private readonly ILibraryMigrationService _migrationService = Substitute.For<ILibraryMigrationService>();
     private readonly IBackupService _backupService = Substitute.For<IBackupService>();
@@ -38,7 +39,7 @@ public sealed class MoveLibraryViewModelTests
             .Returns(target);
 
         return new MoveLibraryViewModel(
-            Substitute.For<IDbContextFactory<BookDbContext>>(), settings, _bootstrapConfig, _prober,
+            Substitute.For<IDbContextFactory<BookDbContext>>(), settings, _bootstrapConfig, _prober, _mySqlProber,
             _targetBuilder, _migrationService, _backupService, _filePicker, _secretStore, _restartService);
     }
 
@@ -60,6 +61,40 @@ public sealed class MoveLibraryViewModelTests
         Assert.True(vm.TargetIsPostgres);
         Assert.False(vm.TargetIsSqlite);
         Assert.Contains("library.db", vm.SourceDescription);
+    }
+
+    [Fact]
+    public void SelectingMySqlTarget_DeselectsOtherTargets()
+    {
+        var vm = Create(); // SQLite source → default Postgres target
+
+        vm.TargetIsMySql = true;
+
+        Assert.True(vm.TargetIsMySql);
+        Assert.False(vm.TargetIsPostgres);
+        Assert.False(vm.TargetIsSqlite);
+        Assert.True(vm.IsServerTarget);
+    }
+
+    [Fact]
+    public async Task IncompleteMySqlTarget_IsGatedFromMoving_UntilPasswordEntered()
+    {
+        var vm = Create();
+        vm.TargetIsMySql = true;
+        vm.Host = "maria.example.com";
+        vm.Username = "bookdb";
+        // password left blank — an incomplete server target must not be movable
+        _mySqlProber.ProbeAsync(Arg.Any<MySqlOptions>(), Arg.Any<string?>(), Arg.Any<CancellationToken>())
+            .Returns(ConnectionProbeResult.Succeeded("MySQL 8.0.3", null));
+
+        await vm.CheckTargetCommand.ExecuteAsync(null);
+
+        Assert.True(vm.TargetChecked); // proves the MySQL prober was dispatched, not the Postgres one
+        Assert.True(vm.TargetIsEmpty);
+        Assert.False(vm.MoveCommand.CanExecute(null)); // gated: password missing
+
+        vm.Password = "secret";
+        Assert.True(vm.MoveCommand.CanExecute(null));
     }
 
     [Fact]

@@ -13,14 +13,9 @@ namespace BookDB.Data.PostgreSQL;
 /// </summary>
 public sealed class PostgresLookupNameMatcher : ILookupNameMatcher
 {
-    private const string EscapeChar = "\\";
-
     public Expression<Func<T, bool>> NameEquals<T>(string value) where T : class, INamedLookup
     {
-        var pattern = Escape(value);
-        return e => EF.Functions.ILike(e.Name, pattern, EscapeChar);
+        var pattern = LikeEscaping.Escape(value);
+        return e => EF.Functions.ILike(e.Name, pattern, LikeEscaping.EscapeChar);
     }
-
-    private static string Escape(string value) =>
-        value.Replace(EscapeChar, EscapeChar + EscapeChar).Replace("%", EscapeChar + "%").Replace("_", EscapeChar + "_");
 }

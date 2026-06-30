@@ -20,11 +20,6 @@ namespace BookDB.Data.PostgreSQL;
 /// </summary>
 public sealed class PostgresMaintenanceProvider : IMaintenanceProvider
 {
-    // Representative entity tables: querying these confirms the schema is connected and readable. Quoted to
-    // match the PascalCase names the DDL created.
-    private static readonly string[] CoreTables =
-        ["Book", "BookImage", "BookContributor", "Person", "Publisher", "Borrower", "Loan"];
-
     private readonly IDbContextFactory<BookDbContext> _factory;
 
     public PostgresMaintenanceProvider(IDbContextFactory<BookDbContext> factory)
@@ -45,17 +40,22 @@ public sealed class PostgresMaintenanceProvider : IMaintenanceProvider
             progress?.Report(MaintenanceStep.CheckingIntegrity);
 
             messages.Add(await ScalarStringAsync(connection, "SELECT version()", ct));
-            foreach (var table in CoreTables)
+
+            // Verify every base table is connected and readable (a count(*) per table) — the same set VACUUM
+            // covers, so the check and the optimize pass report the same tables (not a hardcoded subset).
+            var tables = await ReadBaseTableNamesAsync(connection, ct);
+            foreach (var table in tables)
             {
                 var count = await ScalarLongAsync(connection, $"SELECT count(*) FROM \"{table}\"", ct);
                 messages.Add($"{table}: {count} rows");
             }
 
             Log.Information(
-                "PostgresMaintenanceProvider: sanity check ok ({TableCount} core tables queried)", CoreTables.Length);
+                "PostgresMaintenanceProvider: sanity check ok ({TableCount} tables queried)", tables.Count);
 
             // No PRAGMA foreign_key_check equivalent — the FK list stays empty; Postgres enforces FKs continuously.
-            return new MaintenanceCheckResult(MaintenanceCheckStatus.Ok, messages, Array.Empty<string>());
+            return new MaintenanceCheckResult(MaintenanceCheckStatus.Ok, messages, Array.Empty<string>())
+                { TablesChecked = tables };
         }
         catch (Exception ex)
         {
@@ -77,6 +77,9 @@ public sealed class PostgresMaintenanceProvider : IMaintenanceProvider
 
             sizeBefore = await ScalarLongAsync(connection, "SELECT pg_database_size(current_database())", ct);
 
+            // VACUUM (ANALYZE) covers every table in the schema; list them so the UI can report what was optimized.
+            var tables = await ReadBaseTableNamesAsync(connection, ct);
+
             // VACUUM cannot run inside a transaction block; the raw command on the open connection runs in
             // autocommit. ANALYZE refreshes planner statistics in the same pass.
             progress?.Report(MaintenanceStep.Vacuum);
@@ -84,16 +87,30 @@ public sealed class PostgresMaintenanceProvider : IMaintenanceProvider
 
             sizeAfter = await ScalarLongAsync(connection, "SELECT pg_database_size(current_database())", ct);
             Log.Information(
-                "PostgresMaintenanceProvider: VACUUM (ANALYZE) complete — {Before} -> {After} bytes",
-                sizeBefore, sizeAfter);
+                "PostgresMaintenanceProvider: VACUUM (ANALYZE) complete — {Before} -> {After} bytes ({Tables} tables)",
+                sizeBefore, sizeAfter, tables.Count);
 
-            return new MaintenanceRepairResult(true, null, sizeBefore, sizeAfter, null);
+            return new MaintenanceRepairResult(true, null, sizeBefore, sizeAfter, null) { TablesOptimized = tables };
         }
         catch (Exception ex)
         {
             Log.Error(ex, "PostgresMaintenanceProvider: OptimizeAndRepairAsync failed");
             return new MaintenanceRepairResult(false, null, sizeBefore, sizeAfter, ex.Message);
         }
+    }
+
+    // Base tables in the active schema (excludes views), so the optimized-table list matches what VACUUM covered.
+    private static async Task<List<string>> ReadBaseTableNamesAsync(DbConnection connection, CancellationToken ct)
+    {
+        await using var cmd = connection.CreateCommand();
+        cmd.CommandText =
+            "SELECT table_name FROM information_schema.tables " +
+            "WHERE table_schema = current_schema() AND table_type = 'BASE TABLE' ORDER BY table_name";
+        var names = new List<string>();
+        await using var reader = await cmd.ExecuteReaderAsync(ct);
+        while (await reader.ReadAsync(ct))
+            names.Add(reader.GetString(0));
+        return names;
     }
 
     private static async Task<long> ScalarLongAsync(DbConnection connection, string sql, CancellationToken ct)

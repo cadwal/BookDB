@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/semver-spec
 
 ## [Unreleased]
 
+## [2.1.0] - 2026-06-30
+
+### Added
+- MySQL and MariaDB database support: BookDB can now keep your library on a MySQL or MariaDB server, alongside the existing PostgreSQL server and local SQLite options. **MySQL 8.0 or later** / **MariaDB 10.6 or later** are required (the schema relies on InnoDB full-text search, `utf8mb4`, and microsecond `datetime`); Test connection reports a clear message and refuses to proceed against an older server.
+- Maintenance (Tools → Maintenance) now reports how many tables — and which — each integrity check and optimize pass covered, on every backend.
+- Settings → Database now offers MySQL / MariaDB as a third backend, using the same connection editor (host, port, database, user, password, TLS mode) and Test connection that reports the server version and book count. As with PostgreSQL, the password is kept in your operating system's secret store; on a system without one, the server backends are disabled and SQLite remains available.
+- Move library (Tools → Maintenance): copy your entire catalog to or from a MySQL/MariaDB server in any direction, choosing the target backend explicitly. It takes the same safety backups (source and, if it already holds data, target), checks the target before writing, shows per-table progress, verifies every row count matches, and can switch the active database to the target when it finishes.
+- Restore from a CSV archive can restore directly into a MySQL/MariaDB server named by the backup, and the restore-confirmation dialog correctly recognises and names a MySQL/MariaDB archive and detects when its connection differs from the live one.
+- The Maintenance tools and multi-client detection work against MySQL/MariaDB the same way they do against PostgreSQL — a server-side sanity check and statistics refresh, and the "another client is connected" warning — since both ride engine-neutral seams.
+
+### Changed
+- The note shown when no OS credential store is available now refers to a server database generally, rather than PostgreSQL specifically, because every server backend requires it.
+
+### Fixed
+- Clear filter (above the facets) no longer hides every book. It had started an empty advanced search — matching nothing — instead of clearing the filters; it now clears them and shows the full list again.
+- Importing from a Readerware backup now untangles messy author fields: a single field holding several authors — a bracketed or comma/"och"-separated list — is split into separate authors, and stray brackets, "by"/"av" prefixes, and "role:" labels are cleaned off.
+
 ## [2.0.0] - 2026-06-26
 
 ### Added
@@ -66,7 +83,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/semver-spec
 - Multi-language UI: EN, SV, DE, ES, FR, NL, IT, PT-BR, PT-PT
 - Help system with per-screen contextual help
 
-[Unreleased]: https://github.com/cadwal/BookDB/compare/v2.0.0...HEAD
+[Unreleased]: https://github.com/cadwal/BookDB/compare/v2.1.0...HEAD
+[2.1.0]: https://github.com/cadwal/BookDB/releases/tag/v2.1.0
 [1.1.0]: https://github.com/cadwal/BookDB/releases/tag/v1.1.0
 [1.0.0]: https://github.com/cadwal/BookDB/releases/tag/v1.0.0
 [1.2.0]: https://github.com/cadwal/BookDB/releases/tag/v1.2.0

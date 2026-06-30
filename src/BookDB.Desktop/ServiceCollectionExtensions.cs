@@ -1,6 +1,7 @@
 using System;
 using BookDB.Data;
 using BookDB.Data.Interfaces;
+using BookDB.Data.MySql;
 using BookDB.Data.PostgreSQL;
 using BookDB.Data.Sqlite;
 using BookDB.Security;
@@ -30,14 +31,18 @@ public static class ServiceCollectionExtensions
             case DatabaseBackend.PostgreSql:
                 services.AddPostgresProvider(appSettings.ConnectionString);
                 break;
+            case DatabaseBackend.MySql:
+                services.AddMySqlProvider(appSettings.ConnectionString);
+                break;
             default:
                 throw new NotSupportedException(
                     $"Database backend '{appSettings.Backend}' is not supported yet.");
         }
 
         services.AddSecretStore();
-        // Backend-independent: a user on SQLite must be able to test a PostgreSQL server before switching.
+        // Backend-independent: a user on one backend must be able to test a remote server before switching to it.
         services.AddSingleton<IPostgresConnectionProber, PostgresConnectionProber>();
+        services.AddSingleton<IMySqlConnectionProber, MySqlConnectionProber>();
         services.AddBookDbData();
         return services;
     }

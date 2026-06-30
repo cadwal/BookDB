@@ -52,7 +52,7 @@ public sealed class ConnectionHealthMonitor : IConnectionHealthMonitor, IDisposa
         _probe = probe;
         _clock = clock;
         _autoProbe = autoProbe;
-        IsEnabled = appSettings.Backend == DatabaseBackend.PostgreSql;
+        IsEnabled = appSettings.Backend.IsRemote();
     }
 
     public bool IsEnabled { get; }

@@ -93,7 +93,13 @@ public sealed class ImportService : IImportService
     private static string? GetFirstContributorDisplay(ParsedBook book)
     {
         var author = book.ResolvedContributors.FirstOrDefault(c => c.Role == "Author");
-        return author.DisplayName;
+        if (string.IsNullOrWhiteSpace(author.DisplayName))
+            return author.DisplayName;
+
+        // Preview the same cleaned first author the import will create — unwrap a serialized "[A, B, C]" list and
+        // strip any "(role)" suffix via the shared helper, so the preview never shows the raw bracketed blob.
+        var first = PersonNameHelper.SplitSquished(author.DisplayName).FirstOrDefault();
+        return first is null ? author.DisplayName : PersonNameHelper.ParseDisplayNameAndRoleHint(first).DisplayName;
     }
 
     /// <summary>

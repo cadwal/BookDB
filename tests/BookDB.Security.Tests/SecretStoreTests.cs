@@ -32,6 +32,34 @@ public sealed class SecretStoreTests
     }
 
     [Fact]
+    public void CredentialManagerSecretStore_StoresAccountWithoutASlash()
+    {
+        // The OS backend folds the account into the service URL, so a '/' in the account (our keys are
+        // "user@host:port/database") turns into a URL path segment and the Set/Get targets diverge — the
+        // secret is written but never read back. The token handed to the library must be flat.
+        var fake = new FakeCredentialStore();
+        var store = new CredentialManagerSecretStore(fake);
+
+        store.Set("user@host:3306/db", "hunter2");
+
+        var storedAccount = Assert.Single(fake.GetAccounts(fake.LastService!));
+        Assert.DoesNotContain('/', storedAccount);
+        Assert.Equal("hunter2", store.Get("user@host:3306/db"));
+    }
+
+    [Fact]
+    public void CredentialManagerSecretStore_Get_FallsBackToRawAccount_ForPreEncodingCredentials()
+    {
+        // A password saved by a build from before the encoding fix sits under the raw account; reading must
+        // still find it so existing users are not forced to re-enter the password.
+        var fake = new FakeCredentialStore();
+        fake.AddOrUpdate("https://bookdb.local", "user@host:5432/db", "legacy");
+        var store = new CredentialManagerSecretStore(fake);
+
+        Assert.Equal("legacy", store.Get("user@host:5432/db"));
+    }
+
+    [Fact]
     public void CredentialManagerSecretStore_Get_ReturnsNull_ForUnknownAccount()
     {
         var store = new CredentialManagerSecretStore(new FakeCredentialStore());

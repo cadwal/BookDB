@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using BookDB.Data;
 using BookDB.Data.DbContexts;
 using BookDB.Data.Interfaces;
+using BookDB.Data.MySql;
 using BookDB.Data.PostgreSQL;
 using BookDB.Data.Sqlite;
 using BookDB.Logic.Services;
@@ -90,6 +91,9 @@ public sealed class MigrationTargetBuilder : IMigrationTargetBuilder
             case DatabaseBackend.PostgreSql:
                 services.AddPostgresProvider(connectionString);
                 break;
+            case DatabaseBackend.MySql:
+                services.AddMySqlProvider(connectionString);
+                break;
             default:
                 throw new NotSupportedException($"Backend '{backend}' cannot be a migration target.");
         }
@@ -97,9 +101,12 @@ public sealed class MigrationTargetBuilder : IMigrationTargetBuilder
         var provider = services.BuildServiceProvider();
 
         // Create the schema on an empty target (idempotent — DbUp's journal skips applied scripts).
-        var runner = backend == DatabaseBackend.PostgreSql
-            ? (IDbUpRunner)new PostgresDbUpRunner(connectionString, NullLogger<DatabaseStartupService>.Instance)
-            : new SqliteDbUpRunner(connectionString, NullLogger<DatabaseStartupService>.Instance);
+        IDbUpRunner runner = backend switch
+        {
+            DatabaseBackend.PostgreSql => new PostgresDbUpRunner(connectionString, NullLogger<DatabaseStartupService>.Instance),
+            DatabaseBackend.MySql => new MySqlDbUpRunner(connectionString, NullLogger<DatabaseStartupService>.Instance),
+            _ => new SqliteDbUpRunner(connectionString, NullLogger<DatabaseStartupService>.Instance),
+        };
         await runner.RunAsync(new Progress<(int, int)>(), ct);
 
         return new MigrationTarget(provider);

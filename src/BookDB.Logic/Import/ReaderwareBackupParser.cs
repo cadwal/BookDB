@@ -284,7 +284,9 @@ public sealed class ReaderwareBackupParser : IBackupParser
             list.Add(fk);
         }
 
-        // Resolve contributor names from the CONTRIBUTOR file
+        // Resolve contributor names from the CONTRIBUTOR file. Messy multi-author names (a serialized
+        // "[A, B, C]" list catalogued into one field, "A / B", "A and B", …) are split downstream by
+        // PersonNameHelper, which every import path shares — see ImportService.
         foreach (var (role, contribKeys) in book.ContributorsByRole)
         {
             foreach (var key in contribKeys)

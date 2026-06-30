@@ -21,6 +21,7 @@ public sealed class BootstrapConfig
     public int Version { get; set; } = 1;
     public string Backend { get; set; } = "Sqlite";
     public PostgresOptions Postgres { get; set; } = new();
+    public MySqlOptions MySql { get; set; } = new();
     public string? Language { get; set; }
     public string? UiTheme { get; set; }
     public string? LogLevel { get; set; }

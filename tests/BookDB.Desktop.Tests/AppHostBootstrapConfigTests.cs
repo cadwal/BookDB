@@ -113,7 +113,8 @@ public sealed class AppHostBootstrapConfigTests
     [InlineData("Sqlite", DatabaseBackend.Sqlite)]
     [InlineData("PostgreSql", DatabaseBackend.PostgreSql)]
     [InlineData("postgresql", DatabaseBackend.PostgreSql)]
-    [InlineData("MySql", DatabaseBackend.Sqlite)]   // unknown/unsupported on this build → Sqlite
+    [InlineData("MySql", DatabaseBackend.MySql)]
+    [InlineData("Oracle", DatabaseBackend.Sqlite)]   // unknown value → Sqlite fallback
     [InlineData(null, DatabaseBackend.Sqlite)]
     public void ParseBackend_MapsKnownValuesAndFallsBackForUnknown(string? backend, DatabaseBackend expected)
         => Assert.Equal(expected, AppHost.ParseBackend(backend));

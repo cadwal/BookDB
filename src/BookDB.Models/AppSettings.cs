@@ -5,6 +5,7 @@ public enum DatabaseBackend
 {
     Sqlite,
     PostgreSql,
+    MySql,
 }
 
 public sealed class AppSettings

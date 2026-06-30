@@ -1,3 +1,4 @@
+using System;
 using BookDB.Data.Interfaces;
 using GitCredentialManager;
 
@@ -22,9 +23,21 @@ public sealed class CredentialManagerSecretStore : ISecretStore
         _store = store;
     }
 
-    public string? Get(string account) => _store.Get(ServiceName, account)?.Password;
+    // The credential library folds the account into the service URL when it builds the OS credential target, so
+    // any '/' in the account (our keys are "user@host:port/database") becomes a URL path segment and Set and Get
+    // end up computing different targets — the secret is written but can never be read back. Percent-encode the
+    // account into a flat, URL-safe token, applied identically on every call. Read also falls back to the raw
+    // account so credentials stored before this fix (e.g. an existing PostgreSQL password) keep working.
+    private static string Encode(string account) => Uri.EscapeDataString(account);
 
-    public void Set(string account, string secret) => _store.AddOrUpdate(ServiceName, account, secret);
+    public string? Get(string account) =>
+        (_store.Get(ServiceName, Encode(account)) ?? _store.Get(ServiceName, account))?.Password;
 
-    public void Delete(string account) => _store.Remove(ServiceName, account);
+    public void Set(string account, string secret) => _store.AddOrUpdate(ServiceName, Encode(account), secret);
+
+    public void Delete(string account)
+    {
+        _store.Remove(ServiceName, Encode(account));
+        _store.Remove(ServiceName, account); // also clear any pre-fix entry stored under the raw account
+    }
 }
