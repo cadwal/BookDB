@@ -120,13 +120,15 @@
               ColumnDefinitions="*,Auto,Auto"
               Margin="0,0,0,12"
               IsVisible="{Binding ShowDeleteConfirmRow}">
+            <!-- Bound to the null-safe display name: renaming/deleting replaces the ComboBox's selected item,
+                 which transiently nulls SelectedPreset, so a SelectedPreset.Name path would raise binding errors. -->
             <TextBlock Grid.Column="0"
                        FontSize="13"
                        Foreground="{StaticResource BrushTextPrimary}"
                        VerticalAlignment="Center">
                 <TextBlock.Text>
                     <MultiBinding StringFormat="{x:Static res:Resources.Print_DeletePresetConfirm}">
-                        <Binding Path="SelectedPreset.Name"/>
+                        <Binding Path="SelectedPresetDisplayName"/>
                     </MultiBinding>
                 </TextBlock.Text>
             </TextBlock>

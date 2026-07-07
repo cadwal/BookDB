@@ -416,7 +416,7 @@
     <value>Den här boken saknar ISBN. Ange ett för att söka upp metadata.</value>
   </data>
   <data name="EditForm_RecatalogButton" xml:space="preserve">
-    <value>Omkatalogsera</value>
+    <value>Omkatalogisera</value>
   </data>
   <data name="CoverPopup_SourceOnly" xml:space="preserve">
     <value>{0}</value>
@@ -767,10 +767,10 @@
     <value>Skriv ut lista...</value>
   </data>
   <data name="Menu_RecatalogAll" xml:space="preserve">
-    <value>Omkatalogsera _alla</value>
+    <value>Omkatalogisera _alla</value>
   </data>
   <data name="Menu_RecatalogSelected" xml:space="preserve">
-    <value>Omkatalogsera _valda</value>
+    <value>Omkatalogisera _valda</value>
   </data>
   <data name="Menu_RestoreBackup" xml:space="preserve">
     <value>Återställ från säkerhetskopia...</value>
@@ -1013,7 +1013,7 @@
     <value>År</value>
   </data>
   <data name="BookList_ContextMenu_Recatalog" xml:space="preserve">
-    <value>Omkatalogsera valda</value>
+    <value>Omkatalogisera valda</value>
   </data>
   <data name="BookList_Loading" xml:space="preserve">
     <value>Laddar...</value>
@@ -2054,6 +2054,9 @@ Möjliga dubletter: {3}  |  Med omslag: {4}</value>
   <data name="Menu_Help_DataSources" xml:space="preserve">
     <value>_Om datakällor</value>
   </data>
+  <data name="Menu_Help_RemoteDatabases" xml:space="preserve">
+    <value>Fjärr_databaser</value>
+  </data>
   <data name="Help_WindowTitle" xml:space="preserve">
     <value>Hjälp</value>
   </data>
@@ -2068,6 +2071,12 @@ Möjliga dubletter: {3}  |  Med omslag: {4}</value>
   </data>
   <data name="Help_Tab_DataSources" xml:space="preserve">
     <value>Om datakällor</value>
+  </data>
+  <data name="Help_Tab_RemoteDatabases" xml:space="preserve">
+    <value>Fjärrdatabaser</value>
+  </data>
+  <data name="Help_RemoteDatabasesLink" xml:space="preserve">
+    <value>Hjälp: fjärrdatabaser</value>
   </data>
   <data name="Menu_AboutBookDB" xml:space="preserve">
     <value>_Om BookDB…</value>
@@ -2184,7 +2193,7 @@ Möjliga dubletter: {3}  |  Med omslag: {4}</value>
     <value>{0:N0} böcker (av {1:N0})</value>
   </data>
   <data name="RecatalogAll_Confirm" xml:space="preserve">
-    <value>Omkatalogsera alla {0} böcker? Det kan ta ett tag.</value>
+    <value>Omkatalogisera alla {0} böcker? Det kan ta ett tag.</value>
   </data>
   <data name="Backup_Saved" xml:space="preserve">
     <value>Säkerhetskopia sparad till {0}</value>
@@ -2485,6 +2494,9 @@ Möjliga dubletter: {3}  |  Med omslag: {4}</value>
   </data>
   <data name="Import_Step1_CollectionCreateFailed" xml:space="preserve">
     <value>Det gick inte att skapa samlingen. Namnet kanske redan används.</value>
+  </data>
+  <data name="Import_Step1_PreviewFailed" xml:space="preserve">
+    <value>Förhandsgranskningen misslyckades: {0}</value>
   </data>
   <data name="Import_Duplicate_Overwrite" xml:space="preserve">
     <value>Skriv över</value>

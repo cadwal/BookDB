@@ -49,8 +49,10 @@ public partial class ImageEditorViewModel : ObservableObject
         OnPropertyChanged(nameof(ImageInfoLabel));
     }
 
-    public double? NativeImageWidth => CoverBitmap?.PixelSize.Width;
-    public double? NativeImageHeight => CoverBitmap?.PixelSize.Height;
+    // Cap the displayed image at its native pixel size to avoid upscaling; with no cover loaded there is no cap
+    // (PositiveInfinity = MaxWidth/MaxHeight's own default), which also keeps the bindings off the null→double path.
+    public double NativeImageWidth => CoverBitmap?.PixelSize.Width ?? double.PositiveInfinity;
+    public double NativeImageHeight => CoverBitmap?.PixelSize.Height ?? double.PositiveInfinity;
 
     public string? ImageInfoLabel =>
         CoverBitmap is { } bmp

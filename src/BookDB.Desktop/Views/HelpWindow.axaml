@@ -38,6 +38,12 @@
             </Border>
         </TabItem>
 
+        <TabItem Header="{x:Static res:Resources.Help_Tab_RemoteDatabases}">
+            <Border Padding="16">
+                <md:MarkdownScrollViewer Markdown="{Binding RemoteDatabasesContent}" />
+            </Border>
+        </TabItem>
+
     </TabControl>
 
 </Window>

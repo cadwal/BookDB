@@ -28,6 +28,9 @@ public partial class HelpWindowViewModel : ObservableObject
     [ObservableProperty]
     private string _dataSourcesContent = string.Empty;
 
+    [ObservableProperty]
+    private string _remoteDatabasesContent = string.Empty;
+
     public async Task InitializeAsync(HelpTab initialTab)
     {
         SelectedTabIndex = (int)initialTab;
@@ -38,6 +41,7 @@ public partial class HelpWindowViewModel : ObservableObject
             GlossaryContent    = await HelpContentLoader.LoadAsync("glossary", culture);
             ImportGuideContent = await HelpContentLoader.LoadAsync("import-guide", culture);
             DataSourcesContent = await HelpContentLoader.LoadAsync("data-sources", culture);
+            RemoteDatabasesContent = await HelpContentLoader.LoadAsync("remote-databases", culture);
         }
         catch (Exception ex)
         {

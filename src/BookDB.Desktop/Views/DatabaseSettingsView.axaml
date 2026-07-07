@@ -13,9 +13,15 @@
          wrapping content and otherwise leaves the last lines unreachable when scrolled to the bottom. -->
     <StackPanel Spacing="12" MinHeight="500">
 
-      <!-- Backend choice -->
-      <TextBlock Text="{x:Static res:Resources.Settings_Database_BackendLabel}"
-                 FontSize="12" FontWeight="SemiBold"/>
+      <!-- Backend choice; the help link sits top-right so it is visible before configuring -->
+      <Grid ColumnDefinitions="*,Auto">
+        <TextBlock Text="{x:Static res:Resources.Settings_Database_BackendLabel}"
+                   FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center"/>
+        <Button Grid.Column="1" Classes="helpLink"
+                Command="{Binding OpenRemoteDatabasesHelpCommand}">
+          <TextBlock Text="{x:Static res:Resources.Help_RemoteDatabasesLink}" TextDecorations="Underline"/>
+        </Button>
+      </Grid>
 
       <StackPanel Orientation="Horizontal" Spacing="16">
         <RadioButton GroupName="DbBackend"

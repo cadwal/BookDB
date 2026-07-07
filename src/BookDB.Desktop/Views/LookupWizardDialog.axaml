@@ -91,7 +91,8 @@
                     Spacing="8"
                     Margin="0,8,0,0">
             <Button Content="{x:Static res:Resources.Common_Cancel}"
-                    Command="{Binding CancelCommand}" />
+                    Command="{Binding CancelCommand}"
+                    IsCancel="True" />
             <Button Content="{x:Static res:Resources.LookupWizard_StartButton}"
                     Classes="accent"
                     Command="{Binding StartLookupCommand}"

@@ -20,7 +20,8 @@
                         HorizontalAlignment="Right"
                         Spacing="8">
                 <Button Content="{x:Static res:Resources.Common_Cancel}"
-                        Command="{Binding CancelCommand}" />
+                        Command="{Binding CancelCommand}"
+                        IsCancel="True" />
                 <Button Content="{x:Static res:Resources.Common_Save}"
                         Classes="accent"
                         Command="{Binding SaveCommand}" />

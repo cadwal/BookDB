@@ -1166,7 +1166,7 @@
     <value>Eliminar imagen</value>
   </data>
   <data name="BookList_Thumbnail_Badge_Tooltip" xml:space="preserve">
-    <value>Tipos de imagen duplicados — comprueba la pestaña Imágenes</value>
+    <value>Tipos de imagen duplicados — compruebe la pestaña Imágenes</value>
   </data>
   <data name="Import_Ask_Body" xml:space="preserve">
     <value>Ya existe un libro con el mismo ISBN:
@@ -2042,6 +2042,42 @@ Posibles duplicados: {3}  |  Con portadas: {4}</value>
   <data name="Menu_Help" xml:space="preserve">
     <value>_Ayuda</value>
   </data>
+  <data name="Menu_Help_KeyboardShortcuts" xml:space="preserve">
+    <value>Atajos de _teclado</value>
+  </data>
+  <data name="Menu_Help_FieldGlossary" xml:space="preserve">
+    <value>_Glosario de campos</value>
+  </data>
+  <data name="Menu_Help_ImportGuide" xml:space="preserve">
+    <value>Guía de _importación</value>
+  </data>
+  <data name="Menu_Help_DataSources" xml:space="preserve">
+    <value>Acerca de las _fuentes de datos</value>
+  </data>
+  <data name="Menu_Help_RemoteDatabases" xml:space="preserve">
+    <value>Bases de datos _remotas</value>
+  </data>
+  <data name="Help_WindowTitle" xml:space="preserve">
+    <value>Ayuda</value>
+  </data>
+  <data name="Help_Tab_KeyboardShortcuts" xml:space="preserve">
+    <value>Atajos de teclado</value>
+  </data>
+  <data name="Help_Tab_FieldGlossary" xml:space="preserve">
+    <value>Glosario de campos</value>
+  </data>
+  <data name="Help_Tab_ImportGuide" xml:space="preserve">
+    <value>Guía de importación</value>
+  </data>
+  <data name="Help_Tab_DataSources" xml:space="preserve">
+    <value>Acerca de las fuentes de datos</value>
+  </data>
+  <data name="Help_Tab_RemoteDatabases" xml:space="preserve">
+    <value>Bases de datos remotas</value>
+  </data>
+  <data name="Help_RemoteDatabasesLink" xml:space="preserve">
+    <value>Ayuda: bases de datos remotas</value>
+  </data>
   <data name="Menu_AboutBookDB" xml:space="preserve">
     <value>_Acerca de BookDB…</value>
   </data>
@@ -2458,6 +2494,9 @@ Posibles duplicados: {3}  |  Con portadas: {4}</value>
   </data>
   <data name="Import_Step1_CollectionCreateFailed" xml:space="preserve">
     <value>No se pudo crear la colección. Es posible que el nombre ya esté en uso.</value>
+  </data>
+  <data name="Import_Step1_PreviewFailed" xml:space="preserve">
+    <value>Error en la vista previa: {0}</value>
   </data>
   <data name="Import_Duplicate_Overwrite" xml:space="preserve">
     <value>Sobrescribir</value>

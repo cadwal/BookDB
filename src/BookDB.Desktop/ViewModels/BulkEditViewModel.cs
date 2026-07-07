@@ -52,7 +52,11 @@ public partial class BulkEditViewModel : ObservableObject
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(ApplyCommand))]
+    [NotifyPropertyChangedFor(nameof(SelectedValueName))]
     private LookupItem? _selectedValue;
+
+    /// <summary>Selected value's display name, or empty — keeps the confirm-summary binding off the null path.</summary>
+    public string SelectedValueName => SelectedValue?.Name ?? string.Empty;
 
     public ObservableCollection<LookupItem> Values { get; } = [];
 

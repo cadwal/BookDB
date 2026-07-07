@@ -1121,7 +1121,7 @@
     <value>Geen achterkantafbeelding</value>
   </data>
   <data name="ImageEditor_NoImage_DustJacket" xml:space="preserve">
-    <value>Geen stofomslagonafbeelding</value>
+    <value>Geen stofomslagafbeelding</value>
   </data>
   <data name="ImageEditor_NoImage_Front" xml:space="preserve">
     <value>Geen voorkantafbeelding</value>
@@ -2042,6 +2042,42 @@ Mogelijke duplicaten: {3}  |  Met omslag: {4}</value>
   <data name="Menu_Help" xml:space="preserve">
     <value>_Help</value>
   </data>
+  <data name="Menu_Help_KeyboardShortcuts" xml:space="preserve">
+    <value>_Sneltoetsen</value>
+  </data>
+  <data name="Menu_Help_FieldGlossary" xml:space="preserve">
+    <value>_Veldverklaringen</value>
+  </data>
+  <data name="Menu_Help_ImportGuide" xml:space="preserve">
+    <value>_Importgids</value>
+  </data>
+  <data name="Menu_Help_DataSources" xml:space="preserve">
+    <value>Over _gegevensbronnen</value>
+  </data>
+  <data name="Menu_Help_RemoteDatabases" xml:space="preserve">
+    <value>E_xterne databases</value>
+  </data>
+  <data name="Help_WindowTitle" xml:space="preserve">
+    <value>Help</value>
+  </data>
+  <data name="Help_Tab_KeyboardShortcuts" xml:space="preserve">
+    <value>Sneltoetsen</value>
+  </data>
+  <data name="Help_Tab_FieldGlossary" xml:space="preserve">
+    <value>Veldverklaringen</value>
+  </data>
+  <data name="Help_Tab_ImportGuide" xml:space="preserve">
+    <value>Importgids</value>
+  </data>
+  <data name="Help_Tab_DataSources" xml:space="preserve">
+    <value>Over gegevensbronnen</value>
+  </data>
+  <data name="Help_Tab_RemoteDatabases" xml:space="preserve">
+    <value>Externe databases</value>
+  </data>
+  <data name="Help_RemoteDatabasesLink" xml:space="preserve">
+    <value>Help: externe databases</value>
+  </data>
   <data name="Menu_AboutBookDB" xml:space="preserve">
     <value>_Over BookDB…</value>
   </data>
@@ -2458,6 +2494,9 @@ Mogelijke duplicaten: {3}  |  Met omslag: {4}</value>
   </data>
   <data name="Import_Step1_CollectionCreateFailed" xml:space="preserve">
     <value>Kan de collectie niet aanmaken. De naam is mogelijk al in gebruik.</value>
+  </data>
+  <data name="Import_Step1_PreviewFailed" xml:space="preserve">
+    <value>Voorbeeld mislukt: {0}</value>
   </data>
   <data name="Import_Duplicate_Overwrite" xml:space="preserve">
     <value>Overschrijven</value>

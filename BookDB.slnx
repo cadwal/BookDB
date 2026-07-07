@@ -21,6 +21,7 @@
     <Project Path="tests/BookDB.Data.PostgreSQL.Tests/BookDB.Data.PostgreSQL.Tests.csproj" />
     <Project Path="tests/BookDB.Data.MySql.Tests/BookDB.Data.MySql.Tests.csproj" />
     <Project Path="tests/BookDB.Desktop.Tests/BookDB.Desktop.Tests.csproj" />
+    <Project Path="tests/BookDB.Desktop.UITests/BookDB.Desktop.UITests.csproj" />
     <Project Path="tests/BookDB.Logic.Tests/BookDB.Logic.Tests.csproj" />
     <Project Path="tests/BookDB.Security.Tests/BookDB.Security.Tests.csproj" />
   </Folder>

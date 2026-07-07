@@ -472,6 +472,10 @@ public partial class MainWindowViewModel : ObservableObject
         _windowService.OpenHelpWindow(HelpTab.DataSources);
 
     [RelayCommand]
+    private void OpenHelpRemoteDatabases() =>
+        _windowService.OpenHelpWindow(HelpTab.RemoteDatabases);
+
+    [RelayCommand]
     private async Task BackupAsync()
     {
         // One entry point mirroring the single Restore item: pick the format (defaulting to the configured

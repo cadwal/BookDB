@@ -5,13 +5,8 @@
              xmlns:i="using:Avalonia.Xaml.Interactivity"
              xmlns:behaviors="using:BookDB.Desktop.Behaviors"
              xmlns:converters="using:BookDB.Desktop.Converters"
-             xmlns:svg="using:Avalonia.Svg.Skia"
              x:Class="BookDB.Desktop.Views.BookListView"
              x:DataType="vm:BookListViewModel">
-    <UserControl.Resources>
-        <!-- Import icon — arrow-download.svg registered for use by toolbar/menu extensions -->
-        <svg:SvgImage x:Key="IconImport" Source="avares://BookDB.Desktop/Assets/Icons/arrow-download.svg" Css="{DynamicResource IconCssAccent}" />
-    </UserControl.Resources>
     <DockPanel LastChildFill="True">
 
         <!-- Toolbar -->
@@ -30,11 +25,7 @@
                             ToolTip.Tip="{x:Static res:Resources.Toolbar_AddBook}">
                         <StackPanel Orientation="Horizontal" Spacing="4">
                             <Border Background="{DynamicResource BrushIconChipSuccess}" CornerRadius="4" Padding="2">
-                                <Image Width="20" Height="20">
-                                    <Image.Source>
-                                        <svg:SvgImage Source="avares://BookDB.Desktop/Assets/Icons/add.svg" Css="{DynamicResource IconCssSuccess}" />
-                                    </Image.Source>
-                                </Image>
+                                <Image Width="20" Height="20" Source="{StaticResource Icon.Add}" />
                             </Border>
                             <TextBlock Text="{x:Static res:Resources.Toolbar_AddBook}"
                                        VerticalAlignment="Center"
@@ -46,11 +37,7 @@
                             ToolTip.Tip="{x:Static res:Resources.Toolbar_Edit}">
                         <StackPanel Orientation="Horizontal" Spacing="4">
                             <Border Background="{DynamicResource BrushIconChipAccent}" CornerRadius="4" Padding="2">
-                                <Image Width="20" Height="20">
-                                    <Image.Source>
-                                        <svg:SvgImage Source="avares://BookDB.Desktop/Assets/Icons/edit.svg" Css="{DynamicResource IconCssAccent}" />
-                                    </Image.Source>
-                                </Image>
+                                <Image Width="20" Height="20" Source="{StaticResource Icon.Edit}" />
                             </Border>
                             <TextBlock Text="{x:Static res:Resources.Toolbar_Edit}"
                                        VerticalAlignment="Center"
@@ -62,11 +49,7 @@
                             ToolTip.Tip="{x:Static res:Resources.Toolbar_Delete}">
                         <StackPanel Orientation="Horizontal" Spacing="4">
                             <Border Background="{DynamicResource BrushIconChipDanger}" CornerRadius="4" Padding="2">
-                                <Image Width="20" Height="20">
-                                    <Image.Source>
-                                        <svg:SvgImage Source="avares://BookDB.Desktop/Assets/Icons/delete.svg" Css="{DynamicResource IconCssDanger}" />
-                                    </Image.Source>
-                                </Image>
+                                <Image Width="20" Height="20" Source="{StaticResource Icon.Delete}" />
                             </Border>
                             <TextBlock Text="{x:Static res:Resources.Toolbar_Delete}"
                                        VerticalAlignment="Center"
@@ -78,11 +61,7 @@
                             ToolTip.Tip="{x:Static res:Resources.Toolbar_FullDetails}">
                         <StackPanel Orientation="Horizontal" Spacing="4">
                             <Border Background="{DynamicResource BrushIconChipAccent}" CornerRadius="4" Padding="2">
-                                <Image Width="20" Height="20">
-                                    <Image.Source>
-                                        <svg:SvgImage Source="avares://BookDB.Desktop/Assets/Icons/open.svg" Css="{DynamicResource IconCssAccent}" />
-                                    </Image.Source>
-                                </Image>
+                                <Image Width="20" Height="20" Source="{StaticResource Icon.Open}" />
                             </Border>
                             <TextBlock Text="{x:Static res:Resources.Toolbar_FullDetails}"
                                        VerticalAlignment="Center"
@@ -102,11 +81,7 @@
                         Command="{Binding AdvancedSearchCommand}"
                         ToolTip.Tip="{x:Static res:Resources.BookList_AdvancedSearch_Button}">
                     <StackPanel Orientation="Horizontal" Spacing="4">
-                        <Image Width="20" Height="20">
-                            <Image.Source>
-                                <svg:SvgImage Source="avares://BookDB.Desktop/Assets/Icons/filter.svg" Css="{DynamicResource IconCss}" />
-                            </Image.Source>
-                        </Image>
+                        <Image Width="20" Height="20" Source="{StaticResource Icon.Filter}" />
                         <TextBlock Text="{x:Static res:Resources.BookList_AdvancedSearch_Label}"
                                    VerticalAlignment="Center"
                                    FontSize="13" />
@@ -138,13 +113,7 @@
                             Orientation="Horizontal"
                             Spacing="4"
                             VerticalAlignment="Center">
-                    <Image Width="16" Height="16"
-                           VerticalAlignment="Center"
-                           Opacity="0.6">
-                        <Image.Source>
-                            <svg:SvgImage Source="avares://BookDB.Desktop/Assets/Icons/search.svg" Css="{DynamicResource IconCss}" />
-                        </Image.Source>
-                    </Image>
+                    <Image Width="16" Height="16" VerticalAlignment="Center" Opacity="0.6" Source="{StaticResource Icon.Search}" />
                     <TextBox Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                              Watermark="{x:Static res:Resources.Toolbar_Search_Placeholder}"
                              Width="240"
@@ -153,11 +122,7 @@
                             Command="{Binding ClearSearchCommand}"
                             IsVisible="{Binding SearchText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
                             ToolTip.Tip="{x:Static res:Resources.Toolbar_Search_Clear}">
-                        <Image Width="20" Height="20">
-                            <Image.Source>
-                                <svg:SvgImage Source="avares://BookDB.Desktop/Assets/Icons/dismiss-circle.svg" Css="{DynamicResource IconCssDanger}" />
-                            </Image.Source>
-                        </Image>
+                        <Image Width="20" Height="20" Source="{StaticResource Icon.DismissCircle}" />
                     </Button>
                 </StackPanel>
             </DockPanel>
@@ -195,55 +160,50 @@
                         <MenuItem Header="{x:Static res:Resources.ContextMenu_Edit}"
                                   Command="{Binding EditBookCommand}">
                             <MenuItem.Icon>
-                                <Image Width="16" Height="16">
-                                    <Image.Source>
-                                        <svg:SvgImage Source="avares://BookDB.Desktop/Assets/Icons/edit.svg" Css="{DynamicResource IconCssAccent}" />
-                                    </Image.Source>
-                                </Image>
+                                <Image Width="16" Height="16" Source="{StaticResource Icon.Edit}" />
                             </MenuItem.Icon>
                         </MenuItem>
                         <MenuItem Header="{x:Static res:Resources.ContextMenu_OpenInWindow}"
                                   Command="{Binding OpenFullDetailsCommand}">
                             <MenuItem.Icon>
-                                <Image Width="16" Height="16">
-                                    <Image.Source>
-                                        <svg:SvgImage Source="avares://BookDB.Desktop/Assets/Icons/open.svg" Css="{DynamicResource IconCssAccent}" />
-                                    </Image.Source>
-                                </Image>
+                                <Image Width="16" Height="16" Source="{StaticResource Icon.Open}" />
                             </MenuItem.Icon>
                         </MenuItem>
                         <Separator />
                         <!-- Group 2: Create / Destroy -->
                         <MenuItem Header="{x:Static res:Resources.ContextMenu_Duplicate}"
-                                  Command="{Binding DuplicateBookCommand}" />
+                                  Command="{Binding DuplicateBookCommand}">
+                            <MenuItem.Icon>
+                                <Image Width="16" Height="16" Source="{StaticResource Icon.DocumentCopy}" />
+                            </MenuItem.Icon>
+                        </MenuItem>
                         <MenuItem Header="{x:Static res:Resources.ContextMenu_Delete}"
                                   Command="{Binding DeleteBooksCommand}">
                             <MenuItem.Icon>
-                                <Image Width="16" Height="16">
-                                    <Image.Source>
-                                        <svg:SvgImage Source="avares://BookDB.Desktop/Assets/Icons/delete.svg" Css="{DynamicResource IconCssDanger}" />
-                                    </Image.Source>
-                                </Image>
+                                <Image Width="16" Height="16" Source="{StaticResource Icon.Delete}" />
                             </MenuItem.Icon>
                         </MenuItem>
                         <Separator />
                         <!-- Group 3: Batch actions -->
                         <MenuItem Header="{x:Static res:Resources.ContextMenu_BulkEdit}"
-                                  Command="{Binding BulkEditCommand}" />
+                                  Command="{Binding BulkEditCommand}">
+                            <MenuItem.Icon>
+                                <Image Width="16" Height="16" Source="{StaticResource Icon.TableEdit}" />
+                            </MenuItem.Icon>
+                        </MenuItem>
                         <MenuItem Header="{x:Static res:Resources.BookList_ContextMenu_Recatalog}"
                                   Command="{Binding RecatalogSelectedCommand}">
                             <MenuItem.Icon>
-                                <Image Width="16" Height="16">
-                                    <Image.Source>
-                                        <svg:SvgImage Source="avares://BookDB.Desktop/Assets/Icons/arrow-sync.svg" Css="{DynamicResource IconCssAccent}" />
-                                    </Image.Source>
-                                </Image>
+                                <Image Width="16" Height="16" Source="{StaticResource Icon.BookArrowClockwise}" />
                             </MenuItem.Icon>
                         </MenuItem>
                         <Separator />
                         <!-- Group 4: Collection management -->
                         <MenuItem Header="{x:Static res:Resources.ContextMenu_MoveToCollection}"
                                   ItemsSource="{Binding CollectionMenuEntries}">
+                            <MenuItem.Icon>
+                                <Image Width="16" Height="16" Source="{StaticResource Icon.FolderArrowRight}" />
+                            </MenuItem.Icon>
                             <MenuItem.ItemContainerTheme>
                                 <ControlTheme TargetType="MenuItem"
                                               x:DataType="vm:CollectionMenuEntry"
@@ -260,15 +220,31 @@
                         <Separator />
                         <!-- Group 5: Copy -->
                         <MenuItem Header="{x:Static res:Resources.ContextMenu_CopyIsbn}"
-                                  Command="{Binding CopyIsbnCommand}" />
+                                  Command="{Binding CopyIsbnCommand}">
+                            <MenuItem.Icon>
+                                <Image Width="16" Height="16" Source="{StaticResource Icon.Clipboard}" />
+                            </MenuItem.Icon>
+                        </MenuItem>
                         <MenuItem Header="{x:Static res:Resources.ContextMenu_CopyTitle}"
-                                  Command="{Binding CopyTitleCommand}" />
+                                  Command="{Binding CopyTitleCommand}">
+                            <MenuItem.Icon>
+                                <Image Width="16" Height="16" Source="{StaticResource Icon.Clipboard}" />
+                            </MenuItem.Icon>
+                        </MenuItem>
                         <Separator />
                         <!-- Group 6: Loan -->
                         <MenuItem Header="{x:Static res:Resources.ContextMenu_CheckOut}"
-                                  Command="{Binding CheckOutCommand}" />
+                                  Command="{Binding CheckOutCommand}">
+                            <MenuItem.Icon>
+                                <Image Width="16" Height="16" Source="{StaticResource Icon.PersonArrowRight}" />
+                            </MenuItem.Icon>
+                        </MenuItem>
                         <MenuItem Header="{x:Static res:Resources.ContextMenu_CheckIn}"
-                                  Command="{Binding CheckInCommand}" />
+                                  Command="{Binding CheckInCommand}">
+                            <MenuItem.Icon>
+                                <Image Width="16" Height="16" Source="{StaticResource Icon.PersonArrowLeft}" />
+                            </MenuItem.Icon>
+                        </MenuItem>
                     </ContextMenu>
                 </DataGrid.ContextMenu>
                 <DataGrid.Columns>

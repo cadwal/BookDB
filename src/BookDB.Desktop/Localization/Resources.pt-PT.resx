@@ -455,7 +455,7 @@
     <value>Amazon Usado</value>
   </data>
   <data name="Label_AmazonCollectible" xml:space="preserve">
-    <value>Amazon Coleccionável</value>
+    <value>Amazon Colecionável</value>
   </data>
   <data name="Label_SalesRank" xml:space="preserve">
     <value>Posição de Vendas</value>
@@ -479,7 +479,7 @@
     <value>Limpeza de Dados...</value>
   </data>
   <data name="ManageLookups_DataCleanupDesc" xml:space="preserve">
-    <value>Os nomes seguintes foram propostos para correcção. Edite o Nome de Ordenação Sugerido conforme necessário. Desmarque linhas para ignorar. As linhas sem alteração não são mostradas.</value>
+    <value>Os nomes seguintes foram propostos para correção. Edite o Nome de Ordenação Sugerido conforme necessário. Desmarque linhas para ignorar. As linhas sem alteração não são mostradas.</value>
   </data>
   <data name="ManageLookups_DataCleanupTitle" xml:space="preserve">
     <value>Pré-visualização da Limpeza de Dados</value>
@@ -491,7 +491,7 @@
     <value>Eliminar '{0}'? Esta operação não pode ser anulada.</value>
   </data>
   <data name="ManageLookups_DeselectAll" xml:space="preserve">
-    <value>Desseleccionar Tudo</value>
+    <value>Desselecionar Tudo</value>
   </data>
   <data name="ManageLookups_DisplayName" xml:space="preserve">
     <value>Nome de Apresentação</value>
@@ -572,13 +572,13 @@
     <value>A analisar...</value>
   </data>
   <data name="ManageLookups_SelectAll" xml:space="preserve">
-    <value>Seleccionar Tudo</value>
+    <value>Selecionar Tudo</value>
   </data>
   <data name="ManageLookups_SelectEntry" xml:space="preserve">
-    <value>Seleccione uma entrada para editar</value>
+    <value>Selecione uma entrada para editar</value>
   </data>
   <data name="ManageLookups_SelectPerson" xml:space="preserve">
-    <value>Seleccione uma pessoa para editar</value>
+    <value>Selecione uma pessoa para editar</value>
   </data>
   <data name="ManageLookups_SortName" xml:space="preserve">
     <value>Nome de Ordenação</value>
@@ -719,7 +719,7 @@
     <value>Cópia de Segurança (SQLite)...</value>
   </data>
   <data name="Menu_BulkEdit" xml:space="preserve">
-    <value>_Editar Selecção em Massa...</value>
+    <value>_Editar Seleção em Massa...</value>
   </data>
   <data name="Menu_CatalogByIsbn" xml:space="preserve">
     <value>Catalogar por _ISBN...</value>
@@ -770,7 +770,7 @@
     <value>Re-catalogar _Tudo</value>
   </data>
   <data name="Menu_RecatalogSelected" xml:space="preserve">
-    <value>Re-catalogar _Seleccionados</value>
+    <value>Re-catalogar _Selecionados</value>
   </data>
   <data name="Menu_RestoreBackup" xml:space="preserve">
     <value>Restaurar a partir de Cópia de Segurança...</value>
@@ -1013,7 +1013,7 @@
     <value>Ano</value>
   </data>
   <data name="BookList_ContextMenu_Recatalog" xml:space="preserve">
-    <value>Re-catalogar Seleccionados</value>
+    <value>Re-catalogar Selecionados</value>
   </data>
   <data name="BookList_Loading" xml:space="preserve">
     <value>A carregar...</value>
@@ -1034,10 +1034,10 @@
     <value>Miniatura</value>
   </data>
   <data name="BorrowerStatus_Active" xml:space="preserve">
-    <value>Activo</value>
+    <value>Ativo</value>
   </data>
   <data name="BorrowerStatus_Inactive" xml:space="preserve">
-    <value>Inactivo</value>
+    <value>Inativo</value>
   </data>
   <data name="Condition_Fair" xml:space="preserve">
     <value>Razoável</value>
@@ -1106,7 +1106,7 @@
     <value>3.ª Edição</value>
   </data>
   <data name="Edition_CollectorsEdition" xml:space="preserve">
-    <value>Edição de Coleccionador</value>
+    <value>Edição de Colecionador</value>
   </data>
   <data name="Edition_LimitedEdition" xml:space="preserve">
     <value>Edição Limitada</value>
@@ -1188,7 +1188,7 @@ Substituir pelos dados de importação?</value>
     <value>Seguinte</value>
   </data>
   <data name="Import_Step1_BrowseFolder" xml:space="preserve">
-    <value>Seleccionar Pasta de Cópia de Segurança…</value>
+    <value>Selecionar Pasta de Cópia de Segurança…</value>
   </data>
   <data name="Import_Step1_BrowseZip" xml:space="preserve">
     <value>Procurar Ficheiro Zip de Cópia de Segurança…</value>
@@ -1197,7 +1197,7 @@ Substituir pelos dados de importação?</value>
     <value>Importar para a coleção:</value>
   </data>
   <data name="Import_Step1_CollectionWatermark" xml:space="preserve">
-    <value>Seleccione uma coleção...</value>
+    <value>Selecione uma coleção...</value>
   </data>
   <data name="Import_Step1_FileLabel" xml:space="preserve">
     <value>Ficheiro ou pasta de cópia de segurança:</value>
@@ -1206,7 +1206,7 @@ Substituir pelos dados de importação?</value>
     <value>Caminho para o ficheiro .zip ou pasta de cópia de segurança...</value>
   </data>
   <data name="Import_Step1_HelpText" xml:space="preserve">
-    <value>Seleccione um ficheiro .zip criado pela funcionalidade de Cópia de Segurança do Readerware, ou a pasta de cópia de segurança extraída.</value>
+    <value>Selecione um ficheiro .zip criado pela funcionalidade de Cópia de Segurança do Readerware, ou a pasta de cópia de segurança extraída.</value>
   </data>
   <data name="Import_Step2_Analyzing" xml:space="preserve">
     <value>A analisar ficheiro de cópia de segurança...</value>
@@ -1289,7 +1289,7 @@ Duplicados potenciais: {3}  |  Com capas: {4}</value>
     <value>Ignorados:</value>
   </data>
   <data name="Import_Step5_Updated" xml:space="preserve">
-    <value>Actualizados:</value>
+    <value>Atualizados:</value>
   </data>
   <data name="Import_StepIndicator" xml:space="preserve">
     <value>Passo {0} de {1}</value>
@@ -1304,7 +1304,7 @@ Duplicados potenciais: {3}  |  Com capas: {4}</value>
     <value>Importar do Readerware</value>
   </data>
   <data name="Import_StepTitle_FileSelect" xml:space="preserve">
-    <value>Seleccionar Ficheiro de Cópia de Segurança</value>
+    <value>Selecionar Ficheiro de Cópia de Segurança</value>
   </data>
   <data name="Import_StepTitle_Preview" xml:space="preserve">
     <value>Pré-visualizar Importação</value>
@@ -1322,7 +1322,7 @@ Duplicados potenciais: {3}  |  Com capas: {4}</value>
     <value>Banda Desenhada</value>
   </data>
   <data name="Format_Ebook" xml:space="preserve">
-    <value>Livro Electrónico</value>
+    <value>Livro Eletrónico</value>
   </data>
   <data name="Format_GraphicNovel" xml:space="preserve">
     <value>Romance Gráfico</value>
@@ -1464,7 +1464,7 @@ Duplicados potenciais: {3}  |  Com capas: {4}</value>
     <value>Guardar como PDF…</value>
   </data>
   <data name="Print_SelectAll" xml:space="preserve">
-    <value>Seleccionar Tudo</value>
+    <value>Selecionar Tudo</value>
   </data>
   <data name="Print_WindowTitle" xml:space="preserve">
     <value>Imprimir Lista</value>
@@ -1560,7 +1560,7 @@ Duplicados potenciais: {3}  |  Com capas: {4}</value>
     <value>Título</value>
   </data>
   <data name="Print_Column_Updated" xml:space="preserve">
-    <value>Actualizado</value>
+    <value>Atualizado</value>
   </data>
   <data name="Print_DefaultHeaderTitle" xml:space="preserve">
     <value>Lista de Livros</value>
@@ -1683,7 +1683,7 @@ Duplicados potenciais: {3}  |  Com capas: {4}</value>
     <value>IsbnSearch.org</value>
   </data>
   <data name="Settings_Lookup_Enabled" xml:space="preserve">
-    <value>Activado</value>
+    <value>Ativado</value>
   </data>
   <data name="Settings_Tab_Advanced" xml:space="preserve">
     <value>Avançadas</value>
@@ -1725,7 +1725,7 @@ Duplicados potenciais: {3}  |  Com capas: {4}</value>
     <value>Total de Livros</value>
   </data>
   <data name="Statistics_RefreshButton" xml:space="preserve">
-    <value>Actualizar</value>
+    <value>Atualizar</value>
   </data>
   <data name="Statistics_Section_ByCollection" xml:space="preserve">
     <value>Por Coleção</value>
@@ -1872,13 +1872,13 @@ Duplicados potenciais: {3}  |  Com capas: {4}</value>
     <value>Exportar CSV</value>
   </data>
   <data name="CsvPicker_Heading" xml:space="preserve">
-    <value>Seleccione as colunas a incluir na exportação:</value>
+    <value>Selecione as colunas a incluir na exportação:</value>
   </data>
   <data name="CsvPicker_SelectAll" xml:space="preserve">
-    <value>Seleccionar Tudo</value>
+    <value>Selecionar Tudo</value>
   </data>
   <data name="CsvPicker_WindowTitle" xml:space="preserve">
-    <value>Seleccionar Colunas de Exportação</value>
+    <value>Selecionar Colunas de Exportação</value>
   </data>
   <data name="LookupWizard_LookingUp" xml:space="preserve">
     <value>A pesquisar…</value>
@@ -1893,7 +1893,7 @@ Duplicados potenciais: {3}  |  Com capas: {4}</value>
     <value>Aplicar</value>
   </data>
   <data name="Person_Column_CurrentName" xml:space="preserve">
-    <value>Nome actual</value>
+    <value>Nome atual</value>
   </data>
   <data name="Person_Column_ProposedName" xml:space="preserve">
     <value>Nome proposto</value>
@@ -2042,6 +2042,42 @@ Duplicados potenciais: {3}  |  Com capas: {4}</value>
   <data name="Menu_Help" xml:space="preserve">
     <value>_Ajuda</value>
   </data>
+  <data name="Menu_Help_KeyboardShortcuts" xml:space="preserve">
+    <value>Atalhos de _teclado</value>
+  </data>
+  <data name="Menu_Help_FieldGlossary" xml:space="preserve">
+    <value>_Glossário de campos</value>
+  </data>
+  <data name="Menu_Help_ImportGuide" xml:space="preserve">
+    <value>Guia de _importação</value>
+  </data>
+  <data name="Menu_Help_DataSources" xml:space="preserve">
+    <value>Sobre as _fontes de dados</value>
+  </data>
+  <data name="Menu_Help_RemoteDatabases" xml:space="preserve">
+    <value>Bases de dados _remotas</value>
+  </data>
+  <data name="Help_WindowTitle" xml:space="preserve">
+    <value>Ajuda</value>
+  </data>
+  <data name="Help_Tab_KeyboardShortcuts" xml:space="preserve">
+    <value>Atalhos de teclado</value>
+  </data>
+  <data name="Help_Tab_FieldGlossary" xml:space="preserve">
+    <value>Glossário de campos</value>
+  </data>
+  <data name="Help_Tab_ImportGuide" xml:space="preserve">
+    <value>Guia de importação</value>
+  </data>
+  <data name="Help_Tab_DataSources" xml:space="preserve">
+    <value>Sobre as fontes de dados</value>
+  </data>
+  <data name="Help_Tab_RemoteDatabases" xml:space="preserve">
+    <value>Bases de dados remotas</value>
+  </data>
+  <data name="Help_RemoteDatabasesLink" xml:space="preserve">
+    <value>Ajuda: bases de dados remotas</value>
+  </data>
   <data name="Menu_AboutBookDB" xml:space="preserve">
     <value>_Sobre o BookDB…</value>
   </data>
@@ -2133,13 +2169,13 @@ Duplicados potenciais: {3}  |  Com capas: {4}</value>
     <value>ISBN Duplicado</value>
   </data>
   <data name="DuplicateIsbn_UpdateExisting" xml:space="preserve">
-    <value>Actualizar existente</value>
+    <value>Atualizar existente</value>
   </data>
   <data name="DuplicateIsbn_AddAsNew" xml:space="preserve">
     <value>Adicionar como novo</value>
   </data>
   <data name="DuplicateIsbn_Body" xml:space="preserve">
-    <value>Já existe um livro com o ISBN {0} ({1}). Actualizar o livro existente ou adicionar como novo?</value>
+    <value>Já existe um livro com o ISBN {0} ({1}). Atualizar o livro existente ou adicionar como novo?</value>
   </data>
   <data name="Delete_Dialog_Title" xml:space="preserve">
     <value>Confirmar Eliminação</value>
@@ -2169,13 +2205,13 @@ Duplicados potenciais: {3}  |  Com capas: {4}</value>
     <value>Guardar cópia de segurança de segurança antes de restaurar?</value>
   </data>
   <data name="Restore_Confirm_Body" xml:space="preserve">
-    <value>A sua biblioteca actual será substituída. Escolha uma localização para guardar primeiro uma cópia de segurança.</value>
+    <value>A sua biblioteca atual será substituída. Escolha uma localização para guardar primeiro uma cópia de segurança.</value>
   </data>
   <data name="Restore_Replace_Title" xml:space="preserve">
-    <value>Substituir a biblioteca actual?</value>
+    <value>Substituir a biblioteca atual?</value>
   </data>
   <data name="Restore_Replace_Body" xml:space="preserve">
-    <value>Esta operação irá substituir a sua biblioteca actual pela cópia de segurança seleccionada. Esta operação não pode ser anulada.</value>
+    <value>Esta operação irá substituir a sua biblioteca atual pela cópia de segurança selecionada. Esta operação não pode ser anulada.</value>
   </data>
   <data name="Restore_Complete_Title" xml:space="preserve">
     <value>Restauro concluído</value>
@@ -2190,7 +2226,7 @@ Duplicados potenciais: {3}  |  Com capas: {4}</value>
     <value>Não foi possível gerar o relatório PDF: {0}</value>
   </data>
   <data name="BookList_AdvancedSearch_ActiveStatus" xml:space="preserve">
-    <value>Pesquisa avançada activa</value>
+    <value>Pesquisa avançada ativa</value>
   </data>
   <data name="CheckOut_Title" xml:space="preserve">
     <value>Requisitar livro</value>
@@ -2458,6 +2494,9 @@ Duplicados potenciais: {3}  |  Com capas: {4}</value>
   </data>
   <data name="Import_Step1_CollectionCreateFailed" xml:space="preserve">
     <value>Não foi possível criar a coleção. O nome pode já estar em uso.</value>
+  </data>
+  <data name="Import_Step1_PreviewFailed" xml:space="preserve">
+    <value>Falha na pré-visualização: {0}</value>
   </data>
   <data name="Import_Duplicate_Overwrite" xml:space="preserve">
     <value>Substituir</value>

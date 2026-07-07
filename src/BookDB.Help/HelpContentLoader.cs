@@ -10,13 +10,14 @@ public static class HelpContentLoader
 {
     private static readonly Assembly _helpAssembly = typeof(HelpContentLoader).Assembly;
 
-    // topic: "shortcuts" | "glossary" | "import-guide" | "data-sources"
+    // topic: "shortcuts" | "glossary" | "import-guide" | "data-sources" | "remote-databases"
     public static async Task<string> LoadAsync(string topic, CultureInfo? culture = null)
     {
         culture ??= CultureInfo.CurrentUICulture;
-        var lang = culture.TwoLetterISOLanguageName;
 
-        var stream = TryOpen($"BookDB.Help.Content.{topic}.{lang}.md");
+        // Region-specific variant first (pt-BR/pt-PT ship separate files), then the bare language, then English.
+        var stream = TryOpen($"BookDB.Help.Content.{topic}.{culture.Name}.md");
+        stream ??= TryOpen($"BookDB.Help.Content.{topic}.{culture.TwoLetterISOLanguageName}.md");
         stream ??= TryOpen($"BookDB.Help.Content.{topic}.md");
 
         if (stream is null)

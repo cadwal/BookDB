@@ -1,0 +1,50 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:svg="using:Avalonia.Svg.Skia">
+
+    <!-- One keyed SvgImage per icon: the single source of truth for which asset an action uses and which
+         IconCss role tints it. Views reference these by key, so the same action shows the same glyph
+         everywhere, and tests can pin icon identity by resource reference. Css stays DynamicResource:
+         theme flavours override the IconCss* strings at startup. -->
+
+    <!-- Create / destroy -->
+    <svg:SvgImage x:Key="Icon.Add" Source="avares://BookDB.Desktop/Assets/Icons/add.svg" Css="{DynamicResource IconCssSuccess}" />
+    <svg:SvgImage x:Key="Icon.Delete" Source="avares://BookDB.Desktop/Assets/Icons/delete.svg" Css="{DynamicResource IconCssDanger}" />
+
+    <!-- Data-changing actions (accent) -->
+    <svg:SvgImage x:Key="Icon.Edit" Source="avares://BookDB.Desktop/Assets/Icons/edit.svg" Css="{DynamicResource IconCssAccent}" />
+    <svg:SvgImage x:Key="Icon.Open" Source="avares://BookDB.Desktop/Assets/Icons/open.svg" Css="{DynamicResource IconCssAccent}" />
+    <svg:SvgImage x:Key="Icon.Archive" Source="avares://BookDB.Desktop/Assets/Icons/archive.svg" Css="{DynamicResource IconCssAccent}" />
+    <svg:SvgImage x:Key="Icon.History" Source="avares://BookDB.Desktop/Assets/Icons/history.svg" Css="{DynamicResource IconCssAccent}" />
+    <svg:SvgImage x:Key="Icon.ArrowImport" Source="avares://BookDB.Desktop/Assets/Icons/arrow-import.svg" Css="{DynamicResource IconCssAccent}" />
+    <svg:SvgImage x:Key="Icon.DocumentArrowUp" Source="avares://BookDB.Desktop/Assets/Icons/document-arrow-up.svg" Css="{DynamicResource IconCssAccent}" />
+    <svg:SvgImage x:Key="Icon.DocumentCopy" Source="avares://BookDB.Desktop/Assets/Icons/document-copy.svg" Css="{DynamicResource IconCssAccent}" />
+    <svg:SvgImage x:Key="Icon.TableEdit" Source="avares://BookDB.Desktop/Assets/Icons/table-edit.svg" Css="{DynamicResource IconCssAccent}" />
+    <svg:SvgImage x:Key="Icon.BookArrowClockwise" Source="avares://BookDB.Desktop/Assets/Icons/book-arrow-clockwise.svg" Css="{DynamicResource IconCssAccent}" />
+    <svg:SvgImage x:Key="Icon.FolderArrowRight" Source="avares://BookDB.Desktop/Assets/Icons/folder-arrow-right.svg" Css="{DynamicResource IconCssAccent}" />
+    <svg:SvgImage x:Key="Icon.PersonArrowRight" Source="avares://BookDB.Desktop/Assets/Icons/person-arrow-right.svg" Css="{DynamicResource IconCssAccent}" />
+    <svg:SvgImage x:Key="Icon.PersonArrowLeft" Source="avares://BookDB.Desktop/Assets/Icons/person-arrow-left.svg" Css="{DynamicResource IconCssAccent}" />
+
+    <!-- Navigation / tools / info (neutral) -->
+    <svg:SvgImage x:Key="Icon.Search" Source="avares://BookDB.Desktop/Assets/Icons/search.svg" Css="{DynamicResource IconCss}" />
+    <svg:SvgImage x:Key="Icon.Filter" Source="avares://BookDB.Desktop/Assets/Icons/filter.svg" Css="{DynamicResource IconCss}" />
+    <svg:SvgImage x:Key="Icon.BarcodeScanner" Source="avares://BookDB.Desktop/Assets/Icons/barcode-scanner.svg" Css="{DynamicResource IconCss}" />
+    <svg:SvgImage x:Key="Icon.Print" Source="avares://BookDB.Desktop/Assets/Icons/print.svg" Css="{DynamicResource IconCss}" />
+    <svg:SvgImage x:Key="Icon.ArrowExit" Source="avares://BookDB.Desktop/Assets/Icons/arrow-exit.svg" Css="{DynamicResource IconCss}" />
+    <svg:SvgImage x:Key="Icon.TextBulletListSquare" Source="avares://BookDB.Desktop/Assets/Icons/text-bullet-list-square.svg" Css="{DynamicResource IconCss}" />
+    <svg:SvgImage x:Key="Icon.PeopleList" Source="avares://BookDB.Desktop/Assets/Icons/people-list.svg" Css="{DynamicResource IconCss}" />
+    <svg:SvgImage x:Key="Icon.ChartMultiple" Source="avares://BookDB.Desktop/Assets/Icons/chart-multiple.svg" Css="{DynamicResource IconCss}" />
+    <svg:SvgImage x:Key="Icon.WrenchScrewdriver" Source="avares://BookDB.Desktop/Assets/Icons/wrench-screwdriver.svg" Css="{DynamicResource IconCss}" />
+    <svg:SvgImage x:Key="Icon.Settings" Source="avares://BookDB.Desktop/Assets/Icons/settings.svg" Css="{DynamicResource IconCss}" />
+    <svg:SvgImage x:Key="Icon.Keyboard" Source="avares://BookDB.Desktop/Assets/Icons/keyboard.svg" Css="{DynamicResource IconCss}" />
+    <svg:SvgImage x:Key="Icon.BookQuestionMark" Source="avares://BookDB.Desktop/Assets/Icons/book-question-mark.svg" Css="{DynamicResource IconCss}" />
+    <svg:SvgImage x:Key="Icon.DocumentArrowDown" Source="avares://BookDB.Desktop/Assets/Icons/document-arrow-down.svg" Css="{DynamicResource IconCss}" />
+    <svg:SvgImage x:Key="Icon.Globe" Source="avares://BookDB.Desktop/Assets/Icons/globe.svg" Css="{DynamicResource IconCss}" />
+    <svg:SvgImage x:Key="Icon.DatabaseLink" Source="avares://BookDB.Desktop/Assets/Icons/database-link.svg" Css="{DynamicResource IconCss}" />
+    <svg:SvgImage x:Key="Icon.Info" Source="avares://BookDB.Desktop/Assets/Icons/info.svg" Css="{DynamicResource IconCss}" />
+    <svg:SvgImage x:Key="Icon.Clipboard" Source="avares://BookDB.Desktop/Assets/Icons/clipboard.svg" Css="{DynamicResource IconCss}" />
+
+    <!-- Dismiss / clear (danger) -->
+    <svg:SvgImage x:Key="Icon.DismissCircle" Source="avares://BookDB.Desktop/Assets/Icons/dismiss-circle.svg" Css="{DynamicResource IconCssDanger}" />
+
+</ResourceDictionary>

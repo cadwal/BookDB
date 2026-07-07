@@ -2087,6 +2087,9 @@ Potential duplicates: {3}  |  With covers: {4}</value>
   <data name="Menu_Help_DataSources" xml:space="preserve">
     <value>_About Data Sources</value>
   </data>
+  <data name="Menu_Help_RemoteDatabases" xml:space="preserve">
+    <value>_Remote Databases</value>
+  </data>
   <data name="Help_WindowTitle" xml:space="preserve">
     <value>Help</value>
   </data>
@@ -2101,6 +2104,12 @@ Potential duplicates: {3}  |  With covers: {4}</value>
   </data>
   <data name="Help_Tab_DataSources" xml:space="preserve">
     <value>About Data Sources</value>
+  </data>
+  <data name="Help_Tab_RemoteDatabases" xml:space="preserve">
+    <value>Remote Databases</value>
+  </data>
+  <data name="Help_RemoteDatabasesLink" xml:space="preserve">
+    <value>Help: remote databases</value>
   </data>
   <data name="Menu_AboutBookDB" xml:space="preserve">
     <value>_About BookDB…</value>
@@ -2488,6 +2497,9 @@ Potential duplicates: {3}  |  With covers: {4}</value>
   </data>
   <data name="Import_Step1_CollectionCreateFailed" xml:space="preserve">
     <value>Could not create the collection. The name may already be in use.</value>
+  </data>
+  <data name="Import_Step1_PreviewFailed" xml:space="preserve">
+    <value>Preview failed: {0}</value>
   </data>
   <data name="Import_Duplicate_Overwrite" xml:space="preserve">
     <value>Overwrite</value>

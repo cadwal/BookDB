@@ -1166,7 +1166,7 @@
     <value>Bild entfernen</value>
   </data>
   <data name="BookList_Thumbnail_Badge_Tooltip" xml:space="preserve">
-    <value>Doppelte Bildtypen — prüfe den Reiter Bilder</value>
+    <value>Doppelte Bildtypen — prüfen Sie den Reiter Bilder</value>
   </data>
   <data name="Import_Ask_Body" xml:space="preserve">
     <value>Ein Buch mit derselben ISBN existiert bereits:
@@ -2042,6 +2042,42 @@ Mögliche Duplikate: {3}  |  Mit Cover: {4}</value>
   <data name="Menu_Help" xml:space="preserve">
     <value>_Hilfe</value>
   </data>
+  <data name="Menu_Help_KeyboardShortcuts" xml:space="preserve">
+    <value>_Tastenkürzel</value>
+  </data>
+  <data name="Menu_Help_FieldGlossary" xml:space="preserve">
+    <value>_Feldlexikon</value>
+  </data>
+  <data name="Menu_Help_ImportGuide" xml:space="preserve">
+    <value>_Importleitfaden</value>
+  </data>
+  <data name="Menu_Help_DataSources" xml:space="preserve">
+    <value>Über _Datenquellen</value>
+  </data>
+  <data name="Menu_Help_RemoteDatabases" xml:space="preserve">
+    <value>_Entfernte Datenbanken</value>
+  </data>
+  <data name="Help_WindowTitle" xml:space="preserve">
+    <value>Hilfe</value>
+  </data>
+  <data name="Help_Tab_KeyboardShortcuts" xml:space="preserve">
+    <value>Tastenkürzel</value>
+  </data>
+  <data name="Help_Tab_FieldGlossary" xml:space="preserve">
+    <value>Feldlexikon</value>
+  </data>
+  <data name="Help_Tab_ImportGuide" xml:space="preserve">
+    <value>Importleitfaden</value>
+  </data>
+  <data name="Help_Tab_DataSources" xml:space="preserve">
+    <value>Über Datenquellen</value>
+  </data>
+  <data name="Help_Tab_RemoteDatabases" xml:space="preserve">
+    <value>Entfernte Datenbanken</value>
+  </data>
+  <data name="Help_RemoteDatabasesLink" xml:space="preserve">
+    <value>Hilfe: entfernte Datenbanken</value>
+  </data>
   <data name="Menu_AboutBookDB" xml:space="preserve">
     <value>_Über BookDB…</value>
   </data>
@@ -2458,6 +2494,9 @@ Mögliche Duplikate: {3}  |  Mit Cover: {4}</value>
   </data>
   <data name="Import_Step1_CollectionCreateFailed" xml:space="preserve">
     <value>Die Sammlung konnte nicht erstellt werden. Der Name ist möglicherweise bereits vergeben.</value>
+  </data>
+  <data name="Import_Step1_PreviewFailed" xml:space="preserve">
+    <value>Vorschau fehlgeschlagen: {0}</value>
   </data>
   <data name="Import_Duplicate_Overwrite" xml:space="preserve">
     <value>Überschreiben</value>

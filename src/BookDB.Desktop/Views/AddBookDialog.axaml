@@ -43,7 +43,8 @@
                     Spacing="8" Margin="0,16,0,0">
             <Button Content="{x:Static res:Resources.Common_Cancel}"
                     Command="{Binding CancelCommand}"
-                    FontSize="13"/>
+                    FontSize="13"
+                    IsCancel="True"/>
             <Button Content="{x:Static res:Resources.AddBookDialog_AddButton}"
                     Command="{Binding SaveCommand}"
                     FontSize="13"

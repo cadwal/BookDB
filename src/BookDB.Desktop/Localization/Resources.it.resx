@@ -2042,6 +2042,42 @@ Potenziali duplicati: {3}  |  Con copertine: {4}</value>
   <data name="Menu_Help" xml:space="preserve">
     <value>_Guida</value>
   </data>
+  <data name="Menu_Help_KeyboardShortcuts" xml:space="preserve">
+    <value>Scorciatoie da _tastiera</value>
+  </data>
+  <data name="Menu_Help_FieldGlossary" xml:space="preserve">
+    <value>Glossario dei _campi</value>
+  </data>
+  <data name="Menu_Help_ImportGuide" xml:space="preserve">
+    <value>_Guida all'importazione</value>
+  </data>
+  <data name="Menu_Help_DataSources" xml:space="preserve">
+    <value>Informazioni sulle _fonti dati</value>
+  </data>
+  <data name="Menu_Help_RemoteDatabases" xml:space="preserve">
+    <value>Database _remoti</value>
+  </data>
+  <data name="Help_WindowTitle" xml:space="preserve">
+    <value>Guida</value>
+  </data>
+  <data name="Help_Tab_KeyboardShortcuts" xml:space="preserve">
+    <value>Scorciatoie da tastiera</value>
+  </data>
+  <data name="Help_Tab_FieldGlossary" xml:space="preserve">
+    <value>Glossario dei campi</value>
+  </data>
+  <data name="Help_Tab_ImportGuide" xml:space="preserve">
+    <value>Guida all'importazione</value>
+  </data>
+  <data name="Help_Tab_DataSources" xml:space="preserve">
+    <value>Informazioni sulle fonti dati</value>
+  </data>
+  <data name="Help_Tab_RemoteDatabases" xml:space="preserve">
+    <value>Database remoti</value>
+  </data>
+  <data name="Help_RemoteDatabasesLink" xml:space="preserve">
+    <value>Guida: database remoti</value>
+  </data>
   <data name="Menu_AboutBookDB" xml:space="preserve">
     <value>_Informazioni su BookDB…</value>
   </data>
@@ -2458,6 +2494,9 @@ Potenziali duplicati: {3}  |  Con copertine: {4}</value>
   </data>
   <data name="Import_Step1_CollectionCreateFailed" xml:space="preserve">
     <value>Impossibile creare la raccolta. Il nome potrebbe essere già in uso.</value>
+  </data>
+  <data name="Import_Step1_PreviewFailed" xml:space="preserve">
+    <value>Anteprima non riuscita: {0}</value>
   </data>
   <data name="Import_Duplicate_Overwrite" xml:space="preserve">
     <value>Sovrascrivi</value>

@@ -50,7 +50,7 @@
             <TextBlock.Text>
                 <MultiBinding StringFormat="{x:Static res:Resources.BulkEdit_ConfirmSummary}">
                     <Binding Path="SelectedField" />
-                    <Binding Path="SelectedValue.Name" />
+                    <Binding Path="SelectedValueName" />
                     <Binding Path="BookCount" />
                 </MultiBinding>
             </TextBlock.Text>
@@ -66,7 +66,8 @@
                     FontSize="13" />
             <Button Content="{x:Static res:Resources.BulkEdit_Cancel_Button}"
                     Command="{Binding CancelCommand}"
-                    FontSize="13" />
+                    FontSize="13"
+                    IsCancel="True" />
         </StackPanel>
 
     </StackPanel>

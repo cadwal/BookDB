@@ -35,7 +35,8 @@
                 Content="{x:Static res:Resources.ManageLookups_ConfirmMerge}"
                 Command="{Binding ConfirmCommand}"/>
         <Button Content="{x:Static res:Resources.ManageLookups_CancelMerge}"
-                Command="{Binding CancelCommand}"/>
+                Command="{Binding CancelCommand}"
+                IsCancel="True"/>
       </StackPanel>
     </StackPanel>
   </Border>

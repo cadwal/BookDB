@@ -5,7 +5,6 @@
         xmlns:converters="using:BookDB.Desktop.Converters"
         xmlns:behaviors="using:BookDB.Desktop.Behaviors"
         xmlns:res="using:BookDB.Desktop.Localization"
-        xmlns:svg="using:Avalonia.Svg.Skia"
         x:Class="BookDB.Desktop.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Title="BookDB"
@@ -38,83 +37,99 @@
                           Command="{Binding BookList.AddBookCommand}"
                           InputGesture="Ctrl+N">
                     <MenuItem.Icon>
-                        <Image Width="16" Height="16">
-                            <Image.Source>
-                                <svg:SvgImage Source="avares://BookDB.Desktop/Assets/Icons/add.svg" Css="{DynamicResource IconCssSuccess}" />
-                            </Image.Source>
-                        </Image>
+                        <Image Width="16" Height="16" Source="{StaticResource Icon.Add}" />
                     </MenuItem.Icon>
                 </MenuItem>
                 <Separator />
-                <MenuItem Header="{x:Static res:Resources.Menu_Backup}" Command="{Binding BackupCommand}"/>
-                <MenuItem Header="{x:Static res:Resources.Menu_RestoreBackup}"  Command="{Binding RestoreCommand}"/>
+                <MenuItem Header="{x:Static res:Resources.Menu_Backup}" Command="{Binding BackupCommand}">
+                    <MenuItem.Icon>
+                        <Image Width="16" Height="16" Source="{StaticResource Icon.Archive}" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="{x:Static res:Resources.Menu_RestoreBackup}"  Command="{Binding RestoreCommand}">
+                    <MenuItem.Icon>
+                        <Image Width="16" Height="16" Source="{StaticResource Icon.History}" />
+                    </MenuItem.Icon>
+                </MenuItem>
                 <Separator />
                 <MenuItem Header="{x:Static res:Resources.Menu_ImportReaderware}"
                           Command="{Binding ImportFromReaderwareCommand}">
                     <MenuItem.Icon>
-                        <Image Width="16" Height="16">
-                            <Image.Source>
-                                <svg:SvgImage Source="avares://BookDB.Desktop/Assets/Icons/arrow-download.svg" Css="{DynamicResource IconCssAccent}" />
-                            </Image.Source>
-                        </Image>
+                        <Image Width="16" Height="16" Source="{StaticResource Icon.ArrowImport}" />
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem Header="{x:Static res:Resources.Menu_ImportReaderwareDatabase}"
                           Command="{Binding ImportFromReaderwareDatabaseCommand}">
                     <MenuItem.Icon>
-                        <Image Width="16" Height="16">
-                            <Image.Source>
-                                <svg:SvgImage Source="avares://BookDB.Desktop/Assets/Icons/arrow-download.svg" Css="{DynamicResource IconCssAccent}" />
-                            </Image.Source>
-                        </Image>
+                        <Image Width="16" Height="16" Source="{StaticResource Icon.ArrowImport}" />
                     </MenuItem.Icon>
                 </MenuItem>
                 <Separator />
-                <MenuItem Header="{x:Static res:Resources.Menu_ExportCsv}"               Command="{Binding ExportCsvCommand}"/>
-                <MenuItem Header="{x:Static res:Resources.Menu_PrintList}"           Command="{Binding PrintListCommand}"/>
+                <MenuItem Header="{x:Static res:Resources.Menu_ExportCsv}"               Command="{Binding ExportCsvCommand}">
+                    <MenuItem.Icon>
+                        <Image Width="16" Height="16" Source="{StaticResource Icon.DocumentArrowUp}" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="{x:Static res:Resources.Menu_PrintList}"           Command="{Binding PrintListCommand}">
+                    <MenuItem.Icon>
+                        <Image Width="16" Height="16" Source="{StaticResource Icon.Print}" />
+                    </MenuItem.Icon>
+                </MenuItem>
                 <Separator />
                 <MenuItem Header="{x:Static res:Resources.Menu_Exit}"
                           Command="{Binding ExitCommand}"
-                          InputGesture="Alt+F4" />
+                          InputGesture="Alt+F4">
+                    <MenuItem.Icon>
+                        <Image Width="16" Height="16" Source="{StaticResource Icon.ArrowExit}" />
+                    </MenuItem.Icon>
+                </MenuItem>
             </MenuItem>
             <MenuItem Header="{x:Static res:Resources.Menu_Edit}">
                 <MenuItem Header="{x:Static res:Resources.Menu_EditBook}"
                           Command="{Binding BookList.EditBookCommand}"
                           InputGesture="F2">
                     <MenuItem.Icon>
-                        <Image Width="16" Height="16">
-                            <Image.Source>
-                                <svg:SvgImage Source="avares://BookDB.Desktop/Assets/Icons/edit.svg" Css="{DynamicResource IconCssAccent}" />
-                            </Image.Source>
-                        </Image>
+                        <Image Width="16" Height="16" Source="{StaticResource Icon.Edit}" />
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem Header="{x:Static res:Resources.Menu_DeleteBooks}"
                           Command="{Binding BookList.DeleteBooksCommand}"
                           InputGesture="Delete">
                     <MenuItem.Icon>
-                        <Image Width="16" Height="16">
-                            <Image.Source>
-                                <svg:SvgImage Source="avares://BookDB.Desktop/Assets/Icons/delete.svg" Css="{DynamicResource IconCssDanger}" />
-                            </Image.Source>
-                        </Image>
+                        <Image Width="16" Height="16" Source="{StaticResource Icon.Delete}" />
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem Header="{x:Static res:Resources.Menu_DuplicateBook}"
                           Command="{Binding BookList.DuplicateBookCommand}"
-                          InputGesture="Ctrl+D" />
+                          InputGesture="Ctrl+D">
+                    <MenuItem.Icon>
+                        <Image Width="16" Height="16" Source="{StaticResource Icon.DocumentCopy}" />
+                    </MenuItem.Icon>
+                </MenuItem>
                 <Separator />
                 <MenuItem Header="{x:Static res:Resources.Menu_BulkEdit}"
-                          Command="{Binding BookList.BulkEditCommand}" />
+                          Command="{Binding BookList.BulkEditCommand}">
+                    <MenuItem.Icon>
+                        <Image Width="16" Height="16" Source="{StaticResource Icon.TableEdit}" />
+                    </MenuItem.Icon>
+                </MenuItem>
                 <Separator />
                 <MenuItem Header="{x:Static res:Resources.Menu_AdvancedSearch}"
                           Command="{Binding BookList.AdvancedSearchCommand}"
-                          InputGesture="Ctrl+Shift+F" />
+                          InputGesture="Ctrl+Shift+F">
+                    <MenuItem.Icon>
+                        <Image Width="16" Height="16" Source="{StaticResource Icon.Filter}" />
+                    </MenuItem.Icon>
+                </MenuItem>
             </MenuItem>
             <MenuItem Header="{x:Static res:Resources.Menu_View}">
                 <MenuItem Header="{x:Static res:Resources.Menu_FullDetails}"
                           Command="{Binding BookList.OpenFullDetailsCommand}"
-                          InputGesture="Ctrl+Return" />
+                          InputGesture="Ctrl+Return">
+                    <MenuItem.Icon>
+                        <Image Width="16" Height="16" Source="{StaticResource Icon.Open}" />
+                    </MenuItem.Icon>
+                </MenuItem>
                 <Separator />
                 <MenuItem Header="{x:Static res:Resources.Menu_ShowThumbnail}"
                           ToggleType="CheckBox"
@@ -151,38 +166,54 @@
             <MenuItem Header="{x:Static res:Resources.Menu_Tools}">
                 <MenuItem Header="{x:Static res:Resources.Menu_CatalogByIsbn}"
                           Command="{Binding CatalogByIsbnCommand}"
-                          InputGesture="Ctrl+I" />
+                          InputGesture="Ctrl+I">
+                    <MenuItem.Icon>
+                        <Image Width="16" Height="16" Source="{StaticResource Icon.BarcodeScanner}" />
+                    </MenuItem.Icon>
+                </MenuItem>
                 <Separator />
                 <MenuItem Header="{x:Static res:Resources.Menu_RecatalogSelected}"
                           Command="{Binding RecatalogSelectedCommand}">
                     <MenuItem.Icon>
-                        <Image Width="16" Height="16">
-                            <Image.Source>
-                                <svg:SvgImage Source="avares://BookDB.Desktop/Assets/Icons/arrow-sync.svg" Css="{DynamicResource IconCssAccent}" />
-                            </Image.Source>
-                        </Image>
+                        <Image Width="16" Height="16" Source="{StaticResource Icon.BookArrowClockwise}" />
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem Header="{x:Static res:Resources.Menu_RecatalogAll}"
                           Command="{Binding RecatalogAllCommand}">
                     <MenuItem.Icon>
-                        <Image Width="16" Height="16">
-                            <Image.Source>
-                                <svg:SvgImage Source="avares://BookDB.Desktop/Assets/Icons/arrow-sync.svg" Css="{DynamicResource IconCssAccent}" />
-                            </Image.Source>
-                        </Image>
+                        <Image Width="16" Height="16" Source="{StaticResource Icon.BookArrowClockwise}" />
                     </MenuItem.Icon>
                 </MenuItem>
                 <Separator/>
                 <MenuItem Header="{x:Static res:Resources.Menu_ManageLookups}"
-                          Command="{Binding OpenManageLookupsCommand}"/>
+                          Command="{Binding OpenManageLookupsCommand}">
+                    <MenuItem.Icon>
+                        <Image Width="16" Height="16" Source="{StaticResource Icon.TextBulletListSquare}" />
+                    </MenuItem.Icon>
+                </MenuItem>
                 <MenuItem Header="{x:Static res:Resources.Menu_ManageBorrowers}"
-                          Command="{Binding OpenManageBorrowersCommand}"/>
+                          Command="{Binding OpenManageBorrowersCommand}">
+                    <MenuItem.Icon>
+                        <Image Width="16" Height="16" Source="{StaticResource Icon.PeopleList}" />
+                    </MenuItem.Icon>
+                </MenuItem>
                 <Separator/>
-                <MenuItem Header="{x:Static res:Resources.Menu_Statistics}"  Command="{Binding OpenStatisticsCommand}"/>
+                <MenuItem Header="{x:Static res:Resources.Menu_Statistics}"  Command="{Binding OpenStatisticsCommand}">
+                    <MenuItem.Icon>
+                        <Image Width="16" Height="16" Source="{StaticResource Icon.ChartMultiple}" />
+                    </MenuItem.Icon>
+                </MenuItem>
                 <Separator/>
-                <MenuItem Header="{x:Static res:Resources.Menu_Maintenance}"  Command="{Binding OpenMaintenanceCommand}"/>
-                <MenuItem Header="{x:Static res:Resources.Menu_Settings}"  Command="{Binding OpenSettingsCommand}"/>
+                <MenuItem Header="{x:Static res:Resources.Menu_Maintenance}"  Command="{Binding OpenMaintenanceCommand}">
+                    <MenuItem.Icon>
+                        <Image Width="16" Height="16" Source="{StaticResource Icon.WrenchScrewdriver}" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="{x:Static res:Resources.Menu_Settings}"  Command="{Binding OpenSettingsCommand}">
+                    <MenuItem.Icon>
+                        <Image Width="16" Height="16" Source="{StaticResource Icon.Settings}" />
+                    </MenuItem.Icon>
+                </MenuItem>
             </MenuItem>
             <MenuItem x:Name="WindowMenuParent"
                       Header="{x:Static res:Resources.Menu_Window}"
@@ -212,16 +243,42 @@
             </MenuItem>
             <MenuItem Header="{x:Static res:Resources.Menu_Help}">
                 <MenuItem Header="{x:Static res:Resources.Menu_Help_KeyboardShortcuts}"
-                          Command="{Binding OpenHelpKeyboardShortcutsCommand}" />
+                          Command="{Binding OpenHelpKeyboardShortcutsCommand}">
+                    <MenuItem.Icon>
+                        <Image Width="16" Height="16" Source="{StaticResource Icon.Keyboard}" />
+                    </MenuItem.Icon>
+                </MenuItem>
                 <MenuItem Header="{x:Static res:Resources.Menu_Help_FieldGlossary}"
-                          Command="{Binding OpenHelpFieldGlossaryCommand}" />
+                          Command="{Binding OpenHelpFieldGlossaryCommand}">
+                    <MenuItem.Icon>
+                        <Image Width="16" Height="16" Source="{StaticResource Icon.BookQuestionMark}" />
+                    </MenuItem.Icon>
+                </MenuItem>
                 <MenuItem Header="{x:Static res:Resources.Menu_Help_ImportGuide}"
-                          Command="{Binding OpenHelpImportGuideCommand}" />
+                          Command="{Binding OpenHelpImportGuideCommand}">
+                    <MenuItem.Icon>
+                        <Image Width="16" Height="16" Source="{StaticResource Icon.DocumentArrowDown}" />
+                    </MenuItem.Icon>
+                </MenuItem>
                 <MenuItem Header="{x:Static res:Resources.Menu_Help_DataSources}"
-                          Command="{Binding OpenHelpDataSourcesCommand}" />
+                          Command="{Binding OpenHelpDataSourcesCommand}">
+                    <MenuItem.Icon>
+                        <Image Width="16" Height="16" Source="{StaticResource Icon.Globe}" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="{x:Static res:Resources.Menu_Help_RemoteDatabases}"
+                          Command="{Binding OpenHelpRemoteDatabasesCommand}">
+                    <MenuItem.Icon>
+                        <Image Width="16" Height="16" Source="{StaticResource Icon.DatabaseLink}" />
+                    </MenuItem.Icon>
+                </MenuItem>
                 <Separator />
                 <MenuItem Header="{x:Static res:Resources.Menu_AboutBookDB}"
-                          Command="{Binding ShowAboutCommand}" />
+                          Command="{Binding ShowAboutCommand}">
+                    <MenuItem.Icon>
+                        <Image Width="16" Height="16" Source="{StaticResource Icon.Info}" />
+                    </MenuItem.Icon>
+                </MenuItem>
             </MenuItem>
         </Menu>
 
@@ -236,11 +293,7 @@
                         ToolTip.Tip="{x:Static res:Resources.MainWindow_Toolbar_NewBook}">
                     <StackPanel Orientation="Horizontal" Spacing="4">
                         <Border Background="{DynamicResource BrushIconChipSuccess}" CornerRadius="4" Padding="2">
-                            <Image Width="20" Height="20">
-                                <Image.Source>
-                                    <svg:SvgImage Source="avares://BookDB.Desktop/Assets/Icons/add.svg" Css="{DynamicResource IconCssSuccess}" />
-                                </Image.Source>
-                            </Image>
+                            <Image Width="20" Height="20" Source="{StaticResource Icon.Add}" />
                         </Border>
                         <TextBlock Text="{x:Static res:Resources.MainWindow_Toolbar_NewBook}"
                                    VerticalAlignment="Center"
@@ -251,11 +304,7 @@
                         Command="{Binding CatalogByIsbnCommand}"
                         ToolTip.Tip="{x:Static res:Resources.MainWindow_Toolbar_CatalogByIsbn}">
                     <StackPanel Orientation="Horizontal" Spacing="4">
-                        <Image Width="20" Height="20">
-                            <Image.Source>
-                                <svg:SvgImage Source="avares://BookDB.Desktop/Assets/Icons/search.svg" Css="{DynamicResource IconCss}" />
-                            </Image.Source>
-                        </Image>
+                        <Image Width="20" Height="20" Source="{StaticResource Icon.BarcodeScanner}" />
                         <TextBlock Text="{x:Static res:Resources.MainWindow_Toolbar_CatalogByIsbn}"
                                    VerticalAlignment="Center"
                                    FontSize="13" />

@@ -10,6 +10,7 @@ using BookDB.Data.MySql;
 using BookDB.Data.PostgreSQL;
 using BookDB.Desktop.Localization;
 using BookDB.Desktop.Services;
+using BookDB.Help;
 using BookDB.Models;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -32,6 +33,7 @@ public sealed partial class DatabaseSettingsViewModel : ObservableObject
     private readonly IPostgresConnectionProber _postgresProber;
     private readonly IMySqlConnectionProber _mySqlProber;
     private readonly ISecretStore _secretStore;
+    private readonly IWindowService _windowService;
 
     // The selected backend is the single source of truth; the three Is*Selected flags are computed views of it, so
     // selecting one engine necessarily deselects the others (no separate mutually-exclusive booleans to keep in sync).
@@ -143,12 +145,14 @@ public sealed partial class DatabaseSettingsViewModel : ObservableObject
         SecretStoreAvailability secretStoreAvailability,
         IPostgresConnectionProber postgresProber,
         IMySqlConnectionProber mySqlProber,
-        ISecretStore secretStore)
+        ISecretStore secretStore,
+        IWindowService windowService)
     {
         _bootstrapConfig = bootstrapConfig;
         _postgresProber = postgresProber;
         _mySqlProber = mySqlProber;
         _secretStore = secretStore;
+        _windowService = windowService;
         IsKeyringAvailable = secretStoreAvailability.IsAvailable;
 
         _postgresSslModes = RemoteConnectionEditor.PostgresSslModes();
@@ -156,6 +160,9 @@ public sealed partial class DatabaseSettingsViewModel : ObservableObject
 
         SelectedSslMode = _postgresSslModes.First(s => s.Value == RemoteConnectionEditor.DefaultSslMode(_selectedBackend));
     }
+
+    [RelayCommand]
+    private void OpenRemoteDatabasesHelp() => _windowService.OpenHelpWindow(HelpTab.RemoteDatabases);
 
     /// <summary>Probes the entered server parameters with the engine's prober and shows an inline, classified result.</summary>
     [RelayCommand(CanExecute = nameof(CanTestConnection))]

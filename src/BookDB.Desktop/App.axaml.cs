@@ -17,6 +17,11 @@ public partial class App : Application
 {
     private AppHost? _appHost;
 
+    /// <summary>Set by the headless UI-test harness so app init loads resources/themes (via <see cref="Initialize"/>)
+    /// but skips the production startup (AppHost.Build, single-instance gate, splash, connectivity gate, MainWindow).
+    /// Tests build their own DI host and create their own windows.</summary>
+    public static bool HeadlessTestMode { get; set; }
+
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
@@ -24,6 +29,12 @@ public partial class App : Application
 
     public override async void OnFrameworkInitializationCompleted()
     {
+        if (HeadlessTestMode)
+        {
+            base.OnFrameworkInitializationCompleted();
+            return;
+        }
+
         BindingPlugins.DataValidators.RemoveAt(0);
 
         _appHost = AppHost.Build();

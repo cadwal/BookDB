@@ -60,7 +60,8 @@ public sealed partial class SettingsWindowViewModel : ObservableObject
         ISecretStore secretStore,
         IApplicationRestartService restartService,
         IBackupStrategy backupStrategy,
-        IMessenger messenger)
+        IMessenger messenger,
+        IWindowService windowService)
     {
         _settingsService = settingsService;
         _lookupService   = lookupService;
@@ -77,7 +78,8 @@ public sealed partial class SettingsWindowViewModel : ObservableObject
         ApplicationAccessTab = new SettingsApplicationAccessTabViewModel(shortcutService);
         AppearanceTab = new SettingsAppearanceTabViewModel(bootstrapConfig);
         DatabaseTab = new DatabaseSettingsViewModel(
-            bootstrapConfig, secretStoreAvailability, connectionProber, mySqlConnectionProber, secretStore);
+            bootstrapConfig, secretStoreAvailability, connectionProber, mySqlConnectionProber, secretStore,
+            windowService);
     }
 
     public async Task InitializeAsync(CancellationToken ct = default)

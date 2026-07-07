@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/semver-spec
 
 ## [Unreleased]
 
+## [2.2.0] - 2026-07-07
+
+### Added
+- In-app help for remote databases: a new **Remote Databases** topic in the Help window (Help → Remote Databases) covering how to choose a database backend and why an OS keyring is required, the server version requirements, moving your library between backends, using the same library from several computers, and how backups behave on a server library — translated into all supported languages.
+- "Help: remote databases" links in Settings → Database and Tools → Maintenance → Move library jump straight to that topic. The Move library link keeps working while a move is running.
+
+### Changed
+- The book list's right-click menu now shows icons, and several menu icons were replaced with clearer ones: Backup (archive box), Import (import arrow), Catalog by ISBN (barcode scanner — menu and toolbar now match), Re-catalog (book with a refresh arrow), and Full details / Open in window (opening panel). Every icon follows the active theme's colours.
+
+### Fixed
+- Opening a book in its own window (Full details / Open in window) no longer asks to save changes when nothing was edited — the window used to count its own start-up as an edit for any book with a publisher, format, or series set.
+- Portuguese help topics now load their Brazilian and European translations; previously every Help tab fell back to English for Portuguese users.
+- The Help menu items and Help window tab titles are now translated in German, Spanish, French, Italian, Dutch, and Portuguese — they previously appeared in English in those languages.
+- European Portuguese texts modernised to post-reform (Acordo Ortográfico de 1990) spelling, and assorted translation fixes in Swedish, Dutch, German, and Spanish (register and compound-word corrections).
+
 ## [2.1.0] - 2026-06-30
 
 ### Added
@@ -83,10 +98,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/semver-spec
 - Multi-language UI: EN, SV, DE, ES, FR, NL, IT, PT-BR, PT-PT
 - Help system with per-screen contextual help
 
-[Unreleased]: https://github.com/cadwal/BookDB/compare/v2.1.0...HEAD
+[Unreleased]: https://github.com/cadwal/BookDB/compare/v2.2.0...HEAD
 [2.1.0]: https://github.com/cadwal/BookDB/releases/tag/v2.1.0
 [1.1.0]: https://github.com/cadwal/BookDB/releases/tag/v1.1.0
 [1.0.0]: https://github.com/cadwal/BookDB/releases/tag/v1.0.0
 [1.2.0]: https://github.com/cadwal/BookDB/releases/tag/v1.2.0
 [1.2.1]: https://github.com/cadwal/BookDB/releases/tag/v1.2.1
 [2.0.0]: https://github.com/cadwal/BookDB/releases/tag/v2.0.0
+[2.2.0]: https://github.com/cadwal/BookDB/releases/tag/v2.2.0

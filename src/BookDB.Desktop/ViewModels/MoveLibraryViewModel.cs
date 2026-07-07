@@ -13,6 +13,7 @@ using BookDB.Data.MySql;
 using BookDB.Data.PostgreSQL;
 using BookDB.Desktop.Localization;
 using BookDB.Desktop.Services;
+using BookDB.Help;
 using BookDB.Logic.Services;
 using BookDB.Models;
 using BookDB.Models.Interfaces;
@@ -43,6 +44,7 @@ public sealed partial class MoveLibraryViewModel : ObservableObject
     private readonly IFilePickerService _filePicker;
     private readonly ISecretStore _secretStore;
     private readonly IApplicationRestartService _restartService;
+    private readonly IWindowService _windowService;
 
     public MoveLibraryViewModel(
         IDbContextFactory<BookDbContext> source,
@@ -55,7 +57,8 @@ public sealed partial class MoveLibraryViewModel : ObservableObject
         IBackupService backupService,
         IFilePickerService filePicker,
         ISecretStore secretStore,
-        IApplicationRestartService restartService)
+        IApplicationRestartService restartService,
+        IWindowService windowService)
     {
         _source = source;
         _appSettings = appSettings;
@@ -68,6 +71,7 @@ public sealed partial class MoveLibraryViewModel : ObservableObject
         _filePicker = filePicker;
         _secretStore = secretStore;
         _restartService = restartService;
+        _windowService = windowService;
 
         _postgresSslModes = RemoteConnectionEditor.PostgresSslModes();
         _mySqlSslModes = RemoteConnectionEditor.MySqlSslModes();
@@ -162,6 +166,9 @@ public sealed partial class MoveLibraryViewModel : ObservableObject
     [ObservableProperty] private string? _failureMessage;
 
     public bool CanInteract => !IsRunning;
+
+    [RelayCommand]
+    private void OpenRemoteDatabasesHelp() => _windowService.OpenHelpWindow(HelpTab.RemoteDatabases);
 
     [RelayCommand(CanExecute = nameof(CanTest))]
     private async Task TestConnectionAsync()

@@ -1767,6 +1767,11 @@ namespace BookDB.Desktop.Localization
             get { return ResourceManager.GetString("Import_Step1_CollectionCreateFailed", resourceCulture) ?? "Could not create the collection. The name may already be in use."; }
         }
 
+        public static string Import_Step1_PreviewFailed
+        {
+            get { return ResourceManager.GetString("Import_Step1_PreviewFailed", resourceCulture) ?? "Preview failed: {0}"; }
+        }
+
         public static string Import_Step1_FileLabel
         {
             get { return ResourceManager.GetString("Import_Step1_FileLabel", resourceCulture) ?? "Backup file or folder:"; }
@@ -3528,6 +3533,21 @@ namespace BookDB.Desktop.Localization
         public static string Help_Tab_DataSources
         {
             get { return ResourceManager.GetString("Help_Tab_DataSources", resourceCulture) ?? "About Data Sources"; }
+        }
+
+        public static string Menu_Help_RemoteDatabases
+        {
+            get { return ResourceManager.GetString("Menu_Help_RemoteDatabases", resourceCulture) ?? "_Remote Databases"; }
+        }
+
+        public static string Help_Tab_RemoteDatabases
+        {
+            get { return ResourceManager.GetString("Help_Tab_RemoteDatabases", resourceCulture) ?? "Remote Databases"; }
+        }
+
+        public static string Help_RemoteDatabasesLink
+        {
+            get { return ResourceManager.GetString("Help_RemoteDatabasesLink", resourceCulture) ?? "Help: remote databases"; }
         }
 
         public static string Menu_AboutBookDB

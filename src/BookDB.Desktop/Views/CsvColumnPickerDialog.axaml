@@ -32,7 +32,7 @@
                     Spacing="8"
                     Margin="0,12,0,0">
             <Button Classes="accent" Content="{x:Static res:Resources.CsvPicker_ExportButton}" Command="{Binding ExportCommand}"/>
-            <Button Content="{x:Static res:Resources.Common_Cancel}"                  Command="{Binding CancelCommand}"/>
+            <Button Content="{x:Static res:Resources.Common_Cancel}"                  Command="{Binding CancelCommand}" IsCancel="True"/>
         </StackPanel>
 
         <ScrollViewer>

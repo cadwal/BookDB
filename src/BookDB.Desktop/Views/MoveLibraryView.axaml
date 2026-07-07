@@ -15,12 +15,19 @@
        action bar is pinned, and the progress log (the only star row) absorbs all leftover height —
        so it grows when the window is enlarged and shrinks when it is reduced. The dialog MinHeight
        guarantees the form fits, so no scroll region is needed (matching the integrity tab). -->
-  <Grid RowDefinitions="Auto,Auto,Auto,*">
+  <Grid RowDefinitions="Auto,Auto,Auto,Auto,*">
 
-    <StackPanel Grid.Row="0" Spacing="10" Margin="16,16,16,8" IsEnabled="{Binding CanInteract}">
-
+    <!-- Header row lives outside the CanInteract gate so the help link stays usable during a move -->
+    <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="16,16,16,0">
       <TextBlock Text="{x:Static res:Resources.MoveLibrary_Intro}"
-                 FontSize="12" Opacity="0.8" TextWrapping="Wrap"/>
+                 FontSize="12" Opacity="0.8" TextWrapping="Wrap" VerticalAlignment="Top"/>
+      <Button Grid.Column="1" Classes="helpLink" VerticalAlignment="Top" Margin="12,0,0,0"
+              Command="{Binding OpenRemoteDatabasesHelpCommand}">
+        <TextBlock Text="{x:Static res:Resources.Help_RemoteDatabasesLink}" TextDecorations="Underline"/>
+      </Button>
+    </Grid>
+
+    <StackPanel Grid.Row="1" Spacing="10" Margin="16,10,16,8" IsEnabled="{Binding CanInteract}">
 
       <!-- Source (read-only) -->
       <TextBlock Text="{x:Static res:Resources.MoveLibrary_SourceLabel}" FontSize="12" FontWeight="SemiBold"/>
@@ -67,7 +74,7 @@
       </StackPanel>
 
     <!-- Pinned action bar: the validation steps and the primary Move action. -->
-    <Border Grid.Row="1" Padding="16,10" BorderThickness="0,1,0,0" BorderBrush="{DynamicResource BrushBorder}"
+    <Border Grid.Row="2" Padding="16,10" BorderThickness="0,1,0,0" BorderBrush="{DynamicResource BrushBorder}"
             IsEnabled="{Binding CanInteract}">
       <StackPanel Spacing="8">
 
@@ -107,9 +114,9 @@
     <!-- Progress log (pinned below the action bar). No MinHeight: it shares the leftover space with
          the form via star sizing, so it grows when the window is enlarged and shrinks (never clips
          past the footer) when the window is small. -->
-    <TextBlock Grid.Row="2" Text="{x:Static res:Resources.MoveLibrary_ProgressHeader}"
+    <TextBlock Grid.Row="3" Text="{x:Static res:Resources.MoveLibrary_ProgressHeader}"
                FontSize="12" FontWeight="SemiBold" Margin="16,8,16,4"/>
-    <Border Grid.Row="3" Margin="16,0,16,16"
+    <Border Grid.Row="4" Margin="16,0,16,16"
             BorderBrush="{DynamicResource BrushBorder}" BorderThickness="1" CornerRadius="4">
       <TextBox Text="{Binding LogText}" IsReadOnly="True" AcceptsReturn="True" TextWrapping="Wrap"
                FontFamily="Consolas, monospace" FontSize="11" BorderThickness="0" Background="Transparent"

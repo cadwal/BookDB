@@ -6,6 +6,7 @@ using BookDB.Desktop.Services;
 using BookDB.Desktop.Tests.Helpers;
 using BookDB.Desktop.ViewModels;
 using BookDB.Models;
+using NSubstitute;
 using Xunit;
 
 namespace BookDB.Desktop.Tests.ViewModels;
@@ -88,7 +89,8 @@ public sealed class DatabaseSettingsViewModelTests
             availability,
             prober ?? new StubProber(DefaultProbe),
             mySqlProber ?? new StubMySqlProber(DefaultProbe),
-            secretStore ?? new FakeSecretStore());
+            secretStore ?? new FakeSecretStore(),
+            Substitute.For<IWindowService>());
     }
 
     [Fact]

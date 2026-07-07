@@ -2042,6 +2042,42 @@ Doublons potentiels : {3}  |  Avec couvertures : {4}</value>
   <data name="Menu_Help" xml:space="preserve">
     <value>_Aide</value>
   </data>
+  <data name="Menu_Help_KeyboardShortcuts" xml:space="preserve">
+    <value>_Raccourcis clavier</value>
+  </data>
+  <data name="Menu_Help_FieldGlossary" xml:space="preserve">
+    <value>_Glossaire des champs</value>
+  </data>
+  <data name="Menu_Help_ImportGuide" xml:space="preserve">
+    <value>Guide d'_importation</value>
+  </data>
+  <data name="Menu_Help_DataSources" xml:space="preserve">
+    <value>À propos des _sources de données</value>
+  </data>
+  <data name="Menu_Help_RemoteDatabases" xml:space="preserve">
+    <value>Bases de données _distantes</value>
+  </data>
+  <data name="Help_WindowTitle" xml:space="preserve">
+    <value>Aide</value>
+  </data>
+  <data name="Help_Tab_KeyboardShortcuts" xml:space="preserve">
+    <value>Raccourcis clavier</value>
+  </data>
+  <data name="Help_Tab_FieldGlossary" xml:space="preserve">
+    <value>Glossaire des champs</value>
+  </data>
+  <data name="Help_Tab_ImportGuide" xml:space="preserve">
+    <value>Guide d'importation</value>
+  </data>
+  <data name="Help_Tab_DataSources" xml:space="preserve">
+    <value>À propos des sources de données</value>
+  </data>
+  <data name="Help_Tab_RemoteDatabases" xml:space="preserve">
+    <value>Bases de données distantes</value>
+  </data>
+  <data name="Help_RemoteDatabasesLink" xml:space="preserve">
+    <value>Aide : bases de données distantes</value>
+  </data>
   <data name="Menu_AboutBookDB" xml:space="preserve">
     <value>_À propos de BookDB…</value>
   </data>
@@ -2458,6 +2494,9 @@ Doublons potentiels : {3}  |  Avec couvertures : {4}</value>
   </data>
   <data name="Import_Step1_CollectionCreateFailed" xml:space="preserve">
     <value>Impossible de créer la collection. Le nom est peut-être déjà utilisé.</value>
+  </data>
+  <data name="Import_Step1_PreviewFailed" xml:space="preserve">
+    <value>Échec de l'aperçu : {0}</value>
   </data>
   <data name="Import_Duplicate_Overwrite" xml:space="preserve">
     <value>Remplacer</value>

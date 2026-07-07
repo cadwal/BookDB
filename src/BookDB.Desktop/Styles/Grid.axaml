@@ -30,7 +30,7 @@
         <Setter Property="Foreground" Value="{DynamicResource BrushRowSelectedText}" />
     </Style>
 
-    <!-- Overdue loan row — amber tint (per D-06); CSS class set by OverdueRowHighlightBehavior -->
+    <!-- Overdue loan row — amber tint; class set by OverdueRowHighlightBehavior -->
     <Style Selector="DataGridRow.overdue">
         <Setter Property="Background" Value="{DynamicResource BrushRowOverdue}" />
     </Style>

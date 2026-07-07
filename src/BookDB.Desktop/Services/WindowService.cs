@@ -85,7 +85,7 @@ public sealed class WindowService : IWindowService
 
     public async Task<bool?> ShowDeleteConfirmationAsync(string message)
     {
-        var dialog = BuildDeleteConfirmationDialog(message);
+        var dialog = Helpers.AppDialogs.BuildDeleteConfirmationDialog(message);
         return await dialog.ShowDialog<bool?>(GetMainWindow());
     }
 
@@ -105,6 +105,12 @@ public sealed class WindowService : IWindowService
         viewModel.CloseWindow = () => window.Close();
         _fullDetailsWindows[bookId] = window;
         window.Show();
+        // The first binding pass coerces every lookup ComboBox's SelectedValue (null, then back), which
+        // lands in the VM as edits — the window would open already dirty and guard its close. Reset once
+        // the initial realization settles; no user input can arrive before the idle callback runs.
+        Avalonia.Threading.Dispatcher.UIThread.Post(
+            () => viewModel.HasUnsavedChanges = false,
+            Avalonia.Threading.DispatcherPriority.ApplicationIdle);
         _secondaryWindows.Add(window);
         var mainWindowViewModel = _serviceProvider.GetRequiredService<MainWindowViewModel>();
         var openWindowEntry = new OpenWindowEntry(window.Title ?? "Book Details", new RelayCommand(() => window?.Activate()), WindowCategory.BookEdit);
@@ -159,7 +165,7 @@ public sealed class WindowService : IWindowService
 
     public async Task<DuplicateIsbnResult> ShowDuplicateIsbnDialogAsync(string isbn, string existingTitle)
     {
-        var dialog = BuildDuplicateIsbnDialog(isbn, existingTitle);
+        var dialog = Helpers.AppDialogs.BuildDuplicateIsbnDialog(isbn, existingTitle);
         var result = await dialog.ShowDialog<DuplicateIsbnResult?>(GetMainWindow());
         return result ?? DuplicateIsbnResult.Cancel;
     }
@@ -435,7 +441,7 @@ public sealed class WindowService : IWindowService
 
     public async Task<string?> ShowIsbnPromptDialogAsync()
     {
-        var dialog = BuildIsbnPromptDialog(out var textBox);
+        var dialog = Helpers.AppDialogs.BuildIsbnPromptDialog();
         var result = await dialog.ShowDialog<string?>(GetMainWindow());
         return result;
     }
@@ -453,128 +459,6 @@ public sealed class WindowService : IWindowService
         var dialog = Helpers.AppDialogs.BuildShutdownWarningDialog(
             Localization.Resources.Shutdown_CloseApplication, Localization.Resources.Shutdown_KeepRunning);
         return await dialog.ShowDialog<bool?>(GetMainWindow());
-    }
-
-    private static Window BuildIsbnPromptDialog(out TextBox textBox)
-    {
-        var dialog = new Window
-        {
-            Title = Localization.Resources.Recatalog_NoIsbn_Title,
-            SizeToContent = SizeToContent.WidthAndHeight,
-            CanResize = false,
-            WindowStartupLocation = WindowStartupLocation.CenterOwner,
-            Padding = new Thickness(24),
-            MinWidth = 340
-        };
-
-        var input = new TextBox
-        {
-            Watermark = Localization.Resources.Recatalog_NoIsbn_Watermark,
-            Width = 280,
-            Margin = new Thickness(0, 8, 0, 0)
-        };
-        textBox = input;
-
-        var okBtn = new Button
-        {
-            Content = Localization.Resources.Recatalog_NoIsbn_LookUp,
-            HorizontalAlignment = HorizontalAlignment.Stretch
-        };
-        okBtn.Classes.Add("accent");
-        okBtn.Click += (_, _) =>
-        {
-            var isbn = input.Text?.Trim();
-            dialog.Close(string.IsNullOrEmpty(isbn) ? null : isbn);
-        };
-
-        var cancelBtn = new Button
-        {
-            Content = Localization.Resources.Common_Cancel,
-            HorizontalAlignment = HorizontalAlignment.Stretch
-        };
-        cancelBtn.Click += (_, _) => dialog.Close(null);
-
-        var buttonRow = new StackPanel
-        {
-            Orientation = Orientation.Horizontal,
-            HorizontalAlignment = HorizontalAlignment.Right,
-            Spacing = 8,
-            Margin = new Thickness(0, 16, 0, 0)
-        };
-        buttonRow.Children.Add(okBtn);
-        buttonRow.Children.Add(cancelBtn);
-
-        var root = new StackPanel { Spacing = 4 };
-        root.Children.Add(new TextBlock
-        {
-            Text = Localization.Resources.Recatalog_NoIsbn_Body,
-            TextWrapping = TextWrapping.Wrap,
-            MaxWidth = 340
-        });
-        root.Children.Add(input);
-        root.Children.Add(buttonRow);
-
-        dialog.Content = root;
-        return dialog;
-    }
-
-    // --- Dialog builders ---
-
-    private static Window BuildDuplicateIsbnDialog(string isbn, string existingTitle)
-    {
-        var dialog = new Window
-        {
-            Title = Localization.Resources.DuplicateIsbn_Title,
-            SizeToContent = SizeToContent.WidthAndHeight,
-            CanResize = false,
-            WindowStartupLocation = WindowStartupLocation.CenterOwner,
-            Padding = new Thickness(24),
-            MinWidth = 380
-        };
-
-        var updateBtn = new Button
-        {
-            Content = Localization.Resources.DuplicateIsbn_UpdateExisting,
-            HorizontalAlignment = HorizontalAlignment.Stretch
-        };
-        updateBtn.Click += (_, _) => dialog.Close(DuplicateIsbnResult.UpdateExisting);
-
-        var addBtn = new Button
-        {
-            Content = Localization.Resources.DuplicateIsbn_AddAsNew,
-            HorizontalAlignment = HorizontalAlignment.Stretch
-        };
-        addBtn.Click += (_, _) => dialog.Close(DuplicateIsbnResult.AddAsNew);
-
-        var cancelBtn = new Button
-        {
-            Content = Localization.Resources.Common_Cancel,
-            HorizontalAlignment = HorizontalAlignment.Stretch
-        };
-        cancelBtn.Click += (_, _) => dialog.Close(DuplicateIsbnResult.Cancel);
-
-        var buttonRow = new StackPanel
-        {
-            Orientation = Orientation.Horizontal,
-            HorizontalAlignment = HorizontalAlignment.Right,
-            Spacing = 8,
-            Margin = new Thickness(0, 16, 0, 0)
-        };
-        buttonRow.Children.Add(updateBtn);
-        buttonRow.Children.Add(addBtn);
-        buttonRow.Children.Add(cancelBtn);
-
-        var root = new StackPanel { Spacing = 8 };
-        root.Children.Add(new TextBlock
-        {
-            Text = string.Format(Localization.Resources.DuplicateIsbn_Body, isbn, existingTitle),
-            TextWrapping = TextWrapping.Wrap,
-            MaxWidth = 400
-        });
-        root.Children.Add(buttonRow);
-
-        dialog.Content = root;
-        return dialog;
     }
 
     public async Task<bool?> ShowCheckOutDialogAsync(int bookId)
@@ -624,57 +508,6 @@ public sealed class WindowService : IWindowService
             mainWindowViewModel.RemoveOpenWindow(entry);
         };
         _manageBorrowersWindow.Show(GetMainWindow());
-    }
-
-    private static Window BuildDeleteConfirmationDialog(string message)
-    {
-        var dialog = new Window
-        {
-            Title = Localization.Resources.Delete_Dialog_Title,
-            SizeToContent = SizeToContent.WidthAndHeight,
-            CanResize = false,
-            WindowStartupLocation = WindowStartupLocation.CenterOwner,
-            Padding = new Thickness(24),
-            MinWidth = 320
-        };
-
-        var deleteBtn = new Button
-        {
-            Content = Localization.Resources.Delete_Confirm_Button,
-            HorizontalAlignment = HorizontalAlignment.Stretch,
-            Background = Helpers.Palette.Brush("BrushError", Brushes.Red),
-            Foreground = Helpers.Palette.Brush("BrushBadgeText", Brushes.White)
-        };
-        deleteBtn.Click += (_, _) => dialog.Close(true);
-
-        var cancelBtn = new Button
-        {
-            Content = Localization.Resources.Delete_Cancel_Button,
-            HorizontalAlignment = HorizontalAlignment.Stretch
-        };
-        cancelBtn.Click += (_, _) => dialog.Close(false);
-
-        var buttonRow = new StackPanel
-        {
-            Orientation = Orientation.Horizontal,
-            HorizontalAlignment = HorizontalAlignment.Right,
-            Spacing = 8,
-            Margin = new Thickness(0, 16, 0, 0)
-        };
-        buttonRow.Children.Add(deleteBtn);
-        buttonRow.Children.Add(cancelBtn);
-
-        var root = new StackPanel { Spacing = 8 };
-        root.Children.Add(new TextBlock
-        {
-            Text = message,
-            TextWrapping = TextWrapping.Wrap,
-            MaxWidth = 400
-        });
-        root.Children.Add(buttonRow);
-
-        dialog.Content = root;
-        return dialog;
     }
 
     public async Task<bool> ShowConnectDialogAsync(Window owner)

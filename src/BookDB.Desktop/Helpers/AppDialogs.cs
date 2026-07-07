@@ -131,7 +131,10 @@ public static class AppDialogs
 
     public enum BackupConflictChoice { Overwrite, AddSuffix, Cancel }
 
-    public static void ShowInfoDialog(string message)
+    private static Window? MainWindowOwner() =>
+        Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime lt ? lt.MainWindow : null;
+
+    public static Window BuildInfoDialog(string message)
     {
         var dialog = new Window
         {
@@ -161,16 +164,20 @@ public static class AppDialogs
         });
         root.Children.Add(okBtn);
         dialog.Content = root;
-        Window? owner = null;
-        if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime lt)
-            owner = lt.MainWindow;
+        return dialog;
+    }
+
+    public static void ShowInfoDialog(string message)
+    {
+        var dialog = BuildInfoDialog(message);
+        var owner = MainWindowOwner();
         if (owner != null)
             _ = dialog.ShowDialog(owner);
         else
             Log.Warning("ShowInfoDialog called with no main window owner — dialog may not appear");
     }
 
-    public static async Task<bool?> ShowConfirmDialogAsync(string title, string body)
+    public static (Window dialog, Task<bool?> result) BuildConfirmDialog(string title, string body)
     {
         var dialog = new Window
         {
@@ -207,15 +214,19 @@ public static class AppDialogs
         root.Children.Add(btnRow);
         dialog.Content = root;
         dialog.Closed += (_, _) => choice.TrySetResult(null); // closed via window chrome — treat as no choice
-        Window? owner = null;
-        if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime lt)
-            owner = lt.MainWindow;
+        return (dialog, choice.Task);
+    }
+
+    public static async Task<bool?> ShowConfirmDialogAsync(string title, string body)
+    {
+        var (dialog, result) = BuildConfirmDialog(title, body);
+        var owner = MainWindowOwner();
         if (owner == null)
         {
             // No main window yet (startup outage recovery): show non-modally but still await the user's choice,
             // so a restart confirmation actually waits for an answer instead of returning immediately.
             dialog.Show();
-            return await choice.Task;
+            return await result;
         }
         return await dialog.ShowDialog<bool?>(owner);
     }
@@ -224,7 +235,7 @@ public static class AppDialogs
     /// Mid-session write-failure modal: the connection dropped while saving. Retry re-attempts the write; Discard
     /// abandons the unsaved changes. Closing the window defaults to Retry, so closing never silently drops work.
     /// </summary>
-    public static async Task<WriteFailureChoice> ShowWriteFailureDialogAsync(string message)
+    public static (Window dialog, Task<WriteFailureChoice> result) BuildWriteFailureDialog(string message)
     {
         var tcs = new TaskCompletionSource<WriteFailureChoice>();
         var dialog = new Window
@@ -255,22 +266,25 @@ public static class AppDialogs
         root.Children.Add(new TextBlock { Text = message, TextWrapping = TextWrapping.Wrap, MaxWidth = 400 });
         root.Children.Add(btnRow);
         dialog.Content = root;
+        return (dialog, tcs.Task);
+    }
 
-        Window? owner = null;
-        if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime lt)
-            owner = lt.MainWindow;
+    public static async Task<WriteFailureChoice> ShowWriteFailureDialogAsync(string message)
+    {
+        var (dialog, result) = BuildWriteFailureDialog(message);
+        var owner = MainWindowOwner();
         if (owner == null)
             dialog.Show();
         else
             _ = dialog.ShowDialog(owner);
-        return await tcs.Task;
+        return await result;
     }
 
     /// <summary>
     /// Escalation modal: the database has been unreachable past the retry window. Quit shuts the app down;
     /// closing defaults to "keep waiting" so an accidental close never loses the session.
     /// </summary>
-    public static async Task<bool> ShowConnectionLostEscalationDialogAsync()
+    public static (Window dialog, Task<bool> result) BuildConnectionLostEscalationDialog()
     {
         var tcs = new TaskCompletionSource<bool>();
         var dialog = new Window
@@ -308,15 +322,18 @@ public static class AppDialogs
         });
         root.Children.Add(btnRow);
         dialog.Content = root;
+        return (dialog, tcs.Task);
+    }
 
-        Window? owner = null;
-        if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime lt)
-            owner = lt.MainWindow;
+    public static async Task<bool> ShowConnectionLostEscalationDialogAsync()
+    {
+        var (dialog, result) = BuildConnectionLostEscalationDialog();
+        var owner = MainWindowOwner();
         if (owner == null)
             dialog.Show();
         else
             _ = dialog.ShowDialog(owner);
-        return await tcs.Task;
+        return await result;
     }
 
     public enum RestoreTargetChoice { Current, Archived, Cancel }
@@ -608,7 +625,7 @@ public static class AppDialogs
         return (window, progress);
     }
 
-    public static async Task ShowAboutDialogAsync()
+    public static Window BuildAboutDialog()
     {
         var assembly = Assembly.GetExecutingAssembly();
         var version = assembly.GetName().Version;
@@ -665,13 +682,189 @@ public static class AppDialogs
         root.Children.Add(okBtn);
 
         dialog.Content = root;
+        return dialog;
+    }
 
-        Window? owner = null;
-        if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime lt)
-            owner = lt.MainWindow;
+    public static async Task ShowAboutDialogAsync()
+    {
+        var dialog = BuildAboutDialog();
+        var owner = MainWindowOwner();
         if (owner != null)
             await dialog.ShowDialog(owner);
         else
             dialog.Show();
+    }
+
+    public static Window BuildDeleteConfirmationDialog(string message)
+    {
+        var dialog = new Window
+        {
+            Title = Localization.Resources.Delete_Dialog_Title,
+            SizeToContent = SizeToContent.WidthAndHeight,
+            CanResize = false,
+            WindowStartupLocation = WindowStartupLocation.CenterOwner,
+            Padding = new Thickness(24),
+            MinWidth = 320
+        };
+
+        var deleteBtn = new Button
+        {
+            Content = Localization.Resources.Delete_Confirm_Button,
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+            Background = Palette.Brush("BrushError", Brushes.Red),
+            Foreground = Palette.Brush("BrushBadgeText", Brushes.White)
+        };
+        deleteBtn.Click += (_, _) => dialog.Close(true);
+
+        var cancelBtn = new Button
+        {
+            Content = Localization.Resources.Delete_Cancel_Button,
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+            IsCancel = true
+        };
+        cancelBtn.Click += (_, _) => dialog.Close(false);
+
+        var buttonRow = new StackPanel
+        {
+            Orientation = Orientation.Horizontal,
+            HorizontalAlignment = HorizontalAlignment.Right,
+            Spacing = 8,
+            Margin = new Thickness(0, 16, 0, 0)
+        };
+        buttonRow.Children.Add(deleteBtn);
+        buttonRow.Children.Add(cancelBtn);
+
+        var root = new StackPanel { Spacing = 8 };
+        root.Children.Add(new TextBlock
+        {
+            Text = message,
+            TextWrapping = TextWrapping.Wrap,
+            MaxWidth = 400
+        });
+        root.Children.Add(buttonRow);
+
+        dialog.Content = root;
+        return dialog;
+    }
+
+    public static Window BuildDuplicateIsbnDialog(string isbn, string existingTitle)
+    {
+        var dialog = new Window
+        {
+            Title = Localization.Resources.DuplicateIsbn_Title,
+            SizeToContent = SizeToContent.WidthAndHeight,
+            CanResize = false,
+            WindowStartupLocation = WindowStartupLocation.CenterOwner,
+            Padding = new Thickness(24),
+            MinWidth = 380
+        };
+
+        var updateBtn = new Button
+        {
+            Content = Localization.Resources.DuplicateIsbn_UpdateExisting,
+            HorizontalAlignment = HorizontalAlignment.Stretch
+        };
+        updateBtn.Click += (_, _) => dialog.Close(DuplicateIsbnResult.UpdateExisting);
+
+        var addBtn = new Button
+        {
+            Content = Localization.Resources.DuplicateIsbn_AddAsNew,
+            HorizontalAlignment = HorizontalAlignment.Stretch
+        };
+        addBtn.Click += (_, _) => dialog.Close(DuplicateIsbnResult.AddAsNew);
+
+        var cancelBtn = new Button
+        {
+            Content = Localization.Resources.Common_Cancel,
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+            IsCancel = true
+        };
+        cancelBtn.Click += (_, _) => dialog.Close(DuplicateIsbnResult.Cancel);
+
+        var buttonRow = new StackPanel
+        {
+            Orientation = Orientation.Horizontal,
+            HorizontalAlignment = HorizontalAlignment.Right,
+            Spacing = 8,
+            Margin = new Thickness(0, 16, 0, 0)
+        };
+        buttonRow.Children.Add(updateBtn);
+        buttonRow.Children.Add(addBtn);
+        buttonRow.Children.Add(cancelBtn);
+
+        var root = new StackPanel { Spacing = 8 };
+        root.Children.Add(new TextBlock
+        {
+            Text = string.Format(Localization.Resources.DuplicateIsbn_Body, isbn, existingTitle),
+            TextWrapping = TextWrapping.Wrap,
+            MaxWidth = 400
+        });
+        root.Children.Add(buttonRow);
+
+        dialog.Content = root;
+        return dialog;
+    }
+
+    public static Window BuildIsbnPromptDialog()
+    {
+        var dialog = new Window
+        {
+            Title = Localization.Resources.Recatalog_NoIsbn_Title,
+            SizeToContent = SizeToContent.WidthAndHeight,
+            CanResize = false,
+            WindowStartupLocation = WindowStartupLocation.CenterOwner,
+            Padding = new Thickness(24),
+            MinWidth = 340
+        };
+
+        var input = new TextBox
+        {
+            Watermark = Localization.Resources.Recatalog_NoIsbn_Watermark,
+            Width = 280,
+            Margin = new Thickness(0, 8, 0, 0)
+        };
+
+        var okBtn = new Button
+        {
+            Content = Localization.Resources.Recatalog_NoIsbn_LookUp,
+            HorizontalAlignment = HorizontalAlignment.Stretch
+        };
+        okBtn.Classes.Add("accent");
+        okBtn.Click += (_, _) =>
+        {
+            var isbn = input.Text?.Trim();
+            dialog.Close(string.IsNullOrEmpty(isbn) ? null : isbn);
+        };
+
+        var cancelBtn = new Button
+        {
+            Content = Localization.Resources.Common_Cancel,
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+            IsCancel = true
+        };
+        cancelBtn.Click += (_, _) => dialog.Close(null);
+
+        var buttonRow = new StackPanel
+        {
+            Orientation = Orientation.Horizontal,
+            HorizontalAlignment = HorizontalAlignment.Right,
+            Spacing = 8,
+            Margin = new Thickness(0, 16, 0, 0)
+        };
+        buttonRow.Children.Add(okBtn);
+        buttonRow.Children.Add(cancelBtn);
+
+        var root = new StackPanel { Spacing = 4 };
+        root.Children.Add(new TextBlock
+        {
+            Text = Localization.Resources.Recatalog_NoIsbn_Body,
+            TextWrapping = TextWrapping.Wrap,
+            MaxWidth = 340
+        });
+        root.Children.Add(input);
+        root.Children.Add(buttonRow);
+
+        dialog.Content = root;
+        return dialog;
     }
 }

@@ -40,7 +40,8 @@ public sealed class MoveLibraryViewModelTests
 
         return new MoveLibraryViewModel(
             Substitute.For<IDbContextFactory<BookDbContext>>(), settings, _bootstrapConfig, _prober, _mySqlProber,
-            _targetBuilder, _migrationService, _backupService, _filePicker, _secretStore, _restartService);
+            _targetBuilder, _migrationService, _backupService, _filePicker, _secretStore, _restartService,
+            Substitute.For<IWindowService>());
     }
 
     private void EnterValidPostgresTarget(MoveLibraryViewModel vm)

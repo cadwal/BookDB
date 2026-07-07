@@ -2042,6 +2042,42 @@ Duplicatas potenciais: {3}  |  Com capas: {4}</value>
   <data name="Menu_Help" xml:space="preserve">
     <value>_Ajuda</value>
   </data>
+  <data name="Menu_Help_KeyboardShortcuts" xml:space="preserve">
+    <value>Atalhos de _teclado</value>
+  </data>
+  <data name="Menu_Help_FieldGlossary" xml:space="preserve">
+    <value>_Glossário de campos</value>
+  </data>
+  <data name="Menu_Help_ImportGuide" xml:space="preserve">
+    <value>Guia de _importação</value>
+  </data>
+  <data name="Menu_Help_DataSources" xml:space="preserve">
+    <value>Sobre as _fontes de dados</value>
+  </data>
+  <data name="Menu_Help_RemoteDatabases" xml:space="preserve">
+    <value>Bancos de dados _remotos</value>
+  </data>
+  <data name="Help_WindowTitle" xml:space="preserve">
+    <value>Ajuda</value>
+  </data>
+  <data name="Help_Tab_KeyboardShortcuts" xml:space="preserve">
+    <value>Atalhos de teclado</value>
+  </data>
+  <data name="Help_Tab_FieldGlossary" xml:space="preserve">
+    <value>Glossário de campos</value>
+  </data>
+  <data name="Help_Tab_ImportGuide" xml:space="preserve">
+    <value>Guia de importação</value>
+  </data>
+  <data name="Help_Tab_DataSources" xml:space="preserve">
+    <value>Sobre as fontes de dados</value>
+  </data>
+  <data name="Help_Tab_RemoteDatabases" xml:space="preserve">
+    <value>Bancos de dados remotos</value>
+  </data>
+  <data name="Help_RemoteDatabasesLink" xml:space="preserve">
+    <value>Ajuda: bancos de dados remotos</value>
+  </data>
   <data name="Menu_AboutBookDB" xml:space="preserve">
     <value>_Sobre o BookDB…</value>
   </data>
@@ -2458,6 +2494,9 @@ Duplicatas potenciais: {3}  |  Com capas: {4}</value>
   </data>
   <data name="Import_Step1_CollectionCreateFailed" xml:space="preserve">
     <value>Não foi possível criar a coleção. O nome pode já estar em uso.</value>
+  </data>
+  <data name="Import_Step1_PreviewFailed" xml:space="preserve">
+    <value>Falha na pré-visualização: {0}</value>
   </data>
   <data name="Import_Duplicate_Overwrite" xml:space="preserve">
     <value>Substituir</value>

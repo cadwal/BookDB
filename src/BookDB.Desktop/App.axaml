@@ -7,6 +7,7 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceInclude Source="avares://BookDB.Desktop/Styles/Themes/Default.axaml" />
+                <ResourceInclude Source="avares://BookDB.Desktop/Styles/Icons.axaml" />
             </ResourceDictionary.MergedDictionaries>
 
             <!-- ControlTheme must live in ResourceDictionary (not Styles). Key = {x:Type} for implicit theming.

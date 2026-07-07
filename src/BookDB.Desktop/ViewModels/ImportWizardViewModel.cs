@@ -210,7 +210,7 @@ public sealed partial class ImportWizardViewModel : ObservableObject
                 // Return to step 1 on failure
                 CurrentStepIndex = 0;
                 var displayMessage = ex.Message.Split('\n', 2)[0].Trim();
-                Step1.ErrorMessage = $"Preview failed: {displayMessage}";
+                Step1.ErrorMessage = string.Format(Localization.Resources.Import_Step1_PreviewFailed, displayMessage);
                 return;
             }
             Step2.IsLoading = false;

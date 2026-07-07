@@ -21,9 +21,29 @@
     <!-- Standard (unclassed) buttons follow the palette via DynamicResource so they stay legible in
          every flavour — Fluent's own button brushes don't react to our palette, which left them grey-on-grey
          in High contrast. The accent and custom button classes opt out and keep their own look. -->
-    <Style Selector="Button:not(.accent):not(.iconButton):not(.primaryButton):not(.secondaryButton):not(.accentOutline)">
+    <Style Selector="Button:not(.accent):not(.iconButton):not(.primaryButton):not(.secondaryButton):not(.accentOutline):not(.helpLink)">
         <Setter Property="BorderBrush" Value="{DynamicResource BrushBorderInput}" />
         <Setter Property="Foreground" Value="{DynamicResource BrushTextPrimary}" />
+    </Style>
+
+    <!-- Help link: hyperlink-styled button for contextual help (opens the Help window on a topic).
+         Borderless accent text so it reads as a link, not an action; keyboard-focusable like any button. -->
+    <Style Selector="Button.helpLink">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="2,1" />
+        <Setter Property="MinWidth" Value="0" />
+        <Setter Property="Foreground" Value="{DynamicResource BrushPrimaryBlue}" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Cursor" Value="Hand" />
+    </Style>
+    <Style Selector="Button.helpLink:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{DynamicResource BrushPrimaryBlueDark}" />
+    </Style>
+    <Style Selector="Button.helpLink:pressed /template/ ContentPresenter">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{DynamicResource BrushPrimaryBlueDark}" />
     </Style>
 
     <!-- Accent-outline button: highlights an important contextual action (e.g. Test connection, Check
