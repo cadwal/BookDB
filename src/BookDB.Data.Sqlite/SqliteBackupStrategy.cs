@@ -18,8 +18,8 @@ namespace BookDB.Data.Sqlite;
 /// <see cref="SupportsFileBackup"/> = false and the caller falls back to the engine-neutral CSV archive.
 /// </summary>
 /// <remarks>
-/// Progress is reported as resource <em>keys</em> (e.g. <c>Backup_Status_CopyingDatabase</c>); the calling
-/// Logic-layer service localizes them, so this data-layer type carries no localization dependency.
+/// Progress is reported as typed <see cref="BackupProgressStep"/> values; the Desktop layer maps them to
+/// status strings, so this data-layer type carries no localization dependency.
 /// </remarks>
 public sealed class SqliteBackupStrategy : IBackupStrategy
 {
@@ -35,7 +35,8 @@ public sealed class SqliteBackupStrategy : IBackupStrategy
     public bool SupportsFileBackup => true;
 
     public async Task<string> BackupAsync(
-        string destFolder, CancellationToken ct, string? explicitFileName = null, IProgress<string>? progress = null)
+        string destFolder, CancellationToken ct, string? explicitFileName = null,
+        IProgress<ProgressUpdate<BackupProgressStep>>? progress = null)
     {
         destFolder = Path.GetFullPath(destFolder);
         var zipPath = Path.Combine(
@@ -46,7 +47,7 @@ public sealed class SqliteBackupStrategy : IBackupStrategy
         var snapshot = Path.Combine(Path.GetTempPath(), $"bookdb_sqlitesnapshot_{Guid.NewGuid():N}.db");
         try
         {
-            progress?.Report("Backup_Status_FlushingLog");
+            progress?.Report(new ProgressUpdate<BackupProgressStep>(BackupProgressStep.FlushingLog));
             await using var dbContext = await _factory.CreateDbContextAsync(ct);
 
             // VACUUM INTO writes a transactionally consistent snapshot of the live database. Unlike a
@@ -54,10 +55,10 @@ public sealed class SqliteBackupStrategy : IBackupStrategy
             // to quiesce the (pooled, still-open) EF connections, and the result is a self-contained,
             // compacted library.db. ExecuteSqlAsync binds the path as a parameter (VACUUM INTO takes a string
             // expression, so a bound parameter is valid and keeps the analyzer happy).
-            progress?.Report("Backup_Status_CopyingDatabase");
+            progress?.Report(new ProgressUpdate<BackupProgressStep>(BackupProgressStep.CopyingDatabase));
             await dbContext.Database.ExecuteSqlAsync($"VACUUM INTO {snapshot}", ct);
 
-            progress?.Report("Backup_Status_CreatingArchive");
+            progress?.Report(new ProgressUpdate<BackupProgressStep>(BackupProgressStep.CreatingArchive));
             using var archive = ZipFile.Open(zipPath, ZipArchiveMode.Create);
             archive.CreateEntryFromFile(snapshot, "library.db");
             if (ExistingConfigPath is { } configPath)

@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Runtime.Versioning;
 using Microsoft.Win32;
+using Serilog;
 
 namespace BookDB.Desktop.Helpers;
 
@@ -24,10 +25,30 @@ public static class ReaderwareInstallLocator
     private static string Resolve()
     {
         if (OperatingSystem.IsWindows())
-            return FindWindowsInstall() ?? WindowsFallback;
+            return ResolveWindows(FindWindowsInstall);
         if (OperatingSystem.IsMacOS())
             return "/Applications/Readerware 4.app/Contents";
         return "/opt/readerware4";
+    }
+
+    // The registry probe is invoked through a delegate and guarded here so a failure never propagates: a
+    // framework-dependent build does not carry Microsoft.Win32.Registry, so the first call throws
+    // FileNotFoundException *entering* the method (before its own try/catch runs) — and because DefaultToolPath
+    // is a Lazy that caches exceptions, an unguarded throw would brick the Settings window for the whole session.
+    // The tool path is a convenience default, so any failure falls back instead. Probe-injected + internal so the
+    // fallback is testable on any OS.
+    internal static string ResolveWindows(Func<string?> probe)
+    {
+        try
+        {
+            return probe() ?? WindowsFallback;
+        }
+        catch (Exception ex)
+        {
+            Log.Warning(
+                "ReaderwareInstallLocator: Windows install probe failed, using fallback path ({Error})", ex.Message);
+            return WindowsFallback;
+        }
     }
 
     [SupportedOSPlatform("windows")]

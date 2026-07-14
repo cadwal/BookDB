@@ -156,6 +156,10 @@
     </DataTemplate>
   </Window.Resources>
 
+  <i:Interaction.Behaviors>
+    <behaviors:LinearTabOrderBehavior />
+  </i:Interaction.Behaviors>
+
   <DockPanel Margin="0">
     <!-- Title bar -->
     <Border DockPanel.Dock="Top"
@@ -175,6 +179,7 @@
             BorderBrush="{DynamicResource BrushBorder}">
       <Button Content="{x:Static res:Resources.Common_Close}"
               Command="{Binding CloseCommand}"
+              IsCancel="{Binding !IsAnyTabEditing}"
               HorizontalAlignment="Right"/>
     </Border>
 

@@ -34,14 +34,16 @@
                 IsVisible="{Binding !IsComplete}"/>
         <Button Content="{x:Static res:Resources.Common_Cancel}"
                 Command="{Binding CancelCommand}"
-                IsVisible="{Binding IsRunning}"/>
+                IsVisible="{Binding IsRunning}"
+                IsCancel="{Binding IsRunning}"/>
         <Button Content="{x:Static res:Resources.ReaderwareImport_Continue}"
                 Classes="accent"
                 Command="{Binding ContinueCommand}"
                 IsVisible="{Binding IsComplete}"/>
         <Button Content="{x:Static res:Resources.Common_Close}"
                 Command="{Binding CloseCommand}"
-                IsVisible="{Binding !IsRunning}"/>
+                IsVisible="{Binding !IsRunning}"
+                IsCancel="{Binding !IsRunning}"/>
       </StackPanel>
     </Border>
 

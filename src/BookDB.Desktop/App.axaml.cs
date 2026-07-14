@@ -46,6 +46,10 @@ public partial class App : Application
             // main window is shown would otherwise trigger an OnLastWindowClose shutdown).
             desktop.ShutdownMode = ShutdownMode.OnMainWindowClose;
 
+            // Exit is raised on the UI thread with the dispatcher still pumping, on every exit path —
+            // the one safe moment to tear down the DBus connection (see DBusShutdown).
+            desktop.Exit += (_, _) => Helpers.DBusShutdown.DisposeDefaultConnection();
+
             // Wire Avalonia UI-thread unhandled exception handler via Dispatcher.
             // IClassicDesktopStyleApplicationLifetime.UnhandledException does not exist in
             // Avalonia 11.3.x — the correct hook is Dispatcher.UIThread.UnhandledException.

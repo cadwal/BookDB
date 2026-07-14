@@ -76,6 +76,22 @@ public static class Ui
     }
 
     /// <summary>
+    /// Real double-click at the centre of <paramref name="target"/>. The double-tap gesture window is
+    /// wall-clock, so a stalled runner can split the two clicks past it and the gesture never fires —
+    /// callers waiting on the gesture's effect should re-invoke this inside <see cref="PumpUntil"/> rather
+    /// than bet on a single attempt.
+    /// </summary>
+    public static void DoubleClick(this Window window, Control target)
+    {
+        var center = target.TranslatePoint(new Point(target.Bounds.Width / 2, target.Bounds.Height / 2), window)!.Value;
+        window.MouseDown(center, MouseButton.Left);
+        window.MouseUp(center, MouseButton.Left);
+        window.MouseDown(center, MouseButton.Left);
+        window.MouseUp(center, MouseButton.Left);
+        Pump();
+    }
+
+    /// <summary>
     /// Pumps the dispatcher until <paramref name="condition"/> holds, letting real-time work (e.g. a debounced
     /// search timer plus its async reload) settle. Throws if it never converges within the timeout.
     /// </summary>

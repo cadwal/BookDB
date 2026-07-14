@@ -325,6 +325,11 @@ namespace BookDB.Desktop.Localization
             get { return ResourceManager.GetString("Toolbar_OpenInWindow", resourceCulture) ?? "Open in Window"; }
         }
 
+        public static string Toolbar_Recatalog
+        {
+            get { return ResourceManager.GetString("Toolbar_Recatalog", resourceCulture) ?? "Re-catalog"; }
+        }
+
         public static string Toolbar_Search_Placeholder
         {
             get { return ResourceManager.GetString("Toolbar_Search_Placeholder", resourceCulture) ?? "Search books..."; }
@@ -655,9 +660,19 @@ namespace BookDB.Desktop.Localization
             get { return ResourceManager.GetString("Recatalog_NoIsbn_Title", resourceCulture) ?? "No ISBN"; }
         }
 
-        public static string Recatalog_NoIsbn_Body
+        public static string Recatalog_NoIsbn_BodyForBook
         {
-            get { return ResourceManager.GetString("Recatalog_NoIsbn_Body", resourceCulture) ?? "This book has no ISBN. Enter one to look up metadata."; }
+            get { return ResourceManager.GetString("Recatalog_NoIsbn_BodyForBook", resourceCulture) ?? "\"{0}\" has no ISBN. Enter one to look up metadata."; }
+        }
+
+        public static string Recatalog_SaveIsbn_Title
+        {
+            get { return ResourceManager.GetString("Recatalog_SaveIsbn_Title", resourceCulture) ?? "Save this ISBN?"; }
+        }
+
+        public static string Recatalog_SaveIsbn_Body
+        {
+            get { return ResourceManager.GetString("Recatalog_SaveIsbn_Body", resourceCulture) ?? "Save ISBN {0} on \"{1}\"? If not, the ISBN is only used for this lookup."; }
         }
 
         public static string EditForm_RecatalogButton
@@ -2367,6 +2382,11 @@ namespace BookDB.Desktop.Localization
             get { return ResourceManager.GetString("Menu_Window", resourceCulture) ?? "_Window"; }
         }
 
+        public static string Menu_Window_NoOpenWindows
+        {
+            get { return ResourceManager.GetString("Menu_Window_NoOpenWindows", resourceCulture) ?? "(No open windows)"; }
+        }
+
         public static string Print_Column_Added
         {
             get { return ResourceManager.GetString("Print_Column_Added", resourceCulture) ?? "Added"; }
@@ -2675,6 +2695,16 @@ namespace BookDB.Desktop.Localization
         public static string Print_ScopeSummary_Single
         {
             get { return ResourceManager.GetString("Print_ScopeSummary_Single", resourceCulture) ?? "Printing {0} book from current filter."; }
+        }
+
+        public static string Print_Status_Querying
+        {
+            get { return ResourceManager.GetString("Print_Status_Querying", resourceCulture) ?? "Querying books…"; }
+        }
+
+        public static string Print_Status_GeneratingPdf
+        {
+            get { return ResourceManager.GetString("Print_Status_GeneratingPdf", resourceCulture) ?? "Generating PDF for {0:N0} books…"; }
         }
 
         public static string Print_StandardPresetDisplayName
@@ -3585,6 +3615,26 @@ namespace BookDB.Desktop.Localization
             get { return ResourceManager.GetString("Common_Close", resourceCulture) ?? "Close"; }
         }
 
+        public static string ReleaseNotes_WindowTitle
+        {
+            get { return ResourceManager.GetString("ReleaseNotes_WindowTitle", resourceCulture) ?? "What's new in BookDB {0}"; }
+        }
+
+        public static string ReleaseNotes_Prompt_Title
+        {
+            get { return ResourceManager.GetString("ReleaseNotes_Prompt_Title", resourceCulture) ?? "BookDB has been updated"; }
+        }
+
+        public static string ReleaseNotes_Prompt_Body
+        {
+            get { return ResourceManager.GetString("ReleaseNotes_Prompt_Body", resourceCulture) ?? "You are now running version {0}. Do you want to see what's new?"; }
+        }
+
+        public static string ReleaseNotes_Prompt_Skip_Button
+        {
+            get { return ResourceManager.GetString("ReleaseNotes_Prompt_Skip_Button", resourceCulture) ?? "Skip"; }
+        }
+
         public static string Common_Apply
         {
             get { return ResourceManager.GetString("Common_Apply", resourceCulture) ?? "Apply"; }
@@ -3730,6 +3780,11 @@ namespace BookDB.Desktop.Localization
             get { return ResourceManager.GetString("ReaderwareImport_Error_ProcessFailed", resourceCulture) ?? "The conversion failed. See the progress log for details."; }
         }
 
+        public static string Export_Status_Querying
+        {
+            get { return ResourceManager.GetString("Export_Status_Querying", resourceCulture) ?? "Querying books…"; }
+        }
+
         public static string Export_Status_WritingBooks
         {
             get { return ResourceManager.GetString("Export_Status_WritingBooks", resourceCulture) ?? "Writing {0:N0} books…"; }
@@ -3743,6 +3798,16 @@ namespace BookDB.Desktop.Localization
         public static string About_AppName
         {
             get { return ResourceManager.GetString("About_AppName", resourceCulture) ?? "BookDB"; }
+        }
+
+        public static string About_Version
+        {
+            get { return ResourceManager.GetString("About_Version", resourceCulture) ?? "Version {0}"; }
+        }
+
+        public static string About_VersionUnknown
+        {
+            get { return ResourceManager.GetString("About_VersionUnknown", resourceCulture) ?? "Version unknown"; }
         }
 
         public static string Splash_Status_Initializing
@@ -4658,6 +4723,36 @@ namespace BookDB.Desktop.Localization
         public static string StatusBar_Connection_Lost
         {
             get { return ResourceManager.GetString("StatusBar_Connection_Lost", resourceCulture) ?? "Database connection lost"; }
+        }
+
+        public static string StatusBar_Storage_File_Label
+        {
+            get { return ResourceManager.GetString("StatusBar_Storage_File_Label", resourceCulture) ?? "Database file"; }
+        }
+
+        public static string StatusBar_Storage_Host_Label
+        {
+            get { return ResourceManager.GetString("StatusBar_Storage_Host_Label", resourceCulture) ?? "Server"; }
+        }
+
+        public static string StatusBar_Storage_Database_Label
+        {
+            get { return ResourceManager.GetString("StatusBar_Storage_Database_Label", resourceCulture) ?? "Database"; }
+        }
+
+        public static string StatusBar_Storage_User_Label
+        {
+            get { return ResourceManager.GetString("StatusBar_Storage_User_Label", resourceCulture) ?? "User"; }
+        }
+
+        public static string StatusBar_Storage_State_Label
+        {
+            get { return ResourceManager.GetString("StatusBar_Storage_State_Label", resourceCulture) ?? "Connection"; }
+        }
+
+        public static string StatusBar_Storage_State_Connected
+        {
+            get { return ResourceManager.GetString("StatusBar_Storage_State_Connected", resourceCulture) ?? "Connected"; }
         }
 
         public static string MoveLibrary_Header

@@ -412,8 +412,14 @@
   <data name="Recatalog_NoIsbn_Title" xml:space="preserve">
     <value>Geen ISBN</value>
   </data>
-  <data name="Recatalog_NoIsbn_Body" xml:space="preserve">
-    <value>Dit boek heeft geen ISBN. Voer er een in om metadata op te zoeken.</value>
+  <data name="Recatalog_NoIsbn_BodyForBook" xml:space="preserve">
+    <value>'{0}' heeft geen ISBN. Voer er een in om metadata op te zoeken.</value>
+  </data>
+  <data name="Recatalog_SaveIsbn_Title" xml:space="preserve">
+    <value>Deze ISBN opslaan?</value>
+  </data>
+  <data name="Recatalog_SaveIsbn_Body" xml:space="preserve">
+    <value>ISBN {0} opslaan bij '{1}'? Zo niet, dan wordt de ISBN alleen voor deze zoekopdracht gebruikt.</value>
   </data>
   <data name="EditForm_RecatalogButton" xml:space="preserve">
     <value>Opnieuw catalogiseren</value>
@@ -772,6 +778,9 @@
   <data name="Menu_RecatalogSelected" xml:space="preserve">
     <value>_Selectie opnieuw catalogiseren</value>
   </data>
+  <data name="Toolbar_Recatalog" xml:space="preserve">
+    <value>Opnieuw catalogiseren</value>
+  </data>
   <data name="Menu_RestoreBackup" xml:space="preserve">
     <value>Herstellen vanuit back-up...</value>
   </data>
@@ -813,6 +822,9 @@
   </data>
   <data name="Menu_Window" xml:space="preserve">
     <value>_Venster</value>
+  </data>
+  <data name="Menu_Window_NoOpenWindows" xml:space="preserve">
+    <value>(Geen open vensters)</value>
   </data>
   <data name="BookDetail_Label_Category" xml:space="preserve">
     <value>Categorie:</value>
@@ -1586,6 +1598,12 @@ Mogelijke duplicaten: {3}  |  Met omslag: {4}</value>
   <data name="Print_ScopeSummary_Single" xml:space="preserve">
     <value>{0} boek afdrukken uit het huidige filter.</value>
   </data>
+  <data name="Print_Status_Querying" xml:space="preserve">
+    <value>Boeken opvragen…</value>
+  </data>
+  <data name="Print_Status_GeneratingPdf" xml:space="preserve">
+    <value>PDF voor {0:N0} boeken genereren…</value>
+  </data>
   <data name="Print_StandardPresetDisplayName" xml:space="preserve">
     <value>Standard</value>
   </data>
@@ -2090,6 +2108,12 @@ Mogelijke duplicaten: {3}  |  Met omslag: {4}</value>
   <data name="About_AppName" xml:space="preserve">
     <value>BookDB</value>
   </data>
+  <data name="About_Version" xml:space="preserve">
+    <value>Versie {0}</value>
+  </data>
+  <data name="About_VersionUnknown" xml:space="preserve">
+    <value>Versie onbekend</value>
+  </data>
   <data name="Menu_Backup" xml:space="preserve">
     <value>Back-up...</value>
   </data>
@@ -2381,6 +2405,18 @@ Mogelijke duplicaten: {3}  |  Met omslag: {4}</value>
   <data name="Common_Discard" xml:space="preserve">
     <value>Verwerpen</value>
   </data>
+  <data name="ReleaseNotes_WindowTitle" xml:space="preserve">
+    <value>Nieuw in BookDB {0}</value>
+  </data>
+  <data name="ReleaseNotes_Prompt_Title" xml:space="preserve">
+    <value>BookDB is bijgewerkt</value>
+  </data>
+  <data name="ReleaseNotes_Prompt_Body" xml:space="preserve">
+    <value>Je gebruikt nu versie {0}. Wil je zien wat er nieuw is?</value>
+  </data>
+  <data name="ReleaseNotes_Prompt_Skip_Button" xml:space="preserve">
+    <value>Overslaan</value>
+  </data>
   <data name="Common_Close" xml:space="preserve">
     <value>Sluiten</value>
   </data>
@@ -2392,6 +2428,9 @@ Mogelijke duplicaten: {3}  |  Met omslag: {4}</value>
   </data>
   <data name="Export_Header" xml:space="preserve">
     <value>Boeken exporteren…</value>
+  </data>
+  <data name="Export_Status_Querying" xml:space="preserve">
+    <value>Boeken opvragen…</value>
   </data>
   <data name="Export_Status_WritingBooks" xml:space="preserve">
     <value>{0:N0} boeken schrijven…</value>
@@ -2445,7 +2484,7 @@ Mogelijke duplicaten: {3}  |  Met omslag: {4}</value>
     <value>Importeren uit Readerware-database</value>
   </data>
   <data name="ReaderwareImport_Intro" xml:space="preserve">
-    <value>Converteer een actieve Readerware-databasemap (de .rw4-map) naar een back-up die BookDB kan importeren. Uw oorspronkelijke database wordt eerst gekopieerd en nooit gewijzigd.</value>
+    <value>Converteer een actieve Readerware-databasemap (de .rw4-map) naar een back-up die BookDB kan importeren. Je oorspronkelijke database wordt eerst gekopieerd en nooit gewijzigd.</value>
   </data>
   <data name="ReaderwareImport_DatabaseLabel" xml:space="preserve">
     <value>Readerware-databasemap</value>
@@ -2559,7 +2598,7 @@ Mogelijke duplicaten: {3}  |  Met omslag: {4}</value>
     <value>Databaseonderhoud</value>
   </data>
   <data name="Maintenance_Intro" xml:space="preserve">
-    <value>Controleer uw bibliotheekdatabase op problemen en voer veilige reparaties uit. Voordat een reparatie wordt uitgevoerd, wordt automatisch een back-up gemaakt.</value>
+    <value>Controleer je bibliotheekdatabase op problemen en voer veilige reparaties uit. Voordat een reparatie wordt uitgevoerd, wordt automatisch een back-up gemaakt.</value>
   </data>
   <data name="Maintenance_IntegrityHeader" xml:space="preserve">
     <value>Database-integriteit</value>
@@ -2574,7 +2613,7 @@ Mogelijke duplicaten: {3}  |  Met omslag: {4}</value>
     <value>Resultaten</value>
   </data>
   <data name="Maintenance_AdviseRestore" xml:space="preserve">
-    <value>De database heeft problemen gemeld die niet ter plaatse kunnen worden gerepareerd. Herstel vanaf een recente back-up om uw gegevens te redden.</value>
+    <value>De database heeft problemen gemeld die niet ter plaatse kunnen worden gerepareerd. Herstel vanaf een recente back-up om je gegevens te redden.</value>
   </data>
   <data name="Maintenance_Step_CheckingIntegrity" xml:space="preserve">
     <value>Database-integriteit controleren…</value>
@@ -2769,7 +2808,7 @@ Mogelijke duplicaten: {3}  |  Met omslag: {4}</value>
     <value>Verbinding geweigerd — controleer de host en poort, en of de server actief is.</value>
   </data>
   <data name="Settings_Database_TestError_Timeout" xml:space="preserve">
-    <value>Time-out van verbinding — controleer de host en poort, en uw netwerk.</value>
+    <value>Time-out van verbinding — controleer de host en poort, en je netwerk.</value>
   </data>
   <data name="Settings_Database_TestError_Tls" xml:space="preserve">
     <value>TLS/SSL-fout — controleer de TLS-modus en het certificaat van de server.</value>
@@ -2809,6 +2848,24 @@ Mogelijke duplicaten: {3}  |  Met omslag: {4}</value>
   </data>
   <data name="StatusBar_Connection_Lost" xml:space="preserve">
     <value>Databaseverbinding verbroken</value>
+  </data>
+  <data name="StatusBar_Storage_File_Label" xml:space="preserve">
+    <value>Databasebestand</value>
+  </data>
+  <data name="StatusBar_Storage_Host_Label" xml:space="preserve">
+    <value>Server</value>
+  </data>
+  <data name="StatusBar_Storage_Database_Label" xml:space="preserve">
+    <value>Database</value>
+  </data>
+  <data name="StatusBar_Storage_User_Label" xml:space="preserve">
+    <value>Gebruiker</value>
+  </data>
+  <data name="StatusBar_Storage_State_Label" xml:space="preserve">
+    <value>Verbinding</value>
+  </data>
+  <data name="StatusBar_Storage_State_Connected" xml:space="preserve">
+    <value>Verbonden</value>
   </data>
   <data name="MoveLibrary_Header" xml:space="preserve">
     <value>Bibliotheek verplaatsen</value>
@@ -2880,7 +2937,7 @@ Mogelijke duplicaten: {3}  |  Met omslag: {4}</value>
     <value>⚠ Migratie voltooid maar de recordaantallen komen niet overeen; overschakelen van de actieve database is geblokkeerd.</value>
   </data>
   <data name="MoveLibrary_Failed" xml:space="preserve">
-    <value>Migratie mislukt bij {0}. Het doel bevat gedeeltelijke gegevens en mag niet worden gebruikt. Uw gegevens zijn veilig in de back-up: {1}</value>
+    <value>Migratie mislukt bij {0}. Het doel bevat gedeeltelijke gegevens en mag niet worden gebruikt. Je gegevens zijn veilig in de back-up: {1}</value>
   </data>
   <data name="MoveLibrary_Phase_Preparing" xml:space="preserve">
     <value>Doel voorbereiden…</value>
@@ -2922,13 +2979,13 @@ Mogelijke duplicaten: {3}  |  Met omslag: {4}</value>
     <value>Databaseverbinding van de back-up toepassen?</value>
   </data>
   <data name="Restore_AdoptBackend_Body" xml:space="preserve">
-    <value>Deze back-up is gemaakt op een {0}-database. De actieve database naar die verbinding overschakelen en opnieuw starten? Bij Nee blijft uw huidige database behouden.</value>
+    <value>Deze back-up is gemaakt op een {0}-database. De actieve database naar die verbinding overschakelen en opnieuw starten? Bij Nee blijft je huidige database behouden.</value>
   </data>
   <data name="RestoreTarget_Title" xml:space="preserve">
     <value>Waar herstellen</value>
   </data>
   <data name="RestoreTarget_Body" xml:space="preserve">
-    <value>Deze back-up is gemaakt op de databaseserver {0}. De gegevens herstellen naar die server of naar uw huidige database?</value>
+    <value>Deze back-up is gemaakt op de databaseserver {0}. De gegevens herstellen naar die server of naar je huidige database?</value>
   </data>
   <data name="RestoreTarget_Archived" xml:space="preserve">
     <value>Herstellen naar de server van de back-up</value>

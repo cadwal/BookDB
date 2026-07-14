@@ -3,6 +3,8 @@
         xmlns:vm="using:BookDB.Desktop.ViewModels"
         xmlns:views="using:BookDB.Desktop.Views"
         xmlns:res="using:BookDB.Desktop.Localization"
+        xmlns:behaviors="using:BookDB.Desktop.Behaviors"
+        xmlns:i="using:Avalonia.Xaml.Interactivity"
         x:Class="BookDB.Desktop.Views.MaintenanceDialog"
         x:DataType="vm:MaintenanceViewModel"
         Title="{x:Static res:Resources.Maintenance_WindowTitle}"
@@ -11,6 +13,10 @@
         WindowStartupLocation="CenterOwner"
         ShowInTaskbar="False"
         CanResize="True">
+
+  <i:Interaction.Behaviors>
+    <behaviors:LinearTabOrderBehavior />
+  </i:Interaction.Behaviors>
 
   <DockPanel Margin="0">
 
@@ -31,7 +37,8 @@
       <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
         <Button Content="{x:Static res:Resources.Common_Close}"
                 Command="{Binding CloseCommand}"
-                IsEnabled="{Binding !IsRunning}"/>
+                IsEnabled="{Binding !IsRunning}"
+                IsCancel="{Binding !IsRunning}"/>
       </StackPanel>
     </Border>
 
@@ -52,7 +59,7 @@
           <Border Grid.Row="2"
                   BorderBrush="{DynamicResource BrushBorder}" BorderThickness="1" CornerRadius="4">
             <TextBox Text="{Binding LogText}"
-                     IsReadOnly="True" AcceptsReturn="True" TextWrapping="Wrap"
+                     IsReadOnly="True" IsTabStop="False" AcceptsReturn="True" TextWrapping="Wrap"
                      FontFamily="Consolas, monospace" FontSize="11"
                      BorderThickness="0" Background="Transparent"
                      VerticalAlignment="Stretch" HorizontalAlignment="Stretch"

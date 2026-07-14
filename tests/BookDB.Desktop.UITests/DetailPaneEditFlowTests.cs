@@ -114,19 +114,58 @@ public class DetailPaneEditFlowTests : HeadlessTest
             var detailWindow = detailView.Host();
 
             // A real double-click on the row: the first click selects it, the second raises the
-            // DoubleTapped gesture the behavior listens for.
+            // DoubleTapped gesture the behavior listens for. Re-clicked until the pane reacts: the
+            // double-tap window is wall-clock, so a stalled runner can split one attempt's clicks past it.
             var row = listWindow.Descendants<DataGridRow>().First();
-            var center = row.TranslatePoint(new Avalonia.Point(row.Bounds.Width / 2, row.Bounds.Height / 2), listWindow)!.Value;
-            listWindow.MouseDown(center, MouseButton.Left);
-            listWindow.MouseUp(center, MouseButton.Left);
-            listWindow.MouseDown(center, MouseButton.Left);
-            listWindow.MouseUp(center, MouseButton.Left);
-            Ui.Pump();
-
-            await Ui.PumpUntil(() => detail.IsEditMode && detail.CurrentBook?.BookId == book.BookId, ct);
+            await Ui.PumpUntil(() =>
+            {
+                if (!detail.IsEditMode)
+                    listWindow.DoubleClick(row);
+                return detail.IsEditMode && detail.CurrentBook?.BookId == book.BookId;
+            }, ct);
             Assert.Equal("Tap Subject", detail.EditTitle);
 
             listWindow.Close();
+            detailWindow.Close();
+        });
+    }
+
+    [Fact]
+    public async Task RecatalogFromThePane_PromptsForAnIsbnOnlyWhenTheBookHasNone()
+    {
+        var ct = TestContext.Current.CancellationToken;
+        var windowService = Substitute.For<IWindowService>();
+        windowService.ShowIsbnPromptDialogAsync("No Isbn Yet").Returns("9780451526538");
+
+        await RunUi(async () =>
+        {
+            using var host = TestHost.Create(s => s.AddSingleton(windowService));
+            var books = host.Resolve<IBookService>();
+            var noIsbn = await books.AddBookAsync(new Book { Title = "No Isbn Yet" }, ct);
+
+            var detail = host.Resolve<BookDetailViewModel>();
+            var detailView = new BookDetailView { DataContext = detail };
+            var detailWindow = detailView.Host();
+            await detail.LoadBookAsync(noIsbn.BookId);
+            Ui.Pump();
+
+            // No ISBN on the record: the pane's Re-catalog button prompts (naming the book), offers to
+            // save the entered ISBN, and enqueues it for this book instead of discarding it. The
+            // unanswered save offer (substitute returns null) must still enqueue.
+            await Ui.ClickAsync(detailView.ButtonFor(detail.RecatalogCommand));
+            await windowService.Received(1).ShowIsbnPromptDialogAsync("No Isbn Yet");
+            await windowService.Received(1).ShowConfirmAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<Avalonia.Controls.Window?>());
+            await windowService.Received(1).StartBatchRecatalogAsync(noIsbn.BookId, "9780451526538");
+
+            // With an ISBN, re-catalog goes straight to the queue — no prompt.
+            var withIsbn = await books.AddBookAsync(new Book { Title = "Has Isbn", Isbn = "9780062315007" }, ct);
+            await detail.LoadBookAsync(withIsbn.BookId);
+            Ui.Pump();
+            await Ui.ClickAsync(detailView.ButtonFor(detail.RecatalogCommand));
+            await windowService.Received(1).ShowIsbnPromptDialogAsync(Arg.Any<string>());
+            await windowService.Received(1).StartBatchRecatalogAsync(
+                Arg.Is<System.Collections.Generic.IReadOnlyList<int>>(ids => ids.Single() == withIsbn.BookId));
+
             detailWindow.Close();
         });
     }

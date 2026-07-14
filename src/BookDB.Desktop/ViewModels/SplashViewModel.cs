@@ -36,23 +36,23 @@ public partial class SplashViewModel : ObservableObject
         }
     }
 
-    private void OnProgressChanged(StartupProgressReport report)
+    private void OnProgressChanged(ProgressUpdate<StartupStage> report)
     {
         // The reporter may raise on a background thread (migrations run via Task.Run);
         // marshal the property updates onto the UI thread.
         Dispatcher.UIThread.Post(() =>
         {
-            ProgressValue = SplashProgressMath.ToPercent(report.Stage, report.Current, report.Total);
+            ProgressValue = SplashProgressMath.ToPercent(report.Step, report.Current, report.Total);
             StatusText = DescribeStage(report);
         });
 
         // Startup is complete once Finishing is reported — stop listening so the singleton
         // reporter does not keep this transient ViewModel alive after the splash closes.
-        if (report.Stage == StartupStage.Finishing)
+        if (report.Step == StartupStage.Finishing)
             _reporter.ProgressChanged -= OnProgressChanged;
     }
 
-    private static string DescribeStage(StartupProgressReport report) => report.Stage switch
+    private static string DescribeStage(ProgressUpdate<StartupStage> report) => report.Step switch
     {
         StartupStage.Initializing => Resources.Splash_Status_Initializing,
         StartupStage.ApplyingMigrations => report.Total > 0

@@ -3,6 +3,8 @@
         xmlns:vm="using:BookDB.Desktop.ViewModels"
         xmlns:res="using:BookDB.Desktop.Localization"
         xmlns:views="using:BookDB.Desktop.Views"
+        xmlns:behaviors="using:BookDB.Desktop.Behaviors"
+        xmlns:i="using:Avalonia.Xaml.Interactivity"
         x:Class="BookDB.Desktop.Views.SettingsWindow"
         x:DataType="vm:SettingsWindowViewModel"
         Title="{x:Static res:Resources.Settings_WindowTitle}"
@@ -358,6 +360,10 @@
     </DataTemplate>
 
   </Window.Resources>
+
+  <i:Interaction.Behaviors>
+    <behaviors:LinearTabOrderBehavior />
+  </i:Interaction.Behaviors>
 
   <DockPanel Margin="0">
 

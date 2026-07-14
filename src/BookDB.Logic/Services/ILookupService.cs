@@ -20,11 +20,4 @@ public interface ILookupService
     
     Task<ContributorRole?> GetContributorRoleByCodeAsync(string code, CancellationToken cancellationToken = default);
     Task<IReadOnlyList<ContributorRole>> GetContributorRolesAsync(CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// Returns the localised display name for a resource key, falling back to
-    /// <paramref name="name"/> when <paramref name="resourceKey"/> is null, empty,
-    /// or has no matching entry in the resource file.
-    /// </summary>
-    string GetDisplayName(string name, string? resourceKey);
 }

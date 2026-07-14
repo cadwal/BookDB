@@ -4,6 +4,7 @@
         xmlns:views="using:BookDB.Desktop.Views"
         xmlns:converters="using:BookDB.Desktop.Converters"
         xmlns:behaviors="using:BookDB.Desktop.Behaviors"
+        xmlns:i="using:Avalonia.Xaml.Interactivity"
         xmlns:res="using:BookDB.Desktop.Localization"
         x:Class="BookDB.Desktop.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
@@ -18,6 +19,12 @@
     <Window.Resources>
         <converters:GridLengthConverter x:Key="GridLengthConverter" />
     </Window.Resources>
+
+    <i:Interaction.Behaviors>
+        <behaviors:WindowPlacementBehavior />
+        <behaviors:MainWindowShutdownBehavior />
+        <behaviors:OfferReleaseNotesBehavior />
+    </i:Interaction.Behaviors>
 
     <Window.KeyBindings>
         <KeyBinding Gesture="Ctrl+N" Command="{Binding BookList.AddBookCommand}" />
@@ -220,10 +227,11 @@
                       ItemsSource="{Binding OpenWindowEntries}">
                 <MenuItem.ItemContainerTheme>
                     <ControlTheme TargetType="MenuItem"
-                                  BasedOn="{StaticResource {x:Type MenuItem}}">
-                        <Setter Property="Header" Value="{ReflectionBinding Title}"/>
-                        <Setter Property="Command" Value="{ReflectionBinding ActivateCommand}"/>
-                        <Setter Property="Tag" Value="{ReflectionBinding SeparatorTag}"/>
+                                  BasedOn="{StaticResource {x:Type MenuItem}}"
+                                  x:DataType="vm:OpenWindowEntry">
+                        <Setter Property="Header" Value="{Binding Title}"/>
+                        <Setter Property="Command" Value="{Binding ActivateCommand}"/>
+                        <Setter Property="Tag" Value="{Binding SeparatorTag}"/>
                         <Style Selector="^[Tag=separator]">
                             <Setter Property="IsHitTestVisible" Value="False"/>
                             <Setter Property="IsEnabled" Value="False"/>
@@ -324,7 +332,8 @@
                     <ColumnDefinition Width="Auto" />  <!-- 1: book count -->
                     <ColumnDefinition Width="Auto" />  <!-- 2: batch queue -->
                     <ColumnDefinition Width="Auto" />  <!-- 3: connection status -->
-                    <ColumnDefinition Width="Auto" />  <!-- 4: detail toggle -->
+                    <ColumnDefinition Width="Auto" />  <!-- 4: storage kind -->
+                    <ColumnDefinition Width="Auto" />  <!-- 5: detail toggle -->
                 </Grid.ColumnDefinitions>
 
                 <!-- Left: collection selector -->
@@ -410,8 +419,63 @@
                     </StackPanel>
                 </Border>
 
+                <!-- Storage-kind indicator: local file vs remote server; hover shows connection facts.
+                     The popup is anchored to the control, not the pointer: pointer placement can land it
+                     under the cursor (observed on scaled Wayland), which closes it instantly in an
+                     open/close flicker loop. VerticalOffset must be zeroed — the default 20 would push a
+                     top-placed popup back down over the control. -->
+                <Border Grid.Column="4"
+                        Name="StorageKindIndicator"
+                        Background="Transparent"
+                        Margin="8,0"
+                        VerticalAlignment="Center"
+                        ToolTip.Placement="Top"
+                        ToolTip.VerticalOffset="0">
+                    <Panel>
+                        <Image Width="16" Height="16"
+                               Source="{StaticResource Icon.StorageLocal}"
+                               IsVisible="{Binding !IsRemoteStorage}" />
+                        <Image Width="16" Height="16"
+                               Source="{StaticResource Icon.StorageRemote}"
+                               IsVisible="{Binding IsRemoteStorage}" />
+                    </Panel>
+                    <ToolTip.Tip>
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="{Binding StorageBackendName}" FontWeight="SemiBold" />
+                            <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto">
+                                <TextBlock Grid.Row="0" Grid.Column="0"
+                                           Text="{Binding StorageLocationLabel}"
+                                           Opacity="0.7" Margin="0,0,12,0" />
+                                <TextBlock Grid.Row="0" Grid.Column="1"
+                                           Text="{Binding StorageLocationValue}" />
+                                <TextBlock Grid.Row="1" Grid.Column="0"
+                                           Text="{x:Static res:Resources.StatusBar_Storage_Database_Label}"
+                                           IsVisible="{Binding IsRemoteStorage}"
+                                           Opacity="0.7" Margin="0,0,12,0" />
+                                <TextBlock Grid.Row="1" Grid.Column="1"
+                                           Text="{Binding StorageDatabaseName}"
+                                           IsVisible="{Binding IsRemoteStorage}" />
+                                <TextBlock Grid.Row="2" Grid.Column="0"
+                                           Text="{x:Static res:Resources.StatusBar_Storage_User_Label}"
+                                           IsVisible="{Binding IsRemoteStorage}"
+                                           Opacity="0.7" Margin="0,0,12,0" />
+                                <TextBlock Grid.Row="2" Grid.Column="1"
+                                           Text="{Binding StorageUserName}"
+                                           IsVisible="{Binding IsRemoteStorage}" />
+                                <TextBlock Grid.Row="3" Grid.Column="0"
+                                           Text="{x:Static res:Resources.StatusBar_Storage_State_Label}"
+                                           IsVisible="{Binding IsRemoteStorage}"
+                                           Opacity="0.7" Margin="0,0,12,0" />
+                                <TextBlock Grid.Row="3" Grid.Column="1"
+                                           Text="{Binding StorageConnectionStateText}"
+                                           IsVisible="{Binding IsRemoteStorage}" />
+                            </Grid>
+                        </StackPanel>
+                    </ToolTip.Tip>
+                </Border>
+
                 <!-- Right: detail panel toggle -->
-                <ToggleButton Grid.Column="4"
+                <ToggleButton Grid.Column="5"
                               IsChecked="{Binding DetailPanelVisible}"
                               Content="{Binding DetailPanelToggleChevron}"
                               VerticalAlignment="Center"

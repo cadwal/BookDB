@@ -47,7 +47,7 @@ public sealed class SettingsChangeTrackingTests : IDisposable
             .Options;
 
         var factory = new TestBookDbContextFactory(options);
-        _settings = new LookupService(factory, new NullResourceProvider());
+        _settings = new LookupService(factory);
     }
 
     public void Dispose()

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using BookDB.Data;
 using BookDB.Data.DbContexts;
 using BookDB.Logic.Services;
+using BookDB.Models;
 using BookDB.Models.Entities;
 using DbUp;
 using Microsoft.EntityFrameworkCore;
@@ -45,7 +46,7 @@ public sealed class PrintServiceTests : IDisposable
         _factory = new TestBookDbContextFactory(options);
 
         global::QuestPDF.Settings.License = global::QuestPDF.Infrastructure.LicenseType.Community;
-        _sut = new PrintService(_factory, new NullResourceProvider());
+        _sut = new PrintService(_factory);
 
         _tempWorkDir = Path.Combine(Path.GetTempPath(), $"bookdb_print_workdir_{Guid.NewGuid():N}");
         Directory.CreateDirectory(_tempWorkDir);
@@ -170,14 +171,13 @@ public sealed class PrintServiceTests : IDisposable
     {
         var ct = TestContext.Current.CancellationToken;
         var outputPath = Path.Combine(_tempWorkDir, "test-sv-footer.pdf");
-        var provider = new FixedResourceProvider("Print_Footer_PageFormat", "Sida {0} av {1}");
-        var sut = new PrintService(_factory, provider);
         var parameters = new PrintParameters(
             OutputPath: outputPath,
             CollectionIds: null, SearchBookIds: null, FacetFilters: null,
             SortColumn: "Title", SortAscending: true,
-            Preset: PrintPreset.CreateDefault());
-        await sut.GenerateAsync(parameters, ct);
+            Preset: PrintPreset.CreateDefault(),
+            PageNumberFormat: "Sida {0} av {1}");
+        await _sut.GenerateAsync(parameters, ct);
         Assert.True(File.Exists(outputPath) && new FileInfo(outputPath).Length > 100);
     }
 
@@ -187,20 +187,52 @@ public sealed class PrintServiceTests : IDisposable
     {
         var ct = TestContext.Current.CancellationToken;
         var outputPath = Path.Combine(_tempWorkDir, "test-malformed-footer.pdf");
-        var provider = new FixedResourceProvider("Print_Footer_PageFormat", "no-placeholders");
-        var sut = new PrintService(_factory, provider);
         var parameters = new PrintParameters(
             OutputPath: outputPath,
             CollectionIds: null, SearchBookIds: null, FacetFilters: null,
             SortColumn: "Title", SortAscending: true,
-            Preset: PrintPreset.CreateDefault());
-        await sut.GenerateAsync(parameters, ct);
+            Preset: PrintPreset.CreateDefault(),
+            PageNumberFormat: "no-placeholders");
+        await _sut.GenerateAsync(parameters, ct);
         Assert.True(File.Exists(outputPath) && new FileInfo(outputPath).Length > 100);
     }
 
-    // Column labels — custom provider overrides the key-name fallback
     [Fact]
-    public async Task GenerateAsync_CustomColumnLabelProvider_ProducesValidPdf()
+    public async Task GenerateAsync_ReportsTypedProgressSteps()
+    {
+        var ct = TestContext.Current.CancellationToken;
+        using (var dbContext = _factory.CreateDbContext())
+        {
+            var now = DateTime.UtcNow;
+            dbContext.Books.Add(new Book { Title = "Progress Book A", Added = now, Updated = now });
+            dbContext.Books.Add(new Book { Title = "Progress Book B", Added = now, Updated = now });
+            dbContext.SaveChanges();
+        }
+        var parameters = new PrintParameters(
+            OutputPath: Path.Combine(_tempWorkDir, "test-progress.pdf"),
+            CollectionIds: null, SearchBookIds: null, FacetFilters: null,
+            SortColumn: "Title", SortAscending: true,
+            Preset: PrintPreset.CreateDefault());
+
+        var reports = new List<ProgressUpdate<PrintProgressStep>>();
+        await _sut.GenerateAsync(parameters, ct, new CollectingProgress(reports));
+
+        Assert.Equal(2, reports.Count);
+        Assert.Equal(PrintProgressStep.Querying, reports[0].Step);
+        Assert.Equal(PrintProgressStep.GeneratingPdf, reports[1].Step);
+        Assert.Equal(2, reports[1].Current);
+    }
+
+    private sealed class CollectingProgress : IProgress<ProgressUpdate<PrintProgressStep>>
+    {
+        private readonly List<ProgressUpdate<PrintProgressStep>> _reports;
+        public CollectingProgress(List<ProgressUpdate<PrintProgressStep>> reports) => _reports = reports;
+        public void Report(ProgressUpdate<PrintProgressStep> value) => _reports.Add(value);
+    }
+
+    // Column labels — supplied labels override the key-name fallback
+    [Fact]
+    public async Task GenerateAsync_CustomColumnHeaderLabels_ProducesValidPdf()
     {
         var ct = TestContext.Current.CancellationToken;
         using (var dbContext = _factory.CreateDbContext())
@@ -210,25 +242,13 @@ public sealed class PrintServiceTests : IDisposable
             dbContext.SaveChanges();
         }
         var outputPath = Path.Combine(_tempWorkDir, "test-custom-labels.pdf");
-        var provider = new FixedResourceProvider("Print_Column_Title", "Titel");
-        var sut = new PrintService(_factory, provider);
         var parameters = new PrintParameters(
             OutputPath: outputPath,
             CollectionIds: null, SearchBookIds: null, FacetFilters: null,
             SortColumn: "Title", SortAscending: true,
-            Preset: PrintPreset.CreateDefault());
-        await sut.GenerateAsync(parameters, ct);
+            Preset: PrintPreset.CreateDefault(),
+            ColumnHeaderLabels: new Dictionary<string, string> { ["Title"] = "Titel" });
+        await _sut.GenerateAsync(parameters, ct);
         Assert.True(File.Exists(outputPath) && new FileInfo(outputPath).Length > 100);
     }
-}
-
-internal sealed class FixedResourceProvider : IResourceProvider
-{
-    private readonly Dictionary<string, string> _map;
-
-    internal FixedResourceProvider(string key, string value)
-        => _map = new Dictionary<string, string> { [key] = value };
-
-    public string? GetString(string key)
-        => _map.TryGetValue(key, out var v) ? v : null;
 }

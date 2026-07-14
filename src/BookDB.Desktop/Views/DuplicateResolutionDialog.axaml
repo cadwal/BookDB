@@ -1,0 +1,41 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:BookDB.Desktop.ViewModels"
+        xmlns:res="using:BookDB.Desktop.Localization"
+        x:Class="BookDB.Desktop.Views.DuplicateResolutionDialog"
+        x:DataType="vm:DuplicateResolutionViewModel"
+        Title="{Binding Title}"
+        SizeToContent="WidthAndHeight"
+        CanResize="False"
+        WindowStartupLocation="CenterOwner"
+        ShowInTaskbar="False"
+        Padding="24"
+        MinWidth="380">
+    <StackPanel Spacing="8">
+        <TextBlock Text="{Binding Body}" TextWrapping="Wrap" MaxWidth="400" />
+        <!-- No default button: every choice writes or skips data, so Enter must not pick one.
+             Esc lands on Skip (safe, per-item) — cancelling the whole import stays a deliberate click. -->
+        <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto" Margin="0,16,0,0">
+            <Button Grid.Row="0" Grid.Column="0" Margin="0,0,4,0"
+                    Content="{x:Static res:Resources.Import_Duplicate_Overwrite}"
+                    Classes="accent" HorizontalAlignment="Stretch"
+                    Command="{Binding OverwriteCommand}" />
+            <Button Grid.Row="0" Grid.Column="1" Margin="4,0,0,0"
+                    Content="{x:Static res:Resources.Import_Duplicate_OverwriteAll}"
+                    HorizontalAlignment="Stretch"
+                    Command="{Binding OverwriteAllCommand}" />
+            <Button Grid.Row="1" Grid.Column="0" Margin="0,8,4,0"
+                    Content="{x:Static res:Resources.Import_Duplicate_Skip}"
+                    IsCancel="True" HorizontalAlignment="Stretch"
+                    Command="{Binding SkipCommand}" />
+            <Button Grid.Row="1" Grid.Column="1" Margin="4,8,0,0"
+                    Content="{x:Static res:Resources.Import_Duplicate_SkipAll}"
+                    HorizontalAlignment="Stretch"
+                    Command="{Binding SkipAllCommand}" />
+            <Button Grid.Row="2" Grid.ColumnSpan="2" Margin="0,8,0,0"
+                    Content="{x:Static res:Resources.Import_Duplicate_CancelImport}"
+                    HorizontalAlignment="Stretch"
+                    Command="{Binding CancelImportCommand}" />
+        </Grid>
+    </StackPanel>
+</Window>

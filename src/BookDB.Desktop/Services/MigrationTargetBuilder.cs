@@ -42,10 +42,10 @@ public sealed class MigrationTarget : IMigrationTarget
         Factory = provider.GetRequiredService<IDbContextFactory<BookDbContext>>();
         Resync = provider.GetRequiredService<IIdentitySequenceResync>();
         // A backup service over this target, only used for the safety export (CSV archive, provider-neutral) before
-        // a restore overwrites it; resource strings are never reached because that export runs without progress.
+        // a restore overwrites it. LookupService doubles as the ISettingsService here.
         Backup = new BackupService(
-            Factory, provider.GetRequiredService<AppSettings>(), new LookupService(Factory, NoResources.Instance),
-            NoResources.Instance, provider.GetRequiredService<IDataChangeTracker>(),
+            Factory, provider.GetRequiredService<AppSettings>(), new LookupService(Factory),
+            provider.GetRequiredService<IDataChangeTracker>(),
             provider.GetRequiredService<IBackupStrategy>());
     }
 
@@ -54,12 +54,6 @@ public sealed class MigrationTarget : IMigrationTarget
     public IBackupService Backup { get; }
 
     public async ValueTask DisposeAsync() => await _provider.DisposeAsync();
-
-    private sealed class NoResources : IResourceProvider
-    {
-        public static readonly NoResources Instance = new();
-        public string? GetString(string key) => key;
-    }
 }
 
 /// <summary>

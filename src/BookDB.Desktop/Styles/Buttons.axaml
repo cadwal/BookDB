@@ -21,7 +21,7 @@
     <!-- Standard (unclassed) buttons follow the palette via DynamicResource so they stay legible in
          every flavour — Fluent's own button brushes don't react to our palette, which left them grey-on-grey
          in High contrast. The accent and custom button classes opt out and keep their own look. -->
-    <Style Selector="Button:not(.accent):not(.iconButton):not(.primaryButton):not(.secondaryButton):not(.accentOutline):not(.helpLink)">
+    <Style Selector="Button:not(.accent):not(.iconButton):not(.primaryButton):not(.secondaryButton):not(.accentOutline):not(.helpLink):not(.dangerButton)">
         <Setter Property="BorderBrush" Value="{DynamicResource BrushBorderInput}" />
         <Setter Property="Foreground" Value="{DynamicResource BrushTextPrimary}" />
     </Style>
@@ -73,6 +73,21 @@
     <Style Selector="Button.accentOutline:disabled /template/ ContentPresenter">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderBrush" Value="{DynamicResource BrushBorderInput}" />
+    </Style>
+
+    <!-- Danger button: solid error-red fill for destructive confirmations (Delete). Hover/pressed keep
+         the error brush so the button never flashes back to the neutral Fluent grey mid-hover. -->
+    <Style Selector="Button.dangerButton">
+        <Setter Property="Background" Value="{DynamicResource BrushError}" />
+        <Setter Property="Foreground" Value="{DynamicResource BrushBadgeText}" />
+    </Style>
+    <Style Selector="Button.dangerButton:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource BrushError}" />
+        <Setter Property="Foreground" Value="{DynamicResource BrushBadgeText}" />
+    </Style>
+    <Style Selector="Button.dangerButton:pressed /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource BrushError}" />
+        <Setter Property="Foreground" Value="{DynamicResource BrushBadgeText}" />
     </Style>
 
     <!-- Icon button: transparent background, hover/active feedback, compact sizing -->

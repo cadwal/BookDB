@@ -1,0 +1,26 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:BookDB.Desktop.ViewModels"
+        xmlns:res="using:BookDB.Desktop.Localization"
+        xmlns:md="https://github.com/whistyun/Markdown.Avalonia.Tight"
+        x:Class="BookDB.Desktop.Views.ReleaseNotesWindow"
+        x:DataType="vm:ReleaseNotesViewModel"
+        Title="{Binding Title}"
+        Width="560" MinWidth="420"
+        Height="520" MinHeight="360"
+        WindowStartupLocation="CenterOwner"
+        ShowInTaskbar="False"
+        CanResize="True">
+
+    <DockPanel Margin="16">
+        <Button DockPanel.Dock="Bottom"
+                Content="{x:Static res:Resources.Common_Close}"
+                Classes="accent" IsDefault="True" IsCancel="True"
+                HorizontalAlignment="Right"
+                Margin="0,12,0,0"
+                Command="{Binding CloseCommand}" />
+        <Border Padding="4">
+            <md:MarkdownScrollViewer Markdown="{Binding Markdown}" />
+        </Border>
+    </DockPanel>
+</Window>

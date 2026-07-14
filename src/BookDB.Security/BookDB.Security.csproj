@@ -12,7 +12,6 @@
 
   <ItemGroup>
     <PackageReference Include="Devlooped.CredentialManager" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
   </ItemGroup>
 
   <ItemGroup>

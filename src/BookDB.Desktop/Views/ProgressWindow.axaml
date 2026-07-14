@@ -1,0 +1,43 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:BookDB.Desktop.ViewModels"
+        xmlns:res="using:BookDB.Desktop.Localization"
+        x:Class="BookDB.Desktop.Views.ProgressWindow"
+        x:DataType="vm:ProgressWindowViewModel"
+        Title="{x:Static res:Resources.AppDialog_Progress_Title}"
+        SizeToContent="WidthAndHeight"
+        CanResize="False"
+        MinWidth="320"
+        WindowStartupLocation="CenterOwner"
+        ShowInTaskbar="False"
+        SystemDecorations="{Binding Decorations}"
+        Background="{DynamicResource BrushBackground}">
+    <!-- Explicit Background so the window never flashes empty/transparent before its first paint —
+         visible on a near-instant SQLite backup that opens and closes the window in one frame. -->
+    <Window.Styles>
+        <Style Selector="Border#Root > StackPanel">
+            <Setter Property="Margin" Value="24,20" />
+            <Setter Property="Spacing" Value="8" />
+        </Style>
+        <Style Selector="Border#Root.card">
+            <Setter Property="BorderBrush" Value="{DynamicResource BrushPrimaryBlue}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="8" />
+        </Style>
+        <Style Selector="Border#Root.card > StackPanel">
+            <Setter Property="Margin" Value="28,22" />
+            <Setter Property="Spacing" Value="12" />
+        </Style>
+        <Style Selector="Border#Root.card TextBlock.status">
+            <Setter Property="FontSize" Value="12" />
+        </Style>
+    </Window.Styles>
+    <Border Name="Root" Classes.card="{Binding IsCard}">
+        <StackPanel>
+            <TextBlock Text="{Binding Header}" FontWeight="SemiBold" TextWrapping="Wrap" MaxWidth="360" />
+            <ProgressBar IsIndeterminate="True" Height="6" IsVisible="{Binding IsCard}" />
+            <TextBlock Classes="status" Text="{Binding Status}" TextWrapping="Wrap" MaxWidth="360"
+                       Foreground="{DynamicResource BrushTextSecondary}" />
+        </StackPanel>
+    </Border>
+</Window>

@@ -51,9 +51,9 @@ public sealed class BackupServiceTests : IDisposable
         _configPath = Path.Combine(Path.GetTempPath(), $"bookdb_backup_config_{Guid.NewGuid():N}.json");
         File.WriteAllText(_configPath, "{\"version\":1,\"backend\":\"Sqlite\",\"language\":\"sv\"}");
         var appSettings = new AppSettings { SqliteLibraryPath = _dbPath, ConfigPath = _configPath };
-        _settings = new LookupService(_factory, new NullResourceProvider());
+        _settings = new LookupService(_factory);
         _changeTracker = new DataChangeTracker();
-        _sut = new BackupService(_factory, appSettings, _settings, new NullResourceProvider(), _changeTracker,
+        _sut = new BackupService(_factory, appSettings, _settings, _changeTracker,
             new BookDB.Data.Sqlite.SqliteBackupStrategy(_factory, appSettings));
 
         _tempWorkDir = Path.Combine(Path.GetTempPath(), $"bookdb_backup_workdir_{Guid.NewGuid():N}");
@@ -294,7 +294,7 @@ public sealed class BackupServiceTests : IDisposable
         // the saved format preference is the default SQLite.
         var appSettings = new AppSettings { SqliteLibraryPath = _dbPath, ConfigPath = _configPath };
         var remoteSut = new BackupService(
-            _factory, appSettings, _settings, new NullResourceProvider(), _changeTracker, new NoFileBackupStrategy());
+            _factory, appSettings, _settings, _changeTracker, new NoFileBackupStrategy());
 
         await EnableAutoBackupAsync();
         _changeTracker.MarkChanged();
@@ -311,7 +311,7 @@ public sealed class BackupServiceTests : IDisposable
 
         public Task<string> BackupAsync(
             string destFolder, System.Threading.CancellationToken ct, string? explicitFileName = null,
-            IProgress<string>? progress = null) =>
+            IProgress<ProgressUpdate<BackupProgressStep>>? progress = null) =>
             throw new InvalidOperationException("File backup must not be called when SupportsFileBackup is false.");
     }
 }

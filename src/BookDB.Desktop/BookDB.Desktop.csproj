@@ -52,6 +52,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- Release-notes source: the canonical changelog ships embedded as-is; ReleaseNotes\ may hold optional
+         per-locale overrides ({version}.{lang}.md) and is normally empty — the probe exists, files are only
+         authored when a release warrants translation. -->
+    <EmbeddedResource Include="..\..\CHANGELOG.md" LogicalName="BookDB.Desktop.CHANGELOG.md" />
+    <EmbeddedResource Include="ReleaseNotes\**\*.md" />
+  </ItemGroup>
+
+  <ItemGroup>
     <EmbeddedResource Update="Localization\Resources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

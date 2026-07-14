@@ -28,7 +28,8 @@ public sealed class ColumnVisibilityPersistenceTests
             Substitute.For<IClipboardService>(),
             Substitute.For<ILoanService>(),
             Substitute.For<BookDB.Logic.Services.IConnectionHealthMonitor>(),
-            Substitute.For<BookDB.Data.Interfaces.IConnectionFailureClassifier>());
+            Substitute.For<BookDB.Data.Interfaces.IConnectionFailureClassifier>(),
+            Substitute.For<BookDB.Desktop.Services.IRecatalogFlowService>());
 
     [Fact]
     public void HidingAuthorColumn_PersistsColumnVisibleAuthorKey()

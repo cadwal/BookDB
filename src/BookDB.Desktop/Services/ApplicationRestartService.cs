@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
-using BookDB.Desktop.Helpers;
 using BookDB.Desktop.Localization;
 using Serilog;
 
@@ -12,14 +11,25 @@ namespace BookDB.Desktop.Services;
 /// <inheritdoc />
 public sealed class ApplicationRestartService : IApplicationRestartService
 {
+    private readonly IWindowService _windowService;
+
+    public ApplicationRestartService(IWindowService windowService)
+    {
+        _windowService = windowService;
+    }
+
     public async Task<bool> ConfirmRestartAsync(string message)
     {
-        var result = await AppDialogs.ShowConfirmDialogAsync(Resources.Settings_RestartConfirm_Title, message);
+        var result = await _windowService.ShowConfirmAsync(Resources.Settings_RestartConfirm_Title, message);
         return result == true;
     }
 
     public void Restart()
     {
+        // Forced Shutdown ignores close-guard cancellation, so the async guard path never gets to close
+        // the satellites — close them synchronously here so none outlives the main window into the handoff.
+        _windowService.CloseAllSecondaryWindows();
+
         // Start the replacement first; it waits on the instance lock until this process releases it on exit.
         var exePath = Environment.ProcessPath;
         if (!string.IsNullOrEmpty(exePath))

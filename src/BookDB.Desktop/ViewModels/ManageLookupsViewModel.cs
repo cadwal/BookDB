@@ -23,6 +23,20 @@ public sealed partial class ManageLookupsViewModel : ObservableObject
     [ObservableProperty]
     private int _selectedTabIndex;
 
+    /// <summary>Whether any tab has its inline entry editor (or, for Person, its merge/cleanup panel) open —
+    /// the gate for Esc-closes-the-window. Deliberately global: an edit left pending on a tab the user
+    /// has since switched away from still blocks Esc, so it can't be lost by an accidental keypress.</summary>
+    public bool IsAnyTabEditing =>
+        PersonTab.HasSelection || PersonTab.IsMergePanelOpen || PersonTab.IsCleanupPanelOpen
+        || PublisherTab.HasSelection
+        || SeriesTab.HasSelection
+        || LocationTab.HasSelection
+        || OwnerTab.HasSelection
+        || LanguageTab.HasSelection
+        || CategoryTab.HasSelection
+        || PurchasePlaceTab.HasSelection
+        || CollectionTab.HasSelection;
+
     // Sub-VMs — constructed here, NOT registered in DI.
     public PersonTabViewModel PersonTab { get; }
     public PublisherTabViewModel PublisherTab { get; }
@@ -66,7 +80,9 @@ public sealed partial class ManageLookupsViewModel : ObservableObject
         {
             tab.ConnectionMonitor = connectionMonitor;
             tab.ConnectionClassifier = connectionClassifier;
+            tab.PropertyChanged += (_, _) => OnPropertyChanged(nameof(IsAnyTabEditing));
         }
+        PersonTab.PropertyChanged += (_, _) => OnPropertyChanged(nameof(IsAnyTabEditing));
     }
 
     public async Task InitializeAsync(string? initialTab = null)

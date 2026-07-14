@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using BookDB.Models;
 
 namespace BookDB.Data.Interfaces;
 
@@ -17,5 +18,5 @@ public interface IBackupStrategy
         string destFolder,
         CancellationToken ct,
         string? explicitFileName = null,
-        IProgress<string>? progress = null);
+        IProgress<ProgressUpdate<BackupProgressStep>>? progress = null);
 }

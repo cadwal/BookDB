@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Threading;
-using BookDB.Desktop.Helpers;
 using BookDB.Desktop.Localization;
 using BookDB.Desktop.Messages;
 using BookDB.Desktop.Services;
@@ -30,6 +29,7 @@ public sealed partial class ImportWizardViewModel : ObservableObject
     private readonly ILookupService _lookupService;
     private readonly ILookupManagementService _lookupManagement;
     private readonly IMessenger _messenger;
+    private readonly IWindowService _windowService;
     private CancellationTokenSource? _importCts;
 
     // Set by WindowService to close the dialog
@@ -94,13 +94,15 @@ public sealed partial class ImportWizardViewModel : ObservableObject
         IFilePickerService filePicker,
         ILookupService lookupService,
         ILookupManagementService lookupManagement,
-        IMessenger messenger)
+        IMessenger messenger,
+        IWindowService windowService)
     {
         _importService = importService;
         _filePicker = filePicker;
         _lookupService = lookupService;
         _lookupManagement = lookupManagement;
         _messenger = messenger;
+        _windowService = windowService;
 
         // Delegate commands to step VMs so AXAML can bind without parent traversal
         Step1.PickFileCommand = PickFileCommand;
@@ -272,7 +274,7 @@ public sealed partial class ImportWizardViewModel : ObservableObject
 
         Func<string, CancellationToken, Task<ImportDuplicateResolution>> askCallback = async (title, ct) =>
             await Dispatcher.UIThread.InvokeAsync(() =>
-                AppDialogs.ShowDuplicateResolutionDialogAsync(
+                _windowService.ShowDuplicateResolutionAsync(
                     Localization.Resources.Import_Ask_Title,
                     string.Format(Localization.Resources.Import_Ask_Body, title)));
 

@@ -13,6 +13,7 @@ using BookDB.Models;
 using BookDB.Models.Interfaces;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Extensions.DependencyInjection;
+using Serilog;
 
 namespace BookDB.Desktop;
 
@@ -39,7 +40,17 @@ public static class ServiceCollectionExtensions
                     $"Database backend '{appSettings.Backend}' is not supported yet.");
         }
 
-        services.AddSecretStore();
+        // Probes the OS credential store once and registers the result (real or null-object) plus the
+        // availability the Settings UI reads to enable/disable the remote-backend options. The Settings UI
+        // only shows a generic "no credential store" message, so the log carries the real cause (e.g.
+        // libsecret missing, no Secret Service on the session bus). Warning, not Error — the app runs fine
+        // on SQLite without a credential store.
+        var (secretStore, secretStoreAvailability) = SecretStoreFactory.Create();
+        if (!secretStoreAvailability.IsAvailable)
+            Log.Warning("OS credential store unavailable — remote-database passwords cannot be stored: {Reason}",
+                secretStoreAvailability.UnavailableReason);
+        services.AddSingleton(secretStore);
+        services.AddSingleton(secretStoreAvailability);
         // Backend-independent: a user on one backend must be able to test a remote server before switching to it.
         services.AddSingleton<IPostgresConnectionProber, PostgresConnectionProber>();
         services.AddSingleton<IMySqlConnectionProber, MySqlConnectionProber>();
@@ -52,10 +63,11 @@ public static class ServiceCollectionExtensions
         // Startup-progress channel: the splash ViewModel subscribes and DatabaseStartupService
         // (BookDB.Data) reports migration sub-progress into it. Singleton so they share one instance.
         services.AddSingleton<IStartupProgressReporter, StartupProgressReporter>();
-        services.AddSingleton<IResourceProvider, DesktopResourceProvider>();
         services.AddSingleton<IFileSystemService, FileSystemService>();
+        services.AddSingleton<IReleaseNotesService, ReleaseNotesService>();
         services.AddSingleton<IShortcutService, ShortcutService>();
         services.AddSingleton<IWindowService, WindowService>();
+        services.AddSingleton<IRecatalogFlowService, RecatalogFlowService>();
         services.AddSingleton<IRemoteWriteGuard, RemoteWriteGuard>();
         services.AddSingleton<IMigrationTargetBuilder, MigrationTargetBuilder>();
         services.AddSingleton<IApplicationRestartService, ApplicationRestartService>();

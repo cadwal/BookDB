@@ -412,8 +412,14 @@
   <data name="Recatalog_NoIsbn_Title" xml:space="preserve">
     <value>Pas d'ISBN</value>
   </data>
-  <data name="Recatalog_NoIsbn_Body" xml:space="preserve">
-    <value>Ce livre n'a pas d'ISBN. Saisissez-en un pour rechercher les métadonnées.</value>
+  <data name="Recatalog_NoIsbn_BodyForBook" xml:space="preserve">
+    <value>« {0} » n'a pas d'ISBN. Saisissez-en un pour rechercher les métadonnées.</value>
+  </data>
+  <data name="Recatalog_SaveIsbn_Title" xml:space="preserve">
+    <value>Enregistrer cet ISBN ?</value>
+  </data>
+  <data name="Recatalog_SaveIsbn_Body" xml:space="preserve">
+    <value>Enregistrer l'ISBN {0} pour « {1} » ? Sinon, l'ISBN ne sert qu'à cette recherche.</value>
   </data>
   <data name="EditForm_RecatalogButton" xml:space="preserve">
     <value>Re-cataloguer</value>
@@ -772,6 +778,9 @@
   <data name="Menu_RecatalogSelected" xml:space="preserve">
     <value>Re-cataloguer la _sélection</value>
   </data>
+  <data name="Toolbar_Recatalog" xml:space="preserve">
+    <value>Re-cataloguer</value>
+  </data>
   <data name="Menu_RestoreBackup" xml:space="preserve">
     <value>Restaurer depuis une sauvegarde...</value>
   </data>
@@ -813,6 +822,9 @@
   </data>
   <data name="Menu_Window" xml:space="preserve">
     <value>_Fenêtre</value>
+  </data>
+  <data name="Menu_Window_NoOpenWindows" xml:space="preserve">
+    <value>(Aucune fenêtre ouverte)</value>
   </data>
   <data name="BookDetail_Label_Category" xml:space="preserve">
     <value>Catégorie :</value>
@@ -1586,6 +1598,12 @@ Doublons potentiels : {3}  |  Avec couvertures : {4}</value>
   <data name="Print_ScopeSummary_Single" xml:space="preserve">
     <value>Impression de {0} livre depuis le filtre actuel.</value>
   </data>
+  <data name="Print_Status_Querying" xml:space="preserve">
+    <value>Interrogation des livres…</value>
+  </data>
+  <data name="Print_Status_GeneratingPdf" xml:space="preserve">
+    <value>Génération du PDF pour {0:N0} livres…</value>
+  </data>
   <data name="Print_StandardPresetDisplayName" xml:space="preserve">
     <value>Standard</value>
   </data>
@@ -2090,6 +2108,12 @@ Doublons potentiels : {3}  |  Avec couvertures : {4}</value>
   <data name="About_AppName" xml:space="preserve">
     <value>BookDB</value>
   </data>
+  <data name="About_Version" xml:space="preserve">
+    <value>Version {0}</value>
+  </data>
+  <data name="About_VersionUnknown" xml:space="preserve">
+    <value>Version inconnue</value>
+  </data>
   <data name="Menu_Backup" xml:space="preserve">
     <value>Sauvegarde...</value>
   </data>
@@ -2381,6 +2405,18 @@ Doublons potentiels : {3}  |  Avec couvertures : {4}</value>
   <data name="Common_Discard" xml:space="preserve">
     <value>Abandonner</value>
   </data>
+  <data name="ReleaseNotes_WindowTitle" xml:space="preserve">
+    <value>Nouveautés de BookDB {0}</value>
+  </data>
+  <data name="ReleaseNotes_Prompt_Title" xml:space="preserve">
+    <value>BookDB a été mis à jour</value>
+  </data>
+  <data name="ReleaseNotes_Prompt_Body" xml:space="preserve">
+    <value>Vous utilisez maintenant la version {0}. Voulez-vous découvrir les nouveautés ?</value>
+  </data>
+  <data name="ReleaseNotes_Prompt_Skip_Button" xml:space="preserve">
+    <value>Ignorer</value>
+  </data>
   <data name="Common_Close" xml:space="preserve">
     <value>Fermer</value>
   </data>
@@ -2392,6 +2428,9 @@ Doublons potentiels : {3}  |  Avec couvertures : {4}</value>
   </data>
   <data name="Export_Header" xml:space="preserve">
     <value>Exportation des livres…</value>
+  </data>
+  <data name="Export_Status_Querying" xml:space="preserve">
+    <value>Interrogation des livres…</value>
   </data>
   <data name="Export_Status_WritingBooks" xml:space="preserve">
     <value>Écriture de {0:N0} livres…</value>
@@ -2809,6 +2848,24 @@ Doublons potentiels : {3}  |  Avec couvertures : {4}</value>
   </data>
   <data name="StatusBar_Connection_Lost" xml:space="preserve">
     <value>Connexion à la base de données perdue</value>
+  </data>
+  <data name="StatusBar_Storage_File_Label" xml:space="preserve">
+    <value>Fichier de base de données</value>
+  </data>
+  <data name="StatusBar_Storage_Host_Label" xml:space="preserve">
+    <value>Serveur</value>
+  </data>
+  <data name="StatusBar_Storage_Database_Label" xml:space="preserve">
+    <value>Base de données</value>
+  </data>
+  <data name="StatusBar_Storage_User_Label" xml:space="preserve">
+    <value>Utilisateur</value>
+  </data>
+  <data name="StatusBar_Storage_State_Label" xml:space="preserve">
+    <value>Connexion</value>
+  </data>
+  <data name="StatusBar_Storage_State_Connected" xml:space="preserve">
+    <value>Connectée</value>
   </data>
   <data name="MoveLibrary_Header" xml:space="preserve">
     <value>Déplacer la bibliothèque</value>

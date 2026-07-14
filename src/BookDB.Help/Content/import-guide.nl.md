@@ -1,6 +1,6 @@
 # Importgids
 
-BookDB kan uw bestaande boekenverzameling importeren vanuit een Readerware-back-up — als back-up zip-bestand of als uitgepakte back-upmap.
+BookDB kan je bestaande boekenverzameling importeren vanuit een Readerware-back-up — als back-up zip-bestand of als uitgepakte back-upmap.
 
 ## Stroom van de importwizard
 
@@ -27,21 +27,21 @@ Klik op **Volgende** om door te gaan naar de voorvertoning.
 Voordat gegevens worden geschreven, analyseert BookDB de back-up en toont:
 - **Aantal records** — hoeveel boeken zijn gevonden
 - **Velddekking** — welke velden zijn gedetecteerd en hoeveel records elk veld hebben ingevuld
-- **Dubbele ISBN's** — ISBN's die al in uw collectie bestaan
+- **Dubbele ISBN's** — ISBN's die al in je collectie bestaan
 - **Coderingsproblemen** — tekencoderingsproblemen gevonden in het bestand
 
-Bekijk de voorvertoning zorgvuldig. Er worden geen gegevens geïmporteerd totdat u bevestigt in Stap 4.
+Bekijk de voorvertoning zorgvuldig. Er worden geen gegevens geïmporteerd totdat je bevestigt in Stap 4.
 
 Klik op **Volgende** om door te gaan naar de importinstellingen.
 
 ## Stap 3 — Importopties
 
-**Doelcollectie** — kies aan welke collectie (Fictie, Non-fictie, Comics, enz.) de geïmporteerde boeken worden toegewezen. U kunt dit later wijzigen door afzonderlijke boeken te bewerken.
+**Doelcollectie** — kies aan welke collectie (Fictie, Non-fictie, Comics, enz.) de geïmporteerde boeken worden toegewezen. Je kunt dit later wijzigen door afzonderlijke boeken te bewerken.
 
-**Afhandeling van duplicaten** — als een boek met hetzelfde ISBN al in uw collectie bestaat, kan BookDB:
+**Afhandeling van duplicaten** — als een boek met hetzelfde ISBN al in je collectie bestaat, kan BookDB:
 - Het duplicaat overslaan (standaard)
 - Het bestaande record overschrijven
-- U elke keer vragen
+- Je elke keer vragen
 
 Klik op **Volgende** om de import te starten.
 
@@ -51,7 +51,7 @@ BookDB importeert records in batches. De voortgangsbalk toont:
 - Hoeveel records zijn verwerkt
 - Records die zijn overgeslagen of mislukt
 
-U kunt de import op elk moment annuleren. Gedeeltelijk geïmporteerde records worden behouden.
+Je kunt de import op elk moment annuleren. Gedeeltelijk geïmporteerde records worden behouden.
 
 ## Stap 5 — Importrapport
 
@@ -61,7 +61,7 @@ Het eindrapport toont:
 - **Ontbrekende velden** — velden die leeg waren in het importbestand
 - **Coderingsproblemen** — tekenproblemen die zijn opgetreden
 
-Klik op **Voltooien** om de wizard te sluiten. Uw boekenlijst wordt automatisch vernieuwd.
+Klik op **Voltooien** om de wizard te sluiten. Je boekenlijst wordt automatisch vernieuwd.
 
 ## Ondersteunde bestandsindelingen
 
@@ -80,21 +80,21 @@ Een boek kan meer dan één afbeelding van hetzelfde type krijgen — Readerware
 
 Zulke boeken worden in de boekenlijst gemarkeerd met een **!**-label op de miniatuur ("Dubbele afbeeldingstypen — controleer het tabblad Afbeeldingen").
 
-Om dit op te lossen opent u het boek om te bewerken en gaat u naar het tabblad **Afbeeldingen**. Zodra een type twee of meer afbeeldingen bevat, verschijnt het gedeelte **Alle afbeeldingen beheren** met alle afbeeldingen. Voor elke afbeelding kunt u:
+Om dit op te lossen open je het boek om te bewerken en ga je naar het tabblad **Afbeeldingen**. Zodra een type twee of meer afbeeldingen bevat, verschijnt het gedeelte **Alle afbeeldingen beheren** met alle afbeeldingen. Voor elke afbeelding kun je:
 
 - **Aan een ander afbeeldingstype toewijzen** — bijvoorbeeld een tweede *Voorkant* omzetten naar *Achterkant* of *Rug*.
 - **Omhoog of omlaag verplaatsen binnen het type** — de bovenste afbeelding (met de laagste volgorde) wordt de voorvertoning van dat type.
 - **De afbeelding verwijderen**.
 
-Sla het boek op om uw wijzigingen te bewaren. Zodra elk type hooguit één afbeelding heeft, verdwijnt het **!**-label.
+Sla het boek op om je wijzigingen te bewaren. Zodra elk type hooguit één afbeelding heeft, verdwijnt het **!**-label.
 
 ## Importeren uit een actieve Readerware-database
 
-Als u geen back-up hebt maar nog wel uw actieve Readerware-database (de `.rw4`-map, bijv. `MyBooks.rw4`), kan BookDB die rechtstreeks lezen:
+Als je geen back-up hebt maar nog wel je actieve Readerware-database (de `.rw4`-map, bijv. `MyBooks.rw4`), kan BookDB die rechtstreeks lezen:
 
 1. Open **Bestand > Readerware-database importeren…**.
-2. Klik op **Bladeren** en selecteer uw `.rw4`-databasemap.
-3. Klik op **Converteren**. BookDB kopieert eerst de database — uw origineel wordt nooit geopend of gewijzigd — en converteert die naar een back-upmap.
+2. Klik op **Bladeren** en selecteer je `.rw4`-databasemap.
+3. Klik op **Converteren**. BookDB kopieert eerst de database — je origineel wordt nooit geopend of gewijzigd — en converteert die naar een back-upmap.
 4. Klik na het voltooien van de conversie op **Importwizard openen** om verder te gaan met dezelfde stappen voor voorbeeld, instellingen en import die hierboven zijn beschreven.
 
 Dit vereist een eenmalige instelling: stel de map met HSQLDB- en Java-hulpprogramma's in via **Instellingen > Importeren**. Die map moet `jre\bin\java.exe` en `lib\hsqldb.jar` bevatten.
@@ -107,6 +107,6 @@ Deze functie ondersteunt **Readerware 4**-databases — de `DBCATALOG40`-indelin
 
 **"Geen records gevonden"** — Het bestand is mogelijk leeg of geen geldige Readerware-back-up. Controleer of het is gemaakt met de Back-up functie van Readerware, niet een export.
 
-**"Coderingsproblemen gedetecteerd"** — BookDB verwerkt tekencodering automatisch. Als u verminkte tekens ziet in de voorvertoning, is het back-upbestand mogelijk beschadigd — probeer een nieuwe back-up te maken vanuit Readerware.
+**"Coderingsproblemen gedetecteerd"** — BookDB verwerkt tekencodering automatisch. Als je verminkte tekens ziet in de voorvertoning, is het back-upbestand mogelijk beschadigd — probeer een nieuwe back-up te maken vanuit Readerware.
 
-**Veel duplicaten worden weergegeven** — Als u al boeken hebt geïmporteerd via ISBN-opzoeken, verschijnen deze als duplicaten. Kies "Overslaan" om te voorkomen dat uw handmatig beoordeelde records worden overschreven.
+**Veel duplicaten worden weergegeven** — Als je al boeken hebt geïmporteerd via ISBN-opzoeken, verschijnen deze als duplicaten. Kies "Overslaan" om te voorkomen dat je handmatig beoordeelde records worden overschreven.

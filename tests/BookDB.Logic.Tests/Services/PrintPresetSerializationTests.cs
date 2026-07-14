@@ -41,7 +41,7 @@ public sealed class PrintPresetSerializationTests : IDisposable
             .Options;
 
         _factory = new TestBookDbContextFactory(options);
-        var lookupService = new LookupService(_factory, new NullResourceProvider());
+        var lookupService = new LookupService(_factory);
         _settingsService = lookupService;
     }
 

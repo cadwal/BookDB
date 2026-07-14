@@ -21,8 +21,9 @@ public class MainWindowViewModelTests
         var settingsService = (ISettingsService)factory.LookupService;
         var filterPanel = new FilterPanelViewModel(messenger, factory.BookService, factory.BookSearchService, settingsService, windowService);
         var loanService = NSubstitute.Substitute.For<ILoanService>();
-        var bookList = new BookListViewModel(messenger, factory.BookService, factory.BookSearchService, factory.BookImageService, windowService, settingsService, factory.LookupService, new TestLookupServiceFactory.NullClipboardService(), loanService, NSubstitute.Substitute.For<BookDB.Logic.Services.IConnectionHealthMonitor>(), NSubstitute.Substitute.For<BookDB.Data.Interfaces.IConnectionFailureClassifier>());
-        var bookDetail = new BookDetailViewModel(messenger, factory.BookService, factory.BookImageService, factory.LookupService, windowService, filePickerService, new Helpers.PassThroughWriteGuard(), NSubstitute.Substitute.For<System.Net.Http.IHttpClientFactory>(), loanService, NSubstitute.Substitute.For<BookDB.Logic.Services.IConnectionHealthMonitor>(), NSubstitute.Substitute.For<BookDB.Data.Interfaces.IConnectionFailureClassifier>());
+        var recatalogFlow = NSubstitute.Substitute.For<BookDB.Desktop.Services.IRecatalogFlowService>();
+        var bookList = new BookListViewModel(messenger, factory.BookService, factory.BookSearchService, factory.BookImageService, windowService, settingsService, factory.LookupService, new TestLookupServiceFactory.NullClipboardService(), loanService, NSubstitute.Substitute.For<BookDB.Logic.Services.IConnectionHealthMonitor>(), NSubstitute.Substitute.For<BookDB.Data.Interfaces.IConnectionFailureClassifier>(), recatalogFlow);
+        var bookDetail = new BookDetailViewModel(messenger, factory.BookService, factory.BookImageService, factory.LookupService, windowService, filePickerService, new Helpers.PassThroughWriteGuard(), NSubstitute.Substitute.For<System.Net.Http.IHttpClientFactory>(), loanService, NSubstitute.Substitute.For<BookDB.Logic.Services.IConnectionHealthMonitor>(), NSubstitute.Substitute.For<BookDB.Data.Interfaces.IConnectionFailureClassifier>(), recatalogFlow);
         var collectionSelector = new CollectionSelectorViewModel(messenger);
         var vm = new MainWindowViewModel(filterPanel, bookList, bookDetail, collectionSelector, factory.LookupService, windowService, messenger,
             filePickerService, new TestLookupServiceFactory.NullBackupService(), new TestLookupServiceFactory.NullCsvExportService(), settingsService, new TestLookupServiceFactory.NullPrintService(),
@@ -33,7 +34,8 @@ public class MainWindowViewModelTests
             NSubstitute.Substitute.For<BookDB.Desktop.Services.IBootstrapConfigService>(),
             new BookDB.Models.AppSettings(),
             NSubstitute.Substitute.For<BookDB.Desktop.Services.IMigrationTargetBuilder>(),
-            NSubstitute.Substitute.For<BookDB.Data.Interfaces.ISecretStore>());
+            NSubstitute.Substitute.For<BookDB.Data.Interfaces.ISecretStore>(),
+            NSubstitute.Substitute.For<BookDB.Desktop.Services.IReleaseNotesService>());
         return (vm, factory);
     }
 
@@ -237,6 +239,68 @@ public class MainWindowViewModelTests
             vm.RemoveOpenWindow(utilityEntry);
 
             Assert.DoesNotContain(vm.OpenWindowEntries, e => e.IsSeparator);
+        }
+    }
+
+    [Fact]
+    public void WindowMenu_GroupsBookEditBeforeUtility_WhicheverOpensFirst()
+    {
+        var (vm, factory) = CreateTestViewModel();
+        using (factory)
+        {
+            var utility = new OpenWindowEntry("Statistics",
+                new CommunityToolkit.Mvvm.Input.RelayCommand(() => { }), WindowCategory.Utility);
+            var bookEdit = new OpenWindowEntry("Edit Book",
+                new CommunityToolkit.Mvvm.Input.RelayCommand(() => { }), WindowCategory.BookEdit);
+
+            // Utility opens first — the menu must still list the BookEdit group above the separator above Utility.
+            vm.AddOpenWindow(utility);
+            vm.AddOpenWindow(bookEdit);
+
+            var entries = vm.OpenWindowEntries.ToList();
+            Assert.Single(entries, e => e.IsSeparator);
+            Assert.True(entries.IndexOf(bookEdit) < entries.FindIndex(e => e.IsSeparator));
+            Assert.True(entries.FindIndex(e => e.IsSeparator) < entries.IndexOf(utility));
+        }
+    }
+
+    [Fact]
+    public void WindowMenu_KeepsInsertionOrderWithinACategory_AndEntryActivationRunsItsCommand()
+    {
+        var (vm, factory) = CreateTestViewModel();
+        using (factory)
+        {
+            var activated = 0;
+            var first = new OpenWindowEntry("Statistics",
+                new CommunityToolkit.Mvvm.Input.RelayCommand(() => { }), WindowCategory.Utility);
+            var second = new OpenWindowEntry("Help",
+                new CommunityToolkit.Mvvm.Input.RelayCommand(() => activated++), WindowCategory.Utility);
+
+            vm.AddOpenWindow(first);
+            vm.AddOpenWindow(second);
+
+            Assert.Equal(new[] { first, second }, vm.OpenWindowEntries.Where(e => !e.IsSeparator));
+            second.ActivateCommand.Execute(null);
+            Assert.Equal(1, activated);
+        }
+    }
+
+    [Fact]
+    public void WindowMenu_ShowsLocalizedSentinel_OnlyWhenNoWindowsAreOpen()
+    {
+        var (vm, factory) = CreateTestViewModel();
+        using (factory)
+        {
+            var sentinel = BookDB.Desktop.Localization.Resources.Menu_Window_NoOpenWindows;
+            Assert.Equal(sentinel, Assert.Single(vm.OpenWindowEntries).Title);
+
+            var entry = new OpenWindowEntry("Statistics",
+                new CommunityToolkit.Mvvm.Input.RelayCommand(() => { }), WindowCategory.Utility);
+            vm.AddOpenWindow(entry);
+            Assert.DoesNotContain(vm.OpenWindowEntries, e => e.Title == sentinel);
+
+            vm.RemoveOpenWindow(entry);
+            Assert.Equal(sentinel, Assert.Single(vm.OpenWindowEntries).Title);
         }
     }
 }

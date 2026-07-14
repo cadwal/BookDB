@@ -101,6 +101,120 @@ public sealed class SecretStoreTests
         Assert.Contains("no Secret Service", availability.UnavailableReason);
     }
 
+    private static Func<(ISecretStore, SecretStoreAvailability)> AttemptsReturning(
+        Action onCall, params (ISecretStore, SecretStoreAvailability)[] results)
+    {
+        var call = 0;
+        return () =>
+        {
+            onCall();
+            return results[Math.Min(call++, results.Length - 1)];
+        };
+    }
+
+    private static (ISecretStore, SecretStoreAvailability) AvailableResult(ISecretStore store) =>
+        (store, SecretStoreAvailability.Available);
+
+    private static (ISecretStore, SecretStoreAvailability) UnavailableResult(string reason) =>
+        (new NullSecretStore(), SecretStoreAvailability.Unavailable(reason));
+
+    [Fact]
+    public void CreateWithPlatformDefault_OnLinuxWithNoSelection_DefaultsToSecretServiceAndRetries()
+    {
+        var env = new Dictionary<string, string>();
+        var calls = 0;
+        var working = new CredentialManagerSecretStore(new FakeCredentialStore());
+        var attempt = AttemptsReturning(() => calls++,
+            UnavailableResult("No credential store has been selected."),
+            AvailableResult(working));
+
+        var (store, availability) = SecretStoreFactory.CreateWithPlatformDefault(
+            attempt,
+            isLinux: true,
+            key => env.TryGetValue(key, out var v) ? v : null,
+            (key, value) => { if (value is null) env.Remove(key); else env[key] = value; });
+
+        Assert.Same(working, store);
+        Assert.True(availability.IsAvailable);
+        Assert.Equal(2, calls);
+        Assert.Equal("secretservice", env["GCM_CREDENTIAL_STORE"]);
+    }
+
+    [Fact]
+    public void CreateWithPlatformDefault_WhenTheDefaultAlsoFails_RestoresTheEnvironmentAndOriginalReason()
+    {
+        var env = new Dictionary<string, string>();
+        var attempt = AttemptsReturning(() => { },
+            UnavailableResult("No credential store has been selected."),
+            UnavailableResult("no Secret Service on this session bus"));
+
+        var (store, availability) = SecretStoreFactory.CreateWithPlatformDefault(
+            attempt,
+            isLinux: true,
+            key => env.TryGetValue(key, out var v) ? v : null,
+            (key, value) => { if (value is null) env.Remove(key); else env[key] = value; });
+
+        Assert.IsType<NullSecretStore>(store);
+        Assert.Contains("No credential store has been selected", availability.UnavailableReason);
+        Assert.Empty(env);
+    }
+
+    [Fact]
+    public void CreateWithPlatformDefault_OnLinuxWithExplicitSelection_DoesNotOverrideIt()
+    {
+        // A set-but-broken GCM_CREDENTIAL_STORE is the user's choice — surface its failure, don't paper over it.
+        var env = new Dictionary<string, string> { ["GCM_CREDENTIAL_STORE"] = "gpg" };
+        var calls = 0;
+        var attempt = AttemptsReturning(() => calls++, UnavailableResult("gpg is broken"));
+
+        var (_, availability) = SecretStoreFactory.CreateWithPlatformDefault(
+            attempt,
+            isLinux: true,
+            key => env.TryGetValue(key, out var v) ? v : null,
+            (key, value) => { if (value is null) env.Remove(key); else env[key] = value; });
+
+        Assert.Contains("gpg is broken", availability.UnavailableReason);
+        Assert.Equal(1, calls);
+        Assert.Equal("gpg", env["GCM_CREDENTIAL_STORE"]);
+    }
+
+    [Fact]
+    public void CreateWithPlatformDefault_OffLinux_NeverRetries()
+    {
+        var env = new Dictionary<string, string>();
+        var calls = 0;
+        var attempt = AttemptsReturning(() => calls++, UnavailableResult("boom"));
+
+        var (_, availability) = SecretStoreFactory.CreateWithPlatformDefault(
+            attempt,
+            isLinux: false,
+            key => env.TryGetValue(key, out var v) ? v : null,
+            (key, value) => { if (value is null) env.Remove(key); else env[key] = value; });
+
+        Assert.False(availability.IsAvailable);
+        Assert.Equal(1, calls);
+        Assert.Empty(env);
+    }
+
+    [Fact]
+    public void CreateWithPlatformDefault_WhenTheStoreResolves_NeitherRetriesNorTouchesTheEnvironment()
+    {
+        var env = new Dictionary<string, string>();
+        var calls = 0;
+        var working = new CredentialManagerSecretStore(new FakeCredentialStore());
+        var attempt = AttemptsReturning(() => calls++, AvailableResult(working));
+
+        var (store, _) = SecretStoreFactory.CreateWithPlatformDefault(
+            attempt,
+            isLinux: true,
+            key => env.TryGetValue(key, out var v) ? v : null,
+            (key, value) => { if (value is null) env.Remove(key); else env[key] = value; });
+
+        Assert.Same(working, store);
+        Assert.Equal(1, calls);
+        Assert.Empty(env);
+    }
+
     [Theory]
     [InlineData("bookdb_user", "db.example.com", 6543, "library", "bookdb_user@db.example.com:6543/library")]
     [InlineData("", "localhost", 5432, "bookdb", "@localhost:5432/bookdb")]

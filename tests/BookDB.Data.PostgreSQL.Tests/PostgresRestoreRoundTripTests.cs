@@ -43,11 +43,6 @@ public sealed class PostgresRestoreRoundTripTests : IClassFixture<PostgresTestDb
         try { Directory.Delete(_workDir, recursive: true); } catch { /* best effort */ }
     }
 
-    private sealed class KeyResources : IResourceProvider
-    {
-        public string? GetString(string key) => key;
-    }
-
     private static readonly byte[] CoverBytes = [0x89, 0x50, 0x4E, 0x47, 0x55, 0x66];
     private static readonly DateTime BookAdded = new(2026, 5, 6, 7, 8, 9, DateTimeKind.Utc);
 
@@ -102,7 +97,7 @@ public sealed class PostgresRestoreRoundTripTests : IClassFixture<PostgresTestDb
     }
 
     private BackupService BackupServiceFor(IDbContextFactory<BookDbContext> factory, AppSettings settings, IBackupStrategy strategy)
-        => new(factory, settings, new LookupService(factory, new KeyResources()), new KeyResources(), new DataChangeTracker(), strategy);
+        => new(factory, settings, new LookupService(factory), new DataChangeTracker(), strategy);
 
     [Fact]
     public async Task Restore_SqliteArchive_IntoPostgres_RoundTrips_AndResyncsInsideTransaction()

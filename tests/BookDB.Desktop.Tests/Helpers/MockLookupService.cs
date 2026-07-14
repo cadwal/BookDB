@@ -7,6 +7,7 @@ using BookDB.Desktop.Services;
 using BookDB.Desktop.ViewModels;
 using BookDB.Help;
 using BookDB.Logic.Services;
+using BookDB.Models;
 using BookDB.Models.Metadata;
 using BookDB.Models.Entities;
 using BookDB.Models.Interfaces;
@@ -44,7 +45,7 @@ public sealed class TestLookupServiceFactory : IDisposable
             db.Database.EnsureCreated();
         }
 
-        LookupService = new LookupService(_factory, new NullResourceProvider());
+        LookupService = new LookupService(_factory);
         BookService = new BookService(_factory);
         BookSearchService = new BookSearchService(_factory, new BookDB.Data.Sqlite.SqliteBookSearchProvider(_factory));
         BookImageService = new BookImageService(_factory);
@@ -90,14 +91,16 @@ public sealed class TestLookupServiceFactory : IDisposable
         public Task<DuplicateIsbnResult> ShowDuplicateIsbnDialogAsync(string isbn, string existingTitle) => Task.FromResult(DuplicateIsbnResult.Cancel);
         public void OpenBatchQueueWindow() { }
         public BatchQueueWindowViewModel? GetBatchQueueWindowViewModel() => null;
-        public Task<string?> ShowIsbnPromptDialogAsync() => Task.FromResult<string?>(null);
+        public Task<string?> ShowIsbnPromptDialogAsync(string bookTitle) => Task.FromResult<string?>(null);
         public Task<bool?> ShowImportWizardAsync(string? initialPath = null) => Task.FromResult<bool?>(null);
         public Task ShowReaderwareDbImportDialogAsync() => Task.CompletedTask;
         public Task<bool?> ShowBatchShutdownWarningAsync() => Task.FromResult<bool?>(null);
         public Task<bool?> ShowMainShutdownWarningAsync() => Task.FromResult<bool?>(null);
         public Task StartBatchAsync(IReadOnlyList<string> isbns) => Task.CompletedTask;
         public Task StartBatchRecatalogAsync(IReadOnlyList<int> bookIds) => Task.CompletedTask;
+        public Task StartBatchRecatalogAsync(int bookId, string isbn) => Task.CompletedTask;
         public void CloseAllSecondaryWindows() { }
+        public Task<bool> ConfirmCloseGuardedWindowsAsync() => Task.FromResult(true);
         public Task ShowManageLookupsAsync(string? initialTab = null) => Task.CompletedTask;
         public Task ShowSettingsAsync(Avalonia.Controls.Window? owner = null) => Task.CompletedTask;
         public Task ShowMaintenanceDialogAsync() => Task.CompletedTask;
@@ -128,6 +131,22 @@ public sealed class TestLookupServiceFactory : IDisposable
             Avalonia.Controls.Window owner) => Task.FromResult(StartupFailureOutcome.Proceed);
         public Task<WriteFailureChoice> ShowWriteFailureDialogAsync(string message) => Task.FromResult(WriteFailureChoice.Discard);
         public Task<bool> ShowConnectionLostEscalationDialogAsync() => Task.FromResult(false);
+        public Task ShowAboutAsync() => Task.CompletedTask;
+        public Task ShowReleaseNotesAsync(string version, string markdown) => Task.CompletedTask;
+        public Task<ReleaseNotesChoice> ShowReleaseNotesPromptAsync(string version) => Task.FromResult(ReleaseNotesChoice.Defer);
+        public Task<RestoreTargetChoice> ShowRestoreTargetAsync(string archivedServerDescription) => Task.FromResult(RestoreTargetChoice.Cancel);
+        public Task ShowInfoAsync(string body, string? title = null) => Task.CompletedTask;
+        public Task<bool?> ShowConfirmAsync(string title, string body, Window? owner = null) => Task.FromResult<bool?>(null);
+        public Task<BackupConflictChoice> ShowBackupConflictAsync(string existingPath) => Task.FromResult(BackupConflictChoice.Cancel);
+        public Task<BookDB.Logic.Import.ImportDuplicateResolution> ShowDuplicateResolutionAsync(string title, string body) => Task.FromResult(BookDB.Logic.Import.ImportDuplicateResolution.Skip);
+        public IProgressWindowHandle ShowProgressWindow(string header) => new NullProgressHandle();
+        public IProgressWindowHandle ShowBackupProgressWindow() => new NullProgressHandle();
+
+        private sealed class NullProgressHandle : IProgressWindowHandle
+        {
+            public void Report(string value) { }
+            public void Close() { }
+        }
     }
 
     public sealed class NullFilePickerService : IFilePickerService
@@ -148,11 +167,11 @@ public sealed class TestLookupServiceFactory : IDisposable
 
     public sealed class NullBackupService : IBackupService
     {
-        public Task<string> BackupSqliteAsync(string destFolder, CancellationToken ct = default, string? explicitFileName = null, IProgress<string>? progress = null) => Task.FromResult(string.Empty);
-        public Task<string> BackupCsvArchiveAsync(string destFolder, CancellationToken ct = default, string? explicitFileName = null, IProgress<string>? progress = null) => Task.FromResult(string.Empty);
+        public Task<string> BackupSqliteAsync(string destFolder, CancellationToken ct = default, string? explicitFileName = null, IProgress<ProgressUpdate<BackupProgressStep>>? progress = null) => Task.FromResult(string.Empty);
+        public Task<string> BackupCsvArchiveAsync(string destFolder, CancellationToken ct = default, string? explicitFileName = null, IProgress<ProgressUpdate<BackupProgressStep>>? progress = null) => Task.FromResult(string.Empty);
         public bool SupportsFileBackup => true;
-        public Task RestoreAsync(string backupZipPath, string safetyBackupPath, CancellationToken ct = default, IProgress<string>? progress = null) => Task.CompletedTask;
-        public Task AutoBackupIfEnabledAsync(CancellationToken ct = default, IProgress<string>? progress = null) => Task.CompletedTask;
+        public Task RestoreAsync(string backupZipPath, string safetyBackupPath, CancellationToken ct = default, IProgress<ProgressUpdate<BackupProgressStep>>? progress = null) => Task.CompletedTask;
+        public Task AutoBackupIfEnabledAsync(CancellationToken ct = default, IProgress<ProgressUpdate<BackupProgressStep>>? progress = null) => Task.CompletedTask;
         public Task<bool> IsAutoBackupEnabledAsync(CancellationToken ct = default) => Task.FromResult(false);
         public Task<bool> ShouldAutoBackupAsync(CancellationToken ct = default) => Task.FromResult(false);
         public string GetCandidateSqlitePath(string destFolder) => string.Empty;
@@ -163,7 +182,7 @@ public sealed class TestLookupServiceFactory : IDisposable
     {
         public IReadOnlyList<string> AllColumnNames => [];
         public IReadOnlyList<string> DefaultColumnNames => [];
-        public Task ExportAsync(CsvExportParameters parameters, CancellationToken ct = default, IProgress<string>? progress = null) => Task.CompletedTask;
+        public Task ExportAsync(CsvExportParameters parameters, CancellationToken ct = default, IProgress<ProgressUpdate<CsvExportProgressStep>>? progress = null) => Task.CompletedTask;
     }
 
     public sealed class NullSettingsService : ISettingsService
@@ -176,7 +195,7 @@ public sealed class TestLookupServiceFactory : IDisposable
     {
         public IReadOnlyList<string> AllColumnNames => [];
         public IReadOnlyList<string> DefaultColumnNames => [];
-        public Task GenerateAsync(PrintParameters parameters, CancellationToken ct = default, IProgress<string>? progress = null) => Task.CompletedTask;
+        public Task GenerateAsync(PrintParameters parameters, CancellationToken ct = default, IProgress<ProgressUpdate<PrintProgressStep>>? progress = null) => Task.CompletedTask;
         public void InitializeLicense() { }
     }
 

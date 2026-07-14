@@ -56,6 +56,9 @@
                     <Button Content="{x:Static res:Resources.Toolbar_OpenInWindow}"
                             Command="{Binding OpenFullDetailsCommand}"
                             FontSize="13" />
+                    <Button Content="{x:Static res:Resources.Toolbar_Recatalog}"
+                            Command="{Binding RecatalogCommand}"
+                            FontSize="13" />
                 </StackPanel>
 
                 <!-- Separator 1 -->

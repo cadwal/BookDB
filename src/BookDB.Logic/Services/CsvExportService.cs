@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using BookDB.Data.DbContexts;
+using BookDB.Models;
 using BookDB.Models.Entities;
 using CsvHelper;
 using CsvHelper.Configuration;
@@ -17,7 +18,6 @@ namespace BookDB.Logic.Services;
 public sealed class CsvExportService : ICsvExportService
 {
     private readonly IDbContextFactory<BookDbContext> _factory;
-    private readonly IResourceProvider _resources;
 
     public IReadOnlyList<string> AllColumnNames { get; } =
     [
@@ -35,21 +35,16 @@ public sealed class CsvExportService : ICsvExportService
         "Rating", "Status"
     ];
 
-    public CsvExportService(IDbContextFactory<BookDbContext> factory, IResourceProvider resources)
+    public CsvExportService(IDbContextFactory<BookDbContext> factory)
     {
         _factory = factory;
-        _resources = resources;
     }
 
-    // Localised status text for the export progress window. Log messages stay in English.
-    private string L(string key, params object[] args)
-        => string.Format(_resources.GetString(key) ?? key, args);
-
-    public async Task ExportAsync(CsvExportParameters parameters, CancellationToken ct = default, IProgress<string>? progress = null)
+    public async Task ExportAsync(CsvExportParameters parameters, CancellationToken ct = default, IProgress<ProgressUpdate<CsvExportProgressStep>>? progress = null)
     {
         try
         {
-            progress?.Report("Querying books...");
+            progress?.Report(new ProgressUpdate<CsvExportProgressStep>(CsvExportProgressStep.Querying));
             await using var dbContext = await _factory.CreateDbContextAsync(ct);
 
             IQueryable<Book> query = dbContext.Books.AsNoTracking()
@@ -113,7 +108,7 @@ public sealed class CsvExportService : ICsvExportService
             };
 
             var books = await query.ToListAsync(ct);
-            progress?.Report(L("Export_Status_WritingBooks", books.Count));
+            progress?.Report(new ProgressUpdate<CsvExportProgressStep>(CsvExportProgressStep.WritingBooks, books.Count));
 
             var selectedColumns = parameters.SelectedColumns.Count > 0
                 ? parameters.SelectedColumns
@@ -134,7 +129,7 @@ public sealed class CsvExportService : ICsvExportService
         string outputPath,
         IReadOnlyList<Book> books,
         IReadOnlyList<string> selectedColumns,
-        IProgress<string>? progress,
+        IProgress<ProgressUpdate<CsvExportProgressStep>>? progress,
         CancellationToken ct)
     {
         await using var writer = new StreamWriter(outputPath, false, System.Text.Encoding.UTF8);
@@ -149,7 +144,7 @@ public sealed class CsvExportService : ICsvExportService
             ct.ThrowIfCancellationRequested();
 
             if (i % 100 == 0)
-                progress?.Report(L("Export_Status_WritingRow", i + 1, books.Count));
+                progress?.Report(new ProgressUpdate<CsvExportProgressStep>(CsvExportProgressStep.WritingRow, i + 1, books.Count));
 
             var book = books[i];
             var authors = string.Join("; ", book.Contributors

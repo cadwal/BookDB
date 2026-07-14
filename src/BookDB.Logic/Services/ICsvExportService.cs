@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using BookDB.Models;
 
 namespace BookDB.Logic.Services;
 
@@ -18,5 +19,5 @@ public interface ICsvExportService
 {
     IReadOnlyList<string> AllColumnNames { get; }
     IReadOnlyList<string> DefaultColumnNames { get; }
-    Task ExportAsync(CsvExportParameters parameters, CancellationToken ct = default, IProgress<string>? progress = null);
+    Task ExportAsync(CsvExportParameters parameters, CancellationToken ct = default, IProgress<ProgressUpdate<CsvExportProgressStep>>? progress = null);
 }

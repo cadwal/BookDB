@@ -236,28 +236,46 @@ public static class SurfaceRegistry
         new("Maintenance", host =>
             Task.FromResult<Control>(new MaintenanceDialog { DataContext = host.Resolve<MaintenanceViewModel>() })),
 
-        // Code-built dialogs with a build/show split — built here, shown by the smoke test.
-        new("UnsavedChanges", _ =>
-            Task.FromResult<Control>(Helpers.AppDialogs.BuildUnsavedChangesDialog("Smoke Book"))),
+        new("MessageDialog", _ => Task.FromResult<Control>(new MessageDialog
+        {
+            DataContext = new MessageDialogViewModel(new MessageDialogSpec(
+                "Smoke title", "Smoke body.",
+                [new DialogButton("OK", true, DialogButtonRole.Primary, IsDefault: true, IsCancel: true)],
+                SafeCloseResult: null)),
+        })),
 
-        new("ShutdownWarning", _ =>
-            Task.FromResult<Control>(Helpers.AppDialogs.BuildShutdownWarningDialog("Confirm", "Cancel"))),
-        new("Info", _ =>
-            Task.FromResult<Control>(Helpers.AppDialogs.BuildInfoDialog("Smoke info."))),
-        new("Confirm", _ =>
-            Task.FromResult<Control>(Helpers.AppDialogs.BuildConfirmDialog("Confirm?", "Smoke body.").dialog)),
         new("About", _ =>
-            Task.FromResult<Control>(Helpers.AppDialogs.BuildAboutDialog())),
-        new("WriteFailure", _ =>
-            Task.FromResult<Control>(Helpers.AppDialogs.BuildWriteFailureDialog("Write failed.").dialog)),
-        new("ConnectionLost", _ =>
-            Task.FromResult<Control>(Helpers.AppDialogs.BuildConnectionLostEscalationDialog().dialog)),
-        new("DeleteConfirmation", _ =>
-            Task.FromResult<Control>(Helpers.AppDialogs.BuildDeleteConfirmationDialog("Delete this?"))),
-        new("DuplicateIsbn", _ =>
-            Task.FromResult<Control>(Helpers.AppDialogs.BuildDuplicateIsbnDialog("9780000000000", "Existing Title"))),
-        new("IsbnPrompt", _ =>
-            Task.FromResult<Control>(Helpers.AppDialogs.BuildIsbnPromptDialog())),
+            Task.FromResult<Control>(new AboutWindow { DataContext = new AboutWindowViewModel() })),
+
+        new("ReleaseNotes", _ => Task.FromResult<Control>(new ReleaseNotesWindow
+        {
+            DataContext = new ReleaseNotesViewModel("2.3.0", "### Added\n- Smoke item"),
+        })),
+
+        new("RestoreTarget", _ => Task.FromResult<Control>(new RestoreTargetDialog
+        {
+            DataContext = new RestoreTargetViewModel("PostgreSQL on smoke-server"),
+        })),
+
+        new("IsbnPrompt", _ => Task.FromResult<Control>(new IsbnPromptDialog
+        {
+            DataContext = new IsbnPromptViewModel("Smoke Book"),
+        })),
+
+        new("DuplicateResolution", _ => Task.FromResult<Control>(new DuplicateResolutionDialog
+        {
+            DataContext = new DuplicateResolutionViewModel("Smoke title", "Smoke body."),
+        })),
+
+        new("Progress", _ => Task.FromResult<Control>(new ProgressWindow
+        {
+            DataContext = new ProgressWindowViewModel("Smoke header"),
+        })),
+
+        new("ProgressCard", _ => Task.FromResult<Control>(new ProgressWindow
+        {
+            DataContext = new ProgressWindowViewModel("Smoke header", isCard: true),
+        })),
     ];
 
     public static IEnumerable<Surface> All => Windows.Concat(Panes).Concat(Dialogs);

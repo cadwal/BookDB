@@ -46,12 +46,12 @@ Beschrijvingen van alle velden in BookDB. Velden gemarkeerd als *optioneel* hoev
 | Reeks | De reeks waartoe het boek behoort, indien van toepassing. *Optioneel.* |
 | Reeksnummer | De positie van dit boek binnen de reeks (bijv. "3" of "3.5"). *Optioneel.* |
 
-## Uw exemplaar
+## Je exemplaar
 
 | Veld | Beschrijving |
 |------|--------------|
-| Exemplaren | Het aantal fysieke exemplaren dat u bezit. Standaard 1. |
-| Staat | De fysieke staat van uw exemplaar: Prima, Zeer goed, Goed, Redelijk, Slecht, enz. *Optioneel.* |
+| Exemplaren | Het aantal fysieke exemplaren dat je bezit. Standaard 1. |
+| Staat | De fysieke staat van je exemplaar: Prima, Zeer goed, Goed, Redelijk, Slecht, enz. *Optioneel.* |
 | Locatie | De plank, kamer of opslaglocatie waar dit exemplaar wordt bewaard. *Optioneel.* |
 | Eigenaar | Wie dit exemplaar bezit (nuttig bij gedeelde collecties). *Optioneel.* |
 | Gesigneerd | Of dit een gesigneerd exemplaar is. |
@@ -61,10 +61,10 @@ Beschrijvingen van alle velden in BookDB. Velden gemarkeerd als *optioneel* hoev
 
 | Veld | Beschrijving |
 |------|--------------|
-| Status | Uw leesstatus: Te lezen, Aan het lezen, Gelezen, Opgegeven, enz. *Optioneel.* |
-| Aantal keer gelezen | Hoe vaak u dit boek hebt gelezen. |
-| Laatst gelezen | De datum waarop u dit boek voor het laatst hebt uitgelezen. *Optioneel.* |
-| Beoordeling | Uw persoonlijke beoordeling. *Optioneel.* |
+| Status | Je leesstatus: Te lezen, Aan het lezen, Gelezen, Opgegeven, enz. *Optioneel.* |
+| Aantal keer gelezen | Hoe vaak je dit boek hebt gelezen. |
+| Laatst gelezen | De datum waarop je dit boek voor het laatst hebt uitgelezen. *Optioneel.* |
+| Beoordeling | Je persoonlijke beoordeling. *Optioneel.* |
 | Favoriet | Of dit boek als favoriet is gemarkeerd. |
 | Leesniveau | Het beoogde leesniveau (leeftijd of klas). *Optioneel.* |
 
@@ -72,13 +72,13 @@ Beschrijvingen van alle velden in BookDB. Velden gemarkeerd als *optioneel* hoev
 
 | Veld | Beschrijving |
 |------|--------------|
-| Aankoopprijs | De prijs die u voor dit exemplaar heeft betaald. *Optioneel.* |
+| Aankoopprijs | De prijs die je voor dit exemplaar hebt betaald. *Optioneel.* |
 | Aankoopvaluta | De valuta van de aankoopprijs (bijv. EUR, USD, SEK). *Optioneel.* |
-| Aankooplocatie | Waar u het boek heeft gekocht. *Optioneel.* |
-| Aankoopdatum | De datum waarop u het boek heeft gekocht. *Optioneel.* |
+| Aankooplocatie | Waar je het boek hebt gekocht. *Optioneel.* |
+| Aankoopdatum | De datum waarop je het boek hebt gekocht. *Optioneel.* |
 | Lijstprijs | De aanbevolen verkoopprijs van de uitgever. *Optioneel.* |
 | Lijstprijsvaluta | De valuta van de lijstprijs. *Optioneel.* |
-| Artikelwaarde | Uw geschatte geldwaarde van dit exemplaar (bijv. voor verzekeringsdoeleinden). *Optioneel.* |
+| Artikelwaarde | Je geschatte geldwaarde van dit exemplaar (bijv. voor verzekeringsdoeleinden). *Optioneel.* |
 | Waarderingsdatum | De datum waarop de waarde is vastgesteld. *Optioneel.* |
 
 ## Beschrijving en notities
@@ -86,7 +86,7 @@ Beschrijvingen van alle velden in BookDB. Velden gemarkeerd als *optioneel* hoev
 | Veld | Beschrijving |
 |------|--------------|
 | Trefwoorden | Vrije-tekstlabels voor eigen gebruik. *Optioneel.* |
-| Opmerkingen | Uw persoonlijke notities over dit boek. *Optioneel.* |
+| Opmerkingen | Je persoonlijke notities over dit boek. *Optioneel.* |
 | Boekinfo | Een uitgebreide beschrijving of samenvatting. *Optioneel.* |
 | Afmetingen | Fysieke afmetingen van het boek (bijv. "24 × 16 × 3 cm"). *Optioneel.* |
 | Gewicht | Het fysieke gewicht van het boek. *Optioneel.* |

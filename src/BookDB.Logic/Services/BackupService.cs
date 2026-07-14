@@ -31,7 +31,6 @@ public sealed class BackupService : IBackupService
     private readonly IDbContextFactory<BookDbContext> _factory;
     private readonly AppSettings _appSettings;
     private readonly ISettingsService _settingsService;
-    private readonly IResourceProvider _resources;
     private readonly IDataChangeTracker _changeTracker;
     private readonly IBackupStrategy _backupStrategy;
 
@@ -39,24 +38,17 @@ public sealed class BackupService : IBackupService
         IDbContextFactory<BookDbContext> factory,
         AppSettings appSettings,
         ISettingsService settingsService,
-        IResourceProvider resources,
         IDataChangeTracker changeTracker,
         IBackupStrategy backupStrategy)
     {
         _factory = factory;
         _appSettings = appSettings;
         _settingsService = settingsService;
-        _resources = resources;
         _changeTracker = changeTracker;
         _backupStrategy = backupStrategy;
     }
 
     public bool SupportsFileBackup => _backupStrategy.SupportsFileBackup;
-
-    // Localised status text for user-facing progress windows. Log messages stay in English.
-    private string L(string key) => _resources.GetString(key) ?? key;
-    private string L(string key, params object[] args)
-        => string.Format(_resources.GetString(key) ?? key, args);
 
     // File-based backup/restore requires a local SQLite database file. A non-SQLite backend uses the
     // CSV-archive path instead, so this never resolves to null for the operations that call it.
@@ -84,37 +76,20 @@ public sealed class BackupService : IBackupService
         return Path.Combine(Path.GetFullPath(destFolder), $"bookdb-csv-{date}.zip");
     }
 
-    public async Task<string> BackupSqliteAsync(string destFolder, CancellationToken ct = default, string? explicitFileName = null, IProgress<string>? progress = null)
+    public async Task<string> BackupSqliteAsync(string destFolder, CancellationToken ct = default, string? explicitFileName = null, IProgress<ProgressUpdate<BackupProgressStep>>? progress = null)
     {
         destFolder = Path.GetFullPath(destFolder);
         // Resolve the file name here (provider-neutral naming/collision logic) and let the SQLite strategy do
-        // the engine-specific work — the WAL flush, the file copy, and the zip. The strategy reports resource
-        // keys; localize them before they reach the user-facing progress window.
+        // the engine-specific work — the WAL flush, the file copy, and the zip. The strategy reports the same
+        // typed progress steps, so its updates flow straight through.
         var fileName = explicitFileName ?? Path.GetFileName(ResolvePath(GetCandidateSqlitePath(destFolder)));
-        var localized = progress is null ? null : new LocalizingProgress(progress, L);
 
-        var zipPath = await _backupStrategy.BackupAsync(destFolder, ct, fileName, localized);
+        var zipPath = await _backupStrategy.BackupAsync(destFolder, ct, fileName, progress);
         await RecordBackupCompletedAsync(ct);
         return zipPath;
     }
 
-    // Forwards a resource key from the strategy to the user's progress as a localized string, inline so the
-    // reporting order and timing match a direct report.
-    private sealed class LocalizingProgress : IProgress<string>
-    {
-        private readonly IProgress<string> _inner;
-        private readonly Func<string, string> _localize;
-
-        public LocalizingProgress(IProgress<string> inner, Func<string, string> localize)
-        {
-            _inner = inner;
-            _localize = localize;
-        }
-
-        public void Report(string key) => _inner.Report(_localize(key));
-    }
-
-    public async Task<string> BackupCsvArchiveAsync(string destFolder, CancellationToken ct = default, string? explicitFileName = null, IProgress<string>? progress = null)
+    public async Task<string> BackupCsvArchiveAsync(string destFolder, CancellationToken ct = default, string? explicitFileName = null, IProgress<ProgressUpdate<BackupProgressStep>>? progress = null)
     {
         destFolder = Path.GetFullPath(destFolder);
 
@@ -129,47 +104,47 @@ public sealed class BackupService : IBackupService
         {
             await using var dbContext = await _factory.CreateDbContextAsync(ct);
 
-            progress?.Report(L("Backup_Status_ExportingBooks"));
+            progress?.Report(new ProgressUpdate<BackupProgressStep>(BackupProgressStep.ExportingBooks));
             await WriteCsvAsync(tempDir, "Books.csv",
                 await dbContext.Books.AsNoTracking().ToListAsync(ct));
 
-            progress?.Report(L("Backup_Status_ExportingPeople"));
+            progress?.Report(new ProgressUpdate<BackupProgressStep>(BackupProgressStep.ExportingPeople));
             await WriteCsvAsync(tempDir, "People.csv",
                 await dbContext.People.AsNoTracking().ToListAsync(ct));
 
-            progress?.Report(L("Backup_Status_ExportingPublishers"));
+            progress?.Report(new ProgressUpdate<BackupProgressStep>(BackupProgressStep.ExportingPublishers));
             await WriteCsvAsync(tempDir, "Publishers.csv",
                 await dbContext.Publishers.AsNoTracking().ToListAsync(ct));
 
-            progress?.Report(L("Backup_Status_ExportingSeries"));
+            progress?.Report(new ProgressUpdate<BackupProgressStep>(BackupProgressStep.ExportingSeries));
             await WriteCsvAsync(tempDir, "Series.csv",
                 await dbContext.Series.AsNoTracking().ToListAsync(ct));
 
-            progress?.Report(L("Backup_Status_ExportingCollections"));
+            progress?.Report(new ProgressUpdate<BackupProgressStep>(BackupProgressStep.ExportingCollections));
             await WriteCsvAsync(tempDir, "Collections.csv",
                 await dbContext.Collections.AsNoTracking().ToListAsync(ct));
 
-            progress?.Report(L("Backup_Status_ExportingCategories"));
+            progress?.Report(new ProgressUpdate<BackupProgressStep>(BackupProgressStep.ExportingCategories));
             await WriteCsvAsync(tempDir, "Categories.csv",
                 await dbContext.Categories.AsNoTracking().ToListAsync(ct));
 
-            progress?.Report(L("Backup_Status_ExportingFormats"));
+            progress?.Report(new ProgressUpdate<BackupProgressStep>(BackupProgressStep.ExportingFormats));
             await WriteCsvAsync(tempDir, "Formats.csv",
                 await dbContext.Formats.AsNoTracking().ToListAsync(ct));
 
-            progress?.Report(L("Backup_Status_ExportingLanguages"));
+            progress?.Report(new ProgressUpdate<BackupProgressStep>(BackupProgressStep.ExportingLanguages));
             await WriteCsvAsync(tempDir, "Languages.csv",
                 await dbContext.Languages.AsNoTracking().ToListAsync(ct));
 
-            progress?.Report(L("Backup_Status_ExportingLocations"));
+            progress?.Report(new ProgressUpdate<BackupProgressStep>(BackupProgressStep.ExportingLocations));
             await WriteCsvAsync(tempDir, "Locations.csv",
                 await dbContext.Locations.AsNoTracking().ToListAsync(ct));
 
-            progress?.Report(L("Backup_Status_ExportingOwners"));
+            progress?.Report(new ProgressUpdate<BackupProgressStep>(BackupProgressStep.ExportingOwners));
             await WriteCsvAsync(tempDir, "Owners.csv",
                 await dbContext.Owners.AsNoTracking().ToListAsync(ct));
 
-            progress?.Report(L("Backup_Status_ExportingRelationships"));
+            progress?.Report(new ProgressUpdate<BackupProgressStep>(BackupProgressStep.ExportingRelationships));
             await WriteCsvAsync(tempDir, "BookContributors.csv",
                 await dbContext.BookContributors.AsNoTracking().ToListAsync(ct));
             await WriteCsvAsync(tempDir, "BookCategories.csv",
@@ -181,7 +156,7 @@ public sealed class BackupService : IBackupService
             await WriteCsvAsync(tempDir, "BookChapters.csv",
                 await dbContext.BookChapters.AsNoTracking().ToListAsync(ct));
 
-            progress?.Report(L("Backup_Status_ExportingLookups"));
+            progress?.Report(new ProgressUpdate<BackupProgressStep>(BackupProgressStep.ExportingLookups));
             await WriteCsvAsync(tempDir, "Conditions.csv",
                 await dbContext.Conditions.AsNoTracking().ToListAsync(ct));
             await WriteCsvAsync(tempDir, "ContributorRoles.csv",
@@ -203,13 +178,13 @@ public sealed class BackupService : IBackupService
             await WriteCsvAsync(tempDir, "BorrowerStatuses.csv",
                 await dbContext.BorrowerStatuses.AsNoTracking().ToListAsync(ct));
 
-            progress?.Report(L("Backup_Status_ExportingLoans"));
+            progress?.Report(new ProgressUpdate<BackupProgressStep>(BackupProgressStep.ExportingLoans));
             await WriteCsvAsync(tempDir, "Borrowers.csv",
                 await dbContext.Borrowers.AsNoTracking().ToListAsync(ct));
             await WriteCsvAsync(tempDir, "Loans.csv",
                 await dbContext.Loans.AsNoTracking().ToListAsync(ct));
 
-            progress?.Report(L("Backup_Status_ExportingSettings"));
+            progress?.Report(new ProgressUpdate<BackupProgressStep>(BackupProgressStep.ExportingSettings));
             await WriteCsvAsync(tempDir, "Settings.csv",
                 await dbContext.Settings.AsNoTracking().ToListAsync(ct));
             await WriteCsvAsync(tempDir, "SavedSearches.csv",
@@ -217,7 +192,7 @@ public sealed class BackupService : IBackupService
             await WriteCsvAsync(tempDir, "BatchQueueItems.csv",
                 await dbContext.BatchQueueItems.AsNoTracking().ToListAsync(ct));
 
-            progress?.Report(L("Backup_Status_ExportingCoverImages"));
+            progress?.Report(new ProgressUpdate<BackupProgressStep>(BackupProgressStep.ExportingCoverImages));
             var imagesDir = Path.Combine(tempDir, "images");
             Directory.CreateDirectory(imagesDir);
 
@@ -258,13 +233,14 @@ public sealed class BackupService : IBackupService
                 }
 
                 exported += batch.Count;
-                progress?.Report(L("Backup_Status_ExportingCoverImagesCount", exported, imageMeta.Count));
+                progress?.Report(new ProgressUpdate<BackupProgressStep>(
+                    BackupProgressStep.ExportingCoverImagesCount, exported, imageMeta.Count));
             }
 
             if (ExistingConfigPath is { } configPath)
                 File.Copy(configPath, Path.Combine(tempDir, "config.json"));
 
-            progress?.Report(L("Backup_Status_CreatingArchive"));
+            progress?.Report(new ProgressUpdate<BackupProgressStep>(BackupProgressStep.CreatingArchive));
             ZipFile.CreateFromDirectory(tempDir, zipPath);
 
             Log.Information("BackupService: CSV archive backup written to {ZipPath}", zipPath);
@@ -282,7 +258,7 @@ public sealed class BackupService : IBackupService
         return zipPath;
     }
 
-    public async Task RestoreAsync(string backupZipPath, string safetyBackupPath, CancellationToken ct = default, IProgress<string>? progress = null)
+    public async Task RestoreAsync(string backupZipPath, string safetyBackupPath, CancellationToken ct = default, IProgress<ProgressUpdate<BackupProgressStep>>? progress = null)
     {
         if (string.IsNullOrWhiteSpace(safetyBackupPath))
             throw new ArgumentNullException(nameof(safetyBackupPath), "Safety backup is required before restore.");
@@ -290,13 +266,13 @@ public sealed class BackupService : IBackupService
         backupZipPath = Path.GetFullPath(backupZipPath);
         safetyBackupPath = Path.GetFullPath(safetyBackupPath);
 
-        progress?.Report(L("Restore_Status_SavingSafetyBackup"));
+        progress?.Report(new ProgressUpdate<BackupProgressStep>(BackupProgressStep.SavingSafetyBackup));
         var safetyFolder = Path.GetDirectoryName(safetyBackupPath)
             ?? throw new InvalidOperationException("Could not determine safety backup folder.");
         var safetyFileName = Path.GetFileName(safetyBackupPath);
         await BackupSqliteAsync(safetyFolder, ct, explicitFileName: safetyFileName);
 
-        progress?.Report(L("Restore_Status_ExtractingArchive"));
+        progress?.Report(new ProgressUpdate<BackupProgressStep>(BackupProgressStep.ExtractingArchive));
         var tempDir = Path.Combine(Path.GetTempPath(), $"bookdb_restore_{Guid.NewGuid():N}");
         try
         {
@@ -306,7 +282,7 @@ public sealed class BackupService : IBackupService
             if (!File.Exists(extractedDb))
                 throw new InvalidOperationException("The backup zip does not contain library.db.");
 
-            progress?.Report(L("Restore_Status_ReplacingLibrary"));
+            progress?.Report(new ProgressUpdate<BackupProgressStep>(BackupProgressStep.ReplacingLibrary));
             var activeLibraryPath = Path.GetFullPath(SqliteLibraryPath);
             File.Copy(extractedDb, activeLibraryPath, overwrite: true);
 
@@ -352,7 +328,7 @@ public sealed class BackupService : IBackupService
         return DateTime.UtcNow - lastRun.ToUniversalTime() > RecencyThreshold;
     }
 
-    public async Task AutoBackupIfEnabledAsync(CancellationToken ct = default, IProgress<string>? progress = null)
+    public async Task AutoBackupIfEnabledAsync(CancellationToken ct = default, IProgress<ProgressUpdate<BackupProgressStep>>? progress = null)
     {
         if (!await ShouldAutoBackupAsync(ct))
             return;

@@ -23,7 +23,7 @@ public sealed class BookListViewModelPagedTests : IDisposable
         _factory = new TestLookupServiceFactory();
         var messenger = new WeakReferenceMessenger();
         var settingsService = new TestLookupServiceFactory.NullSettingsService();
-        _bookList = new BookListViewModel(messenger, _factory.BookService, _factory.BookSearchService, _factory.BookImageService, new TestLookupServiceFactory.NullWindowService(), settingsService, _factory.LookupService, new TestLookupServiceFactory.NullClipboardService(), NSubstitute.Substitute.For<BookDB.Logic.Services.ILoanService>(), NSubstitute.Substitute.For<BookDB.Logic.Services.IConnectionHealthMonitor>(), NSubstitute.Substitute.For<BookDB.Data.Interfaces.IConnectionFailureClassifier>());
+        _bookList = new BookListViewModel(messenger, _factory.BookService, _factory.BookSearchService, _factory.BookImageService, new TestLookupServiceFactory.NullWindowService(), settingsService, _factory.LookupService, new TestLookupServiceFactory.NullClipboardService(), NSubstitute.Substitute.For<BookDB.Logic.Services.ILoanService>(), NSubstitute.Substitute.For<BookDB.Logic.Services.IConnectionHealthMonitor>(), NSubstitute.Substitute.For<BookDB.Data.Interfaces.IConnectionFailureClassifier>(), NSubstitute.Substitute.For<BookDB.Desktop.Services.IRecatalogFlowService>());
     }
 
     public void Dispose() => _factory.Dispose();

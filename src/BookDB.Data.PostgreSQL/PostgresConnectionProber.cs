@@ -26,7 +26,7 @@ public sealed class PostgresConnectionProber : IPostgresConnectionProber
     public async Task<ConnectionProbeResult> ProbeAsync(
         PostgresOptions options, string? password, CancellationToken ct = default)
     {
-        // Throwaway, non-pooled connection: a failed probe must not poison the app's pool, and the 8s
+        // Throwaway, non-pooled connection: a failed probe must not poison the app's pool, and the 4s
         // connect timeout from the factory only bounds the attempt when pooling is off.
         var connectionString = new NpgsqlConnectionStringBuilder(
             PostgresConnectionStringFactory.Build(options, password))

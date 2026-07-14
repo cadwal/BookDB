@@ -412,8 +412,14 @@
   <data name="Recatalog_NoIsbn_Title" xml:space="preserve">
     <value>Inget ISBN</value>
   </data>
-  <data name="Recatalog_NoIsbn_Body" xml:space="preserve">
-    <value>Den här boken saknar ISBN. Ange ett för att söka upp metadata.</value>
+  <data name="Recatalog_NoIsbn_BodyForBook" xml:space="preserve">
+    <value>”{0}” saknar ISBN. Ange ett för att söka upp metadata.</value>
+  </data>
+  <data name="Recatalog_SaveIsbn_Title" xml:space="preserve">
+    <value>Spara ISBN-numret?</value>
+  </data>
+  <data name="Recatalog_SaveIsbn_Body" xml:space="preserve">
+    <value>Spara ISBN {0} på ”{1}”? Annars används numret bara för den här sökningen.</value>
   </data>
   <data name="EditForm_RecatalogButton" xml:space="preserve">
     <value>Omkatalogisera</value>
@@ -772,6 +778,9 @@
   <data name="Menu_RecatalogSelected" xml:space="preserve">
     <value>Omkatalogisera _valda</value>
   </data>
+  <data name="Toolbar_Recatalog" xml:space="preserve">
+    <value>Omkatalogisera</value>
+  </data>
   <data name="Menu_RestoreBackup" xml:space="preserve">
     <value>Återställ från säkerhetskopia...</value>
   </data>
@@ -813,6 +822,9 @@
   </data>
   <data name="Menu_Window" xml:space="preserve">
     <value>_Fönster</value>
+  </data>
+  <data name="Menu_Window_NoOpenWindows" xml:space="preserve">
+    <value>(Inga öppna fönster)</value>
   </data>
   <data name="BookDetail_Label_Category" xml:space="preserve">
     <value>Kategori:</value>
@@ -1586,6 +1598,12 @@ Möjliga dubletter: {3}  |  Med omslag: {4}</value>
   <data name="Print_ScopeSummary_Single" xml:space="preserve">
     <value>Skriver ut {0} bok från aktuellt filter.</value>
   </data>
+  <data name="Print_Status_Querying" xml:space="preserve">
+    <value>Hämtar böcker…</value>
+  </data>
+  <data name="Print_Status_GeneratingPdf" xml:space="preserve">
+    <value>Skapar PDF för {0:N0} böcker…</value>
+  </data>
   <data name="Print_StandardPresetDisplayName" xml:space="preserve">
     <value>Standard</value>
   </data>
@@ -2090,6 +2108,12 @@ Möjliga dubletter: {3}  |  Med omslag: {4}</value>
   <data name="About_AppName" xml:space="preserve">
     <value>BookDB</value>
   </data>
+  <data name="About_Version" xml:space="preserve">
+    <value>Version {0}</value>
+  </data>
+  <data name="About_VersionUnknown" xml:space="preserve">
+    <value>Okänd version</value>
+  </data>
   <data name="Menu_Backup" xml:space="preserve">
     <value>Säkerhetskopiering...</value>
   </data>
@@ -2381,6 +2405,18 @@ Möjliga dubletter: {3}  |  Med omslag: {4}</value>
   <data name="Common_Discard" xml:space="preserve">
     <value>Förkasta</value>
   </data>
+  <data name="ReleaseNotes_WindowTitle" xml:space="preserve">
+    <value>Nyheter i BookDB {0}</value>
+  </data>
+  <data name="ReleaseNotes_Prompt_Title" xml:space="preserve">
+    <value>BookDB har uppdaterats</value>
+  </data>
+  <data name="ReleaseNotes_Prompt_Body" xml:space="preserve">
+    <value>Du kör nu version {0}. Vill du se vad som är nytt?</value>
+  </data>
+  <data name="ReleaseNotes_Prompt_Skip_Button" xml:space="preserve">
+    <value>Hoppa över</value>
+  </data>
   <data name="Common_Close" xml:space="preserve">
     <value>Stäng</value>
   </data>
@@ -2392,6 +2428,9 @@ Möjliga dubletter: {3}  |  Med omslag: {4}</value>
   </data>
   <data name="Export_Header" xml:space="preserve">
     <value>Exporterar böcker…</value>
+  </data>
+  <data name="Export_Status_Querying" xml:space="preserve">
+    <value>Hämtar böcker…</value>
   </data>
   <data name="Export_Status_WritingBooks" xml:space="preserve">
     <value>Skriver {0:N0} böcker…</value>
@@ -2809,6 +2848,24 @@ Möjliga dubletter: {3}  |  Med omslag: {4}</value>
   </data>
   <data name="StatusBar_Connection_Lost" xml:space="preserve">
     <value>Anslutningen till databasen förlorades</value>
+  </data>
+  <data name="StatusBar_Storage_File_Label" xml:space="preserve">
+    <value>Databasfil</value>
+  </data>
+  <data name="StatusBar_Storage_Host_Label" xml:space="preserve">
+    <value>Server</value>
+  </data>
+  <data name="StatusBar_Storage_Database_Label" xml:space="preserve">
+    <value>Databas</value>
+  </data>
+  <data name="StatusBar_Storage_User_Label" xml:space="preserve">
+    <value>Användare</value>
+  </data>
+  <data name="StatusBar_Storage_State_Label" xml:space="preserve">
+    <value>Anslutning</value>
+  </data>
+  <data name="StatusBar_Storage_State_Connected" xml:space="preserve">
+    <value>Ansluten</value>
   </data>
   <data name="MoveLibrary_Header" xml:space="preserve">
     <value>Flytta biblioteket</value>

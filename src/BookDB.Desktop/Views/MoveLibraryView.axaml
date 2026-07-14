@@ -35,7 +35,7 @@
 
       <!-- Target (the source is fixed; offer every backend that isn't the source) -->
       <TextBlock Text="{x:Static res:Resources.MoveLibrary_TargetLabel}" FontSize="12" FontWeight="SemiBold"/>
-      <StackPanel Orientation="Horizontal" Spacing="16">
+      <StackPanel Orientation="Horizontal" Spacing="16" KeyboardNavigation.TabNavigation="Once">
         <RadioButton GroupName="MoveTarget"
                      Content="{x:Static res:Resources.MoveLibrary_Target_Sqlite}"
                      IsChecked="{Binding TargetIsSqlite}"
@@ -118,7 +118,7 @@
                FontSize="12" FontWeight="SemiBold" Margin="16,8,16,4"/>
     <Border Grid.Row="4" Margin="16,0,16,16"
             BorderBrush="{DynamicResource BrushBorder}" BorderThickness="1" CornerRadius="4">
-      <TextBox Text="{Binding LogText}" IsReadOnly="True" AcceptsReturn="True" TextWrapping="Wrap"
+      <TextBox Text="{Binding LogText}" IsReadOnly="True" IsTabStop="False" AcceptsReturn="True" TextWrapping="Wrap"
                FontFamily="Consolas, monospace" FontSize="11" BorderThickness="0" Background="Transparent"
                ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto"/>
     </Border>

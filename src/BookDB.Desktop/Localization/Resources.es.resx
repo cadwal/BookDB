@@ -412,8 +412,14 @@
   <data name="Recatalog_NoIsbn_Title" xml:space="preserve">
     <value>Sin ISBN</value>
   </data>
-  <data name="Recatalog_NoIsbn_Body" xml:space="preserve">
-    <value>Este libro no tiene ISBN. Introduzca uno para buscar metadatos.</value>
+  <data name="Recatalog_NoIsbn_BodyForBook" xml:space="preserve">
+    <value>«{0}» no tiene ISBN. Introduzca uno para buscar metadatos.</value>
+  </data>
+  <data name="Recatalog_SaveIsbn_Title" xml:space="preserve">
+    <value>¿Guardar este ISBN?</value>
+  </data>
+  <data name="Recatalog_SaveIsbn_Body" xml:space="preserve">
+    <value>¿Guardar el ISBN {0} en «{1}»? Si no, el ISBN solo se usa para esta búsqueda.</value>
   </data>
   <data name="EditForm_RecatalogButton" xml:space="preserve">
     <value>Re-catalogar</value>
@@ -772,6 +778,9 @@
   <data name="Menu_RecatalogSelected" xml:space="preserve">
     <value>Re-catalogar _seleccionado</value>
   </data>
+  <data name="Toolbar_Recatalog" xml:space="preserve">
+    <value>Re-catalogar</value>
+  </data>
   <data name="Menu_RestoreBackup" xml:space="preserve">
     <value>Restaurar desde copia de seguridad...</value>
   </data>
@@ -813,6 +822,9 @@
   </data>
   <data name="Menu_Window" xml:space="preserve">
     <value>_Ventana</value>
+  </data>
+  <data name="Menu_Window_NoOpenWindows" xml:space="preserve">
+    <value>(No hay ventanas abiertas)</value>
   </data>
   <data name="BookDetail_Label_Category" xml:space="preserve">
     <value>Categoría:</value>
@@ -1586,6 +1598,12 @@ Posibles duplicados: {3}  |  Con portadas: {4}</value>
   <data name="Print_ScopeSummary_Single" xml:space="preserve">
     <value>Imprimiendo {0} libro del filtro actual.</value>
   </data>
+  <data name="Print_Status_Querying" xml:space="preserve">
+    <value>Consultando libros…</value>
+  </data>
+  <data name="Print_Status_GeneratingPdf" xml:space="preserve">
+    <value>Generando el PDF de {0:N0} libros…</value>
+  </data>
   <data name="Print_StandardPresetDisplayName" xml:space="preserve">
     <value>Standard</value>
   </data>
@@ -2090,6 +2108,12 @@ Posibles duplicados: {3}  |  Con portadas: {4}</value>
   <data name="About_AppName" xml:space="preserve">
     <value>BookDB</value>
   </data>
+  <data name="About_Version" xml:space="preserve">
+    <value>Versión {0}</value>
+  </data>
+  <data name="About_VersionUnknown" xml:space="preserve">
+    <value>Versión desconocida</value>
+  </data>
   <data name="Menu_Backup" xml:space="preserve">
     <value>Copia de seguridad...</value>
   </data>
@@ -2381,6 +2405,18 @@ Posibles duplicados: {3}  |  Con portadas: {4}</value>
   <data name="Common_Discard" xml:space="preserve">
     <value>Descartar</value>
   </data>
+  <data name="ReleaseNotes_WindowTitle" xml:space="preserve">
+    <value>Novedades de BookDB {0}</value>
+  </data>
+  <data name="ReleaseNotes_Prompt_Title" xml:space="preserve">
+    <value>BookDB se ha actualizado</value>
+  </data>
+  <data name="ReleaseNotes_Prompt_Body" xml:space="preserve">
+    <value>Ahora está usando la versión {0}. ¿Quiere ver las novedades?</value>
+  </data>
+  <data name="ReleaseNotes_Prompt_Skip_Button" xml:space="preserve">
+    <value>Omitir</value>
+  </data>
   <data name="Common_Close" xml:space="preserve">
     <value>Cerrar</value>
   </data>
@@ -2392,6 +2428,9 @@ Posibles duplicados: {3}  |  Con portadas: {4}</value>
   </data>
   <data name="Export_Header" xml:space="preserve">
     <value>Exportando libros…</value>
+  </data>
+  <data name="Export_Status_Querying" xml:space="preserve">
+    <value>Consultando libros…</value>
   </data>
   <data name="Export_Status_WritingBooks" xml:space="preserve">
     <value>Escribiendo {0:N0} libros…</value>
@@ -2809,6 +2848,24 @@ Posibles duplicados: {3}  |  Con portadas: {4}</value>
   </data>
   <data name="StatusBar_Connection_Lost" xml:space="preserve">
     <value>Conexión a la base de datos perdida</value>
+  </data>
+  <data name="StatusBar_Storage_File_Label" xml:space="preserve">
+    <value>Archivo de base de datos</value>
+  </data>
+  <data name="StatusBar_Storage_Host_Label" xml:space="preserve">
+    <value>Servidor</value>
+  </data>
+  <data name="StatusBar_Storage_Database_Label" xml:space="preserve">
+    <value>Base de datos</value>
+  </data>
+  <data name="StatusBar_Storage_User_Label" xml:space="preserve">
+    <value>Usuario</value>
+  </data>
+  <data name="StatusBar_Storage_State_Label" xml:space="preserve">
+    <value>Conexión</value>
+  </data>
+  <data name="StatusBar_Storage_State_Connected" xml:space="preserve">
+    <value>Conectada</value>
   </data>
   <data name="MoveLibrary_Header" xml:space="preserve">
     <value>Mover biblioteca</value>

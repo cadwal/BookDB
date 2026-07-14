@@ -44,6 +44,11 @@
     <svg:SvgImage x:Key="Icon.Info" Source="avares://BookDB.Desktop/Assets/Icons/info.svg" Css="{DynamicResource IconCss}" />
     <svg:SvgImage x:Key="Icon.Clipboard" Source="avares://BookDB.Desktop/Assets/Icons/clipboard.svg" Css="{DynamicResource IconCss}" />
 
+    <!-- Status-bar storage kind: local database file vs remote database server (shares the
+         database-link glyph with the remote-DB help topic — both mean "database over the network"). -->
+    <svg:SvgImage x:Key="Icon.StorageLocal" Source="avares://BookDB.Desktop/Assets/Icons/database.svg" Css="{DynamicResource IconCss}" />
+    <svg:SvgImage x:Key="Icon.StorageRemote" Source="avares://BookDB.Desktop/Assets/Icons/database-link.svg" Css="{DynamicResource IconCss}" />
+
     <!-- Dismiss / clear (danger) -->
     <svg:SvgImage x:Key="Icon.DismissCircle" Source="avares://BookDB.Desktop/Assets/Icons/dismiss-circle.svg" Css="{DynamicResource IconCssDanger}" />
 

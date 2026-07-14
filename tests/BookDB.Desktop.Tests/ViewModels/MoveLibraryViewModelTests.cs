@@ -165,7 +165,7 @@ public sealed class MoveLibraryViewModelTests
         await vm.CheckTargetCommand.ExecuteAsync(null);
 
         _filePicker.PickFolderAsync(Arg.Any<string>()).Returns(@"C:\backups");
-        _backupService.BackupCsvArchiveAsync(@"C:\backups", Arg.Any<CancellationToken>(), Arg.Any<string?>(), Arg.Any<System.IProgress<string>?>())
+        _backupService.BackupCsvArchiveAsync(@"C:\backups", Arg.Any<CancellationToken>(), Arg.Any<string?>(), Arg.Any<System.IProgress<BookDB.Models.ProgressUpdate<BookDB.Models.BackupProgressStep>>?>())
             .Returns(@"C:\backups\safety.zip");
         _migrationService.MigrateAsync(Arg.Any<IDbContextFactory<BookDbContext>>(), Arg.Any<IDbContextFactory<BookDbContext>>(),
                 Arg.Any<IIdentitySequenceResync>(), Arg.Any<System.IProgress<MigrationProgress>?>(), Arg.Any<CancellationToken>())
@@ -190,7 +190,7 @@ public sealed class MoveLibraryViewModelTests
         await vm.CheckTargetCommand.ExecuteAsync(null);
 
         _filePicker.PickFolderAsync(Arg.Any<string>()).Returns(@"C:\backups");
-        _backupService.BackupCsvArchiveAsync(Arg.Any<string>(), Arg.Any<CancellationToken>(), Arg.Any<string?>(), Arg.Any<System.IProgress<string>?>())
+        _backupService.BackupCsvArchiveAsync(Arg.Any<string>(), Arg.Any<CancellationToken>(), Arg.Any<string?>(), Arg.Any<System.IProgress<BookDB.Models.ProgressUpdate<BookDB.Models.BackupProgressStep>>?>())
             .Returns(@"C:\backups\safety.zip");
         _migrationService.MigrateAsync(Arg.Any<IDbContextFactory<BookDbContext>>(), Arg.Any<IDbContextFactory<BookDbContext>>(),
                 Arg.Any<IIdentitySequenceResync>(), Arg.Any<System.IProgress<MigrationProgress>?>(), Arg.Any<CancellationToken>())
@@ -213,7 +213,7 @@ public sealed class MoveLibraryViewModelTests
         await vm.CheckTargetCommand.ExecuteAsync(null);
 
         _filePicker.PickFolderAsync(Arg.Any<string>()).Returns(@"C:\backups");
-        _backupService.BackupCsvArchiveAsync(Arg.Any<string>(), Arg.Any<CancellationToken>(), Arg.Any<string?>(), Arg.Any<System.IProgress<string>?>())
+        _backupService.BackupCsvArchiveAsync(Arg.Any<string>(), Arg.Any<CancellationToken>(), Arg.Any<string?>(), Arg.Any<System.IProgress<BookDB.Models.ProgressUpdate<BookDB.Models.BackupProgressStep>>?>())
             .Returns(@"C:\backups\safety.zip");
         _migrationService.MigrateAsync(Arg.Any<IDbContextFactory<BookDbContext>>(), Arg.Any<IDbContextFactory<BookDbContext>>(),
                 Arg.Any<IIdentitySequenceResync>(), Arg.Any<System.IProgress<MigrationProgress>?>(), Arg.Any<CancellationToken>())
@@ -236,9 +236,9 @@ public sealed class MoveLibraryViewModelTests
         vm.AcknowledgeReplace = true;
 
         _filePicker.PickFolderAsync(Arg.Any<string>()).Returns(@"C:\backups");
-        _backupService.BackupCsvArchiveAsync(Arg.Any<string>(), Arg.Any<CancellationToken>(), Arg.Any<string?>(), Arg.Any<System.IProgress<string>?>())
+        _backupService.BackupCsvArchiveAsync(Arg.Any<string>(), Arg.Any<CancellationToken>(), Arg.Any<string?>(), Arg.Any<System.IProgress<BookDB.Models.ProgressUpdate<BookDB.Models.BackupProgressStep>>?>())
             .Returns(@"C:\backups\source.zip");
-        _target.Backup.BackupCsvArchiveAsync(Arg.Any<string>(), Arg.Any<CancellationToken>(), Arg.Any<string?>(), Arg.Any<System.IProgress<string>?>())
+        _target.Backup.BackupCsvArchiveAsync(Arg.Any<string>(), Arg.Any<CancellationToken>(), Arg.Any<string?>(), Arg.Any<System.IProgress<BookDB.Models.ProgressUpdate<BookDB.Models.BackupProgressStep>>?>())
             .Returns(@"C:\backups\target.zip");
         _migrationService.MigrateAsync(Arg.Any<IDbContextFactory<BookDbContext>>(), Arg.Any<IDbContextFactory<BookDbContext>>(),
                 Arg.Any<IIdentitySequenceResync>(), Arg.Any<System.IProgress<MigrationProgress>?>(), Arg.Any<CancellationToken>())
@@ -247,7 +247,7 @@ public sealed class MoveLibraryViewModelTests
 
         await vm.MoveCommand.ExecuteAsync(null);
 
-        await _target.Backup.Received().BackupCsvArchiveAsync(@"C:\backups", Arg.Any<CancellationToken>(), Arg.Any<string?>(), Arg.Any<System.IProgress<string>?>());
+        await _target.Backup.Received().BackupCsvArchiveAsync(@"C:\backups", Arg.Any<CancellationToken>(), Arg.Any<string?>(), Arg.Any<System.IProgress<BookDB.Models.ProgressUpdate<BookDB.Models.BackupProgressStep>>?>());
         Assert.False(vm.HasFailure);
     }
 
@@ -261,7 +261,7 @@ public sealed class MoveLibraryViewModelTests
         await vm.CheckTargetCommand.ExecuteAsync(null);
 
         _filePicker.PickFolderAsync(Arg.Any<string>()).Returns(@"C:\backups");
-        _backupService.BackupCsvArchiveAsync(Arg.Any<string>(), Arg.Any<CancellationToken>(), Arg.Any<string?>(), Arg.Any<System.IProgress<string>?>())
+        _backupService.BackupCsvArchiveAsync(Arg.Any<string>(), Arg.Any<CancellationToken>(), Arg.Any<string?>(), Arg.Any<System.IProgress<BookDB.Models.ProgressUpdate<BookDB.Models.BackupProgressStep>>?>())
             .Returns(@"C:\backups\source.zip");
         _migrationService.MigrateAsync(Arg.Any<IDbContextFactory<BookDbContext>>(), Arg.Any<IDbContextFactory<BookDbContext>>(),
                 Arg.Any<IIdentitySequenceResync>(), Arg.Any<System.IProgress<MigrationProgress>?>(), Arg.Any<CancellationToken>())
@@ -270,7 +270,7 @@ public sealed class MoveLibraryViewModelTests
 
         await vm.MoveCommand.ExecuteAsync(null);
 
-        await _target.Backup.DidNotReceive().BackupCsvArchiveAsync(Arg.Any<string>(), Arg.Any<CancellationToken>(), Arg.Any<string?>(), Arg.Any<System.IProgress<string>?>());
+        await _target.Backup.DidNotReceive().BackupCsvArchiveAsync(Arg.Any<string>(), Arg.Any<CancellationToken>(), Arg.Any<string?>(), Arg.Any<System.IProgress<BookDB.Models.ProgressUpdate<BookDB.Models.BackupProgressStep>>?>());
     }
 
     [Fact]
@@ -287,6 +287,6 @@ public sealed class MoveLibraryViewModelTests
         await vm.MoveCommand.ExecuteAsync(null);
 
         Assert.False(vm.IsRunning);
-        await _backupService.DidNotReceive().BackupCsvArchiveAsync(Arg.Any<string>(), Arg.Any<CancellationToken>(), Arg.Any<string?>(), Arg.Any<System.IProgress<string>?>());
+        await _backupService.DidNotReceive().BackupCsvArchiveAsync(Arg.Any<string>(), Arg.Any<CancellationToken>(), Arg.Any<string?>(), Arg.Any<System.IProgress<BookDB.Models.ProgressUpdate<BookDB.Models.BackupProgressStep>>?>());
     }
 }

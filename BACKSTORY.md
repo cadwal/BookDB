@@ -10,7 +10,7 @@ Some years later I discovered Readerware with its auto-catalog feature, which fi
 
 Fast-forwarding to more recently: I, along with many others, noticed something was wrong with Readerware, figured out what had happened — the developer had passed away — and started looking for alternatives. Those are hard to find in a niche like this, especially if you refuse browser or cloud based offerings. While looking, I had an idea: why not use this as a test case for trying out coding agents, spec-driven development, and that kind of thing? I do use those approaches at work, but not in this from-scratch manner. The idea was that it should be possible to create something to keep my database alive with a reasonable amount of manual effort.
 
-So, a Claude subscription was purchased (including an overage budget), GSD was installed, and away we went. Although final trim was done using Opus 4.8 in straight up mode.
+So, a Claude subscription was purchased (including an overage budget), GSD was installed, and away we went — although the final trim for version 1 was done using Opus 4.8 in straight-up mode. Versions 1.1 and later have been built using a somewhat more lightweight custom process and skill, in part using Fable 5 but mostly still Opus 4.8.
 
 With that said — no, I have not read every single line in this codebase. I have run tests against the data I have. There are some visual issues I am not happy with, but it should do its intended job.
 

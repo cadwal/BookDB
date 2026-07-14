@@ -61,7 +61,7 @@ public sealed class BackupServiceKeyTests
     {
         var appSettings = new AppSettings { SqliteLibraryPath = System.IO.Path.GetTempFileName() };
         return new BackupService(
-            new ThrowingDbContextFactory(), appSettings, settingsService, new NullResourceProvider(), new DataChangeTracker(),
+            new ThrowingDbContextFactory(), appSettings, settingsService, new DataChangeTracker(),
             new BookDB.Data.Sqlite.SqliteBackupStrategy(new ThrowingDbContextFactory(), appSettings));
     }
 

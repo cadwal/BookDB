@@ -11,6 +11,7 @@ using BookDB.Desktop.Helpers;
 using BookDB.Desktop.Localization;
 using BookDB.Desktop.Services;
 using BookDB.Logic.Services;
+using BookDB.Models;
 using BookDB.Models.Interfaces;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -83,6 +84,14 @@ public sealed partial class PrintDialogViewModel : ObservableObject
 
     // --- Error feedback ---
     [ObservableProperty] private string _errorMessage = string.Empty;
+
+    // --- Generation progress ---
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(PreviewCommand))]
+    [NotifyCanExecuteChangedFor(nameof(SaveAsPdfCommand))]
+    private bool _isGenerating;
+
+    [ObservableProperty] private string _generationStatus = string.Empty;
 
     // --- Inline preset naming state ---
     [ObservableProperty]
@@ -183,6 +192,13 @@ public sealed partial class PrintDialogViewModel : ObservableObject
         SelectedPreset = Presets.FirstOrDefault();
     }
 
+    // The PDF renders in the Logic layer, which carries no localization dependency — the localized header
+    // labels and page-number format travel in as PrintParameters content (same resolution as the Columns list).
+    private Dictionary<string, string> ResolveColumnHeaderLabels()
+        => _printService.AllColumnNames.ToDictionary(
+            key => key,
+            key => Resources.ResourceManager.GetString("Print_Column_" + key, null) ?? key);
+
     public void SetBookCount(int count)
     {
         BookCount = count;
@@ -273,11 +289,13 @@ public sealed partial class PrintDialogViewModel : ObservableObject
             FacetFilters: _facetFilters,
             SortColumn: _sortColumn,
             SortAscending: _sortAscending,
-            Preset: preset);
+            Preset: preset,
+            ColumnHeaderLabels: ResolveColumnHeaderLabels(),
+            PageNumberFormat: Resources.Print_Footer_PageFormat);
 
         try
         {
-            await _printService.GenerateAsync(parameters);
+            await GenerateWithStatusAsync(parameters);
 
             // Open in system PDF viewer (cross-platform — see SystemLauncher).
             Helpers.SystemLauncher.Open(tempPath);
@@ -291,7 +309,22 @@ public sealed partial class PrintDialogViewModel : ObservableObject
         }
     }
 
-    private bool CanExecutePrint() => BookCount > 0;
+    private bool CanExecutePrint() => BookCount > 0 && !IsGenerating;
+
+    // Runs the generation with the status line live and both output commands gated; the service's typed
+    // steps localize here.
+    private async Task GenerateWithStatusAsync(PrintParameters parameters)
+    {
+        IsGenerating = true;
+        var progress = new Progress<ProgressUpdate<PrintProgressStep>>(
+            u => GenerationStatus = PrintProgressLocalizer.ToDisplayString(u));
+        try { await _printService.GenerateAsync(parameters, progress: progress); }
+        finally
+        {
+            IsGenerating = false;
+            GenerationStatus = string.Empty;
+        }
+    }
 
     [RelayCommand(CanExecute = nameof(CanExecutePrint))]
     private async Task SaveAsPdf()
@@ -321,11 +354,13 @@ public sealed partial class PrintDialogViewModel : ObservableObject
             FacetFilters: _facetFilters,
             SortColumn: _sortColumn,
             SortAscending: _sortAscending,
-            Preset: preset);
+            Preset: preset,
+            ColumnHeaderLabels: ResolveColumnHeaderLabels(),
+            PageNumberFormat: Resources.Print_Footer_PageFormat);
 
         try
         {
-            await _printService.GenerateAsync(parameters);
+            await GenerateWithStatusAsync(parameters);
             CloseDialog?.Invoke(parameters);
         }
         catch (Exception ex)

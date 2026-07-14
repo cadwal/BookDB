@@ -11,12 +11,10 @@ namespace BookDB.Logic.Services;
 public sealed class LookupService : ILookupService, ISettingsService
 {
     private readonly IDbContextFactory<BookDbContext> _factory;
-    private readonly IResourceProvider _resourceProvider;
 
-    public LookupService(IDbContextFactory<BookDbContext> factory, IResourceProvider resourceProvider)
+    public LookupService(IDbContextFactory<BookDbContext> factory)
     {
         _factory = factory;
-        _resourceProvider = resourceProvider;
     }
 
     public async Task<IReadOnlyList<T>> GetAllAsync<T>(
@@ -137,10 +135,4 @@ public sealed class LookupService : ILookupService, ISettingsService
 
     public Task SetAsync(string key, string? value, CancellationToken ct = default)
         => SetSettingAsync(key, value, ct);
-
-    public string GetDisplayName(string name, string? resourceKey)
-    {
-        if (string.IsNullOrEmpty(resourceKey)) return name;
-        return _resourceProvider.GetString(resourceKey) ?? name;
-    }
 }

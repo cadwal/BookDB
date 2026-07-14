@@ -1,12 +1,12 @@
 ﻿# Over gegevensbronnen
 
-Wanneer u een boek catalogiseert via ISBN (Ctrl+I of de werkbalkknop), haalt BookDB gelijktijdig metadata op van drie openbare API's.
+Wanneer je een boek catalogiseert via ISBN (Ctrl+I of de werkbalkknop), haalt BookDB gelijktijdig metadata op van drie openbare API's.
 
 ## Zoekstroom
 
-1. U voert het ISBN in
+1. Je voert het ISBN in
 2. BookDB benadert alle vier bronnen parallel — **Google Books**, **Open Library**, **Libris KB**, **IsbnSearch.org**
-3. Het dialoogvenster **Samenvoegbeoordeling** opent — u kiest welke velden u van elke bron wilt overnemen
+3. Het dialoogvenster **Samenvoegbeoordeling** opent — je kiest welke velden je van elke bron wilt overnemen
 4. Boekrecord opgeslagen
 
 ## Google Books
@@ -28,7 +28,7 @@ Google Books is de grootste algemene boekendatabase, met brede dekking van Engel
 **Opmerkingen:**
 - Geen API-sleutel vereist voor basiszoekopdrachten
 - Dekking is het sterkst voor commerciële publicaties na 1980
-- Auteurnamen komen mogelijk niet altijd overeen met uw gewenste opmaak
+- Auteurnamen komen mogelijk niet altijd overeen met je gewenste opmaak
 
 ## Open Library
 
@@ -92,12 +92,12 @@ Nadat BookDB de resultaten van alle beschikbare bronnen heeft opgehaald, toont h
 | Uitgever | — | Scribner | — | — |
 | Pagina's | — | 180 | 172 | — |
 
-Voor elk veld kunt u:
+Voor elk veld kun je:
 - Een waarde van een bron **overnemen** (klik op de waarde om deze te selecteren)
-- Uw huidige waarde **behouden**
+- Je huidige waarde **behouden**
 - **Alles overnemen** om alle binnenkomende waarden tegelijk te accepteren
 
-Wanneer u op **Opslaan** klikt, worden alleen de door u geaccepteerde velden bijgewerkt. Uw bestaande gegevens worden nooit automatisch overschreven.
+Wanneer je op **Opslaan** klikt, worden alleen de door jou geaccepteerde velden bijgewerkt. Je bestaande gegevens worden nooit automatisch overschreven.
 
 ## Wanneer een bron geen resultaten geeft
 
@@ -108,4 +108,4 @@ Als een bron geen resultaten oplevert voor een ISBN:
 
 ## Snelheidslimieten
 
-BookDB respecteert automatisch de snelheidslimieten van elke API. Tijdens bulk hercatalogisering (Extra > Hercatalogiseren) worden verzoeken gespreid zodat u nooit van een bron wordt geblokkeerd.
+BookDB respecteert automatisch de snelheidslimieten van elke API. Tijdens bulk hercatalogisering (Extra > Hercatalogiseren) worden verzoeken gespreid zodat je nooit van een bron wordt geblokkeerd.

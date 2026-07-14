@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using BookDB.Desktop.Services;
 using BookDB.Desktop.Tests.Helpers;
 using BookDB.Desktop.ViewModels;
 using BookDB.Logic.Import;
@@ -32,7 +33,9 @@ public class ImportWizardViewModelTests : IDisposable
         messenger ??= new WeakReferenceMessenger();
         lookupManagement ??= Substitute.For<ILookupManagementService>();
 
-        return new ImportWizardViewModel(importService, filePicker, _factory.LookupService, lookupManagement, messenger);
+        return new ImportWizardViewModel(
+            importService, filePicker, _factory.LookupService, lookupManagement, messenger,
+            Substitute.For<IWindowService>());
     }
 
     private static ImportPreview MakeCannedPreview() => new ImportPreview(

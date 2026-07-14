@@ -26,6 +26,7 @@ public partial class BookDetailViewModel :
 {
     private readonly IMessenger _messenger;
     private readonly ILoanService _loanService;
+    private readonly IRecatalogFlowService _recatalogFlow;
 
     // Set synchronously in Receive(BookSavedMessage) when IsEditMode is true, so the
     // upcoming BookSelectedMessage (from list-row refresh) is suppressed before any
@@ -157,11 +158,13 @@ public partial class BookDetailViewModel :
         IHttpClientFactory httpClientFactory,
         ILoanService loanService,
         IConnectionHealthMonitor connectionMonitor,
-        IConnectionFailureClassifier connectionClassifier)
+        IConnectionFailureClassifier connectionClassifier,
+        IRecatalogFlowService recatalogFlow)
         : base(bookService, bookImageService, lookupService, filePickerService, windowService, writeGuard, httpClientFactory, connectionMonitor, connectionClassifier)
     {
         _messenger = messenger;
         _loanService = loanService;
+        _recatalogFlow = recatalogFlow;
         _messenger.RegisterAll(this);
         PropertyChanged += (_, e) =>
         {
@@ -287,17 +290,10 @@ public partial class BookDetailViewModel :
     {
         if (CurrentBook == null) return;
 
-        string? isbn = CurrentBook.Isbn;
-
-        if (string.IsNullOrWhiteSpace(isbn))
-        {
-            isbn = await _windowService.ShowIsbnPromptDialogAsync();
-            if (string.IsNullOrWhiteSpace(isbn)) return;
-        }
-
         try
         {
-            await _windowService.StartBatchRecatalogAsync(new[] { CurrentBook.BookId });
+            await _recatalogFlow.RecatalogAsync(
+                [new RecatalogCandidate(CurrentBook.BookId, CurrentBook.Title, CurrentBook.Isbn)]);
         }
         catch (Exception ex)
         {

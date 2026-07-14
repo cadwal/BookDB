@@ -13,6 +13,9 @@ x86/
 bld/
 [Bb]in/
 [Oo]bj/
+# .planning holds process docs, never build output — exempt it from the artifact-dir
+# rules above (they otherwise swallow e.g. .planning/v1/debug/).
+!.planning/**
 
 ## NuGet
 *.nupkg

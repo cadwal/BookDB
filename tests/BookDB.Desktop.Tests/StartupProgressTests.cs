@@ -16,13 +16,13 @@ public class StartupProgressTests
     public void Reporter_Report_RaisesProgressChangedOnceWithGivenValues()
     {
         var reporter = new StartupProgressReporter();
-        var received = new List<StartupProgressReport>();
+        var received = new List<ProgressUpdate<StartupStage>>();
         reporter.ProgressChanged += received.Add;
 
         reporter.Report(StartupStage.ApplyingMigrations, 2, 5);
 
         var report = Assert.Single(received);
-        Assert.Equal(StartupStage.ApplyingMigrations, report.Stage);
+        Assert.Equal(StartupStage.ApplyingMigrations, report.Step);
         Assert.Equal(2, report.Current);
         Assert.Equal(5, report.Total);
     }
@@ -31,7 +31,7 @@ public class StartupProgressTests
     public void Reporter_Report_DefaultsCurrentAndTotalToZero()
     {
         var reporter = new StartupProgressReporter();
-        StartupProgressReport? captured = null;
+        ProgressUpdate<StartupStage>? captured = null;
         reporter.ProgressChanged += r => captured = r;
 
         reporter.Report(StartupStage.Initializing);

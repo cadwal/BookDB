@@ -5,10 +5,10 @@ using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Input;
 using BookDB.Data.Interfaces;
-using BookDB.Desktop.Helpers;
 using BookDB.Desktop.Services;
 using BookDB.Desktop.ViewModels;
 using BookDB.Desktop.Views;
+using BookDB.Logic.Import;
 using BookDB.Logic.Services;
 using BookDB.Models.Entities;
 using BookDB.Models.Interfaces;
@@ -209,58 +209,89 @@ public class DialogKeyboardTests : HeadlessTest
     }
 
     [Fact]
-    public async Task ConfirmDialog_EnterAnswersYes_EscAnswersNo()
+    public async Task ConfirmDialog_EnterAnswersYes_EscAnswersNo_XAnswersNothing()
     {
         await RunUi(async () =>
         {
-            var (dialog, result) = AppDialogs.BuildConfirmDialog("Confirm?", "Body.");
-            dialog.Show();
-            Ui.Pump();
-            dialog.Press(PhysicalKey.Enter);
-            Assert.True(await result);
-            dialog.Close();
+            using var host = TestHost.Create();
+            var (main, windowService) = await ShowMainWindowAsync(host);
 
-            var (escDialog, escResult) = AppDialogs.BuildConfirmDialog("Confirm?", "Body.");
-            escDialog.Show();
-            Ui.Pump();
-            escDialog.Press(PhysicalKey.Escape);
-            Assert.False(await escResult);
-            escDialog.Close();
+            Assert.True(await WrapperResultAfter(
+                main, () => windowService.ShowConfirmAsync("Confirm?", "Body.", main),
+                d => d.Press(PhysicalKey.Enter)));
+            Assert.False(await WrapperResultAfter(
+                main, () => windowService.ShowConfirmAsync("Confirm?", "Body.", main),
+                d => d.Press(PhysicalKey.Escape)));
+            Assert.Null(await WrapperResultAfter(
+                main, () => windowService.ShowConfirmAsync("Confirm?", "Body.", main),
+                d => d.Close()));
+            main.Close();
         });
     }
 
     [Fact]
-    public async Task InfoAndAboutDialogs_CloseOnBothEnterAndEsc()
+    public async Task InfoDialog_ClosesOnBothEnterAndEsc()
     {
-        await RunUi(() =>
+        await RunUi(async () =>
         {
+            using var host = TestHost.Create();
+            var (main, windowService) = await ShowMainWindowAsync(host);
+
             foreach (var key in new[] { PhysicalKey.Enter, PhysicalKey.Escape })
             {
-                foreach (var build in new Func<Window>[]
-                         { () => AppDialogs.BuildInfoDialog("Read me."), AppDialogs.BuildAboutDialog })
-                {
-                    var dialog = build();
-                    var closed = false;
-                    dialog.Closed += (_, _) => closed = true;
-                    dialog.Show();
-                    Ui.Pump();
-                    dialog.Press(key);
-                    Assert.True(closed);
-                }
+                var shown = windowService.ShowInfoAsync("Read me.");
+                Ui.Pump();
+                var dialog = main.OwnedWindows.OfType<MessageDialog>().Single();
+                dialog.Press(key);
+                await shown;
             }
-            return Task.CompletedTask;
+            main.Close();
         });
     }
 
     [Fact]
-    public async Task UnsavedChangesDialog_EnterSaves_EscKeepsEditing()
+    public async Task AboutWindow_ShowsResourceBackedVersion_AndClosesOnBothEnterAndEsc()
     {
         await RunUi(async () =>
         {
-            Assert.Equal(UnsavedChangesResult.Save, await ResultAfterKey<UnsavedChangesResult>(
-                AppDialogs.BuildUnsavedChangesDialog("Some Book"), PhysicalKey.Enter));
-            Assert.Equal(UnsavedChangesResult.KeepEditing, await ResultAfterKey<UnsavedChangesResult>(
-                AppDialogs.BuildUnsavedChangesDialog("Some Book"), PhysicalKey.Escape));
+            using var host = TestHost.Create();
+            var (main, windowService) = await ShowMainWindowAsync(host);
+
+            var version = typeof(AboutWindow).Assembly.GetName().Version!;
+            var expected = string.Format(BookDB.Desktop.Localization.Resources.About_Version,
+                $"{version.Major}.{version.Minor}.{version.Build}");
+
+            foreach (var key in new[] { PhysicalKey.Enter, PhysicalKey.Escape })
+            {
+                var shown = windowService.ShowAboutAsync();
+                Ui.Pump();
+                var about = main.OwnedWindows.OfType<AboutWindow>().Single();
+                Assert.Contains(about.Descendants<TextBlock>(), t => t.Text == expected);
+                about.Press(key);
+                await shown;
+            }
+            main.Close();
+        });
+    }
+
+    [Fact]
+    public async Task UnsavedChangesDialog_EnterSaves_EscAndXKeepEditing()
+    {
+        await RunUi(async () =>
+        {
+            using var host = TestHost.Create();
+            var (main, windowService) = await ShowMainWindowAsync(host);
+
+            Assert.Equal(UnsavedChangesResult.Save, await WrapperResultAfter(
+                main, () => windowService.ShowUnsavedChangesDialogAsync("Some Book"),
+                d => d.Press(PhysicalKey.Enter)));
+            Assert.Equal(UnsavedChangesResult.KeepEditing, await WrapperResultAfter(
+                main, () => windowService.ShowUnsavedChangesDialogAsync("Some Book"),
+                d => d.Press(PhysicalKey.Escape)));
+            Assert.Equal(UnsavedChangesResult.KeepEditing, await WrapperResultAfter(
+                main, () => windowService.ShowUnsavedChangesDialogAsync("Some Book"),
+                d => d.Close()));
+            main.Close();
         });
     }
 
@@ -269,37 +300,60 @@ public class DialogKeyboardTests : HeadlessTest
     {
         await RunUi(async () =>
         {
-            var dialog = AppDialogs.BuildShutdownWarningDialog("Quit anyway", "Keep running");
+            using var host = TestHost.Create();
+            var (main, windowService) = await ShowMainWindowAsync(host);
+
+            var warn = windowService.ShowMainShutdownWarningAsync();
+            Ui.Pump();
+            var dialog = main.OwnedWindows.OfType<MessageDialog>().Single();
             Assert.DoesNotContain(dialog.Descendants<Button>(), b => b.IsDefault);
-            Assert.False(await ResultAfterKey<bool?>(dialog, PhysicalKey.Escape));
+            dialog.Press(PhysicalKey.Escape);
+            Assert.False(await warn);
+
+            // Closing via the title-bar X is the same safe keep-running answer.
+            var second = windowService.ShowMainShutdownWarningAsync();
+            Ui.Pump();
+            main.OwnedWindows.OfType<MessageDialog>().Single().Close();
+            Ui.Pump();
+            Assert.False(await second);
+            main.Close();
         });
     }
 
     [Fact]
-    public async Task WriteFailureDialog_EnterTakesTheSafeRetry()
+    public async Task WriteFailureDialog_EnterEscAndXAllTakeTheSafeRetry()
     {
         await RunUi(async () =>
         {
-            var (dialog, result) = AppDialogs.BuildWriteFailureDialog("Write failed.");
-            dialog.Show();
-            Ui.Pump();
-            dialog.Press(PhysicalKey.Enter);
-            Assert.Equal(WriteFailureChoice.Retry, await result);
-            dialog.Close();
+            using var host = TestHost.Create();
+            var (main, windowService) = await ShowMainWindowAsync(host);
+
+            foreach (var dismiss in new Action<MessageDialog>[]
+                     { d => d.Press(PhysicalKey.Enter), d => d.Press(PhysicalKey.Escape), d => d.Close() })
+            {
+                Assert.Equal(WriteFailureChoice.Retry, await WrapperResultAfter(
+                    main, () => windowService.ShowWriteFailureDialogAsync("Write failed."), dismiss));
+            }
+            main.Close();
         });
     }
 
     [Fact]
-    public async Task ConnectionLostDialog_EnterKeepsWaiting()
+    public async Task ConnectionLostDialog_EnterEscAndXAllKeepWaiting()
     {
         await RunUi(async () =>
         {
-            var (dialog, result) = AppDialogs.BuildConnectionLostEscalationDialog();
-            dialog.Show();
-            Ui.Pump();
-            dialog.Press(PhysicalKey.Enter);
-            Assert.False(await result); // false = keep waiting, the non-destructive choice
-            dialog.Close();
+            using var host = TestHost.Create();
+            var (main, windowService) = await ShowMainWindowAsync(host);
+
+            foreach (var dismiss in new Action<MessageDialog>[]
+                     { d => d.Press(PhysicalKey.Enter), d => d.Press(PhysicalKey.Escape), d => d.Close() })
+            {
+                // false = keep waiting, the non-destructive choice
+                Assert.False(await WrapperResultAfter(
+                    main, windowService.ShowConnectionLostEscalationDialogAsync, dismiss));
+            }
+            main.Close();
         });
     }
 
@@ -308,34 +362,184 @@ public class DialogKeyboardTests : HeadlessTest
     {
         await RunUi(async () =>
         {
-            var dialog = AppDialogs.BuildDeleteConfirmationDialog("Delete this?");
-            dialog.Show();
+            using var host = TestHost.Create();
+            var (main, windowService) = await ShowMainWindowAsync(host);
+
+            var confirm = windowService.ShowDeleteConfirmationAsync("Delete this?");
             Ui.Pump();
+            var dialog = main.OwnedWindows.OfType<MessageDialog>().Single();
             Assert.DoesNotContain(dialog.Descendants<Button>(), b => b.IsDefault);
-            dialog.Close();
+            Assert.Contains("dangerButton", dialog.Descendants<Button>()[0].Classes);
+            dialog.Press(PhysicalKey.Escape);
+            Assert.False(await confirm);
 
-            Assert.False(await ResultAfterKey<bool?>(
-                AppDialogs.BuildDeleteConfirmationDialog("Delete this?"), PhysicalKey.Escape));
+            // Title-bar X declines just like Esc — never deletes.
+            var second = windowService.ShowDeleteConfirmationAsync("Delete this?");
+            Ui.Pump();
+            main.OwnedWindows.OfType<MessageDialog>().Single().Close();
+            Ui.Pump();
+            Assert.False(await second);
+            main.Close();
         });
     }
 
     [Fact]
-    public async Task DuplicateIsbnDialog_EscTakesCancel()
+    public async Task DuplicateIsbnDialog_NeverPutsAWriteOnEnter_AndEscAndXCancel()
     {
         await RunUi(async () =>
         {
-            var result = await ResultAfterKey<DuplicateIsbnResult>(
-                AppDialogs.BuildDuplicateIsbnDialog("9780000000000", "Existing Title"), PhysicalKey.Escape);
-            Assert.Equal(DuplicateIsbnResult.Cancel, result);
+            using var host = TestHost.Create();
+            var (main, windowService) = await ShowMainWindowAsync(host);
+
+            // Update-existing and add-as-new both write to the library — neither may sit on Enter.
+            var prompt = windowService.ShowDuplicateIsbnDialogAsync("9780000000000", "Existing Title");
+            Ui.Pump();
+            var dialog = main.OwnedWindows.OfType<MessageDialog>().Single();
+            Assert.DoesNotContain(dialog.Descendants<Button>(), b => b.IsDefault);
+            dialog.Press(PhysicalKey.Escape);
+            Assert.Equal(DuplicateIsbnResult.Cancel, await prompt);
+
+            Assert.Equal(DuplicateIsbnResult.Cancel, await WrapperResultAfter(
+                main, () => windowService.ShowDuplicateIsbnDialogAsync("9780000000000", "Existing Title"),
+                d => d.Close()));
+            main.Close();
         });
     }
 
     [Fact]
-    public async Task IsbnPromptDialog_EscDismissesWithNoIsbn()
+    public async Task BackupConflictDialog_EnterSavesUnderASuffix_EscAndXCancel()
     {
         await RunUi(async () =>
         {
-            Assert.Null(await ResultAfterKey<string?>(AppDialogs.BuildIsbnPromptDialog(), PhysicalKey.Escape));
+            using var host = TestHost.Create();
+            var (main, windowService) = await ShowMainWindowAsync(host);
+            var existing = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "backup.zip");
+
+            Assert.Equal(BackupConflictChoice.AddSuffix, await WrapperResultAfter(
+                main, () => windowService.ShowBackupConflictAsync(existing), d => d.Press(PhysicalKey.Enter)));
+            Assert.Equal(BackupConflictChoice.Cancel, await WrapperResultAfter(
+                main, () => windowService.ShowBackupConflictAsync(existing), d => d.Press(PhysicalKey.Escape)));
+            Assert.Equal(BackupConflictChoice.Cancel, await WrapperResultAfter(
+                main, () => windowService.ShowBackupConflictAsync(existing), d => d.Close()));
+            main.Close();
+        });
+    }
+
+    [Fact]
+    public async Task RestoreTargetDialog_EnterTakesArchived_CurrentByClick_EscAndXCancel()
+    {
+        await RunUi(async () =>
+        {
+            using var host = TestHost.Create();
+            var (main, windowService) = await ShowMainWindowAsync(host);
+
+            async Task<RestoreTargetChoice> After(Func<RestoreTargetDialog, Task> dismiss)
+            {
+                var task = windowService.ShowRestoreTargetAsync("PostgreSQL on backup-host");
+                Ui.Pump();
+                var dialog = main.OwnedWindows.OfType<RestoreTargetDialog>().Single();
+                await dismiss(dialog);
+                Ui.Pump();
+                return await task;
+            }
+
+            Assert.Equal(RestoreTargetChoice.Archived, await After(d =>
+            {
+                d.Press(PhysicalKey.Enter);
+                return Task.CompletedTask;
+            }));
+            Assert.Equal(RestoreTargetChoice.Current, await After(d =>
+                d.ButtonFor(((RestoreTargetViewModel)d.DataContext!).ChooseCurrentCommand).ClickAsync()));
+            Assert.Equal(RestoreTargetChoice.Cancel, await After(d =>
+            {
+                d.Press(PhysicalKey.Escape);
+                return Task.CompletedTask;
+            }));
+            Assert.Equal(RestoreTargetChoice.Cancel, await After(d =>
+            {
+                d.Close();
+                return Task.CompletedTask;
+            }));
+            main.Close();
+        });
+    }
+
+    [Fact]
+    public async Task DuplicateResolutionDialog_FiveChoicesByClick_EscAndXSkip_EnterPicksNothing()
+    {
+        await RunUi(async () =>
+        {
+            using var host = TestHost.Create();
+            var (main, windowService) = await ShowMainWindowAsync(host);
+
+            async Task<ImportDuplicateResolution> After(Func<DuplicateResolutionDialog, Task> dismiss)
+            {
+                var task = windowService.ShowDuplicateResolutionAsync("Duplicate ISBN", "A book with this ISBN already exists.");
+                Ui.Pump();
+                var dialog = main.OwnedWindows.OfType<DuplicateResolutionDialog>().Single();
+                await dismiss(dialog);
+                Ui.Pump();
+                return await task;
+            }
+
+            Task Click(DuplicateResolutionDialog d, Func<DuplicateResolutionViewModel, System.Windows.Input.ICommand> command) =>
+                d.ButtonFor(command((DuplicateResolutionViewModel)d.DataContext!)).ClickAsync();
+
+            Assert.Equal(ImportDuplicateResolution.Overwrite, await After(d => Click(d, vm => vm.OverwriteCommand)));
+            Assert.Equal(ImportDuplicateResolution.OverwriteAll, await After(d => Click(d, vm => vm.OverwriteAllCommand)));
+            Assert.Equal(ImportDuplicateResolution.Skip, await After(d => Click(d, vm => vm.SkipCommand)));
+            Assert.Equal(ImportDuplicateResolution.SkipAll, await After(d => Click(d, vm => vm.SkipAllCommand)));
+            Assert.Equal(ImportDuplicateResolution.CancelImport, await After(d => Click(d, vm => vm.CancelImportCommand)));
+
+            // Every choice writes or skips data, so Enter deliberately picks nothing; the dialog stays open.
+            Assert.Equal(ImportDuplicateResolution.Skip, await After(d =>
+            {
+                d.Press(PhysicalKey.Enter);
+                Assert.Single(main.OwnedWindows.OfType<DuplicateResolutionDialog>());
+                d.Press(PhysicalKey.Escape);
+                return Task.CompletedTask;
+            }));
+            Assert.Equal(ImportDuplicateResolution.Skip, await After(d =>
+            {
+                d.Close();
+                return Task.CompletedTask;
+            }));
+            main.Close();
+        });
+    }
+
+    [Fact]
+    public async Task IsbnPromptDialog_EnterLooksUpTheTypedIsbn_EscAndXDismissWithNull()
+    {
+        await RunUi(async () =>
+        {
+            using var host = TestHost.Create();
+            var (main, windowService) = await ShowMainWindowAsync(host);
+
+            // Enter triggers Look up — deliberate v2.3 fix (the old dialog had no default button).
+            // The body must name the book being re-cataloged: in a bulk run the prompts repeat and
+            // the title is the only thing telling them apart.
+            var typed = windowService.ShowIsbnPromptDialogAsync("Nameless Tome");
+            Ui.Pump();
+            var dialog = main.OwnedWindows.OfType<IsbnPromptDialog>().Single();
+            var expectedBody = string.Format(
+                BookDB.Desktop.Localization.Resources.Recatalog_NoIsbn_BodyForBook, "Nameless Tome");
+            Assert.Contains(dialog.Descendants<TextBlock>(), t => t.Text == expectedBody);
+            dialog.TypeInto(dialog.Find<TextBox>(), "9781234567897");
+            dialog.Press(PhysicalKey.Enter);
+            Assert.Equal("9781234567897", await typed);
+
+            var esc = windowService.ShowIsbnPromptDialogAsync("Nameless Tome");
+            Ui.Pump();
+            main.OwnedWindows.OfType<IsbnPromptDialog>().Single().Press(PhysicalKey.Escape);
+            Assert.Null(await esc);
+
+            var closed = windowService.ShowIsbnPromptDialogAsync("Nameless Tome");
+            Ui.Pump();
+            main.OwnedWindows.OfType<IsbnPromptDialog>().Single().Close();
+            Ui.Pump();
+            Assert.Null(await closed);
+            main.Close();
         });
     }
 
@@ -533,19 +737,28 @@ public class DialogKeyboardTests : HeadlessTest
 
     // ─── Plumbing ────────────────────────────────────────────────────────────
 
-    /// <summary>Shows a code-built dialog modally over a throwaway owner (the result only surfaces through
-    /// ShowDialog), presses the key, and returns the dialog's result.</summary>
-    private static async Task<T> ResultAfterKey<T>(Window dialog, PhysicalKey key)
+    /// <summary>Shows the app's real MainWindow so WindowService-run dialogs have their production owner,
+    /// and returns it with the real IWindowService.</summary>
+    private static async Task<(MainWindow Main, IWindowService WindowService)> ShowMainWindowAsync(TestHost host)
     {
-        var owner = new Window();
-        owner.Show();
-        var result = dialog.ShowDialog<T>(owner);
+        var main = host.Resolve<MainWindow>();
+        await ((MainWindowViewModel)main.DataContext!).InitializeAsync();
+        main.Show();
         Ui.Pump();
-        dialog.Press(key);
+        return (main, host.Resolve<IWindowService>());
+    }
+
+    /// <summary>Opens a component-backed dialog through its wrapper, dismisses it with the given gesture,
+    /// and returns the wrapper's result.</summary>
+    private static async Task<T> WrapperResultAfter<T>(
+        MainWindow main, Func<Task<T>> open, Action<MessageDialog> dismiss)
+    {
+        var task = open();
         Ui.Pump();
-        var value = await result;
-        owner.Close();
-        return value;
+        var dialog = main.OwnedWindows.OfType<MessageDialog>().Single();
+        dismiss(dialog);
+        Ui.Pump();
+        return await task;
     }
 
     private static (BackupFormatDialogViewModel Vm, BackupFormatDialog Dialog, Func<bool?> Closed) OpenBackupDialog(

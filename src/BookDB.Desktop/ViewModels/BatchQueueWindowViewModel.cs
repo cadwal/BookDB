@@ -510,13 +510,23 @@ public partial class BatchQueueWindowViewModel :
         }
     }
 
-    public async Task StartRecatalogAsync(IReadOnlyList<int> bookIds)
+    public Task StartRecatalogAsync(IReadOnlyList<int> bookIds) =>
+        StartRecatalogCoreAsync(() => _queueService.EnqueueRecatalogAsync(bookIds));
+
+    /// <summary>
+    /// Re-catalog for a single book whose record has no ISBN: the item is enqueued under the
+    /// explicitly supplied ISBN, and its BookId routes the lookup result onto the existing book.
+    /// </summary>
+    public Task StartRecatalogAsync(int bookId, string isbn) =>
+        StartRecatalogCoreAsync(async () => [await _queueService.EnqueueAsync(isbn, bookId)]);
+
+    private async Task StartRecatalogCoreAsync(Func<Task<IReadOnlyList<BatchQueueItem>>> enqueue)
     {
         try
         {
             await _processor.CancelBatchAsync();
             ResetState();
-            var items = await _queueService.EnqueueRecatalogAsync(bookIds);
+            var items = await enqueue();
             if (items.Count == 0)
             {
                 // All books already have an active Pending/Processing item in the queue.

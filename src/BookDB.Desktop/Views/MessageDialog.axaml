@@ -1,0 +1,32 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:BookDB.Desktop.ViewModels"
+        x:Class="BookDB.Desktop.Views.MessageDialog"
+        x:DataType="vm:MessageDialogViewModel"
+        Title="{Binding Title}"
+        MinWidth="{Binding MinWidth}"
+        SizeToContent="WidthAndHeight"
+        CanResize="False"
+        WindowStartupLocation="CenterOwner"
+        Padding="24">
+    <StackPanel Spacing="8">
+        <TextBlock Text="{Binding Body}" TextWrapping="Wrap" MaxWidth="400" />
+        <ItemsControl ItemsSource="{Binding Buttons}" HorizontalAlignment="Right" Margin="0,16,0,0">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel Orientation="Horizontal" Spacing="8" />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="vm:MessageDialogButtonViewModel">
+                    <Button Content="{Binding Text}"
+                            Command="{Binding Command}"
+                            IsDefault="{Binding IsDefault}"
+                            IsCancel="{Binding IsCancel}"
+                            Classes.accent="{Binding IsAccent}"
+                            Classes.dangerButton="{Binding IsDanger}" />
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </StackPanel>
+</Window>

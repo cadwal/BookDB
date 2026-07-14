@@ -66,6 +66,12 @@ public sealed class AppHost : IAsyncDisposable
         var monitor = CurrentServices.GetService<IConnectionHealthMonitor>();
         if (classifier is null || monitor is null || !classifier.IsConnectionLoss(ex))
             return false;
+        // Breadcrumb (Warning so it reaches the file sink): the unguarded interactive paths (print, backup
+        // pre-reads, library move) surface their connection loss here, so this records the exact exception that
+        // tripped the status-bar indicator for later diagnosis.
+        Log.Warning(
+            "Remote connection loss reported to health monitor ({ExceptionType} / inner {InnerType}): {Detail}",
+            ex.GetType().Name, ex.InnerException?.GetType().Name ?? "none", ex.Message);
         monitor.ReportConnectionFailure();
         return true;
     }
@@ -248,16 +254,16 @@ public sealed class AppHost : IAsyncDisposable
             if (await backupService.ShouldAutoBackupAsync(backupCts.Token))
             {
                 // Show a status window and run the backup off the UI thread so the indicator keeps animating.
-                var (backupWindow, backupProgress) = AppDialogs.ShowBackupProgressWindow();
+                var backupProgress = windowService.ShowBackupProgressWindow();
                 try
                 {
                     await Task.Run(
-                        () => backupService.AutoBackupIfEnabledAsync(backupCts.Token, backupProgress),
+                        () => backupService.AutoBackupIfEnabledAsync(backupCts.Token, BackupProgressLocalizer.Localizing(backupProgress)),
                         backupCts.Token);
                 }
                 finally
                 {
-                    backupWindow.Close();
+                    backupProgress.Close();
                 }
             }
         }
@@ -403,6 +409,13 @@ public sealed class AppHost : IAsyncDisposable
         if (TryReportConnectionLoss(ex))
             return;
 
+        // The process is exiting anyway — don't log a fatal crash and open the log viewer over it.
+        if (IsBenignDBusTeardownError(ex))
+        {
+            Log.Debug("Suppressed the DBus-teardown TaskCanceledException on exit");
+            return;
+        }
+
         try
         {
             Log.Fatal(ex, "Unhandled exception — application terminating");
@@ -415,10 +428,12 @@ public sealed class AppHost : IAsyncDisposable
 
     internal static void HandleUnobservedTaskException(Exception? ex)
     {
-        // On Linux desktops without a global app-menu registrar, Avalonia's DBus integration raises
-        // org.freedesktop.DBus.Error.ServiceUnknown for com.canonical.AppMenu.Registrar. It is harmless
-        // and surfaces here as an unobserved task exception — filter it out so it does not spam the log.
-        if (IsBenignAppMenuRegistrarError(ex))
+        // Avalonia's Linux desktop integration (app-menu registrar, status notifier, portals) probes
+        // optional DBus services with fire-and-forget calls; desktops that lack a service answer with
+        // errors like org.freedesktop.DBus.Error.ServiceUnknown, which surface here unobserved. BookDB
+        // itself never talks DBus on a task, so any Tmds.DBus failure on this path is that harmless
+        // integration noise — filter it out so it does not spam the log.
+        if (IsBenignDesktopDBusError(ex) || IsBenignDBusTeardownError(ex))
             return;
 
         // A dropped remote DB connection on a background task drives the status indicator, not a log error.
@@ -433,20 +448,40 @@ public sealed class AppHost : IAsyncDisposable
         // Do NOT re-throw — in .NET 6+ re-throwing an UnobservedTaskException crashes the process
     }
 
-    private static bool IsBenignAppMenuRegistrarError(Exception? ex)
+    // Matches by exception type, not message: the DBus error text does not always name the failing
+    // service (e.g. a bare "The name is not activatable"). Subsumes the former message-based filter for
+    // com.canonical.AppMenu.Registrar.
+    internal static bool IsBenignDesktopDBusError(Exception? ex)
     {
-        const string marker = "com.canonical.AppMenu.Registrar";
         if (ex is AggregateException agg)
         {
             foreach (var inner in agg.Flatten().InnerExceptions)
-                if (inner.Message.Contains(marker, StringComparison.Ordinal))
+                if (IsBenignDesktopDBusError(inner))
                     return true;
             return false;
         }
         for (var e = ex; e is not null; e = e.InnerException)
-            if (e.Message.Contains(marker, StringComparison.Ordinal))
+            if (e.GetType().FullName?.StartsWith("Tmds.DBus.", StringComparison.Ordinal) == true)
                 return true;
         return false;
+    }
+
+    // On process exit Avalonia's DBus teardown races the already-stopped dispatcher: Tmds.DBus notifies its
+    // observers of the disconnect via a synchronous dispatcher Send, the shut-down dispatcher cancels the
+    // operation, and the TaskCanceledException escapes on a worker thread (Wayland sessions;
+    // AvaloniaUI/Avalonia#19523). The dispatcher only cancels sends while shutting down, so this signature
+    // cannot occur mid-session.
+    internal static bool IsBenignDBusTeardownError(Exception? ex)
+    {
+        if (ex is AggregateException agg)
+        {
+            foreach (var inner in agg.Flatten().InnerExceptions)
+                if (IsBenignDBusTeardownError(inner))
+                    return true;
+            return false;
+        }
+        return ex is TaskCanceledException
+            && ex.StackTrace?.Contains("Tmds.DBus.Protocol", StringComparison.Ordinal) == true;
     }
 
     internal static void ShowFatalErrorDialog(Exception? ex)

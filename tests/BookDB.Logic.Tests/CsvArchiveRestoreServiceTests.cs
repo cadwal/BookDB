@@ -56,8 +56,8 @@ public sealed class CsvArchiveRestoreServiceTests : IDisposable
     private BackupService BackupServiceFor(TestBookDbContextFactory factory, string dbPath)
     {
         var settings = new AppSettings { SqliteLibraryPath = dbPath };
-        return new BackupService(factory, settings, new LookupService(factory, new NullResourceProvider()),
-            new NullResourceProvider(), new DataChangeTracker(), new SqliteBackupStrategy(factory, settings));
+        return new BackupService(factory, settings, new LookupService(factory),
+            new DataChangeTracker(), new SqliteBackupStrategy(factory, settings));
     }
 
     private static readonly byte[] CoverBytes = [0x89, 0x50, 0x4E, 0x47, 0xAB, 0xCD];

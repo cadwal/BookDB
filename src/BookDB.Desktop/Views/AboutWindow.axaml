@@ -1,0 +1,26 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:BookDB.Desktop.ViewModels"
+        xmlns:res="using:BookDB.Desktop.Localization"
+        x:Class="BookDB.Desktop.Views.AboutWindow"
+        x:DataType="vm:AboutWindowViewModel"
+        Title="{x:Static res:Resources.About_Title}"
+        SizeToContent="WidthAndHeight"
+        CanResize="False"
+        WindowStartupLocation="CenterOwner"
+        ShowInTaskbar="False"
+        Padding="32"
+        MinWidth="300">
+    <StackPanel Spacing="8" HorizontalAlignment="Center">
+        <TextBlock Text="{x:Static res:Resources.About_AppName}"
+                   FontWeight="Bold" FontSize="18" HorizontalAlignment="Center" />
+        <TextBlock Text="{Binding VersionText}" HorizontalAlignment="Center" />
+        <TextBlock Text="{Binding Copyright}" HorizontalAlignment="Center"
+                   Foreground="{DynamicResource BrushTextTertiary}" />
+        <Separator Margin="0,8" />
+        <Button Content="{x:Static res:Resources.Common_OK}"
+                Classes="accent" IsDefault="True" IsCancel="True"
+                HorizontalAlignment="Center"
+                Command="{Binding CloseCommand}" />
+    </StackPanel>
+</Window>

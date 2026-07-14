@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using BookDB.Data.DbContexts;
+using BookDB.Models;
 using BookDB.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 using QuestPDF.Fluent;
@@ -17,7 +18,6 @@ namespace BookDB.Logic.Services;
 public sealed class PrintService : IPrintService
 {
     private readonly IDbContextFactory<BookDbContext> _factory;
-    private readonly IResourceProvider _resourceProvider;
 
     public IReadOnlyList<string> AllColumnNames { get; } = new[]
     {
@@ -33,10 +33,9 @@ public sealed class PrintService : IPrintService
         "Title", "Authors", "Series", "PubDate", "Format", "Location"
     };
 
-    public PrintService(IDbContextFactory<BookDbContext> factory, IResourceProvider resourceProvider)
+    public PrintService(IDbContextFactory<BookDbContext> factory)
     {
         _factory = factory;
-        _resourceProvider = resourceProvider;
     }
 
     public void InitializeLicense()
@@ -46,7 +45,7 @@ public sealed class PrintService : IPrintService
         global::QuestPDF.Settings.License = global::QuestPDF.Infrastructure.LicenseType.Community;
     }
 
-    public async Task GenerateAsync(PrintParameters parameters, CancellationToken ct = default, IProgress<string>? progress = null)
+    public async Task GenerateAsync(PrintParameters parameters, CancellationToken ct = default, IProgress<ProgressUpdate<PrintProgressStep>>? progress = null)
     {
         try
         {
@@ -61,7 +60,7 @@ public sealed class PrintService : IPrintService
                     ? new List<string>(AllColumnNames)
                     : new List<string>(DefaultColumnNames);
 
-            progress?.Report("Querying books..."); // internal diagnostic — never rendered in UI (callers pass null)
+            progress?.Report(new ProgressUpdate<PrintProgressStep>(PrintProgressStep.Querying));
             await using var dbContext = await _factory.CreateDbContextAsync(ct);
 
             IQueryable<Book> query = dbContext.Books.AsNoTracking()
@@ -125,7 +124,7 @@ public sealed class PrintService : IPrintService
             };
 
             var books = await query.ToListAsync(ct);
-            progress?.Report($"Generating PDF for {books.Count:N0} books..."); // internal diagnostic — never rendered in UI (callers pass null)
+            progress?.Report(new ProgressUpdate<PrintProgressStep>(PrintProgressStep.GeneratingPdf, books.Count));
 
             await Task.Run(() => GeneratePdf(parameters, validatedColumns, books), ct);
 
@@ -138,7 +137,7 @@ public sealed class PrintService : IPrintService
         }
     }
 
-    private void GeneratePdf(PrintParameters parameters, IReadOnlyList<string> columns, IReadOnlyList<Book> books)
+    private static void GeneratePdf(PrintParameters parameters, IReadOnlyList<string> columns, IReadOnlyList<Book> books)
     {
         var preset = parameters.Preset;
 
@@ -179,9 +178,10 @@ public sealed class PrintService : IPrintService
 
                         table.Header(header =>
                         {
+                            var labels = parameters.ColumnHeaderLabels;
                             foreach (var col in columns)
                             {
-                                var label = _resourceProvider.GetString("Print_Column_" + col) ?? col;
+                                var label = labels is not null && labels.TryGetValue(col, out var mapped) ? mapped : col;
                                 header.Cell()
                                       .BorderBottom(1)
                                       .Padding(4)
@@ -212,7 +212,7 @@ public sealed class PrintService : IPrintService
                             textDescriptor.Span(preset.FooterText + "   ");
 
                         // Parse localised "Page {0} of {1}" (e.g. SV: "Sida {0} av {1}") into prefix / middle / suffix
-                        var fmt = _resourceProvider.GetString("Print_Footer_PageFormat") ?? "Page {0} of {1}";
+                        var fmt = parameters.PageNumberFormat ?? "Page {0} of {1}";
                         var parts = fmt.Split(["{0}", "{1}"], StringSplitOptions.None);
                         if (parts.Length == 3)
                         {

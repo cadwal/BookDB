@@ -23,7 +23,7 @@
         </Button>
       </Grid>
 
-      <StackPanel Orientation="Horizontal" Spacing="16">
+      <StackPanel Orientation="Horizontal" Spacing="16" KeyboardNavigation.TabNavigation="Once">
         <RadioButton GroupName="DbBackend"
                      Content="{x:Static res:Resources.Settings_Database_Backend_Sqlite}"
                      IsChecked="{Binding IsSqliteSelected}"/>

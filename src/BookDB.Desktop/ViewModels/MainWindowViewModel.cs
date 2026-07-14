@@ -41,6 +41,9 @@ public partial class MainWindowViewModel : ObservableObject
     private readonly AppSettings _appSettings;
     private readonly IMigrationTargetBuilder _targetBuilder;
     private readonly ISecretStore _secretStore;
+    private readonly IReleaseNotesService _releaseNotesService;
+
+    private const string LastSeenReleaseNotesVersionKey = "ReleaseNotes.LastSeenVersion";
 
     public FilterPanelViewModel FilterPanel { get; }
     public BookListViewModel BookList { get; }
@@ -83,6 +86,19 @@ public partial class MainWindowViewModel : ObservableObject
 
     public bool ShowConnectionStatus => !string.IsNullOrEmpty(ConnectionStatusText);
 
+    // Status-bar storage-kind indicator (fixed for the app's lifetime — changing backend restarts the app).
+    // The popup shows connection facts from the bootstrap config; credentials never appear.
+    public bool IsRemoteStorage { get; }
+    public string StorageBackendName { get; } = string.Empty;
+    public string StorageLocationLabel { get; } = string.Empty;
+    public string StorageLocationValue { get; } = string.Empty;
+    public string StorageDatabaseName { get; } = string.Empty;
+    public string StorageUserName { get; } = string.Empty;
+
+    /// <summary>Popup connection-state row for a remote backend; mirrors the health monitor.</summary>
+    [ObservableProperty]
+    private string _storageConnectionStateText = string.Empty;
+
     private void UpdateConnectionStatus()
     {
         var state = _connectionMonitor.State;
@@ -93,6 +109,12 @@ public partial class MainWindowViewModel : ObservableObject
             ConnectionHealth.Degraded => Localization.Resources.StatusBar_Connection_Reconnecting,
             ConnectionHealth.Lost => Localization.Resources.StatusBar_Connection_Lost,
             _ => string.Empty,
+        };
+        StorageConnectionStateText = state switch
+        {
+            ConnectionHealth.Degraded => Localization.Resources.StatusBar_Connection_Reconnecting,
+            ConnectionHealth.Lost => Localization.Resources.StatusBar_Connection_Lost,
+            _ => Localization.Resources.StatusBar_Storage_State_Connected,
         };
     }
 
@@ -136,48 +158,57 @@ public partial class MainWindowViewModel : ObservableObject
         OnPropertyChanged(nameof(DetailPanelToggleChevron));
     }
 
-    private static readonly OpenWindowEntry NoWindowsSentinel =
-        new("(No open windows)", new RelayCommand(() => { }, () => false));
+    // Disabled placeholder shown when no secondary windows are open; instance-level so its localized
+    // label reflects the culture active when the window is built.
+    private readonly OpenWindowEntry _noWindowsSentinel =
+        new(Localization.Resources.Menu_Window_NoOpenWindows, new RelayCommand(() => { }, () => false));
 
     private static readonly OpenWindowEntry _categorySeparator = OpenWindowEntry.CreateSeparator();
 
     /// <summary>
-    /// The list of currently open secondary windows shown in the _Window menu.
-    /// WindowService calls AddOpenWindow/RemoveOpenWindow to keep this up to date.
-    /// The sentinel entry is shown when no secondary windows are open.
+    /// The currently open secondary windows shown in the _Window menu, grouped BookEdit-then-Utility with a
+    /// single separator between the groups. WindowService calls AddOpenWindow/RemoveOpenWindow to keep this
+    /// up to date; the sentinel entry is shown when no secondary windows are open.
     /// </summary>
-    public ObservableCollection<OpenWindowEntry> OpenWindowEntries { get; }
-        = [NoWindowsSentinel];
+    public ObservableCollection<OpenWindowEntry> OpenWindowEntries { get; } = [];
 
     public void AddOpenWindow(OpenWindowEntry entry)
     {
-        OpenWindowEntries.Remove(NoWindowsSentinel);
-
-        if (entry.Category == WindowCategory.Utility)
-        {
-            bool hasBookEdit = OpenWindowEntries.Any(e => !e.IsSeparator && e.Category == WindowCategory.BookEdit);
-            bool hasSeparator = OpenWindowEntries.Contains(_categorySeparator);
-            if (hasBookEdit && !hasSeparator)
-                OpenWindowEntries.Add(_categorySeparator);
-        }
-
-        OpenWindowEntries.Add(entry);
+        var windows = LiveWindowEntries();
+        windows.Add(entry);
+        RebuildWindowMenu(windows);
     }
 
     public void RemoveOpenWindow(OpenWindowEntry entry)
     {
-        OpenWindowEntries.Remove(entry);
+        var windows = LiveWindowEntries();
+        windows.Remove(entry);
+        RebuildWindowMenu(windows);
+    }
 
-        bool hasBookEdit = OpenWindowEntries.Any(e => !e.IsSeparator && e.Category == WindowCategory.BookEdit);
-        bool hasUtility  = OpenWindowEntries.Any(e => !e.IsSeparator && e.Category == WindowCategory.Utility);
-        if (!hasBookEdit || !hasUtility)
-            OpenWindowEntries.Remove(_categorySeparator);
+    // The real window entries currently listed, in order, without the sentinel/separator chrome.
+    private List<OpenWindowEntry> LiveWindowEntries() =>
+        OpenWindowEntries.Where(e => !e.IsSeparator && !ReferenceEquals(e, _noWindowsSentinel)).ToList();
 
-        if (!OpenWindowEntries.Any(e => !e.IsSeparator))
+    // Rebuilds the menu so BookEdit windows always precede Utility windows with a single separator between
+    // the two groups, independent of the order windows opened and closed in. Within-group order is preserved.
+    private void RebuildWindowMenu(List<OpenWindowEntry> windows)
+    {
+        OpenWindowEntries.Clear();
+        if (windows.Count == 0)
         {
-            OpenWindowEntries.Clear();
-            OpenWindowEntries.Add(NoWindowsSentinel);
+            OpenWindowEntries.Add(_noWindowsSentinel);
+            return;
         }
+
+        var bookEdit = windows.Where(e => e.Category == WindowCategory.BookEdit).ToList();
+        var utility = windows.Where(e => e.Category == WindowCategory.Utility).ToList();
+        foreach (var e in bookEdit)
+            OpenWindowEntries.Add(e);
+        if (bookEdit.Count > 0 && utility.Count > 0)
+            OpenWindowEntries.Add(_categorySeparator);
+        foreach (var e in utility)
+            OpenWindowEntries.Add(e);
     }
 
     public MainWindowViewModel(
@@ -200,8 +231,10 @@ public partial class MainWindowViewModel : ObservableObject
         IBootstrapConfigService bootstrapConfig,
         AppSettings appSettings,
         IMigrationTargetBuilder targetBuilder,
-        ISecretStore secretStore)
+        ISecretStore secretStore,
+        IReleaseNotesService releaseNotesService)
     {
+        OpenWindowEntries.Add(_noWindowsSentinel);
         FilterPanel = filterPanel;
         BookList = bookList;
         BookDetail = bookDetail;
@@ -221,6 +254,35 @@ public partial class MainWindowViewModel : ObservableObject
         _appSettings = appSettings;
         _targetBuilder = targetBuilder;
         _secretStore = secretStore;
+        _releaseNotesService = releaseNotesService;
+
+        IsRemoteStorage = _appSettings.Backend.IsRemote();
+        // Load() never returns null in production; substituted test doubles may, so fall back to defaults.
+        var storageConfig = _bootstrapConfig.Load() ?? new BootstrapConfig();
+        switch (_appSettings.Backend)
+        {
+            case DatabaseBackend.PostgreSql:
+                StorageBackendName = Localization.Resources.Settings_Database_Backend_Postgres;
+                StorageLocationLabel = Localization.Resources.StatusBar_Storage_Host_Label;
+                StorageLocationValue = $"{storageConfig.Postgres.Host}:{storageConfig.Postgres.Port}";
+                StorageDatabaseName = storageConfig.Postgres.Database;
+                StorageUserName = storageConfig.Postgres.Username;
+                break;
+            case DatabaseBackend.MySql:
+                StorageBackendName = Localization.Resources.Settings_Database_Backend_MySql;
+                StorageLocationLabel = Localization.Resources.StatusBar_Storage_Host_Label;
+                StorageLocationValue = $"{storageConfig.MySql.Host}:{storageConfig.MySql.Port}";
+                StorageDatabaseName = storageConfig.MySql.Database;
+                StorageUserName = storageConfig.MySql.Username;
+                break;
+            default:
+                StorageBackendName = Localization.Resources.Settings_Database_Backend_Sqlite;
+                StorageLocationLabel = Localization.Resources.StatusBar_Storage_File_Label;
+                StorageLocationValue = _appSettings.SqliteLibraryPath ?? string.Empty;
+                break;
+        }
+        UpdateConnectionStatus();
+
         _connectionMonitor.StateChanged += (_, _) => Dispatcher.UIThread.Post(UpdateConnectionStatus);
         _connectionMonitor.Reconnected += (_, _) => Dispatcher.UIThread.Post(() => _ = BookList.LoadBooksAsync());
         _connectionMonitor.Escalated += (_, _) => Dispatcher.UIThread.Post(() => _ = HandleConnectionEscalationAsync());
@@ -367,11 +429,46 @@ public partial class MainWindowViewModel : ObservableObject
     {
         try
         {
-            await AppDialogs.ShowAboutDialogAsync();
+            await _windowService.ShowAboutAsync();
         }
         catch (Exception ex)
         {
             Log.Error(ex, "Failed to show About dialog");
+        }
+    }
+
+    /// <summary>
+    /// First main-window open after an update: offers the "what's new" notes once per version.
+    /// Yes and Skip both record the version as seen; Esc/X/Cancel defers to the next start. A fresh
+    /// install seeds the version silently, and a version without notes never prompts.
+    /// </summary>
+    [RelayCommand]
+    private async Task OfferReleaseNotesAsync()
+    {
+        try
+        {
+            var current = _releaseNotesService.CurrentVersion;
+            var lastSeen = await _settingsService.GetAsync(LastSeenReleaseNotesVersionKey);
+            if (lastSeen == current) return;
+            if (string.IsNullOrEmpty(lastSeen))
+            {
+                await _settingsService.SetAsync(LastSeenReleaseNotesVersionKey, current);
+                return;
+            }
+
+            var notes = _releaseNotesService.GetNotes(current);
+            if (notes is null) return;
+
+            var choice = await _windowService.ShowReleaseNotesPromptAsync(current);
+            if (choice == ReleaseNotesChoice.Defer) return;
+
+            await _settingsService.SetAsync(LastSeenReleaseNotesVersionKey, current);
+            if (choice == ReleaseNotesChoice.Show)
+                await _windowService.ShowReleaseNotesAsync(current, notes);
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Failed to offer release notes");
         }
     }
 
@@ -391,7 +488,7 @@ public partial class MainWindowViewModel : ObservableObject
                 string.Format(Localization.Resources.RecatalogAll_Confirm, allBooks.Count));
             if (confirmed != true) return;
 
-            await _windowService.StartBatchRecatalogAsync(allBooks);
+            await BookList.RecatalogAllAsync();
         }
         catch (Exception ex)
         {
@@ -495,14 +592,14 @@ public partial class MainWindowViewModel : ObservableObject
                 Localization.Resources.Backup_Header_CsvArchive,
                 "Backup (CSV Archive)",
                 _backupService.GetCandidateCsvArchivePath,
-                (f, progress, fileName) => _backupService.BackupCsvArchiveAsync(f, progress: progress, explicitFileName: fileName));
+                (f, progress, fileName) => _backupService.BackupCsvArchiveAsync(f, progress: BackupProgressLocalizer.Localizing(progress), explicitFileName: fileName));
         else
             await BackupCoreAsync(
                 folder,
                 Localization.Resources.Backup_Header_Sqlite,
                 "Backup (SQLite)",
                 _backupService.GetCandidateSqlitePath,
-                (f, progress, fileName) => _backupService.BackupSqliteAsync(f, progress: progress, explicitFileName: fileName));
+                (f, progress, fileName) => _backupService.BackupSqliteAsync(f, progress: BackupProgressLocalizer.Localizing(progress), explicitFileName: fileName));
     }
 
     private async Task BackupCoreAsync(
@@ -518,28 +615,28 @@ public partial class MainWindowViewModel : ObservableObject
             string? explicitFileName = null;
             if (File.Exists(candidatePath))
             {
-                var choice = await AppDialogs.ShowBackupConflictDialogAsync(candidatePath, getCandidatePath);
-                if (choice == AppDialogs.BackupConflictChoice.Cancel) return;
-                if (choice == AppDialogs.BackupConflictChoice.Overwrite)
+                var choice = await _windowService.ShowBackupConflictAsync(candidatePath);
+                if (choice == BackupConflictChoice.Cancel) return;
+                if (choice == BackupConflictChoice.Overwrite)
                     explicitFileName = Path.GetFileName(candidatePath);
             }
 
-            var (progressWindow, progress) = AppDialogs.ShowProgressWindow(progressLabel);
+            var progress = _windowService.ShowProgressWindow(progressLabel);
             string writtenPath;
             // Run off the UI thread so the progress window can paint: the SQLite backup does its WAL-flush /
             // file-copy / zip synchronously, which would otherwise block the UI thread and leave the just-shown
             // window unpainted (transparent) until it closes. Progress reports marshal back via Progress<T>.
             try { writtenPath = await Task.Run(() => performBackup(folder, progress, explicitFileName)); }
-            finally { progressWindow.Close(); }
+            finally { progress.Close(); }
 
-            AppDialogs.ShowInfoDialog(string.Format(Localization.Resources.Backup_Saved, Path.GetFileName(writtenPath)));
+            _ = _windowService.ShowInfoAsync(string.Format(Localization.Resources.Backup_Saved, Path.GetFileName(writtenPath)));
         }
         catch (Exception ex)
         {
             Log.Error(ex, "{Context} failed", logContext);
             // A connection loss is surfaced on the status indicator; otherwise show the backup-failed dialog.
             if (!ReportIfConnectionLoss(ex))
-                AppDialogs.ShowInfoDialog(string.Format(Localization.Resources.Backup_Failed, ex.Message));
+                _ = _windowService.ShowInfoAsync(string.Format(Localization.Resources.Backup_Failed, ex.Message));
         }
     }
 
@@ -555,12 +652,12 @@ public partial class MainWindowViewModel : ObservableObject
             var kind = RestoreArchiveInspector.Detect(backupZipPath);
             if (kind == RestoreArchiveKind.Unknown)
             {
-                AppDialogs.ShowInfoDialog(Localization.Resources.Restore_UnknownFormat);
+                _ = _windowService.ShowInfoAsync(Localization.Resources.Restore_UnknownFormat);
                 return;
             }
 
             // Safety backup is mandatory — cannot be skipped.
-            var safetyConfirmed = await AppDialogs.ShowConfirmDialogAsync(
+            var safetyConfirmed = await _windowService.ShowConfirmAsync(
                 Localization.Resources.Restore_Confirm_Title,
                 Localization.Resources.Restore_Confirm_Body);
             if (safetyConfirmed != true)
@@ -578,7 +675,7 @@ public partial class MainWindowViewModel : ObservableObject
         catch (Exception ex)
         {
             Log.Error(ex, "Restore failed");
-            AppDialogs.ShowInfoDialog(string.Format(Localization.Resources.Restore_Failed, ex.Message));
+            _ = _windowService.ShowInfoAsync(string.Format(Localization.Resources.Restore_Failed, ex.Message));
         }
     }
 
@@ -587,22 +684,22 @@ public partial class MainWindowViewModel : ObservableObject
     {
         if (_appSettings.Backend != DatabaseBackend.Sqlite)
         {
-            AppDialogs.ShowInfoDialog(Localization.Resources.Restore_SqliteIntoRemote);
+            _ = _windowService.ShowInfoAsync(Localization.Resources.Restore_SqliteIntoRemote);
             return;
         }
 
-        var restoreConfirmed = await AppDialogs.ShowConfirmDialogAsync(
+        var restoreConfirmed = await _windowService.ShowConfirmAsync(
             Localization.Resources.Restore_Replace_Title,
             Localization.Resources.Restore_Replace_Body);
         if (restoreConfirmed != true)
             return;
 
         var safetyPath = Path.Combine(safetyFolder, "safety-backup.zip");
-        var (progressWindow, progress) = AppDialogs.ShowProgressWindow(Localization.Resources.Restore_Header);
-        try { await _backupService.RestoreAsync(backupZipPath, safetyPath, progress: progress); }
-        finally { progressWindow.Close(); }
+        var progress = _windowService.ShowProgressWindow(Localization.Resources.Restore_Header);
+        try { await _backupService.RestoreAsync(backupZipPath, safetyPath, progress: BackupProgressLocalizer.Localizing(progress)); }
+        finally { progress.Close(); }
 
-        await AppDialogs.ShowConfirmDialogAsync(Localization.Resources.Restore_Complete_Title, Localization.Resources.Restore_Complete_Body);
+        await _windowService.ShowConfirmAsync(Localization.Resources.Restore_Complete_Title, Localization.Resources.Restore_Complete_Body);
         _restartService.Restart();
     }
 
@@ -615,15 +712,15 @@ public partial class MainWindowViewModel : ObservableObject
         IMigrationTarget? directTarget = null;
         if (DescribeArchivedRemoteTarget(archivedConfig) is { } archivedTarget)
         {
-            var choice = await AppDialogs.ShowRestoreTargetDialogAsync(archivedTarget.Description);
-            if (choice == AppDialogs.RestoreTargetChoice.Cancel)
+            var choice = await _windowService.ShowRestoreTargetAsync(archivedTarget.Description);
+            if (choice == RestoreTargetChoice.Cancel)
                 return;
-            if (choice == AppDialogs.RestoreTargetChoice.Archived)
+            if (choice == RestoreTargetChoice.Archived)
             {
                 var password = _secretStore.Get(archivedTarget.AccountKey);
                 if (string.IsNullOrEmpty(password))
                 {
-                    AppDialogs.ShowInfoDialog(Localization.Resources.Restore_NoCredentialsForTarget);
+                    _ = _windowService.ShowInfoAsync(Localization.Resources.Restore_NoCredentialsForTarget);
                     return;
                 }
                 directTarget = await _targetBuilder.BuildAsync(
@@ -635,12 +732,12 @@ public partial class MainWindowViewModel : ObservableObject
         {
             // A restore replaces the current library (the archive's preserved keys can't merge onto existing
             // rows); combining libraries is the Import feature's job.
-            var confirmReplace = await AppDialogs.ShowConfirmDialogAsync(
+            var confirmReplace = await _windowService.ShowConfirmAsync(
                 Localization.Resources.Restore_Replace_Title, Localization.Resources.Restore_Replace_Body);
             if (confirmReplace != true)
                 return;
 
-            var (progressWindow, progress) = AppDialogs.ShowProgressWindow(Localization.Resources.Restore_Header);
+            var progress = _windowService.ShowProgressWindow(Localization.Resources.Restore_Header);
             RestoreResult result;
             try
             {
@@ -650,11 +747,11 @@ public partial class MainWindowViewModel : ObservableObject
                 result = await _csvRestore.RestoreAsync(
                     backupZipPath, safetyFolder, progress: migrationProgress, target: target);
             }
-            finally { progressWindow.Close(); }
+            finally { progress.Close(); }
 
             if (result.Data.Outcome != MigrationOutcome.Completed)
             {
-                AppDialogs.ShowInfoDialog(string.Format(Localization.Resources.Restore_Failed, result.Data.ErrorMessage ?? string.Empty));
+                _ = _windowService.ShowInfoAsync(string.Format(Localization.Resources.Restore_Failed, result.Data.ErrorMessage ?? string.Empty));
                 return;
             }
 
@@ -662,7 +759,7 @@ public partial class MainWindowViewModel : ObservableObject
             if (directTarget is not null)
             {
                 // The data was restored into the archived server — make it the active database and restart.
-                await AppDialogs.ShowConfirmDialogAsync(
+                await _windowService.ShowConfirmAsync(
                     Localization.Resources.Restore_Complete_Title, Localization.Resources.Restore_Complete_Body);
                 confirm.ApplyCommand.Execute(null);
                 return;
@@ -671,7 +768,7 @@ public partial class MainWindowViewModel : ObservableObject
             // Active-backend restore: apply preference keys, and offer (never auto-apply) the archive's backend.
             if (archivedConfig is not null && confirm.HasBackendChange)
             {
-                var adopt = await AppDialogs.ShowConfirmDialogAsync(
+                var adopt = await _windowService.ShowConfirmAsync(
                     Localization.Resources.Restore_AdoptBackend_Title,
                     string.Format(Localization.Resources.Restore_AdoptBackend_Body, confirm.ArchivedBackendName));
                 if (adopt == true)
@@ -683,7 +780,7 @@ public partial class MainWindowViewModel : ObservableObject
             {
                 // No backend change: still restart to load the restored data, but tell the user first
                 // instead of restarting silently.
-                await AppDialogs.ShowConfirmDialogAsync(
+                await _windowService.ShowConfirmAsync(
                     Localization.Resources.Restore_Complete_Title, Localization.Resources.Restore_Complete_Body);
                 confirm.KeepCurrentCommand.Execute(null);
             }
@@ -763,7 +860,7 @@ public partial class MainWindowViewModel : ObservableObject
             if (string.IsNullOrEmpty(outputPath))
                 return;
 
-            var (progressWindow, progress) = AppDialogs.ShowProgressWindow(Localization.Resources.Export_Header);
+            var progress = _windowService.ShowProgressWindow(Localization.Resources.Export_Header);
             try
             {
                 await _csvExportService.ExportAsync(new BookDB.Logic.Services.CsvExportParameters(
@@ -774,9 +871,9 @@ public partial class MainWindowViewModel : ObservableObject
                     FacetFilters: BookList.ActiveFacetFilters,
                     SortColumn: BookList.SortColumn,
                     SortAscending: BookList.SortAscending),
-                    progress: progress);
+                    progress: CsvExportProgressLocalizer.Localizing(progress));
             }
-            finally { progressWindow.Close(); }
+            finally { progress.Close(); }
         }
         catch (Exception ex)
         {
@@ -807,23 +904,40 @@ public partial class MainWindowViewModel : ObservableObject
         {
             Log.Error(ex, "Print list failed");
             if (!ReportIfConnectionLoss(ex))
-                AppDialogs.ShowInfoDialog(string.Format(Localization.Resources.PrintList_Failed, ex.Message));
+                _ = _windowService.ShowInfoAsync(string.Format(Localization.Resources.PrintList_Failed, ex.Message));
         }
     }
 
     [RelayCommand]
     private void Exit()
     {
+        // TryShutdown (not Shutdown) so the main window's close guard can veto — a forced
+        // shutdown would silently drop unsaved edits.
         if (Avalonia.Application.Current?.ApplicationLifetime is Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime desktop)
-            desktop.Shutdown();
+            desktop.TryShutdown();
     }
 
+    /// <summary>
+    /// The aggregate shutdown confirmation: batch warning, then the inline editor's
+    /// unsaved-changes prompt, then every guarded secondary window's own confirmation.
+    /// Returns false if any guard refuses. On true, all secondary windows are already
+    /// closed — the caller only has to complete the main window's close.
+    /// </summary>
     public async Task<bool> ConfirmShutdownAsync()
     {
-        if (!IsBatchQueueRunning) return true;
+        if (IsBatchQueueRunning)
+        {
+            var result = await _windowService.ShowMainShutdownWarningAsync();
+            if (result != true) return false;
+        }
 
-        var result = await _windowService.ShowMainShutdownWarningAsync();
-        return result == true;
+        if (!await BookDetail.TryNavigateAwayAsync()) return false;
+        if (!await _windowService.ConfirmCloseGuardedWindowsAsync()) return false;
+
+        // Close the satellites before the main close completes: the app exits with the main
+        // window (ShutdownMode.OnMainWindowClose), so anything still open would be torn down.
+        _windowService.CloseAllSecondaryWindows();
+        return true;
     }
 
     public async Task PersistSettingsAsync(CancellationToken ct = default)

@@ -1,16 +1,24 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Headless;
+using Avalonia.Input;
 using Avalonia.VisualTree;
 using BookDB.Data.Interfaces;
 using BookDB.Desktop.Localization;
 using BookDB.Desktop.ViewModels;
 using BookDB.Desktop.Views;
 using BookDB.Logic.Services;
+using BookDB.Models;
+using BookDB.Models.Interfaces;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace BookDB.Desktop.UITests;
@@ -76,6 +84,74 @@ public class PrintDialogFlowTests : HeadlessTest
                 t => t.IsEffectivelyVisible && t.Text == string.Format(Resources.Print_ScopeSummary_Multiple, 2));
             dialog.Close();
         });
+    }
+
+    [Fact]
+    public async Task Generating_ShowsLocalizedStatus_AndGatesBothOutputButtons()
+    {
+        var ct = TestContext.Current.CancellationToken;
+
+        await RunUi(async () =>
+        {
+            // The fake blocks mid-generation after reporting its first step, so the in-flight dialog state is
+            // observable; RunContinuationsAsynchronously keeps SetResult from running the command continuation
+            // inline under the gate.
+            var gate = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+            using var host = TestHost.Create(services =>
+            {
+                services.AddSingleton<IPrintService>(new GateablePrintService(gate));
+                services.AddSingleton<IFilePickerService>(new FixedSaveFilePicker(
+                    Path.Combine(Path.GetTempPath(), "bookdb-print-status-test.pdf")));
+            });
+            var (vm, dialog) = await OpenAsync(host, bookCount: 2, ct);
+
+            var run = vm.SaveAsPdfCommand.ExecuteAsync(null);
+            Ui.Pump();
+
+            // The status line actually renders the localized step, and both output commands are gated meanwhile.
+            Assert.Contains(dialog.Descendants<TextBlock>(),
+                t => t.IsEffectivelyVisible && t.Text == Resources.Print_Status_Querying);
+            Assert.False(dialog.ButtonFor(vm.PreviewCommand).IsEffectivelyEnabled);
+            Assert.False(dialog.ButtonFor(vm.SaveAsPdfCommand).IsEffectivelyEnabled);
+
+            gate.SetResult();
+            await run;
+            Ui.Pump();
+
+            // Generation over: status line gone, output commands live again.
+            Assert.DoesNotContain(dialog.Descendants<TextBlock>(),
+                t => t.IsEffectivelyVisible && t.Text == Resources.Print_Status_Querying);
+            Assert.True(dialog.ButtonFor(vm.PreviewCommand).IsEffectivelyEnabled);
+            Assert.True(dialog.ButtonFor(vm.SaveAsPdfCommand).IsEffectivelyEnabled);
+            dialog.Close();
+        });
+    }
+
+    private sealed class GateablePrintService : IPrintService
+    {
+        private readonly TaskCompletionSource _gate;
+        public GateablePrintService(TaskCompletionSource gate) => _gate = gate;
+        public IReadOnlyList<string> AllColumnNames { get; } = ["Title"];
+        public IReadOnlyList<string> DefaultColumnNames { get; } = ["Title"];
+        public void InitializeLicense() { }
+
+        public async Task GenerateAsync(
+            PrintParameters parameters,
+            CancellationToken ct = default,
+            IProgress<ProgressUpdate<PrintProgressStep>>? progress = null)
+        {
+            progress?.Report(new ProgressUpdate<PrintProgressStep>(PrintProgressStep.Querying));
+            await _gate.Task;
+        }
+    }
+
+    private sealed class FixedSaveFilePicker : IFilePickerService
+    {
+        private readonly string _path;
+        public FixedSaveFilePicker(string path) => _path = path;
+        public Task<string?> PickFileAsync(string title, IReadOnlyList<string> extensions) => Task.FromResult<string?>(null);
+        public Task<string?> PickFolderAsync(string title) => Task.FromResult<string?>(null);
+        public Task<string?> SaveFileAsync(string title, string suggestedName, IReadOnlyList<string> extensions) => Task.FromResult<string?>(_path);
     }
 
     [Fact]
@@ -178,6 +254,77 @@ public class PrintDialogFlowTests : HeadlessTest
             Assert.DoesNotContain(vm.Presets, p => p.Name == "Wide List 2");
             Assert.Equal(PrintPreset.StandardPresetName, vm.SelectedPreset!.Name);
             Assert.DoesNotContain("Wide List 2", await PersistedPresetNames(host, ct));
+            dialog.Close();
+        });
+    }
+
+    [Fact]
+    public async Task Esc_RoutesToWhicheverCancelButtonIsVisible()
+    {
+        var ct = TestContext.Current.CancellationToken;
+
+        await RunUi(async () =>
+        {
+            using var host = TestHost.Create();
+            var (vm, dialog) = await OpenAsync(host, bookCount: 0, ct);
+
+            // Naming row open: Esc cancels the naming round, not the whole dialog.
+            await Ui.ClickAsync(dialog.ButtonFor(vm.NewPresetCommand));
+            dialog.TypeInto(NamingBox(dialog, vm), "Escaped Preset");
+            dialog.Press(PhysicalKey.Escape);
+            Assert.False(vm.IsNamingMode);
+            Assert.DoesNotContain(vm.Presets, p => p.Name == "Escaped Preset");
+
+            // A non-Standard preset so DeletePresetCommand — and its confirm row — is reachable.
+            await Ui.ClickAsync(dialog.ButtonFor(vm.NewPresetCommand));
+            dialog.TypeInto(NamingBox(dialog, vm), "Deletable");
+            await Ui.ClickAsync(dialog.ButtonFor(vm.ConfirmPresetNameCommand));
+
+            // Delete-confirm row open: Esc cancels the confirmation, the preset survives.
+            await Ui.ClickAsync(dialog.ButtonFor(vm.DeletePresetCommand));
+            dialog.Press(PhysicalKey.Escape);
+            Assert.False(vm.IsDeleteConfirmMode);
+            Assert.Contains(vm.Presets, p => p.Name == "Deletable");
+
+            // Neither row open: Esc reaches the main Cancel and closes the whole dialog with no result.
+            PrintParameters? result = null;
+            var closed = false;
+            vm.CloseDialog = r => { result = r; closed = true; dialog.Close(); };
+            dialog.Press(PhysicalKey.Escape);
+            Assert.True(closed);
+            Assert.Null(result);
+        });
+    }
+
+    [Fact]
+    public async Task EnterDefault_StaysDroppedWhileAPresetRowIsOpen()
+    {
+        var ct = TestContext.Current.CancellationToken;
+
+        await RunUi(async () =>
+        {
+            using var host = TestHost.Create();
+            var (vm, dialog) = await OpenAsync(host, bookCount: 2, ct);
+            var closed = false;
+            vm.CloseDialog = _ => closed = true;
+
+            // Naming row open: Preview isn't the default button here, so Enter is a no-op.
+            await Ui.ClickAsync(dialog.ButtonFor(vm.NewPresetCommand));
+            dialog.Press(PhysicalKey.Enter);
+            Assert.False(closed);
+            Assert.True(vm.IsNamingMode);
+            await Ui.ClickAsync(dialog.ButtonFor(vm.CancelPresetNameCommand));
+
+            // A non-Standard preset so the delete-confirm row can open.
+            await Ui.ClickAsync(dialog.ButtonFor(vm.NewPresetCommand));
+            dialog.TypeInto(NamingBox(dialog, vm), "Deletable");
+            await Ui.ClickAsync(dialog.ButtonFor(vm.ConfirmPresetNameCommand));
+
+            // Delete-confirm row open: same gating — Enter still doesn't fall through to Preview.
+            await Ui.ClickAsync(dialog.ButtonFor(vm.DeletePresetCommand));
+            dialog.Press(PhysicalKey.Enter);
+            Assert.False(closed);
+            Assert.True(vm.IsDeleteConfirmMode);
             dialog.Close();
         });
     }

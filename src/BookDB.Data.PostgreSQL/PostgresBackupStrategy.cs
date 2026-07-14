@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using BookDB.Data.Interfaces;
+using BookDB.Models;
 
 namespace BookDB.Data.PostgreSQL;
 
@@ -16,7 +17,8 @@ public sealed class PostgresBackupStrategy : IBackupStrategy
     public bool SupportsFileBackup => false;
 
     public Task<string> BackupAsync(
-        string destFolder, CancellationToken ct, string? explicitFileName = null, IProgress<string>? progress = null) =>
+        string destFolder, CancellationToken ct, string? explicitFileName = null,
+        IProgress<ProgressUpdate<BackupProgressStep>>? progress = null) =>
         throw new NotSupportedException(
             "A remote PostgreSQL backend has no file-format backup; use the CSV archive (SupportsFileBackup is false).");
 }

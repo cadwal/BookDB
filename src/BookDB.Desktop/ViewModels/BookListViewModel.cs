@@ -38,6 +38,7 @@ public partial class BookListViewModel :
     private readonly ISettingsService _settingsService;
     private readonly ILookupService _lookupService;
     private readonly IClipboardService _clipboardService;
+    private readonly IRecatalogFlowService _recatalogFlow;
     private readonly ILoanService _loanService;
     private readonly IConnectionHealthMonitor _connectionMonitor;
     private readonly IConnectionFailureClassifier _connectionClassifier;
@@ -192,9 +193,11 @@ public partial class BookListViewModel :
         IClipboardService clipboardService,
         ILoanService loanService,
         IConnectionHealthMonitor connectionMonitor,
-        IConnectionFailureClassifier connectionClassifier)
+        IConnectionFailureClassifier connectionClassifier,
+        IRecatalogFlowService recatalogFlow)
         : base(messenger)
     {
+        _recatalogFlow = recatalogFlow;
         _bookService = bookService;
         _bookSearchService = bookSearchService;
         _bookImageService = bookImageService;
@@ -423,22 +426,27 @@ public partial class BookListViewModel :
     }
 
     [RelayCommand(CanExecute = nameof(CanRecatalogSelected))]
-    private async Task RecatalogSelectedAsync()
+    private Task RecatalogSelectedAsync() => RecatalogBooksAsync(SelectedBooks.ToList());
+
+    private bool CanRecatalogSelected() => SelectedBooks.Count >= 1;
+
+    /// <summary>Re-catalogs every loaded book; the caller confirms first (this can queue a lot).</summary>
+    public Task RecatalogAllAsync() => RecatalogBooksAsync(Books.ToList());
+
+    private async Task RecatalogBooksAsync(IReadOnlyList<BookRowViewModel> books)
     {
-        var selectedIds = SelectedBooks.Select(b => b.BookId).ToList();
-        if (selectedIds.Count == 0) return;
+        if (books.Count == 0) return;
 
         try
         {
-            await _windowService.StartBatchRecatalogAsync(selectedIds);
+            await _recatalogFlow.RecatalogAsync(
+                books.Select(b => new RecatalogCandidate(b.BookId, b.Title, b.Isbn)).ToList());
         }
         catch (Exception ex)
         {
-            Log.Error(ex, "Failed to start re-catalog for selected books");
+            Log.Error(ex, "Failed to start re-catalog");
         }
     }
-
-    private bool CanRecatalogSelected() => SelectedBooks.Count >= 1;
 
     [RelayCommand(CanExecute = nameof(CanMoveToCollection))]
     private async Task MoveToCollectionAsync(int collectionId)

@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/semver-spec
 
 ## [Unreleased]
 
+## [2.3.0] - 2026-07-14
+
+### Added
+- **What's new on update.** After installing a new version, BookDB offers to show what changed in a scrollable release-notes window — you can open it, skip it, or dismiss it, and the offer appears only once per version.
+- **Library location indicator.** The status bar now shows at a glance whether your library is a local file or on a database server; hovering it reveals the backend, the file path or host, database, user, and connection state — never your password.
+
+### Changed
+- **Consistent keyboard behaviour across dialogs.** Enter confirms the default action and Esc cancels, uniformly in every dialog, and the Catalog by ISBN prompt now looks up the ISBN when you press Enter. Tab order was corrected throughout: radio-button groups are a single Tab stop, read-only log boxes no longer trap Tab, and Tab no longer gets stuck oscillating between two controls in the tabbed windows (Settings, Maintenance, Manage lookups).
+- **Re-cataloging a book without an ISBN.** BookDB now prompts you for the ISBN and offers to save it on the book, and bulk Re-catalog (selected or all) no longer silently skips books that have no ISBN — it prompts for each one.
+
+### Fixed
+- Closing the main window, or choosing File → Exit, with unsaved book edits — in the detail pane or in a book's own window — now prompts you to save them instead of discarding them silently.
+- A few progress messages shown during CSV export and printing appeared in English ("Querying books…") regardless of the chosen language; they are now translated everywhere.
+- Dutch texts now use the informal "je" form consistently; some strings and help topics had still used the formal "u".
+- On Linux, BookDB no longer crashes or floods the log with errors from the desktop secret-store (D-Bus) connection when you quit.
+- On Linux, when the credential helper reports no usable secret store, BookDB now falls back to the SecretService keyring, so passwords for a server database can still be saved.
+
 ## [2.2.0] - 2026-07-07
 
 ### Added
@@ -98,7 +115,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/semver-spec
 - Multi-language UI: EN, SV, DE, ES, FR, NL, IT, PT-BR, PT-PT
 - Help system with per-screen contextual help
 
-[Unreleased]: https://github.com/cadwal/BookDB/compare/v2.2.0...HEAD
+[Unreleased]: https://github.com/cadwal/BookDB/compare/v2.3.0...HEAD
 [2.1.0]: https://github.com/cadwal/BookDB/releases/tag/v2.1.0
 [1.1.0]: https://github.com/cadwal/BookDB/releases/tag/v1.1.0
 [1.0.0]: https://github.com/cadwal/BookDB/releases/tag/v1.0.0
@@ -106,3 +123,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/semver-spec
 [1.2.1]: https://github.com/cadwal/BookDB/releases/tag/v1.2.1
 [2.0.0]: https://github.com/cadwal/BookDB/releases/tag/v2.0.0
 [2.2.0]: https://github.com/cadwal/BookDB/releases/tag/v2.2.0
+[2.3.0]: https://github.com/cadwal/BookDB/releases/tag/v2.3.0

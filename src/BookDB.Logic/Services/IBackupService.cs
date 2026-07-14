@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using BookDB.Models;
 
 namespace BookDB.Logic.Services;
 
@@ -8,15 +9,15 @@ public interface IBackupService
 {
     // Returns the path of the zip file written.
     // explicitFileName: if provided, uses that name exactly (enables overwrite); if null, auto-generates and auto-suffixes on conflict.
-    Task<string> BackupSqliteAsync(string destFolder, CancellationToken ct = default, string? explicitFileName = null, IProgress<string>? progress = null);
-    Task<string> BackupCsvArchiveAsync(string destFolder, CancellationToken ct = default, string? explicitFileName = null, IProgress<string>? progress = null);
+    Task<string> BackupSqliteAsync(string destFolder, CancellationToken ct = default, string? explicitFileName = null, IProgress<ProgressUpdate<BackupProgressStep>>? progress = null);
+    Task<string> BackupCsvArchiveAsync(string destFolder, CancellationToken ct = default, string? explicitFileName = null, IProgress<ProgressUpdate<BackupProgressStep>>? progress = null);
 
     /// <summary>True when the active backend supports a file-format (SQLite) backup; false for remote backends,
     /// where only the engine-neutral CSV archive is available. Callers that take their own safety backup must
     /// pick the CSV archive when this is false.</summary>
     bool SupportsFileBackup { get; }
-    Task RestoreAsync(string backupZipPath, string safetyBackupPath, CancellationToken ct = default, IProgress<string>? progress = null);
-    Task AutoBackupIfEnabledAsync(CancellationToken ct = default, IProgress<string>? progress = null);
+    Task RestoreAsync(string backupZipPath, string safetyBackupPath, CancellationToken ct = default, IProgress<ProgressUpdate<BackupProgressStep>>? progress = null);
+    Task AutoBackupIfEnabledAsync(CancellationToken ct = default, IProgress<ProgressUpdate<BackupProgressStep>>? progress = null);
 
     /// <summary>
     /// True when auto-backup is configured (the feature is enabled and a destination folder is set),

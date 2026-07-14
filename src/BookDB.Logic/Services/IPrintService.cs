@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using BookDB.Models;
 
 namespace BookDB.Logic.Services;
 
@@ -38,6 +39,12 @@ public sealed record PrintPreset(
         FooterText: string.Empty);
 }
 
+/// <summary>
+/// <paramref name="ColumnHeaderLabels"/> and <paramref name="PageNumberFormat"/> carry the localized header
+/// labels (column key → label) and footer page-number format ("Page {0} of {1}" shape) into the PDF, so the
+/// Logic layer renders localized content without a localization dependency; an absent label falls back to the
+/// column key, an absent format to English.
+/// </summary>
 public sealed record PrintParameters(
     string OutputPath,
     IReadOnlySet<int>? CollectionIds,
@@ -45,12 +52,14 @@ public sealed record PrintParameters(
     Dictionary<string, HashSet<int>>? FacetFilters,
     string? SortColumn,
     bool SortAscending,
-    PrintPreset Preset);
+    PrintPreset Preset,
+    IReadOnlyDictionary<string, string>? ColumnHeaderLabels = null,
+    string? PageNumberFormat = null);
 
 public interface IPrintService
 {
     IReadOnlyList<string> AllColumnNames { get; }
     IReadOnlyList<string> DefaultColumnNames { get; }
-    Task GenerateAsync(PrintParameters parameters, CancellationToken ct = default, IProgress<string>? progress = null);
+    Task GenerateAsync(PrintParameters parameters, CancellationToken ct = default, IProgress<ProgressUpdate<PrintProgressStep>>? progress = null);
     void InitializeLicense();
 }

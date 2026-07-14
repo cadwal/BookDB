@@ -1,0 +1,28 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:BookDB.Desktop.ViewModels"
+        xmlns:res="using:BookDB.Desktop.Localization"
+        x:Class="BookDB.Desktop.Views.RestoreTargetDialog"
+        x:DataType="vm:RestoreTargetViewModel"
+        Title="{x:Static res:Resources.RestoreTarget_Title}"
+        SizeToContent="WidthAndHeight"
+        CanResize="False"
+        WindowStartupLocation="CenterOwner"
+        ShowInTaskbar="False"
+        Padding="24"
+        MinWidth="420">
+    <StackPanel Spacing="4">
+        <TextBlock Text="{Binding Body}" TextWrapping="Wrap" MaxWidth="440" />
+        <Button Content="{x:Static res:Resources.RestoreTarget_Archived}"
+                Classes="accent" IsDefault="True"
+                HorizontalAlignment="Stretch" Margin="0,8,0,0"
+                Command="{Binding ChooseArchivedCommand}" />
+        <Button Content="{x:Static res:Resources.RestoreTarget_Current}"
+                HorizontalAlignment="Stretch" Margin="0,8,0,0"
+                Command="{Binding ChooseCurrentCommand}" />
+        <Button Content="{x:Static res:Resources.RestoreTarget_Cancel}"
+                IsCancel="True"
+                HorizontalAlignment="Stretch" Margin="0,8,0,0"
+                Command="{Binding CancelCommand}" />
+    </StackPanel>
+</Window>

@@ -41,13 +41,8 @@ public abstract class MySqlRestoreRoundTripTests : IDisposable
         try { Directory.Delete(_workDir, recursive: true); } catch { /* best effort */ }
     }
 
-    private sealed class KeyResources : IResourceProvider
-    {
-        public string? GetString(string key) => key;
-    }
-
     private static BackupService BackupServiceFor(IDbContextFactory<BookDbContext> factory, AppSettings settings, IBackupStrategy strategy)
-        => new(factory, settings, new LookupService(factory, new KeyResources()), new KeyResources(), new DataChangeTracker(), strategy);
+        => new(factory, settings, new LookupService(factory), new DataChangeTracker(), strategy);
 
     [Fact]
     public async Task Restore_SqliteArchive_IntoMySql_RoundTrips_AndResyncsInsideTransaction()

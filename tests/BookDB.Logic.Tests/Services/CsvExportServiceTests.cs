@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using BookDB.Data;
 using BookDB.Data.DbContexts;
 using BookDB.Logic.Services;
+using BookDB.Models;
 using BookDB.Models.Entities;
 using DbUp;
 using Microsoft.EntityFrameworkCore;
@@ -43,7 +44,7 @@ public sealed class CsvExportServiceTests : IDisposable
             .Options;
 
         _factory = new TestBookDbContextFactory(options);
-        _sut = new CsvExportService(_factory, new NullResourceProvider());
+        _sut = new CsvExportService(_factory);
 
         _tempWorkDir = Path.Combine(Path.GetTempPath(), $"bookdb_csvexport_workdir_{Guid.NewGuid():N}");
         Directory.CreateDirectory(_tempWorkDir);
@@ -91,5 +92,49 @@ public sealed class CsvExportServiceTests : IDisposable
         var lines = await File.ReadAllLinesAsync(outputPath, ct);
         var dataRowCount = lines.Length - 1; // subtract header
         Assert.Equal(1002, dataRowCount);
+    }
+
+    [Fact]
+    public async Task ExportAsync_ReportsTypedProgressSteps()
+    {
+        var ct = TestContext.Current.CancellationToken;
+
+        // 150 books → row reports fire at i=0 and i=100 (every 100th row).
+        using (var db = _factory.CreateDbContext())
+        {
+            var now = DateTime.UtcNow;
+            db.Books.AddRange(Enumerable.Range(1, 150)
+                .Select(i => new Book { Title = $"Book {i:D4}", Added = now, Updated = now }));
+            db.SaveChanges();
+        }
+
+        var parameters = new CsvExportParameters(
+            OutputPath: Path.Combine(_tempWorkDir, "export.csv"),
+            SelectedColumns: new[] { "Title" },
+            CollectionIds: null,
+            SearchBookIds: null,
+            FacetFilters: null,
+            SortColumn: "Title",
+            SortAscending: true);
+
+        var reports = new List<ProgressUpdate<CsvExportProgressStep>>();
+        await _sut.ExportAsync(parameters, ct, new CollectingProgress(reports));
+
+        Assert.Equal(CsvExportProgressStep.Querying, reports[0].Step);
+
+        var writingBooks = Assert.Single(reports, r => r.Step == CsvExportProgressStep.WritingBooks);
+        Assert.Equal(150, writingBooks.Current);
+
+        var rowReports = reports.Where(r => r.Step == CsvExportProgressStep.WritingRow).ToList();
+        Assert.Equal(2, rowReports.Count);
+        Assert.All(rowReports, r => Assert.Equal(150, r.Total));
+        Assert.Equal(new[] { 1, 101 }, rowReports.Select(r => r.Current));
+    }
+
+    private sealed class CollectingProgress : IProgress<ProgressUpdate<CsvExportProgressStep>>
+    {
+        private readonly List<ProgressUpdate<CsvExportProgressStep>> _reports;
+        public CollectingProgress(List<ProgressUpdate<CsvExportProgressStep>> reports) => _reports = reports;
+        public void Report(ProgressUpdate<CsvExportProgressStep> value) => _reports.Add(value);
     }
 }

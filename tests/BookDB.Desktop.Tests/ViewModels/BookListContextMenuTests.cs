@@ -33,7 +33,8 @@ public sealed class BookListContextMenuTests
             clipboard,
             Substitute.For<ILoanService>(),
             Substitute.For<BookDB.Logic.Services.IConnectionHealthMonitor>(),
-            Substitute.For<BookDB.Data.Interfaces.IConnectionFailureClassifier>());
+            Substitute.For<BookDB.Data.Interfaces.IConnectionFailureClassifier>(),
+            Substitute.For<BookDB.Desktop.Services.IRecatalogFlowService>());
         return (vm, factory, clipboard);
     }
 

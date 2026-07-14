@@ -151,7 +151,7 @@ public sealed class DatabaseMaintenanceServiceTests : IDisposable
 
         public Task<string> BackupSqliteAsync(
             string destFolder, CancellationToken ct = default,
-            string? explicitFileName = null, IProgress<string>? progress = null)
+            string? explicitFileName = null, IProgress<ProgressUpdate<BackupProgressStep>>? progress = null)
         {
             SqliteUsed = true;
             return Write(destFolder, explicitFileName ?? "backup.zip");
@@ -159,7 +159,7 @@ public sealed class DatabaseMaintenanceServiceTests : IDisposable
 
         public Task<string> BackupCsvArchiveAsync(
             string destFolder, CancellationToken ct = default,
-            string? explicitFileName = null, IProgress<string>? progress = null)
+            string? explicitFileName = null, IProgress<ProgressUpdate<BackupProgressStep>>? progress = null)
         {
             CsvUsed = true;
             return Write(destFolder, explicitFileName ?? "backup-csv.zip");
@@ -178,10 +178,10 @@ public sealed class DatabaseMaintenanceServiceTests : IDisposable
 
         public Task RestoreAsync(
             string backupZipPath, string safetyBackupPath,
-            CancellationToken ct = default, IProgress<string>? progress = null)
+            CancellationToken ct = default, IProgress<ProgressUpdate<BackupProgressStep>>? progress = null)
             => throw new NotSupportedException();
 
-        public Task AutoBackupIfEnabledAsync(CancellationToken ct = default, IProgress<string>? progress = null)
+        public Task AutoBackupIfEnabledAsync(CancellationToken ct = default, IProgress<ProgressUpdate<BackupProgressStep>>? progress = null)
             => Task.CompletedTask;
 
         public Task<bool> IsAutoBackupEnabledAsync(CancellationToken ct = default) => Task.FromResult(false);

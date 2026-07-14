@@ -15,18 +15,14 @@ public enum StartupStage
 }
 
 /// <summary>
-/// A single startup progress update. <see cref="Current"/> / <see cref="Total"/> are only
-/// meaningful for stages that report sub-progress (currently <see cref="StartupStage.ApplyingMigrations"/>).
-/// </summary>
-public readonly record struct StartupProgressReport(StartupStage Stage, int Current, int Total);
-
-/// <summary>
-/// Progress channel for application startup. Implementations simply raise <see cref="ProgressChanged"/>;
-/// they do not touch the UI. Subscribers are responsible for marshalling to the UI thread.
+/// Progress channel for application startup. Updates are the shared <see cref="ProgressUpdate{TStep}"/> over
+/// <see cref="StartupStage"/> (<c>Current</c>/<c>Total</c> only meaningful for stages that report sub-progress,
+/// currently <see cref="StartupStage.ApplyingMigrations"/>). Implementations simply raise
+/// <see cref="ProgressChanged"/>; they do not touch the UI. Subscribers marshal to the UI thread.
 /// </summary>
 public interface IStartupProgressReporter
 {
-    event Action<StartupProgressReport>? ProgressChanged;
+    event Action<ProgressUpdate<StartupStage>>? ProgressChanged;
 
     void Report(StartupStage stage, int current = 0, int total = 0);
 }
@@ -37,10 +33,10 @@ public interface IStartupProgressReporter
 /// </summary>
 public sealed class StartupProgressReporter : IStartupProgressReporter
 {
-    public event Action<StartupProgressReport>? ProgressChanged;
+    public event Action<ProgressUpdate<StartupStage>>? ProgressChanged;
 
     public void Report(StartupStage stage, int current = 0, int total = 0)
     {
-        ProgressChanged?.Invoke(new StartupProgressReport(stage, current, total));
+        ProgressChanged?.Invoke(new ProgressUpdate<StartupStage>(stage, current, total));
     }
 }

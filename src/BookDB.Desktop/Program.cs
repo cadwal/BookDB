@@ -46,6 +46,14 @@ internal sealed class Program
         {
             gate.Dispose();
         }
+
+        // On Linux, Avalonia's DBus teardown races the stopped dispatcher once the main loop ends
+        // (AvaloniaUI/Avalonia#19523): a TaskCanceledException escapes an async void on a worker thread and
+        // the runtime prints an unhandled-exception banner no handler can suppress. Every shutdown task has
+        // already run (AppHost.ShutdownAsync, host stop, instance-lock release) — exit now instead of letting
+        // the runtime teardown open the race window.
+        Log.CloseAndFlush();
+        Environment.Exit(0);
     }
 
     // Log.Logger isn't configured until AppHost.Build runs, which this exit path never reaches, so a

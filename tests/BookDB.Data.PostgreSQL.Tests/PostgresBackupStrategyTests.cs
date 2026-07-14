@@ -68,7 +68,7 @@ public sealed class PostgresBackupStrategyTests : IClassFixture<PostgresTestDbFi
 
         var appSettings = new AppSettings { Backend = DatabaseBackend.PostgreSql, ConnectionString = _fixture.ConnectionString };
         var backupService = new BackupService(
-            factory, appSettings, new InMemorySettingsService(), new NullResourceProvider(),
+            factory, appSettings, new InMemorySettingsService(),
             sp.GetRequiredService<IDataChangeTracker>(), sp.GetRequiredService<IBackupStrategy>());
 
         var workDir = Path.Combine(Path.GetTempPath(), $"bookdb_pgcsv_{Guid.NewGuid():N}");
@@ -86,11 +86,6 @@ public sealed class PostgresBackupStrategyTests : IClassFixture<PostgresTestDbFi
         {
             try { Directory.Delete(workDir, recursive: true); } catch { /* best effort */ }
         }
-    }
-
-    private sealed class NullResourceProvider : IResourceProvider
-    {
-        public string? GetString(string key) => null;
     }
 
     private sealed class InMemorySettingsService : ISettingsService
