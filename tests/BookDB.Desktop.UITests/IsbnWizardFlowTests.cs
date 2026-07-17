@@ -57,7 +57,7 @@ public class IsbnWizardFlowTests : HeadlessTest
             Assert.True(result());
             await windowService.Received(1).StartBatchAsync(
                 Arg.Is<System.Collections.Generic.IReadOnlyList<string>>(l =>
-                    l.Count == 2 && l[0] == "9780441013593" && l[1] == "9780141439587"));
+                    l != null && l.Count == 2 && l[0] == "9780441013593" && l[1] == "9780141439587"));
             dialog.Close();
         });
     }

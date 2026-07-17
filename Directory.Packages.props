@@ -8,26 +8,23 @@
   </PropertyGroup>
 
   <ItemGroup Label="Avalonia &amp; UI">
-    <PackageVersion Include="Avalonia" Version="11.3.18" />
-    <PackageVersion Include="Avalonia.Controls.DataGrid" Version="11.3.13" />
-    <PackageVersion Include="Avalonia.Desktop" Version="11.3.18" />
-    <PackageVersion Include="Avalonia.Diagnostics" Version="11.3.18" />
-    <PackageVersion Include="Avalonia.Fonts.Inter" Version="11.3.18" />
-    <PackageVersion Include="Avalonia.Themes.Fluent" Version="11.3.18" />
-    <PackageVersion Include="Markdown.Avalonia.Tight" Version="11.0.3" />
-    <!-- OxyPlot.Avalonia is intentionally pinned to the Avalonia-11 build; revisit at the Avalonia 12 upgrade. -->
-    <PackageVersion Include="OxyPlot.Avalonia" Version="2.1.0-Avalonia11" />
-    <PackageVersion Include="Svg.Controls.Skia.Avalonia" Version="11.3.9.5" />
-    <PackageVersion Include="Xaml.Behaviors.Interactions" Version="11.3.9.6" />
-    <PackageVersion Include="Xaml.Behaviors.Interactivity" Version="11.3.9.6" />
-    <!-- Pinned patched build of a transitive vulnerable package (Linux DBus integration). -->
-    <PackageVersion Include="Tmds.DBus.Protocol" Version="0.21.3" />
+    <PackageVersion Include="Avalonia" Version="12.1.0" />
+    <PackageVersion Include="Avalonia.Controls.DataGrid" Version="12.1.0" />
+    <PackageVersion Include="Avalonia.Desktop" Version="12.1.0" />
+    <PackageVersion Include="AvaloniaUI.DiagnosticsSupport" Version="2.2.3" />
+    <PackageVersion Include="Avalonia.Fonts.Inter" Version="12.1.0" />
+    <PackageVersion Include="Avalonia.Themes.Fluent" Version="12.1.0" />
+    <PackageVersion Include="Markdown.Avalonia.Tight" Version="12.0.0-a3" />
+    <PackageVersion Include="ScottPlot.Avalonia" Version="5.1.59" />
+    <PackageVersion Include="Svg.Controls.Skia.Avalonia" Version="12.0.0.13" />
+    <PackageVersion Include="Xaml.Behaviors.Interactions" Version="12.0.5" />
+    <PackageVersion Include="Xaml.Behaviors.Interactivity" Version="12.0.5" />
   </ItemGroup>
 
   <ItemGroup Label="App / runtime">
     <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.4.2" />
     <PackageVersion Include="CsvHelper" Version="33.1.0" />
-    <PackageVersion Include="QuestPDF" Version="2026.7.0" />
+    <PackageVersion Include="QuestPDF" Version="2026.7.1" />
     <PackageVersion Include="Devlooped.CredentialManager" Version="2.7.0" />
   </ItemGroup>
 
@@ -64,15 +61,15 @@
   </ItemGroup>
 
   <ItemGroup Label="Test">
-    <!-- Headless UI testing. Base package only (no xUnit integration): Avalonia.Headless.XUnit 11.3 targets
-         xUnit v2, which conflicts with our xunit.v3 — so we drive HeadlessUnitTestSession directly. Swap to the
-         v3-native [AvaloniaFact] at the Avalonia 12 (3.0) upgrade. Must match the Avalonia version. -->
-    <PackageVersion Include="Avalonia.Headless" Version="11.3.18" />
+    <!-- Headless UI testing. The XUnit integration provides the v3-native [AvaloniaFact]/[AvaloniaTheory];
+         the base package carries the headless platform + input extensions. Both must match the Avalonia version. -->
+    <PackageVersion Include="Avalonia.Headless" Version="12.1.0" />
+    <PackageVersion Include="Avalonia.Headless.XUnit" Version="12.1.0" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.7.0" />
     <PackageVersion Include="xunit.v3" Version="3.2.2" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5" />
     <PackageVersion Include="coverlet.collector" Version="10.0.1" />
-    <PackageVersion Include="NSubstitute" Version="5.3.0" />
+    <PackageVersion Include="NSubstitute" Version="6.0.0" />
     <PackageVersion Include="Testcontainers.MySql" Version="4.13.0" />
     <PackageVersion Include="Testcontainers.MariaDb" Version="4.13.0" />
     <PackageVersion Include="Testcontainers.PostgreSql" Version="4.13.0" />

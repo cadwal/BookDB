@@ -48,6 +48,7 @@ public class BookListRecatalogTests
             await vm.RecatalogSelectedCommand.ExecuteAsync(null);
 
             await flow.Received(1).RecatalogAsync(Arg.Is<IReadOnlyList<RecatalogCandidate>>(books =>
+                books != null &&
                 books.Count == 2 &&
                 books[0] == new RecatalogCandidate(1, "Has Isbn", "9780441013593") &&
                 books[1] == new RecatalogCandidate(2, "No Isbn", null)));
@@ -66,7 +67,7 @@ public class BookListRecatalogTests
             await vm.RecatalogAllAsync();
 
             await flow.Received(1).RecatalogAsync(Arg.Is<IReadOnlyList<RecatalogCandidate>>(books =>
-                books.Count == 2 && books[1] == new RecatalogCandidate(2, "No Isbn", null)));
+                books != null && books.Count == 2 && books[1] == new RecatalogCandidate(2, "No Isbn", null)));
         }
     }
 }

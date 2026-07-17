@@ -150,10 +150,12 @@ public record ParsedLoan(int RowKey, int BookRowKey, int BorrowerRowKey,
 public class ParsedBackup
 {
     public IReadOnlyList<ParsedBook> Books { get; set; } = Array.Empty<ParsedBook>();
-    /// <summary>Map from book RowKey to list of (ImageIndex, HexData) tuples for all FULL_IMAGES entries.</summary>
-    public Dictionary<int, List<(int ImageIndex, string HexData)>> FullImagesByRowKey { get; set; } = [];
-    /// <summary>Map from book RowKey to list of (ImageIndex, HexData) tuples for all THUMB_IMAGES entries.</summary>
-    public Dictionary<int, List<(int ImageIndex, string HexData)>> ThumbImagesByRowKey { get; set; } = [];
+    /// <summary>Map from book RowKey to list of (ImageIndex, Data) tuples for all FULL_IMAGES entries.
+    /// Decoded bytes, not hex — a hex string holds the same image at 4x the size, and a full
+    /// catalog's covers must fit here simultaneously.</summary>
+    public Dictionary<int, List<(int ImageIndex, byte[] Data)>> FullImagesByRowKey { get; set; } = [];
+    /// <summary>Map from book RowKey to list of (ImageIndex, Data) tuples for all THUMB_IMAGES entries.</summary>
+    public Dictionary<int, List<(int ImageIndex, byte[] Data)>> ThumbImagesByRowKey { get; set; } = [];
     public IReadOnlyList<ParsedVolume> Volumes { get; set; } = Array.Empty<ParsedVolume>();
     public IReadOnlyList<ParsedChapter> Chapters { get; set; } = Array.Empty<ParsedChapter>();
     public IReadOnlyList<ParsedBorrower> Borrowers { get; set; } = Array.Empty<ParsedBorrower>();

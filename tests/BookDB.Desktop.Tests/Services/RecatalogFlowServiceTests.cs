@@ -37,7 +37,7 @@ public class RecatalogFlowServiceTests
                 new RecatalogCandidate(second.BookId, second.Title, second.Isbn)]);
 
             await windowService.Received(1).StartBatchRecatalogAsync(
-                Arg.Is<IReadOnlyList<int>>(ids => ids.Count == 2 && ids[0] == first.BookId && ids[1] == second.BookId));
+                Arg.Is<IReadOnlyList<int>>(ids => ids != null && ids.Count == 2 && ids[0] == first.BookId && ids[1] == second.BookId));
             await windowService.DidNotReceive().ShowIsbnPromptDialogAsync(Arg.Any<string>());
         }
     }
@@ -103,7 +103,7 @@ public class RecatalogFlowServiceTests
             // The ISBN-bearing book enqueues as a batch; each ISBN-less book gets its own prompt, and
             // the cancelled one is skipped without derailing the one answered after it.
             await windowService.Received(1).StartBatchRecatalogAsync(
-                Arg.Is<IReadOnlyList<int>>(ids => ids.Count == 1 && ids[0] == withIsbn.BookId));
+                Arg.Is<IReadOnlyList<int>>(ids => ids != null && ids.Count == 1 && ids[0] == withIsbn.BookId));
             await windowService.Received(1).ShowIsbnPromptDialogAsync("Skipped");
             await windowService.DidNotReceive().StartBatchRecatalogAsync(skipped.BookId, Arg.Any<string>());
             await windowService.Received(1).StartBatchRecatalogAsync(answered.BookId, "9780451526538");

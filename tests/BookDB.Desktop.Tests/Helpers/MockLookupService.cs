@@ -170,7 +170,7 @@ public sealed class TestLookupServiceFactory : IDisposable
         public Task<string> BackupSqliteAsync(string destFolder, CancellationToken ct = default, string? explicitFileName = null, IProgress<ProgressUpdate<BackupProgressStep>>? progress = null) => Task.FromResult(string.Empty);
         public Task<string> BackupCsvArchiveAsync(string destFolder, CancellationToken ct = default, string? explicitFileName = null, IProgress<ProgressUpdate<BackupProgressStep>>? progress = null) => Task.FromResult(string.Empty);
         public bool SupportsFileBackup => true;
-        public Task RestoreAsync(string backupZipPath, string safetyBackupPath, CancellationToken ct = default, IProgress<ProgressUpdate<BackupProgressStep>>? progress = null) => Task.CompletedTask;
+        public Task RestoreAsync(string backupZipPath, string safetyBackupFolder, CancellationToken ct = default, IProgress<ProgressUpdate<BackupProgressStep>>? progress = null) => Task.CompletedTask;
         public Task AutoBackupIfEnabledAsync(CancellationToken ct = default, IProgress<ProgressUpdate<BackupProgressStep>>? progress = null) => Task.CompletedTask;
         public Task<bool> IsAutoBackupEnabledAsync(CancellationToken ct = default) => Task.FromResult(false);
         public Task<bool> ShouldAutoBackupAsync(CancellationToken ct = default) => Task.FromResult(false);

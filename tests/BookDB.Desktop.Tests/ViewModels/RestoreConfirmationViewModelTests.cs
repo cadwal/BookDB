@@ -22,7 +22,7 @@ public sealed class RestoreConfirmationViewModelTests
     {
         BootstrapConfig probe = start;
         _config.When(c => c.Update(Arg.Any<System.Action<BootstrapConfig>>()))
-            .Do(call => call.Arg<System.Action<BootstrapConfig>>()(probe));
+            .Do(call => call.Arg<System.Action<BootstrapConfig>>()!(probe));
         return probe;
     }
 

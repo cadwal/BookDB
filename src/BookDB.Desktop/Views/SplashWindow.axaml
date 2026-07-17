@@ -7,7 +7,7 @@
         Title="BookDB"
         Width="420"
         Height="240"
-        SystemDecorations="None"
+        WindowDecorations="None"
         CanResize="False"
         ShowInTaskbar="False"
         Topmost="True"

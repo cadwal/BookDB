@@ -237,7 +237,7 @@ public sealed class BookEditCategoryTests
         await bookSvc.Received(1).UpdateBookCategoriesAsync(
             99,
             Arg.Is<IReadOnlyList<int>>(ids =>
-                ids.Count == 2 && ids.Contains(1) && ids.Contains(3)),
+                ids != null && ids.Count == 2 && ids.Contains(1) && ids.Contains(3)),
             Arg.Any<CancellationToken>());
     }
 }

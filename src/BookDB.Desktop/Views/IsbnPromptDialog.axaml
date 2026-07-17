@@ -15,7 +15,7 @@
         <TextBlock Text="{Binding Body}"
                    TextWrapping="Wrap" MaxWidth="340" />
         <TextBox Text="{Binding Isbn}"
-                 Watermark="{x:Static res:Resources.Recatalog_NoIsbn_Watermark}"
+                 PlaceholderText="{x:Static res:Resources.Recatalog_NoIsbn_Watermark}"
                  Width="280" Margin="0,8,0,0" HorizontalAlignment="Left" />
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8" Margin="0,16,0,0">
             <Button Content="{x:Static res:Resources.Recatalog_NoIsbn_LookUp}"

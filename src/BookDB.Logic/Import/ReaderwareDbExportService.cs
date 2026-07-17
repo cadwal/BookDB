@@ -144,8 +144,10 @@ public sealed class ReaderwareDbExportService : IReaderwareDbExportService
                     continue;
                 }
 
-                var dsv = await File.ReadAllTextAsync(dsvPath, Encoding.UTF8, ct);
-                ConvertDsvToBackupFile(dsv, Path.Combine(outputDir, table));
+                // Stream rather than ReadAllText: FULL_IMAGES.dsv holds the whole catalog's
+                // covers as hex and would otherwise land in memory as one multi-GB string.
+                using (var dsvReader = new StreamReader(dsvPath, Encoding.UTF8))
+                    ConvertDsvToBackupFile(dsvReader, Path.Combine(outputDir, table));
                 exported.Add(table);
             }
 
@@ -215,24 +217,70 @@ public sealed class ReaderwareDbExportService : IReaderwareDbExportService
     /// </summary>
     public static void ConvertDsvToBackupFile(string dsvContent, string destPath)
     {
-        var rowSep = new[] { RowDelimiter };
-        var colSep = new[] { ColumnDelimiter };
+        using var reader = new StringReader(dsvContent);
+        ConvertDsvToBackupFile(reader, destPath);
+    }
 
+    /// <summary>
+    /// Streaming form of <see cref="ConvertDsvToBackupFile(string,string)"/>: holds one row in
+    /// memory at a time, so a multi-GB image table never materializes as a single string.
+    /// </summary>
+    public static void ConvertDsvToBackupFile(TextReader dsvReader, string destPath)
+    {
         using var stream = new FileStream(destPath, FileMode.Create, FileAccess.Write);
         using var writer = new StreamWriter(stream, Utf16BeNoBom);
         using var csv = new CsvWriter(writer, new CsvConfiguration(CultureInfo.InvariantCulture));
 
-        foreach (var rawRow in dsvContent.Split(rowSep, StringSplitOptions.None))
+        var row = new StringBuilder();
+        var buffer = new char[64 * 1024];
+        int matched = 0;  // chars of RowDelimiter matched so far at the current position
+        int read;
+        while ((read = dsvReader.Read(buffer, 0, buffer.Length)) > 0)
         {
-            // The final element after a trailing row delimiter is empty — skip those blanks.
-            if (rawRow.Length == 0)
-                continue;
-
-            foreach (var field in rawRow.Split(colSep, StringSplitOptions.None))
-                csv.WriteField(field == NullToken ? string.Empty : field);
-
-            csv.NextRecord();
+            for (int i = 0; i < read; i++)
+            {
+                var c = buffer[i];
+            retry:
+                if (c == RowDelimiter[matched])
+                {
+                    if (++matched == RowDelimiter.Length)
+                    {
+                        WriteBackupRow(csv, row);
+                        matched = 0;
+                    }
+                }
+                else if (matched > 0)
+                {
+                    // False start: the matched chars were row content. No proper prefix of the
+                    // delimiter is also a suffix of a longer prefix, so re-testing the current
+                    // char from position 0 is sufficient.
+                    row.Append(RowDelimiter, 0, matched);
+                    matched = 0;
+                    goto retry;
+                }
+                else
+                {
+                    row.Append(c);
+                }
+            }
         }
+
+        if (matched > 0)
+            row.Append(RowDelimiter, 0, matched);
+        WriteBackupRow(csv, row);
+    }
+
+    private static void WriteBackupRow(CsvWriter csv, StringBuilder row)
+    {
+        // The final element after a trailing row delimiter is empty — skip those blanks.
+        if (row.Length == 0)
+            return;
+
+        foreach (var field in row.ToString().Split(ColumnDelimiter, StringSplitOptions.None))
+            csv.WriteField(field == NullToken ? string.Empty : field);
+
+        csv.NextRecord();
+        row.Clear();
     }
 
     // ----- Internals --------------------------------------------------------------------------

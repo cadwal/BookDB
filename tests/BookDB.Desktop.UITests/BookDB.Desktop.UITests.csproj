@@ -8,8 +8,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <!-- Base headless platform; the session is driven directly (no Avalonia.Headless.XUnit — it targets xUnit v2). -->
+    <!-- Headless platform + input extensions, plus the xunit.v3-native [AvaloniaFact] integration. -->
     <PackageReference Include="Avalonia.Headless" />
+    <PackageReference Include="Avalonia.Headless.XUnit" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="xunit.v3" />
     <PackageReference Include="xunit.runner.visualstudio">

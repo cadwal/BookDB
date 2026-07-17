@@ -177,7 +177,7 @@ public sealed class DatabaseMaintenanceServiceTests : IDisposable
         public bool SupportsFileBackup => SupportsFile;
 
         public Task RestoreAsync(
-            string backupZipPath, string safetyBackupPath,
+            string backupZipPath, string safetyBackupFolder,
             CancellationToken ct = default, IProgress<ProgressUpdate<BackupProgressStep>>? progress = null)
             => throw new NotSupportedException();
 

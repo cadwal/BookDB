@@ -8,7 +8,7 @@ namespace BookDB.Logic.Services;
 public interface IBackupService
 {
     // Returns the path of the zip file written.
-    // explicitFileName: if provided, uses that name exactly (enables overwrite); if null, auto-generates and auto-suffixes on conflict.
+    // explicitFileName: if provided, uses that name exactly (throws if the file already exists); if null, auto-generates and auto-suffixes on conflict.
     Task<string> BackupSqliteAsync(string destFolder, CancellationToken ct = default, string? explicitFileName = null, IProgress<ProgressUpdate<BackupProgressStep>>? progress = null);
     Task<string> BackupCsvArchiveAsync(string destFolder, CancellationToken ct = default, string? explicitFileName = null, IProgress<ProgressUpdate<BackupProgressStep>>? progress = null);
 
@@ -16,7 +16,10 @@ public interface IBackupService
     /// where only the engine-neutral CSV archive is available. Callers that take their own safety backup must
     /// pick the CSV archive when this is false.</summary>
     bool SupportsFileBackup { get; }
-    Task RestoreAsync(string backupZipPath, string safetyBackupPath, CancellationToken ct = default, IProgress<ProgressUpdate<BackupProgressStep>>? progress = null);
+    /// <summary>Restores a SQLite file backup after writing a mandatory safety backup into
+    /// <paramref name="safetyBackupFolder"/>; the safety file is named like a manual backup
+    /// (bookdb-safety-yyyy-MM-dd.zip) and auto-suffixed on conflict, so it never collides.</summary>
+    Task RestoreAsync(string backupZipPath, string safetyBackupFolder, CancellationToken ct = default, IProgress<ProgressUpdate<BackupProgressStep>>? progress = null);
     Task AutoBackupIfEnabledAsync(CancellationToken ct = default, IProgress<ProgressUpdate<BackupProgressStep>>? progress = null);
 
     /// <summary>

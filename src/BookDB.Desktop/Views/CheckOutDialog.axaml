@@ -16,7 +16,7 @@
         <StackPanel Spacing="4">
             <TextBlock Text="{x:Static res:Resources.CheckOut_Label_Borrower}"
                        FontSize="14" FontWeight="SemiBold" />
-            <AutoCompleteBox Watermark="{x:Static res:Resources.CheckOut_Borrower_Watermark}"
+            <AutoCompleteBox PlaceholderText="{x:Static res:Resources.CheckOut_Borrower_Watermark}"
                              MinimumPrefixLength="1"
                              FilterMode="None"
                              ValueMemberBinding="{ReflectionBinding ValueText}"

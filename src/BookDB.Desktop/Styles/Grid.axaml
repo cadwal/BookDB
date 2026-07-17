@@ -2,7 +2,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:svg="using:Avalonia.Svg.Skia">
 
-    <!-- Alternating row backgrounds (per C-01) -->
+    <!-- Alternating row backgrounds -->
     <Style Selector="DataGridRow:nth-child(odd)">
         <Setter Property="Background" Value="{DynamicResource BrushBackground}" />
     </Style>
@@ -10,7 +10,7 @@
         <Setter Property="Background" Value="{DynamicResource BrushBackgroundAlt}" />
     </Style>
 
-    <!-- Row hover (per C-02) — must override both odd and even backgrounds -->
+    <!-- Row hover — must override both odd and even backgrounds -->
     <Style Selector="DataGridRow:pointerover">
         <Setter Property="Background" Value="{DynamicResource BrushRowHover}" />
     </Style>
@@ -18,7 +18,7 @@
         <Setter Property="Background" Value="{DynamicResource BrushRowHover}" />
     </Style>
 
-    <!-- Row selection (per C-02) — blue background, white text -->
+    <!-- Row selection — blue background, white text -->
     <Style Selector="DataGridRow:selected">
         <Setter Property="Background" Value="{DynamicResource BrushRowSelected}" />
         <Setter Property="Foreground" Value="{DynamicResource BrushRowSelectedText}" />
@@ -38,7 +38,7 @@
         <Setter Property="Background" Value="{DynamicResource BrushRowOverdue}" />
     </Style>
 
-    <!-- Column header styling (per C-03) -->
+    <!-- Column header styling -->
     <Style Selector="DataGridColumnHeader">
         <Setter Property="Background" Value="{DynamicResource BrushBackgroundAlt}" />
         <Setter Property="Foreground" Value="{DynamicResource BrushTextPrimary}" />
@@ -48,7 +48,7 @@
         <Setter Property="BorderThickness" Value="0,0,0,2" />
     </Style>
 
-    <!-- Row dividers — subtle 1px lines (per C-05) -->
+    <!-- Row dividers — subtle 1px lines -->
     <Style Selector="DataGridRow">
         <Setter Property="MinHeight" Value="32" />
     </Style>

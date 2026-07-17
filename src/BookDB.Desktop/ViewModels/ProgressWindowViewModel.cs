@@ -10,7 +10,7 @@ public sealed partial class ProgressWindowViewModel : ObservableObject
     // Card = the chromeless shutdown-backup variant: no OS chrome, accent border, indeterminate bar.
     public bool IsCard { get; }
 
-    public SystemDecorations Decorations => IsCard ? SystemDecorations.None : SystemDecorations.Full;
+    public WindowDecorations Decorations => IsCard ? WindowDecorations.None : WindowDecorations.Full;
 
     [ObservableProperty]
     private string _status = Localization.Resources.AppDialog_Progress_PleaseWait;

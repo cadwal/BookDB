@@ -71,7 +71,7 @@ public sealed class ImportWizardFlowTests : HeadlessTest, IDisposable
 
             // Creating a collection under an already-taken name fails inline and keeps the typed text.
             var nameBox = step1.Descendants<TextBox>()
-                .Single(b => b.Watermark == Resources.Import_Step1_NewCollectionWatermark);
+                .Single(b => b.PlaceholderText == Resources.Import_Step1_NewCollectionWatermark);
             var createButton = step1.ButtonFor(vm.CreateCollectionCommand);
             var takenName = vm.Step1.AvailableCollections[0].Name;
             window.TypeInto(nameBox, takenName);

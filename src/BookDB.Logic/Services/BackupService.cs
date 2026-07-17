@@ -258,19 +258,18 @@ public sealed class BackupService : IBackupService
         return zipPath;
     }
 
-    public async Task RestoreAsync(string backupZipPath, string safetyBackupPath, CancellationToken ct = default, IProgress<ProgressUpdate<BackupProgressStep>>? progress = null)
+    public async Task RestoreAsync(string backupZipPath, string safetyBackupFolder, CancellationToken ct = default, IProgress<ProgressUpdate<BackupProgressStep>>? progress = null)
     {
-        if (string.IsNullOrWhiteSpace(safetyBackupPath))
-            throw new ArgumentNullException(nameof(safetyBackupPath), "Safety backup is required before restore.");
+        if (string.IsNullOrWhiteSpace(safetyBackupFolder))
+            throw new ArgumentNullException(nameof(safetyBackupFolder), "Safety backup is required before restore.");
 
         backupZipPath = Path.GetFullPath(backupZipPath);
-        safetyBackupPath = Path.GetFullPath(safetyBackupPath);
+        safetyBackupFolder = Path.GetFullPath(safetyBackupFolder);
 
         progress?.Report(new ProgressUpdate<BackupProgressStep>(BackupProgressStep.SavingSafetyBackup));
-        var safetyFolder = Path.GetDirectoryName(safetyBackupPath)
-            ?? throw new InvalidOperationException("Could not determine safety backup folder.");
-        var safetyFileName = Path.GetFileName(safetyBackupPath);
-        await BackupSqliteAsync(safetyFolder, ct, explicitFileName: safetyFileName);
+        var date = DateTime.Now.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+        var safetyPath = ResolvePath(Path.Combine(safetyBackupFolder, $"bookdb-safety-{date}.zip"));
+        await BackupSqliteAsync(safetyBackupFolder, ct, explicitFileName: Path.GetFileName(safetyPath));
 
         progress?.Report(new ProgressUpdate<BackupProgressStep>(BackupProgressStep.ExtractingArchive));
         var tempDir = Path.Combine(Path.GetTempPath(), $"bookdb_restore_{Guid.NewGuid():N}");

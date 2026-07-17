@@ -13,7 +13,7 @@
         <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto">
             <TextBox Grid.Column="0"
                      Text="{Binding FilePath, Mode=TwoWay}"
-                     Watermark="{x:Static res:Resources.Import_Step1_FileWatermark}"
+                     PlaceholderText="{x:Static res:Resources.Import_Step1_FileWatermark}"
                      IsReadOnly="True"
                      Margin="0,0,8,0"/>
         </Grid>
@@ -56,7 +56,7 @@
         <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto" MaxWidth="420" HorizontalAlignment="Left">
             <TextBox Grid.Column="0"
                      Text="{Binding NewCollectionName, Mode=TwoWay}"
-                     Watermark="{x:Static res:Resources.Import_Step1_NewCollectionWatermark}"
+                     PlaceholderText="{x:Static res:Resources.Import_Step1_NewCollectionWatermark}"
                      MinWidth="250"
                      Margin="0,0,8,0"/>
             <Button Grid.Column="1"

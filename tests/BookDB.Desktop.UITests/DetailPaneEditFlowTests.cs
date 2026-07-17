@@ -164,7 +164,7 @@ public class DetailPaneEditFlowTests : HeadlessTest
             await Ui.ClickAsync(detailView.ButtonFor(detail.RecatalogCommand));
             await windowService.Received(1).ShowIsbnPromptDialogAsync(Arg.Any<string>());
             await windowService.Received(1).StartBatchRecatalogAsync(
-                Arg.Is<System.Collections.Generic.IReadOnlyList<int>>(ids => ids.Single() == withIsbn.BookId));
+                Arg.Is<System.Collections.Generic.IReadOnlyList<int>>(ids => ids != null && ids.Single() == withIsbn.BookId));
 
             detailWindow.Close();
         });

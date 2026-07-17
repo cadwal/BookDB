@@ -41,22 +41,21 @@ public class FileDropBehavior : Behavior<Control>
         base.OnDetaching();
     }
 
-#pragma warning disable CS0618
     private void OnDragOver(object? sender, DragEventArgs e)
     {
-        e.DragEffects = e.Data.Contains(DataFormats.Files)
+        e.DragEffects = e.DataTransfer.Contains(DataFormat.File)
             ? DragDropEffects.Copy
             : DragDropEffects.None;
     }
 
     private void OnDrop(object? sender, DragEventArgs e)
     {
-        if (e.Data.GetFileNames() is not { } files) return;
+        var files = e.DataTransfer.TryGetFiles()?.ToList();
+        if (files is null) return;
         var first = files.FirstOrDefault(f =>
             AllowedImageExtensions.Contains(
-                Path.GetExtension(f).ToLowerInvariant()));
+                Path.GetExtension(f.Name).ToLowerInvariant()));
         if (first is not null)
-            DropCommand?.Execute(first);
+            DropCommand?.Execute(first.Path.LocalPath);
     }
-#pragma warning restore CS0618
 }

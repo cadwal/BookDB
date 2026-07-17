@@ -265,13 +265,13 @@
                         <TextBlock Grid.Row="0" Grid.Column="0" Text="{x:Static res:Resources.BookEditForm_Label_PurchasePrice}" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,4" />
                         <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" Spacing="4" Margin="0,0,0,4">
                             <TextBox Text="{Binding EditPurchasePrice}" FontSize="13" Width="100" />
-                            <TextBox Text="{Binding EditPurchaseCurrency}" FontSize="13" Width="60" Watermark="{x:Static res:Resources.BookEditForm_Watermark_Usd}" />
+                            <TextBox Text="{Binding EditPurchaseCurrency}" FontSize="13" Width="60" PlaceholderText="{x:Static res:Resources.BookEditForm_Watermark_Usd}" />
                         </StackPanel>
 
                         <TextBlock Grid.Row="1" Grid.Column="0" Text="{x:Static res:Resources.BookEditForm_Label_ListPrice}" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,4" />
                         <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" Spacing="4" Margin="0,0,0,4">
                             <TextBox Text="{Binding EditListPrice}" FontSize="13" Width="100" />
-                            <TextBox Text="{Binding EditListPriceCurrency}" FontSize="13" Width="60" Watermark="{x:Static res:Resources.BookEditForm_Watermark_Usd}" />
+                            <TextBox Text="{Binding EditListPriceCurrency}" FontSize="13" Width="60" PlaceholderText="{x:Static res:Resources.BookEditForm_Watermark_Usd}" />
                         </StackPanel>
 
                         <TextBlock Grid.Row="2" Grid.Column="0" Text="{x:Static res:Resources.BookEditForm_Label_PurchasePlace}" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,4" />
@@ -555,7 +555,7 @@
                         <TextBox x:Name="ImagesTabUrlInputBox"
                                  FontSize="12"
                                  Width="180"
-                                 Watermark="https://..." />
+                                 PlaceholderText="https://..." />
                         <Button Content="{x:Static res:Resources.Cover_AttachUrl}"
                                 Command="{Binding ImageEditor.AttachCoverFromUrlCommand}"
                                 CommandParameter="{Binding #ImagesTabUrlInputBox.Text}"

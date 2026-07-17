@@ -694,9 +694,8 @@ public partial class MainWindowViewModel : ObservableObject
         if (restoreConfirmed != true)
             return;
 
-        var safetyPath = Path.Combine(safetyFolder, "safety-backup.zip");
         var progress = _windowService.ShowProgressWindow(Localization.Resources.Restore_Header);
-        try { await _backupService.RestoreAsync(backupZipPath, safetyPath, progress: BackupProgressLocalizer.Localizing(progress)); }
+        try { await _backupService.RestoreAsync(backupZipPath, safetyFolder, progress: BackupProgressLocalizer.Localizing(progress)); }
         finally { progress.Close(); }
 
         await _windowService.ShowConfirmAsync(Localization.Resources.Restore_Complete_Title, Localization.Resources.Restore_Complete_Body);

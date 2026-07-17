@@ -239,8 +239,8 @@ public sealed class ImportService : IImportService
     private async Task ProcessBatchAsync(
         List<ParsedBook> batch,
         int collectionId,
-        Dictionary<int, List<(int ImageIndex, string HexData)>> fullImages,
-        Dictionary<int, List<(int ImageIndex, string HexData)>> thumbImages,
+        Dictionary<int, List<(int ImageIndex, byte[] Data)>> fullImages,
+        Dictionary<int, List<(int ImageIndex, byte[] Data)>> thumbImages,
         HashSet<string> existingIsbnSet,
         Dictionary<int, int> rowKeyToBookId,
         ImportCounters counters,
@@ -260,6 +260,13 @@ public sealed class ImportService : IImportService
         foreach (var parsedBook in batch)
         {
             ct.ThrowIfCancellationRequested();
+
+            // Take the book's images out of the shared dictionaries up front so the memory is
+            // reclaimable as soon as this iteration ends — the dictionaries otherwise hold the
+            // whole catalog's covers until the last batch. No later pass reads them again.
+            fullImages.Remove(parsedBook.RowKey, out var fullImageList);
+            thumbImages.Remove(parsedBook.RowKey, out var thumbImageList);
+
             try
             {
                 if (string.IsNullOrWhiteSpace(parsedBook.Isbn))
@@ -323,14 +330,13 @@ public sealed class ImportService : IImportService
                 // Add categories
                 await AddCategoriesAsync(dbContext, book.BookId, parsedBook, collectionId, caches, ct);
 
-                // Write FULL_IMAGES as BookImage BLOB rows (per A-01 through A-04)
-                if (fullImages.TryGetValue(parsedBook.RowKey, out var fullImageList))
+                // Write FULL_IMAGES as BookImage BLOB rows
+                if (fullImageList is not null)
                 {
                     try
                     {
-                        foreach (var (imageIndex, hexData) in fullImageList)
+                        foreach (var (imageIndex, bytes) in fullImageList)
                         {
-                            var bytes = Convert.FromHexString(hexData);
                             var mimeType = ImageHelpers.DetectMimeType(bytes);
                             var (typeId, isPrimary) = MapFullImageIndex(imageIndex);
                             dbContext.BookImages.Add(new BookImage
@@ -352,14 +358,13 @@ public sealed class ImportService : IImportService
                     }
                 }
 
-                // Write THUMB_IMAGES as BookImage BLOB rows (per B-01 through B-03)
-                if (thumbImages.TryGetValue(parsedBook.RowKey, out var thumbImageList))
+                // Write THUMB_IMAGES as BookImage BLOB rows
+                if (thumbImageList is not null)
                 {
                     try
                     {
-                        foreach (var (imageIndex, hexData) in thumbImageList)
+                        foreach (var (imageIndex, bytes) in thumbImageList)
                         {
-                            var bytes = Convert.FromHexString(hexData);
                             var mimeType = ImageHelpers.DetectMimeType(bytes);
                             dbContext.BookImages.Add(new BookImage
                             {

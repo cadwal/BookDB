@@ -33,7 +33,7 @@
                  MinLines="6"
                  FontFamily="Consolas, Courier New"
                  FontSize="13"
-                 Watermark="{x:Static res:Resources.LookupWizard_IsbnBox_Placeholder}"
+                 PlaceholderText="{x:Static res:Resources.LookupWizard_IsbnBox_Placeholder}"
                  Text="{Binding IsbnText, Mode=TwoWay}"
                  AutomationProperties.Name="ISBN input - one per line" />
 

@@ -1,12 +1,15 @@
+using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Avalonia.Media.Imaging;
+using BookDB.Desktop.Behaviors;
 using BookDB.Desktop.Localization;
 using BookDB.Logic.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace BookDB.Desktop.ViewModels;
 
-public partial class BookRowViewModel : ObservableObject
+public partial class BookRowViewModel : ObservableObject, IHoverImageLoader
 {
     public int BookId { get; init; }
     public string Title { get; init; } = string.Empty;
@@ -48,6 +51,24 @@ public partial class BookRowViewModel : ObservableObject
 
     [ObservableProperty]
     private long? _tooltipBitmapSizeBytes;
+
+    /// <summary>Set by the list VM; fetches the full-size tooltip bitmap for this row on demand.</summary>
+    public Func<BookRowViewModel, Task>? TooltipLoader { get; set; }
+
+    private bool _tooltipLoadInFlight;
+
+    public void RequestHoverImageLoad()
+    {
+        if (_tooltipLoadInFlight || TooltipLoader is null) return;
+        _tooltipLoadInFlight = true;
+        _ = LoadAsync();
+
+        async Task LoadAsync()
+        {
+            try { await TooltipLoader(this); }
+            finally { _tooltipLoadInFlight = false; }
+        }
+    }
 
     // Factory method from BookService.BookListRow
     public static BookRowViewModel FromListRow(BookService.BookListRow row)

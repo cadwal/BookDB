@@ -4,6 +4,7 @@ using System.Reflection;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
+using Avalonia.Input;
 using Avalonia.Media.Imaging;
 using Avalonia.Xaml.Interactivity;
 
@@ -36,12 +37,16 @@ public class CoverHoverPopupBehavior : Behavior<Control>
     }
 
     private INotifyPropertyChanged? _subscribedNotifier;
+    private Bitmap? _lastTipBitmap;
+    private long? _lastTipSizeBytes;
 
     protected override void OnAttached()
     {
         base.OnAttached();
         if (AssociatedObject is null) return;
         AssociatedObject.DataContextChanged += OnDataContextChanged;
+        AssociatedObject.PointerEntered += OnPointerEntered;
+        AssociatedObject.PointerExited += OnPointerExited;
         SubscribeToPropertyChanged();
         UpdateToolTip();
     }
@@ -49,9 +54,27 @@ public class CoverHoverPopupBehavior : Behavior<Control>
     protected override void OnDetaching()
     {
         if (AssociatedObject is not null)
+        {
             AssociatedObject.DataContextChanged -= OnDataContextChanged;
+            AssociatedObject.PointerEntered -= OnPointerEntered;
+            AssociatedObject.PointerExited -= OnPointerExited;
+        }
         UnsubscribeFromPropertyChanged();
         base.OnDetaching();
+    }
+
+    // A tooltip opened explicitly (see UpdateToolTip) is outside the tooltip service's
+    // pointer tracking and would stay open forever — close it ourselves on exit.
+    private void OnPointerExited(object? sender, PointerEventArgs e)
+    {
+        if (AssociatedObject is not null)
+            ToolTip.SetIsOpen(AssociatedObject, false);
+    }
+
+    private void OnPointerEntered(object? sender, PointerEventArgs e)
+    {
+        if (ResolveLeafObject() is IHoverImageLoader loader)
+            loader.RequestHoverImageLoad();
     }
 
     private void OnDataContextChanged(object? sender, EventArgs e)
@@ -97,12 +120,20 @@ public class CoverHoverPopupBehavior : Behavior<Control>
         var bitmap = GetBitmap();
         if (bitmap is null)
         {
+            _lastTipBitmap = null;
+            _lastTipSizeBytes = null;
             ToolTip.SetIsOpen(AssociatedObject, false);
             ToolTip.SetTip(AssociatedObject, null);
             return;
         }
 
         var sizeBytes = GetSizeBytes();
+
+        // Replacing the tip of an open tooltip closes and reopens the popup, which flickers;
+        // skip the rebuild when nothing actually changed (e.g. a second PropertyChanged pass).
+        if (ReferenceEquals(bitmap, _lastTipBitmap) && sizeBytes == _lastTipSizeBytes) return;
+        _lastTipBitmap = bitmap;
+        _lastTipSizeBytes = sizeBytes;
 
         string dimensionText;
         if (sizeBytes.HasValue)
@@ -144,6 +175,11 @@ public class CoverHoverPopupBehavior : Behavior<Control>
         ToolTip.SetTip(AssociatedObject, border);
         ToolTip.SetShowDelay(AssociatedObject, 300);
         ToolTip.SetPlacement(AssociatedObject, Placement);
+
+        // With on-demand loading the bitmap arrives after the pointer is already over the
+        // control, so the normal enter-triggered show never fires — open explicitly.
+        if (AssociatedObject.IsPointerOver)
+            ToolTip.SetIsOpen(AssociatedObject, true);
     }
 
     // Returns the last path segment (e.g. "CoverBitmap" from "ImageEditor.CoverBitmap").

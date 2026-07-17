@@ -393,13 +393,13 @@ public sealed class ReaderwareBackupParser : IBackupParser
         return result;
     }
 
-    private static Dictionary<int, List<(int ImageIndex, string HexData)>> LoadImageFile(
+    private static Dictionary<int, List<(int ImageIndex, byte[] Data)>> LoadImageFile(
         string folder, string fileName, List<string> warnings)
     {
         var path = Path.Combine(folder, fileName);
         if (!File.Exists(path)) return [];
 
-        var result = new Dictionary<int, List<(int ImageIndex, string HexData)>>();
+        var result = new Dictionary<int, List<(int ImageIndex, byte[] Data)>>();
         using var stream = File.OpenRead(path);
         using var reader = new StreamReader(stream, Encoding.BigEndianUnicode);
         var config = new CsvConfiguration(CultureInfo.InvariantCulture)
@@ -429,8 +429,10 @@ public sealed class ReaderwareBackupParser : IBackupParser
                     warnings.Add($"{fileName} row {rowId}: image data too short -- skipping");
                     continue;
                 }
-                var prefix = Convert.FromHexString(trimmed[..8]);
-                if (!IsRecognizedImage(prefix))
+                // Decode here rather than keeping the hex string: the whole catalog's images
+                // sit in this dictionary at once, and hex-as-UTF-16 is 4x the decoded size.
+                var bytes = Convert.FromHexString(trimmed);
+                if (!IsRecognizedImage(bytes))
                 {
                     warnings.Add($"{fileName} row {rowId}: unrecognized image format -- skipping");
                     continue;
@@ -441,7 +443,7 @@ public sealed class ReaderwareBackupParser : IBackupParser
                     list = [];
                     result[rowId] = list;
                 }
-                list.Add((imageIndex, trimmed));
+                list.Add((imageIndex, bytes));
             }
             catch (Exception ex)
             {

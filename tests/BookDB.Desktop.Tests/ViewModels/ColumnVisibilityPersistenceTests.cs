@@ -1,6 +1,7 @@
 using System.Threading;
 using Avalonia.Threading;
 using BookDB.Desktop.Services;
+using BookDB.Desktop.Tests.Helpers;
 using BookDB.Desktop.ViewModels;
 using BookDB.Logic.Services;
 using CommunityToolkit.Mvvm.Messaging;
@@ -12,7 +13,8 @@ namespace BookDB.Desktop.Tests.ViewModels;
 /// <summary>
 /// Verifies that toggling a column's visibility persists a "ColumnVisible.{Name}" setting.
 /// The change handlers post the write through Dispatcher.UIThread, so each test pumps the
-/// dispatcher with RunJobs() before asserting the settings service received the call.
+/// dispatcher with RunJobs() before asserting the settings service received the call. The body runs on
+/// <see cref="UiThread"/> so the post and pump share the dispatcher's owning thread (Avalonia 12 affinity).
 /// </summary>
 public sealed class ColumnVisibilityPersistenceTests
 {
@@ -35,11 +37,14 @@ public sealed class ColumnVisibilityPersistenceTests
     public void HidingAuthorColumn_PersistsColumnVisibleAuthorKey()
     {
         var settings = Substitute.For<ISettingsService>();
-        var vm = CreateVm(settings);
+        UiThread.Run(() =>
+        {
+            var vm = CreateVm(settings);
 
-        // Author defaults to visible; hiding it triggers the change handler.
-        vm.AuthorColumnVisible = false;
-        Dispatcher.UIThread.RunJobs();
+            // Author defaults to visible; hiding it triggers the change handler.
+            vm.AuthorColumnVisible = false;
+            Dispatcher.UIThread.RunJobs();
+        });
 
         settings.Received(1).SetAsync("ColumnVisible.Author", "False", Arg.Any<CancellationToken>());
     }
@@ -48,11 +53,14 @@ public sealed class ColumnVisibilityPersistenceTests
     public void ShowingRatingColumn_PersistsColumnVisibleRatingKey()
     {
         var settings = Substitute.For<ISettingsService>();
-        var vm = CreateVm(settings);
+        UiThread.Run(() =>
+        {
+            var vm = CreateVm(settings);
 
-        // Rating defaults to hidden; showing it triggers the change handler.
-        vm.RatingColumnVisible = true;
-        Dispatcher.UIThread.RunJobs();
+            // Rating defaults to hidden; showing it triggers the change handler.
+            vm.RatingColumnVisible = true;
+            Dispatcher.UIThread.RunJobs();
+        });
 
         settings.Received(1).SetAsync("ColumnVisible.Rating", "True", Arg.Any<CancellationToken>());
     }
@@ -61,11 +69,14 @@ public sealed class ColumnVisibilityPersistenceTests
     public void ShowingStatusColumn_PersistsColumnVisibleStatusKey()
     {
         var settings = Substitute.For<ISettingsService>();
-        var vm = CreateVm(settings);
+        UiThread.Run(() =>
+        {
+            var vm = CreateVm(settings);
 
-        // Status defaults to hidden; showing it triggers the change handler.
-        vm.StatusColumnVisible = true;
-        Dispatcher.UIThread.RunJobs();
+            // Status defaults to hidden; showing it triggers the change handler.
+            vm.StatusColumnVisible = true;
+            Dispatcher.UIThread.RunJobs();
+        });
 
         settings.Received(1).SetAsync("ColumnVisible.Status", "True", Arg.Any<CancellationToken>());
     }

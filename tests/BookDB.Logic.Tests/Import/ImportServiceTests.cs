@@ -404,12 +404,12 @@ public sealed class ImportServiceTests : IDisposable
         var backup = new ParsedBackup
         {
             Books = [book],
-            FullImagesByRowKey = new Dictionary<int, List<(int ImageIndex, string HexData)>>
+            FullImagesByRowKey = new Dictionary<int, List<(int ImageIndex, byte[] Data)>>
             {
                 [1] =
                 [
-                    (0, ValidJpegHex),
-                    (1, ValidJpegHex)
+                    (0, Convert.FromHexString(ValidJpegHex)),
+                    (1, Convert.FromHexString(ValidJpegHex))
                 ]
             }
         };
@@ -445,11 +445,11 @@ public sealed class ImportServiceTests : IDisposable
         var backup = new ParsedBackup
         {
             Books = [book],
-            ThumbImagesByRowKey = new Dictionary<int, List<(int ImageIndex, string HexData)>>
+            ThumbImagesByRowKey = new Dictionary<int, List<(int ImageIndex, byte[] Data)>>
             {
                 [2] =
                 [
-                    (0, ValidJpegHex)
+                    (0, Convert.FromHexString(ValidJpegHex))
                 ]
             }
         };

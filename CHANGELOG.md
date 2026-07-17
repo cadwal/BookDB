@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/semver-spec
 
 ## [Unreleased]
 
+## [3.0.0] - 2026-07-17
+
+### Changed
+- **New UI framework generation.** BookDB now runs on Avalonia 12, the latest major version of its cross-platform UI toolkit, with an updated graphics stack (SkiaSharp 3). This platform upgrade is what the 3.0 version number marks; the app is meant to look and behave the same as before, on all platforms.
+- **Statistics chart.** The books-per-year chart is now drawn with ScottPlot, replacing the previous charting library, and follows the active theme's colours.
+- **Cover previews load when you need them.** Hovering a cover in the book list now fetches the full-size preview on demand instead of loading every cover up front, and the preview appears beside the thumbnail. With a library on a remote server, the first hover on a book may take a moment; after that it is instant.
+
+### Fixed
+- BookDB no longer consumes CPU while sitting idle — a hidden progress indicator kept the renderer busy even when nothing was happening.
+- Memory use with a large library is dramatically lower: the book list no longer keeps a decoded full-size cover image in memory for every book (a ~1000-book library with covers previously held on the order of a gigabyte; now it doesn't).
+- Importing from Readerware (backup file or live database) and restoring a CSV archive no longer hold every cover image in memory at once — covers are now processed and released one batch at a time, so large libraries import and restore in steady memory.
+- Restoring a backup into the same folder a second time no longer fails with "file already exists": the safety backup taken before a restore now gets a dated, auto-suffixed name, the same scheme manual backups use.
+
 ## [2.3.0] - 2026-07-14
 
 ### Added
@@ -115,7 +128,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/semver-spec
 - Multi-language UI: EN, SV, DE, ES, FR, NL, IT, PT-BR, PT-PT
 - Help system with per-screen contextual help
 
-[Unreleased]: https://github.com/cadwal/BookDB/compare/v2.3.0...HEAD
+[Unreleased]: https://github.com/cadwal/BookDB/compare/v3.0.0...HEAD
 [2.1.0]: https://github.com/cadwal/BookDB/releases/tag/v2.1.0
 [1.1.0]: https://github.com/cadwal/BookDB/releases/tag/v1.1.0
 [1.0.0]: https://github.com/cadwal/BookDB/releases/tag/v1.0.0
@@ -124,3 +137,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/semver-spec
 [2.0.0]: https://github.com/cadwal/BookDB/releases/tag/v2.0.0
 [2.2.0]: https://github.com/cadwal/BookDB/releases/tag/v2.2.0
 [2.3.0]: https://github.com/cadwal/BookDB/releases/tag/v2.3.0
+[3.0.0]: https://github.com/cadwal/BookDB/releases/tag/v3.0.0

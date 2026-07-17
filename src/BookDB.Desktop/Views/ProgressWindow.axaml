@@ -10,7 +10,7 @@
         MinWidth="320"
         WindowStartupLocation="CenterOwner"
         ShowInTaskbar="False"
-        SystemDecorations="{Binding Decorations}"
+        WindowDecorations="{Binding Decorations}"
         Background="{DynamicResource BrushBackground}">
     <!-- Explicit Background so the window never flashes empty/transparent before its first paint —
          visible on a near-instant SQLite backup that opens and closes the window in one frame. -->

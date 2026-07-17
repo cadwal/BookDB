@@ -7,7 +7,6 @@ using BookDB.Desktop.ViewModels;
 using BookDB.Desktop.Views;
 using BookDB.Models.Entities;
 using Microsoft.EntityFrameworkCore;
-using OxyPlot.Series;
 using Xunit;
 
 namespace BookDB.Desktop.UITests;
@@ -48,9 +47,9 @@ public class StatisticsFlowTests : HeadlessTest
             Assert.Equal(new[] { ("1990", 2), ("2001", 1) },
                 vm.PublishedYearBreakdown.Select(r => (r.Label, r.Count)));
 
-            // The chart groups by the year the books were added — all three were added today.
-            var series = Assert.IsType<BarSeries>(Assert.Single(vm.ChartModel.Series));
-            Assert.Equal(3, Assert.Single(series.Items).Value);
+            // The chart groups by the year the books were added — all three were added today, so one bar of 3.
+            var point = Assert.Single(vm.BooksPerYear);
+            Assert.Equal(3, point.Count);
 
             // The breakdown rows render in the window's tables, not just on the VM.
             Assert.Contains(window.Descendants<TextBlock>(),

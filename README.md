@@ -42,6 +42,7 @@ The application uses a **SQLite3 database** by default, so tooling exists in alm
 ## What it does not do
 
 - Mobile apps
+- No telemetry, analytics, or "phone-home" — see [Privacy](PRIVACY.md)
 
 Compared to Readerware, the metadata sources supported are limited.
 
@@ -58,6 +59,12 @@ PRs, comments, and feature ideas are welcome — but the amount of time and effo
 As a Windows user, the backup import has been tested against what the Windows version of Readerware generated. It should work with other platforms since Readerware was a Java application, but this has not been verified. Also the import from database is only tested on Windows.
 
 The macOS version is of the "it builds, ship it" variety — I do not have a Mac to test with.
+
+## Privacy
+
+BookDB runs entirely on your machine, has no telemetry, and collects nothing about
+you. It only reaches the internet when you explicitly look up a book or cover by ISBN.
+Full details: [Privacy Policy](PRIVACY.md).
 
 ---
 

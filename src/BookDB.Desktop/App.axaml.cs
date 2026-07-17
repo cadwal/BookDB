@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
 using BookDB.Desktop.Views;
@@ -35,8 +34,6 @@ public partial class App : Application
             return;
         }
 
-        BindingPlugins.DataValidators.RemoveAt(0);
-
         _appHost = AppHost.Build();
         DataTemplates.Add(new ViewLocator(_appHost.Services));
 
@@ -50,10 +47,9 @@ public partial class App : Application
             // the one safe moment to tear down the DBus connection (see DBusShutdown).
             desktop.Exit += (_, _) => Helpers.DBusShutdown.DisposeDefaultConnection();
 
-            // Wire Avalonia UI-thread unhandled exception handler via Dispatcher.
-            // IClassicDesktopStyleApplicationLifetime.UnhandledException does not exist in
-            // Avalonia 11.3.x — the correct hook is Dispatcher.UIThread.UnhandledException.
-            // Wired before StartAsync so the handler is active during startup.
+            // The classic desktop lifetime exposes no UnhandledException event (still true on Avalonia 12), so
+            // Dispatcher.UIThread.UnhandledException is the UI-thread hook. Wired before StartAsync so the
+            // handler is active during startup.
             Dispatcher.UIThread.UnhandledException += (_, e) =>
             {
                 // A dropped remote DB connection from an unguarded interactive call is not fatal: surface it on

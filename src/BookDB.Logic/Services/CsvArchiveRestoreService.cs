@@ -239,6 +239,12 @@ public sealed class CsvArchiveRestoreService : ICsvArchiveRestoreService
             await ctx.SaveChangesAsync(ct);
             ctx.ChangeTracker.Clear();
 
+            // The batch shares its BookImage objects with the full `rows` list, so the blobs
+            // survive ChangeTracker.Clear and would accumulate to the whole catalog by the
+            // last batch. Saved and detached now — drop them.
+            foreach (var image in batch)
+                image.ImageData = [];
+
             done += batch.Length;
             progress?.Report(new MigrationProgress(MigrationPhase.Copying, MigrationTable.BookImage, done, rows.Count));
         }

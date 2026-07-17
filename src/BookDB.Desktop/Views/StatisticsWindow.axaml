@@ -2,7 +2,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:BookDB.Desktop.ViewModels"
         xmlns:res="using:BookDB.Desktop.Localization"
-        xmlns:oxy="http://oxyplot.org/avalonia"
+        xmlns:sp="using:ScottPlot.Avalonia"
+        xmlns:behaviors="using:BookDB.Desktop.Behaviors"
+        xmlns:i="using:Avalonia.Xaml.Interactivity"
         x:Class="BookDB.Desktop.Views.StatisticsWindow"
         x:DataType="vm:StatisticsWindowViewModel"
         Title="{x:Static res:Resources.Statistics_WindowTitle}"
@@ -51,10 +53,11 @@
                 <TextBlock Text="{x:Static res:Resources.Statistics_Section_BooksPerYear}"
                            FontSize="14"
                            FontWeight="SemiBold" />
-                <oxy:PlotView Model="{Binding ChartModel}"
-                              Height="220"
-                              Background="{DynamicResource BrushBackground}"
-                              Margin="0,0,0,0" />
+                <sp:AvaPlot Height="220">
+                    <i:Interaction.Behaviors>
+                        <behaviors:BooksPerYearChartBehavior Points="{Binding BooksPerYear}" />
+                    </i:Interaction.Behaviors>
+                </sp:AvaPlot>
                 <Button Content="{x:Static res:Resources.Statistics_RefreshButton}"
                         Command="{Binding RefreshCommand}"
                         HorizontalAlignment="Right" />

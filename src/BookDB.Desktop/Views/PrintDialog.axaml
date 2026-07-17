@@ -203,7 +203,7 @@
                      Text="{Binding FooterText}"
                      FontSize="13"
                      MaxLength="120"
-                     Watermark="{x:Static res:Resources.Print_FooterWatermark}"
+                     PlaceholderText="{x:Static res:Resources.Print_FooterWatermark}"
                      Margin="0,0,0,8"/>
 
             <!-- Row 4: Margins -->

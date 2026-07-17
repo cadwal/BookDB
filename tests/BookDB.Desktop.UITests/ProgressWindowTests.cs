@@ -50,14 +50,14 @@ public class ProgressWindowTests : HeadlessTest
             var normal = new ProgressWindow { DataContext = new ProgressWindowViewModel("Header") };
             normal.Show();
             Ui.Pump();
-            Assert.Equal(SystemDecorations.Full, normal.SystemDecorations);
+            Assert.Equal(WindowDecorations.Full, normal.WindowDecorations);
             Assert.False(normal.Descendants<ProgressBar>().Single().IsVisible);
             normal.Close();
 
             var card = new ProgressWindow { DataContext = new ProgressWindowViewModel("Header", isCard: true) };
             card.Show();
             Ui.Pump();
-            Assert.Equal(SystemDecorations.None, card.SystemDecorations);
+            Assert.Equal(WindowDecorations.None, card.WindowDecorations);
             var bar = card.Descendants<ProgressBar>().Single();
             Assert.True(bar.IsVisible);
             Assert.True(bar.IsIndeterminate);

@@ -99,6 +99,5 @@
         <Style Selector="GridSplitter">
             <Setter Property="Background" Value="{DynamicResource BrushBorder}" />
         </Style>
-        <StyleInclude Source="avares://OxyPlot.Avalonia/Themes/Default.axaml"/>
     </Application.Styles>
 </Application>

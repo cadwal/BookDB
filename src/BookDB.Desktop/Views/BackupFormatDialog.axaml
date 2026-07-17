@@ -30,7 +30,7 @@
             <TextBox Grid.Column="0"
                      Text="{Binding DestinationFolder}"
                      IsReadOnly="True"
-                     Watermark="{x:Static res:Resources.Settings_Advanced_BackupFolderWatermark}"
+                     PlaceholderText="{x:Static res:Resources.Settings_Advanced_BackupFolderWatermark}"
                      Margin="0,0,8,0" />
             <Button Grid.Column="1"
                     Content="{x:Static res:Resources.Settings_Advanced_Browse}"

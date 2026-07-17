@@ -568,7 +568,7 @@ public partial class BookListViewModel :
                 isLoanedOut: _activeFilterState?.IsLoanedOut ?? false,
                 ct: ct);
 
-            var newVms = result.Books.Select(BookRowViewModel.FromListRow).ToList();
+            var newVms = result.Books.Select(CreateRowViewModel).ToList();
 
             // If a new LoadBooksAsync started while we were fetching, discard stale results
             if (!ReferenceEquals(_loadCts, currentCts)) return;
@@ -629,13 +629,14 @@ public partial class BookListViewModel :
                 isLoanedOut: _activeFilterState?.IsLoanedOut ?? false,
                 ct: linkedCt);
 
+            _tooltipLru.Clear();
             foreach (var old in Books) { old.CoverThumbnail?.Dispose(); old.TooltipBitmap?.Dispose(); }
             Books.Clear();
             var newVms = new List<BookRowViewModel>();
             int rowNum = 0;
             foreach (var row in result.Books)
             {
-                var vm = BookRowViewModel.FromListRow(row);
+                var vm = CreateRowViewModel(row);
                 vm.RowNumber = ++rowNum;  // assign before Add so binding reads correct value
                 Books.Add(vm);
                 newVms.Add(vm);
@@ -734,9 +735,10 @@ public partial class BookListViewModel :
         }
 
         var index = Books.IndexOf(existingRow);
+        _tooltipLru.Remove(existingRow);
         existingRow.CoverThumbnail?.Dispose();
         existingRow.TooltipBitmap?.Dispose();
-        var updatedRowViewModel = BookRowViewModel.FromListRow(updatedRow);
+        var updatedRowViewModel = CreateRowViewModel(updatedRow);
         Books[index] = updatedRowViewModel;
 
         // Restore DataGrid selection to the replacement instance — the ObservableCollection Replace
@@ -789,8 +791,10 @@ public partial class BookListViewModel :
             }
             else
             {
-                viewModel.TooltipBitmap = bmp;
+                // Size before bitmap: the hover behavior rebuilds the tooltip on the bitmap
+                // change, and the size must already be readable in that same pass.
                 viewModel.TooltipBitmapSizeBytes = tooltipBytes.LongLength;
+                viewModel.TooltipBitmap = bmp;
             }
         }
         else
@@ -809,9 +813,48 @@ public partial class BookListViewModel :
             try { await LoadThumbnailBitmapAsync(viewModel, ct); }
             catch (OperationCanceledException) { break; }
             catch (Exception ex) { Log.Debug(ex, "Failed to load thumbnail for book {BookId}", viewModel.BookId); }
-            try { await LoadTooltipBitmapAsync(viewModel, ct); }
-            catch (OperationCanceledException) { break; }
-            catch (Exception ex) { Log.Debug(ex, "Failed to load tooltip image for book {BookId}", viewModel.BookId); }
+        }
+    }
+
+    private BookRowViewModel CreateRowViewModel(BookService.BookListRow row)
+    {
+        var vm = BookRowViewModel.FromListRow(row);
+        vm.TooltipLoader = LoadTooltipOnDemandAsync;
+        return vm;
+    }
+
+    // Tooltip bitmaps are full-size decodes; loading one per row would keep the whole
+    // library's pixel data in native memory (and pull every cover blob from the server
+    // up front). Load on hover instead and keep only the most recent few alive.
+    private const int TooltipCacheSize = 8;
+    private readonly List<BookRowViewModel> _tooltipLru = [];
+
+    private async Task LoadTooltipOnDemandAsync(BookRowViewModel viewModel)
+    {
+        if (!viewModel.HasCoverImage) return;
+        if (viewModel.TooltipBitmap is not null)
+        {
+            _tooltipLru.Remove(viewModel);
+            _tooltipLru.Add(viewModel);
+            return;
+        }
+
+        try { await LoadTooltipBitmapAsync(viewModel, CancellationToken.None); }
+        catch (Exception ex)
+        {
+            Log.Debug(ex, "Failed to load tooltip image for book {BookId}", viewModel.BookId);
+            return;
+        }
+
+        if (viewModel.TooltipBitmap is null) return;
+        _tooltipLru.Add(viewModel);
+        while (_tooltipLru.Count > TooltipCacheSize)
+        {
+            var evicted = _tooltipLru[0];
+            _tooltipLru.RemoveAt(0);
+            evicted.TooltipBitmap?.Dispose();
+            evicted.TooltipBitmap = null;
+            evicted.TooltipBitmapSizeBytes = null;
         }
     }
 

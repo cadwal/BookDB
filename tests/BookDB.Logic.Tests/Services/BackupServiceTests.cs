@@ -164,9 +164,32 @@ public sealed class BackupServiceTests : IDisposable
     {
         var ct = TestContext.Current.CancellationToken;
 
-        // safetyBackupPath=null should throw before any restore attempt
+        // safetyBackupFolder=null should throw before any restore attempt
         await Assert.ThrowsAsync<ArgumentNullException>(
             () => _sut.RestoreAsync("somefile.zip", null!, ct));
+    }
+
+    [Fact]
+    public async Task RestoreAsync_SafetyBackupGetsSuffixedNameWhenTodaysFileExists()
+    {
+        var ct = TestContext.Current.CancellationToken;
+
+        var backupZip = await _sut.BackupSqliteAsync(_tempWorkDir, ct);
+
+        var safetyFolder = Path.Combine(_tempWorkDir, "safety");
+        Directory.CreateDirectory(safetyFolder);
+        var date = DateTime.Now.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+        var occupied = Path.Combine(safetyFolder, $"bookdb-safety-{date}.zip");
+        await File.WriteAllTextAsync(occupied, "left over from an earlier restore", ct);
+
+        await _sut.RestoreAsync(backupZip, safetyFolder, ct);
+
+        Assert.Equal("left over from an earlier restore", await File.ReadAllTextAsync(occupied, ct));
+
+        var suffixed = Path.Combine(safetyFolder, $"bookdb-safety-{date}-1.zip");
+        Assert.True(File.Exists(suffixed), "safety backup should be written under a suffixed name");
+        using var archive = ZipFile.OpenRead(suffixed);
+        Assert.Contains(archive.Entries, e => e.Name == "library.db");
     }
 
     [Fact]

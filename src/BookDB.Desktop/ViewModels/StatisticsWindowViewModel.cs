@@ -8,9 +8,6 @@ using BookDB.Desktop.Helpers;
 using BookDB.Logic.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using OxyPlot;
-using OxyPlot.Axes;
-using OxyPlot.Series;
 using Serilog;
 
 namespace BookDB.Desktop.ViewModels;
@@ -21,6 +18,9 @@ public record BreakdownRowDisplay(string Label, int Count, double Percentage)
     public string CountText => $"{Count:N0} ({Percentage:F1}%)";
 }
 
+/// <summary>One bar of the books-added-per-year chart. Rendered by BooksPerYearChartBehavior.</summary>
+public record BooksPerYearPoint(int Year, int Count);
+
 public sealed partial class StatisticsWindowViewModel : ObservableObject
 {
     private readonly IStatisticsService _statisticsService;
@@ -30,21 +30,12 @@ public sealed partial class StatisticsWindowViewModel : ObservableObject
     /// <summary>Set by WindowService to close the window.</summary>
     public Action? CloseWindow { get; set; }
 
-    // NOT [ObservableProperty] — OxyPlot listens to InvalidatePlot, not PropertyChanged.
-    // Replacing the model causes flicker; update in-place instead.
-    public PlotModel ChartModel { get; } = new PlotModel
-    {
-        Title = Localization.Resources.Statistics_Section_BooksPerYear,
-        Background = ToOxy(Helpers.Palette.Color("BrushBackground", Avalonia.Media.Colors.White)),
-        TextColor = ToOxy(Helpers.Palette.Color("BrushTextPrimary", Avalonia.Media.Colors.Black)),
-        TitleColor = ToOxy(Helpers.Palette.Color("BrushTextPrimary", Avalonia.Media.Colors.Black)),
-        PlotAreaBorderColor = ToOxy(Helpers.Palette.Color("BrushBorder", Avalonia.Media.Colors.Gray)),
-    };
-
-    private static OxyColor ToOxy(Avalonia.Media.Color c) => OxyColor.FromArgb(c.A, c.R, c.G, c.B);
-
     [ObservableProperty]
     private int _totalBooks;
+
+    /// <summary>Books-added-per-year data for the bar chart; the chart control renders it via a behavior.</summary>
+    [ObservableProperty]
+    private IReadOnlyList<BooksPerYearPoint> _booksPerYear = [];
 
     public ObservableCollection<BreakdownRowDisplay> FormatBreakdown { get; } = [];
     public ObservableCollection<BreakdownRowDisplay> CollectionBreakdown { get; } = [];
@@ -74,7 +65,7 @@ public sealed partial class StatisticsWindowViewModel : ObservableObject
         {
             TotalBooks = await _statisticsService.GetTotalBookCountAsync();
             var yearData = await _statisticsService.GetBooksPerYearAsync();
-            BuildChart(yearData);
+            BooksPerYear = yearData.Select(d => new BooksPerYearPoint(d.Year, d.Count)).ToList();
             ReplaceCollection(FormatBreakdown, await _statisticsService.GetBreakdownByFormatAsync());
             ReplaceCollection(CollectionBreakdown, await _statisticsService.GetBreakdownByCollectionAsync());
             ReplaceCollection(LanguageBreakdown, await _statisticsService.GetBreakdownByLanguageAsync());
@@ -89,40 +80,6 @@ public sealed partial class StatisticsWindowViewModel : ObservableObject
             _connectionMonitor.ReportIfConnectionLoss(_connectionClassifier, ex);
             return false;
         }
-    }
-
-    private void BuildChart(IReadOnlyList<(int Year, int Count)> data)
-    {
-        ChartModel.Series.Clear();
-        ChartModel.Axes.Clear();
-
-        var axisText = ToOxy(Helpers.Palette.Color("BrushTextSecondary", Avalonia.Media.Colors.Black));
-        var axisLine = ToOxy(Helpers.Palette.Color("BrushBorder", Avalonia.Media.Colors.Gray));
-
-        // OxyPlot 2.x BarSeries renders horizontal bars; CategoryAxis must be on Left (Y axis).
-        // CategoryAxis.Labels is a List<string> (read-only property — use .Add(), not assignment).
-        var catAxis = new CategoryAxis
-        {
-            Position = AxisPosition.Left,
-            TextColor = axisText, TitleColor = axisText, AxislineColor = axisLine, TicklineColor = axisLine,
-        };
-        foreach (var (year, _) in data)
-            catAxis.Labels.Add(year.ToString());
-
-        var series = new BarSeries { FillColor = ToOxy(Helpers.Palette.Color("BrushChartBar", Avalonia.Media.Color.Parse("#4682b4"))) };
-        foreach (var (_, count) in data)
-            series.Items.Add(new BarItem(count));
-
-        ChartModel.Axes.Add(catAxis);
-        ChartModel.Axes.Add(new LinearAxis
-        {
-            Position = AxisPosition.Bottom,
-            MinimumPadding = 0,
-            TextColor = axisText, TitleColor = axisText, AxislineColor = axisLine, TicklineColor = axisLine,
-        });
-
-        ChartModel.Series.Add(series);
-        ChartModel.InvalidatePlot(true); // REQUIRED — forces Avalonia re-render
     }
 
     private static void ReplaceCollection(

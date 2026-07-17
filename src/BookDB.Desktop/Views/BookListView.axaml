@@ -115,7 +115,7 @@
                             VerticalAlignment="Center">
                     <Image Width="16" Height="16" VerticalAlignment="Center" Opacity="0.6" Source="{StaticResource Icon.Search}" />
                     <TextBox Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                             Watermark="{x:Static res:Resources.Toolbar_Search_Placeholder}"
+                             PlaceholderText="{x:Static res:Resources.Toolbar_Search_Placeholder}"
                              Width="240"
                              FontSize="13" />
                     <Button Classes="iconButton"
@@ -248,7 +248,7 @@
                     </ContextMenu>
                 </DataGrid.ContextMenu>
                 <DataGrid.Columns>
-                    <!-- Row number column: sequential 1-based index, non-interactive, monospace (09.1 A-01/A-02) -->
+                    <!-- Row number column: sequential 1-based index, non-interactive, monospace -->
                     <DataGridTemplateColumn Width="48"
                                             CanUserReorder="False"
                                             CanUserResize="False"
@@ -277,7 +277,7 @@
                                         Height="36"
                                         IsVisible="{Binding CoverThumbnail, Converter={x:Static ObjectConverters.IsNotNull}}">
                                     <i:Interaction.Behaviors>
-                                        <behaviors:CoverHoverPopupBehavior ImagePropertyName="TooltipBitmap" />
+                                        <behaviors:CoverHoverPopupBehavior ImagePropertyName="TooltipBitmap" Placement="Right" />
                                     </i:Interaction.Behaviors>
                                     <Grid>
                                         <Image Source="{Binding CoverThumbnail}"
@@ -452,7 +452,9 @@
                             HorizontalAlignment="Center"
                             Spacing="8"
                             VerticalAlignment="Center">
-                    <ProgressBar IsIndeterminate="True"
+                    <!-- Bound, not constant: an indeterminate ProgressBar keeps the compositor
+                         rendering every frame even while hidden, burning CPU when the app idles. -->
+                    <ProgressBar IsIndeterminate="{Binding IsLoadingMore}"
                                  Width="120"
                                  Height="4" />
                     <TextBlock Text="{x:Static res:Resources.BookList_Loading}"

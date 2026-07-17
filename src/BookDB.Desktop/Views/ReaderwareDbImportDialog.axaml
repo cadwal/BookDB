@@ -68,7 +68,7 @@
         <TextBox Grid.Column="1"
                  Text="{Binding DatabasePath}"
                  IsReadOnly="True"
-                 Watermark="{x:Static res:Resources.ReaderwareImport_DatabaseWatermark}"
+                 PlaceholderText="{x:Static res:Resources.ReaderwareImport_DatabaseWatermark}"
                  HorizontalAlignment="Stretch"
                  Margin="0,0,4,0"/>
         <Button Grid.Column="2"

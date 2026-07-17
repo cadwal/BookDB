@@ -19,7 +19,7 @@
         <DockPanel Grid.Column="0" Background="{DynamicResource BrushBackgroundAlt}">
             <TextBox DockPanel.Dock="Top"
                      Margin="8,8,8,4"
-                     Watermark="{x:Static res:Resources.ManageBorrowers_Filter_Watermark}"
+                     PlaceholderText="{x:Static res:Resources.ManageBorrowers_Filter_Watermark}"
                      Text="{Binding FilterText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
             <Button DockPanel.Dock="Bottom"
                     Margin="8,4,8,8"

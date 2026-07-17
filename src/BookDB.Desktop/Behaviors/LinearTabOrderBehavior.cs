@@ -13,7 +13,7 @@ namespace BookDB.Desktop.Behaviors;
 ///
 /// Avalonia's <see cref="TabControl"/> keeps a per-content "last focused descendant" (its
 /// <c>TabOnceActiveElement</c>); once focus has entered the selected tab's content and moved on,
-/// the default Tab handler — and <see cref="KeyboardNavigationHandler.GetNext"/>, which it relies
+/// the default Tab handler — and <see cref="FocusManager.GetNextElement"/>, which it relies
 /// on — wraps back into that remembered element instead of the window's genuine first control. So
 /// forward Tab degrades into a two-element oscillation after one lap (the tab header and earlier
 /// controls drop out). The behaviour is baked into the traversal and is not reachable through
