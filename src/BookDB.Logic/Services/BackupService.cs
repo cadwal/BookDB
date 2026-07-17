@@ -50,13 +50,6 @@ public sealed class BackupService : IBackupService
 
     public bool SupportsFileBackup => _backupStrategy.SupportsFileBackup;
 
-    // File-based backup/restore requires a local SQLite database file. A non-SQLite backend uses the
-    // CSV-archive path instead, so this never resolves to null for the operations that call it.
-    private string SqliteLibraryPath =>
-        _appSettings.SqliteLibraryPath
-        ?? throw new InvalidOperationException(
-            "A local SQLite database path is required for file-based backup or restore.");
-
     // config.json is bundled into every backup so a restore can carry the backend and preferences;
     // guarded in case a backup runs before the file has been written.
     private string? ExistingConfigPath =>
@@ -282,8 +275,7 @@ public sealed class BackupService : IBackupService
                 throw new InvalidOperationException("The backup zip does not contain library.db.");
 
             progress?.Report(new ProgressUpdate<BackupProgressStep>(BackupProgressStep.ReplacingLibrary));
-            var activeLibraryPath = Path.GetFullPath(SqliteLibraryPath);
-            File.Copy(extractedDb, activeLibraryPath, overwrite: true);
+            await _backupStrategy.RestoreFileAsync(extractedDb, ct);
 
             Log.Information("BackupService: Restore complete — active library replaced from {BackupZipPath}", backupZipPath);
         }

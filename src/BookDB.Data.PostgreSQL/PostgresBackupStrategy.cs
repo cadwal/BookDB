@@ -21,4 +21,8 @@ public sealed class PostgresBackupStrategy : IBackupStrategy
         IProgress<ProgressUpdate<BackupProgressStep>>? progress = null) =>
         throw new NotSupportedException(
             "A remote PostgreSQL backend has no file-format backup; use the CSV archive (SupportsFileBackup is false).");
+
+    public Task RestoreFileAsync(string sourceDbPath, CancellationToken ct) =>
+        throw new NotSupportedException(
+            "A remote PostgreSQL backend has no file-format restore; use the CSV archive (SupportsFileBackup is false).");
 }

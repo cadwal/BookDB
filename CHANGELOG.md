@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/semver-spec
 - Memory use with a large library is dramatically lower: the book list no longer keeps a decoded full-size cover image in memory for every book (a ~1000-book library with covers previously held on the order of a gigabyte; now it doesn't).
 - Importing from Readerware (backup file or live database) and restoring a CSV archive no longer hold every cover image in memory at once — covers are now processed and released one batch at a time, so large libraries import and restore in steady memory.
 - Restoring a backup into the same folder a second time no longer fails with "file already exists": the safety backup taken before a restore now gets a dated, auto-suffixed name, the same scheme manual backups use.
+- Restoring a SQLite file backup on macOS failed with a "file in use" error. The restore now closes the database's open connections — and clears leftover write-ahead-log files — before replacing the library, on every platform.
 
 ## [2.3.0] - 2026-07-14
 

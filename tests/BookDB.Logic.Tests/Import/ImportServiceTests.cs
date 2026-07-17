@@ -517,15 +517,26 @@ public sealed class ImportServiceTests : IDisposable
         var svc = CreateImportService(backup);
 
         using var cts = new CancellationTokenSource();
-        cts.CancelAfter(TimeSpan.FromMilliseconds(100)); // Cancel quickly
+        // Cancel from the first batch's progress report — the import checks the token between
+        // batches, so this stops it mid-run deterministically, with no wall-clock race.
+        var cancelOnFirstReport = new SynchronousProgress<ImportProgress>(_ => cts.Cancel());
 
-        var result = await svc.ImportAsync("mock-path", collectionId: 1, cancellationToken: cts.Token);
+        var result = await svc.ImportAsync("mock-path", collectionId: 1, progress: cancelOnFirstReport, cancellationToken: cts.Token);
 
         Assert.True(result.WasCancelled);
         // Some books should exist, but not all
         await using var verifyDb = await _factory.CreateDbContextAsync(TestContext.Current.CancellationToken);
         var count = await verifyDb.Books.CountAsync(TestContext.Current.CancellationToken);
-        Assert.True(count < 220, $"Expected fewer than 220 books after cancellation, got {count}");
+        Assert.InRange(count, 1, 219);
+    }
+
+    // Unlike Progress<T>, reports inline on the caller's thread, so the test's cancel takes
+    // effect before the next batch starts.
+    private sealed class SynchronousProgress<T> : IProgress<T>
+    {
+        private readonly Action<T> _onReport;
+        public SynchronousProgress(Action<T> onReport) => _onReport = onReport;
+        public void Report(T value) => _onReport(value);
     }
 
     [Fact]

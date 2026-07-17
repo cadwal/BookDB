@@ -336,5 +336,8 @@ public sealed class BackupServiceTests : IDisposable
             string destFolder, System.Threading.CancellationToken ct, string? explicitFileName = null,
             IProgress<ProgressUpdate<BackupProgressStep>>? progress = null) =>
             throw new InvalidOperationException("File backup must not be called when SupportsFileBackup is false.");
+
+        public Task RestoreFileAsync(string sourceDbPath, System.Threading.CancellationToken ct) =>
+            throw new InvalidOperationException("File restore must not be called when SupportsFileBackup is false.");
     }
 }

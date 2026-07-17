@@ -73,6 +73,26 @@ public sealed class SqliteBackupStrategy : IBackupStrategy
         return zipPath;
     }
 
+    public async Task RestoreFileAsync(string sourceDbPath, CancellationToken ct)
+    {
+        var target = Path.GetFullPath(
+            _appSettings.SqliteLibraryPath
+            ?? throw new InvalidOperationException("A local SQLite database path is required for a file restore."));
+
+        // Idle pooled connections keep the library file open — macOS refuses to overwrite an open
+        // file — and a leftover -wal/-shm pair would replay pre-restore pages over the restored
+        // database on its next open. Close every pooled handle, then drop the sidecars before copying.
+        Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools();
+        await Task.Run(() =>
+        {
+            File.Delete(target + "-wal");
+            File.Delete(target + "-shm");
+            File.Copy(sourceDbPath, target, overwrite: true);
+        }, ct);
+
+        Log.Information("SqliteBackupStrategy: library file replaced from {SourcePath}", sourceDbPath);
+    }
+
     // config.json is bundled into the backup so a restore can carry the backend and preferences;
     // guarded in case a backup runs before the file has been written.
     private string? ExistingConfigPath =>

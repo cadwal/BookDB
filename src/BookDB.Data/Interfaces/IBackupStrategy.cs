@@ -19,4 +19,11 @@ public interface IBackupStrategy
         CancellationToken ct,
         string? explicitFileName = null,
         IProgress<ProgressUpdate<BackupProgressStep>>? progress = null);
+
+    /// <summary>
+    /// Replaces the live database file with <paramref name="sourceDbPath"/>, releasing any handles the
+    /// provider itself still holds on it first. Only valid when <see cref="SupportsFileBackup"/> is
+    /// <c>true</c>; remote backends throw.
+    /// </summary>
+    Task RestoreFileAsync(string sourceDbPath, CancellationToken ct);
 }
