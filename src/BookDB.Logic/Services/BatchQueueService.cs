@@ -17,6 +17,9 @@ public record BatchQueueSummary(
     int PendingReview,
     int Skipped);
 
+/// <summary>How many failed items share a failure code (null = failed before codes existed).</summary>
+public sealed record BatchFailureCount(string? FailureCode, int Count);
+
 public sealed class BatchQueueService
 {
     private readonly IDbContextFactory<BookDbContext> _factory;
@@ -27,7 +30,7 @@ public sealed class BatchQueueService
     }
 
     public async Task<BatchQueueItem> EnqueueAsync(
-        string isbn, int? bookId, CancellationToken ct = default)
+        string isbn, int? bookId, bool forceReview = false, CancellationToken ct = default)
     {
         var normalized = IsbnNormalizer.Normalize(isbn);
 
@@ -39,13 +42,27 @@ public sealed class BatchQueueService
                         (i.Status == BatchStatus.Pending || i.Status == BatchStatus.Processing))
             .FirstOrDefaultAsync(ct);
         if (existing is not null)
+        {
+            // A force-review enqueue must keep its confirm promise even when it dedups onto an
+            // item queued without the flag — upgrade the row rather than dropping the demand.
+            if (forceReview && !existing.ForceReview)
+            {
+                await dbContext.BatchQueueItems
+                    .Where(i => i.BatchQueueItemId == existing.BatchQueueItemId)
+                    .ExecuteUpdateAsync(s => s
+                        .SetProperty(i => i.ForceReview, true)
+                        .SetProperty(i => i.UpdatedAt, DateTime.UtcNow), ct);
+                existing.ForceReview = true;
+            }
             return existing;
+        }
 
         var item = new BatchQueueItem
         {
             Isbn = normalized,
             BookId = bookId,
             Status = BatchStatus.Pending,
+            ForceReview = forceReview,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };
@@ -175,8 +192,13 @@ public sealed class BatchQueueService
             .ToListAsync(ct);
     }
 
+    /// <summary>
+    /// <paramref name="failureCode"/> is a <see cref="BatchFailureReason"/> name for Failed items; leaving it
+    /// null on any other transition clears a stale code, so a retried item never keeps its old reason.
+    /// </summary>
     public async Task UpdateStatusAsync(
-        int itemId, string status, string? resultJson, CancellationToken ct = default)
+        int itemId, string status, string? resultJson,
+        string? failureCode = null, CancellationToken ct = default)
     {
         await using var dbContext = await _factory.CreateDbContextAsync(ct);
         await dbContext.BatchQueueItems
@@ -184,7 +206,30 @@ public sealed class BatchQueueService
             .ExecuteUpdateAsync(s => s
                 .SetProperty(i => i.Status, status)
                 .SetProperty(i => i.ResultJson, resultJson)
+                .SetProperty(i => i.FailureCode, failureCode)
                 .SetProperty(i => i.UpdatedAt, DateTime.UtcNow), ct);
+    }
+
+    /// <summary>
+    /// Failed-item counts grouped by failure code. Codes are raw <see cref="BatchQueueItem.FailureCode"/>
+    /// values (null for rows that predate failure codes); the caller localizes them.
+    /// </summary>
+    public async Task<IReadOnlyList<BatchFailureCount>> GetFailureReasonCountsAsync(
+        CancellationToken ct = default)
+    {
+        await using var dbContext = await _factory.CreateDbContextAsync(ct);
+        return await dbContext.BatchQueueItems
+            .Where(i => i.Status == BatchStatus.Failed)
+            .GroupBy(i => i.FailureCode)
+            .Select(g => new BatchFailureCount(g.Key, g.Count()))
+            .ToListAsync(ct);
+    }
+
+    public async Task<BatchQueueItem?> GetItemAsync(int itemId, CancellationToken ct = default)
+    {
+        await using var dbContext = await _factory.CreateDbContextAsync(ct);
+        return await dbContext.BatchQueueItems
+            .FirstOrDefaultAsync(i => i.BatchQueueItemId == itemId, ct);
     }
 
     public async Task<IReadOnlyList<BatchQueueItem>> GetItemsByStatusAsync(

@@ -79,6 +79,41 @@ public class CheckOutFlowTests : HeadlessTest
     }
 
     [Fact]
+    public async Task CheckIn_FromList_RefreshesOpenDetailView_EvenInEditMode()
+    {
+        var ct = TestContext.Current.CancellationToken;
+
+        await RunUi(async () =>
+        {
+            using var host = TestHost.Create();
+            var book = await SeedData.AddBookAsync(host, "Shared Book", ct);
+            var borrower = await SeedData.AddBorrowerAsync(host, "Ada", "Lovelace", ct);
+            await host.Resolve<ILoanService>().CheckOutAsync(book.BookId, borrower.BorrowerId, null, ct);
+
+            // The book's detail view is open in edit mode and shows it as on loan.
+            var detail = host.Resolve<BookDetailViewModel>();
+            await detail.LoadBookAsync(book.BookId);
+            await ((IAsyncRelayCommand)detail.EnterEditModeCommand).ExecuteAsync(null);
+            Ui.Pump();
+            Assert.True(detail.IsEditMode);
+            Assert.True(detail.IsLoanVisible);
+            Assert.Contains("Ada Lovelace", detail.LoanStatusDisplay);
+
+            // Returning it from the list must clear the open view's loan badge — without a reload that
+            // would discard edits (the view stays in edit mode).
+            var list = host.Resolve<BookListViewModel>();
+            await list.LoadBooksAsync(ct);
+            var row = list.Books.Single(b => b.BookId == book.BookId);
+            list.UpdateSelectedBooks(new[] { row });
+            await ((IAsyncRelayCommand)list.CheckInCommand).ExecuteAsync(null);
+
+            await Ui.PumpUntil(() => !detail.IsLoanVisible, ct);
+            Assert.True(detail.IsEditMode);
+            Assert.Equal(string.Empty, detail.LoanStatusDisplay);
+        });
+    }
+
+    [Fact]
     public async Task CancellingTheDialog_RecordsNoLoan()
     {
         var ct = TestContext.Current.CancellationToken;

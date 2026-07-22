@@ -1,10 +1,8 @@
 using System;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
-using Avalonia.Media.Imaging;
+using BookDB.Desktop.Services;
 using BookDB.Logic.Services;
 using BookDB.Models.Entities;
 using BookDB.Models.Interfaces;
@@ -14,83 +12,69 @@ using Serilog;
 
 namespace BookDB.Desktop.ViewModels;
 
+/// <summary>
+/// The guided flow's manual stage (reached from the identify dialog and the Lookup Wizard's
+/// manual hatch): title plus the shared author row-editor, ISBN carried over from identify,
+/// year, and the collection default. "Save &amp; open editor" hands the saved book to the full
+/// editor for anything beyond the quick fields.
+/// </summary>
 public partial class AddBookDialogViewModel : ObservableObject
 {
     private readonly IBookService _bookService;
-    private readonly IBookImageService _bookImageService;
     private readonly ILookupService _lookupService;
-    private readonly IFilePickerService _filePickerService;
-    private readonly IHttpClientFactory _httpClientFactory;
+    private readonly IWindowService _windowService;
 
     // Callback to close the dialog window with a result
     public Action<bool>? CloseDialog { get; set; }
 
     private int? _defaultCollectionId;
-    // Bytes of the selected cover (null if none chosen)
-    private byte[]? _coverBytes;
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
+    [NotifyCanExecuteChangedFor(nameof(SaveAndOpenEditorCommand))]
     private string _title = string.Empty;
-
-    [ObservableProperty]
-    private string _author = string.Empty;
 
     [ObservableProperty]
     private string _isbn = string.Empty;
 
     [ObservableProperty]
-    private int? _selectedFormatId;
-
-    [ObservableProperty]
-    private string _publisher = string.Empty;
-
-    [ObservableProperty]
     private string _year = string.Empty;
-
-    [ObservableProperty]
-    private Bitmap? _coverBitmap;
-
-    [ObservableProperty]
-    private string _urlInput = string.Empty;
 
     [ObservableProperty]
     private int? _selectedCollectionId;
 
-    public ObservableCollection<Format> Formats { get; } = [];
     public ObservableCollection<CollectionItem> Collections { get; } = [];
+
+    /// <summary>Shared type-ahead provider for the author rows; snapshot loads in <see cref="InitializeAsync"/>.</summary>
+    public PersonSuggestionProvider PersonSuggestions { get; } = new();
+
+    /// <summary>Editable author rows — reuse-or-create by name on save, existing-vs-new visible per row.</summary>
+    public ObservableCollection<PersonSuggestionRowViewModel> AuthorRows { get; } = [];
 
     private bool CanSave => !string.IsNullOrWhiteSpace(Title);
 
     public AddBookDialogViewModel(
         IBookService bookService,
-        IBookImageService bookImageService,
         ILookupService lookupService,
-        IFilePickerService filePickerService,
-        IHttpClientFactory httpClientFactory)
+        IWindowService windowService)
     {
         _bookService = bookService;
-        _bookImageService = bookImageService;
         _lookupService = lookupService;
-        _filePickerService = filePickerService;
-        _httpClientFactory = httpClientFactory;
+        _windowService = windowService;
     }
 
     public async Task InitializeAsync()
     {
         try
         {
-            var formats = await _lookupService.GetAllAsync<Format>();
-            Formats.Clear();
-            foreach (var f in formats)
-                Formats.Add(f);
-
             var collections = await _lookupService.GetCollectionsAsync();
             Collections.Clear();
             foreach (var c in collections)
                 Collections.Add(new CollectionItem(c.CollectionId, c.Name));
 
             SelectedCollectionId = _defaultCollectionId ?? Collections.FirstOrDefault()?.Id;
+
+            PersonSuggestions.LoadSnapshot(await _bookService.GetPeopleAsync());
         }
         catch (Exception ex)
         {
@@ -98,34 +82,58 @@ public partial class AddBookDialogViewModel : ObservableObject
         }
     }
 
+    [RelayCommand]
+    private void AddAuthorRow()
+        => AuthorRows.Add(new PersonSuggestionRowViewModel(PersonSuggestions));
+
+    [RelayCommand]
+    private void RemoveAuthorRow(PersonSuggestionRowViewModel row)
+        => AuthorRows.Remove(row);
+
     [RelayCommand(CanExecute = nameof(CanSave))]
-    private async Task SaveAsync()
+    private Task SaveAsync() => SaveAndCloseAsync(openEditor: false);
+
+    [RelayCommand(CanExecute = nameof(CanSave))]
+    private Task SaveAndOpenEditorAsync() => SaveAndCloseAsync(openEditor: true);
+
+    private async Task SaveAndCloseAsync(bool openEditor)
     {
+        int savedBookId;
         try
         {
             var book = new Book
             {
                 Title = Title,
                 Isbn = string.IsNullOrWhiteSpace(Isbn) ? null : Isbn,
-                FormatId = SelectedFormatId,
                 PubDate = string.IsNullOrWhiteSpace(Year) ? null : Year,
                 CollectionId = SelectedCollectionId,
             };
 
-            var authorNames = string.IsNullOrWhiteSpace(Author)
-                ? Array.Empty<string>()
-                : Author.Split(new[] { ';', ',' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            var authorNames = AuthorRows
+                .Select(r => r.NameToPersist)
+                .Where(name => name.Length > 0)
+                .ToArray();
             var savedBook = await _bookService.AddBookWithContributorsAsync(book, authorNames);
-
-            // Store cover as BookImage BLOB after book has been saved and has a BookId
-            if (_coverBytes is { Length: > 0 })
-                await _bookImageService.SavePrimaryBookImageAsync(savedBook.BookId, _coverBytes);
+            savedBookId = savedBook.BookId;
 
             CloseDialog?.Invoke(true);
         }
         catch (Exception ex)
         {
             Log.Error(ex, "Failed to save new book");
+            return;
+        }
+
+        if (openEditor)
+        {
+            try
+            {
+                await _windowService.OpenFullDetailsWindowAsync(savedBookId);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Failed to open the editor for book {BookId} after manual add", savedBookId);
+            }
         }
     }
 
@@ -135,57 +143,13 @@ public partial class AddBookDialogViewModel : ObservableObject
         CloseDialog?.Invoke(false);
     }
 
-    [RelayCommand]
-    private async Task BrowseCoverAsync()
-    {
-        try
-        {
-            var path = await _filePickerService.PickFileAsync(
-                Localization.Resources.FilePicker_SelectCoverImage,
-                new[] { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp" });
-            if (path != null)
-            {
-                var bytes = await File.ReadAllBytesAsync(path);
-                _coverBytes = bytes;
-                using var ms = new MemoryStream(bytes);
-                CoverBitmap = new Bitmap(ms);
-            }
-        }
-        catch (Exception ex)
-        {
-            Log.Error(ex, "Failed to browse for cover image");
-        }
-    }
-
-    [RelayCommand]
-    private async Task DownloadCoverAsync()
-    {
-        if (string.IsNullOrWhiteSpace(UrlInput)) return;
-        try
-        {
-            using var client = _httpClientFactory.CreateClient();
-            var bytes = await client.GetByteArrayAsync(UrlInput);
-            _coverBytes = bytes;
-            using var ms = new MemoryStream(bytes);
-            CoverBitmap = new Bitmap(ms);
-        }
-        catch (Exception ex)
-        {
-            Log.Error(ex, "Failed to download cover from URL: {Url}", UrlInput);
-        }
-    }
-
     public void Reset(int? defaultCollectionId = null)
     {
         _defaultCollectionId = defaultCollectionId;
-        _coverBytes = null;
         Title = string.Empty;
-        Author = string.Empty;
         Isbn = string.Empty;
-        SelectedFormatId = null;
-        Publisher = string.Empty;
         Year = string.Empty;
-        CoverBitmap = null;
-        UrlInput = string.Empty;
+        AuthorRows.Clear();
+        AuthorRows.Add(new PersonSuggestionRowViewModel(PersonSuggestions));
     }
 }

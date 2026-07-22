@@ -129,7 +129,7 @@ public sealed class BookMetadataService : IBookMetadataService
             int sortOrder = 0;
             foreach (var (name, roleHint) in ExpandAuthorNames(merged.Authors))
             {
-                var person = await dbContext.People.FirstOrDefaultAsync(p => p.DisplayName == name, ct)
+                var person = await PersonQueries.FindByDisplayNameAsync(dbContext, name, ct)
                     ?? await CreatePersonAsync(dbContext, name, ct);
                 var resolvedRole = ResolveContributorRoleHint(roleHint, contributorRoles);
                 var roleId = resolvedRole?.ContributorRoleId ?? authorRole.ContributorRoleId;
@@ -213,7 +213,7 @@ public sealed class BookMetadataService : IBookMetadataService
             int sortOrder = 0;
             foreach (var (name, roleHint) in ExpandAuthorNames(merged.Authors))
             {
-                var person = await dbContext.People.FirstOrDefaultAsync(p => p.DisplayName == name, ct)
+                var person = await PersonQueries.FindByDisplayNameAsync(dbContext, name, ct)
                     ?? await CreatePersonAsync(dbContext, name, ct);
                 var resolvedRole = ResolveContributorRoleHint(roleHint, contributorRoles);
                 var roleId = resolvedRole?.ContributorRoleId ?? authorRole.ContributorRoleId;

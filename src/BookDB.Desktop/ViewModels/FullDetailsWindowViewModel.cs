@@ -16,7 +16,7 @@ using Serilog;
 
 namespace BookDB.Desktop.ViewModels;
 
-public partial class FullDetailsWindowViewModel : BookEditViewModelBase, ICloseGuard, IRecipient<LookupsChangedMessage>
+public partial class FullDetailsWindowViewModel : BookEditViewModelBase, ICloseGuard, IRecipient<LookupsChangedMessage>, IRecipient<LoanChangedMessage>
 {
     private readonly IMessenger _messenger;
     private readonly ILoanService _loanService;
@@ -62,6 +62,29 @@ public partial class FullDetailsWindowViewModel : BookEditViewModelBase, ICloseG
         // FullDetailsWindow is always open in edit mode — refresh lookups immediately
         // so newly added categories/purchase places appear without re-opening the window.
         UIThreadHelper.PostAsync(() => ReloadLookupsOnChangeAsync(), "reload lookups after change");
+    }
+
+    public void Receive(LoanChangedMessage message)
+    {
+        // A check-out/in on this book (from the list) must be reflected in the open window's loan history.
+        if (CurrentBook == null || message.Value != CurrentBook.BookId) return;
+        UIThreadHelper.PostAsync(() => ReloadLoanHistoryAsync(CurrentBook.BookId), "refresh loan history after change");
+    }
+
+    private async Task ReloadLoanHistoryAsync(int bookId)
+    {
+        try
+        {
+            var history = await _loanService.GetLoanHistoryAsync(bookId);
+            _loanHistory.Clear();
+            foreach (var row in history)
+                _loanHistory.Add(LoanHistoryRowViewModel.FromLoanHistoryRow(row));
+        }
+        catch (Exception ex)
+        {
+            ReportIfConnectionLoss(ex);
+            Log.Error(ex, "FullDetailsWindowViewModel: Failed to refresh loan history for book {BookId}", bookId);
+        }
     }
 
     // ICloseGuard implementation

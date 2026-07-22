@@ -1,6 +1,6 @@
 ﻿# Über Datenquellen
 
-Wenn Sie ein Buch per ISBN katalogisieren (Strg+I oder die Schaltfläche in der Symbolleiste), ruft BookDB gleichzeitig Metadaten von drei öffentlichen APIs ab.
+Wenn Sie ein Buch per ISBN katalogisieren (Strg+I oder die Schaltfläche in der Symbolleiste), ruft BookDB gleichzeitig Metadaten von vier öffentlichen Quellen ab.
 
 ## Suchablauf
 
@@ -26,9 +26,22 @@ Google Books ist die größte allgemeine Buchdatenbank mit breiter Abdeckung eng
 - Kategorien
 
 **Hinweise:**
-- Für einfache Suchen wird kein API-Schlüssel benötigt
+- Funktioniert ohne Schlüssel, aber nicht authentifizierte Anfragen teilen sich ein kleines Tageskontingent und werden häufig durch Ratenbegrenzung blockiert (429). Fügen Sie einen persönlichen API-Schlüssel hinzu (siehe unten), um Ihr eigenes Kontingent zu nutzen
 - Die Abdeckung ist am stärksten bei kommerziellen Veröffentlichungen nach 1980
 - Autorennamen entsprechen möglicherweise nicht immer Ihrem bevorzugten Format
+
+**Einen Google-Books-API-Schlüssel erhalten (optional)**
+
+Ohne Schlüssel teilt sich BookDB ein kleines anonymes Tageskontingent mit allen anderen nicht authentifizierten Aufrufen, sodass Google Books häufig durch Ratenbegrenzung blockiert wird — ein Banner im Zusammenführungsdialog nennt die ausgelassenen Quellen. Ein kostenloser persönlicher Schlüssel verlagert Ihre Abfragen auf Ihr eigenes Kontingent:
+
+1. Melden Sie sich bei der **Google Cloud Console** unter https://console.cloud.google.com an.
+2. Erstellen Sie ein neues Projekt oder wählen Sie ein vorhandenes aus.
+3. Öffnen Sie **APIs & Services → Library**, suchen Sie nach **Books API** und klicken Sie auf **Enable**.
+4. Öffnen Sie **APIs & Services → Credentials**, klicken Sie auf **Create credentials → API key** und kopieren Sie den Schlüssel.
+5. Empfohlen: Bearbeiten Sie den Schlüssel und beschränken Sie ihn unter **API restrictions** auf die **Books API**.
+6. Öffnen Sie in BookDB **Einstellungen → Nachschlagen**, fügen Sie den Schlüssel unter **Google Books** ein und klicken Sie auf **Speichern**.
+
+Der Schlüssel wird bei der nächsten Abfrage wirksam — kein Neustart nötig. Leeren Sie das Feld und speichern Sie, um zum gemeinsamen Kontingent zurückzukehren.
 
 ## Open Library
 

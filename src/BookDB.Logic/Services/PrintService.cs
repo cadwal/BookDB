@@ -82,7 +82,7 @@ public sealed class PrintService : IPrintService
 
             // Apply collection filter
             if (parameters.CollectionIds is { Count: > 0 })
-                query = query.Where(b => b.CollectionId == null || parameters.CollectionIds.Contains(b.CollectionId.Value));
+                query = query.Where(CollectionFilter.Predicate(parameters.CollectionIds));
 
             // Apply search book IDs filter (empty but non-null = search matched nothing → print zero rows)
             if (parameters.SearchBookIds != null)

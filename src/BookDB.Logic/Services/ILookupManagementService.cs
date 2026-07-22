@@ -73,12 +73,28 @@ public interface ILookupManagementService
 
     Task MergeLanguagesAsync(int sourceId, int targetId, CancellationToken ct = default);
 
-    Task<(IReadOnlyList<CleanupProposal> Renames, IReadOnlyList<SplitProposal> Splits)>
+    Task<(IReadOnlyList<CleanupProposal> Renames, IReadOnlyList<SplitProposal> Splits, int IgnoredCount)>
         ScanPersonNameCleanupAsync(CancellationToken ct = default);
 
     Task ApplyPersonNameCleanupAsync(IReadOnlyList<CleanupProposal> proposals, CancellationToken ct = default);
 
     Task ApplySplitProposalAsync(IReadOnlyList<SplitProposal> proposals, CancellationToken ct = default);
+
+    /// <summary>Persists an ignore for a rename proposal (person + proposed content). Idempotent.</summary>
+    Task AddCleanupIgnoreAsync(CleanupProposal proposal, CancellationToken ct = default);
+
+    /// <summary>Persists an ignore for a whole split proposal (person + the ordered fragment set). Idempotent.</summary>
+    Task AddCleanupIgnoreAsync(SplitProposal proposal, CancellationToken ct = default);
+
+    /// <summary>Persists an ignore for a suspected-duplicate pair, so it stops being suggested. Idempotent.</summary>
+    Task AddDuplicateIgnoreAsync(int personIdA, string nameA, int personIdB, string nameB, CancellationToken ct = default);
+
+    /// <summary>The persisted duplicate ignores as (anchor person id, the other person's name) for scan filtering.</summary>
+    Task<IReadOnlySet<(int AnchorPersonId, string Fingerprint)>> GetDuplicateIgnoresAsync(CancellationToken ct = default);
+
+    Task RemoveCleanupIgnoreAsync(int ignoreId, CancellationToken ct = default);
+
+    Task<IReadOnlyList<CleanupIgnoreRow>> GetCleanupIgnoresAsync(CancellationToken ct = default);
 
     Task<int> GetCategoryBookCountAsync(int categoryId, CancellationToken ct = default);
     Task<int> AddCategoryAsync(string name, CancellationToken ct = default);

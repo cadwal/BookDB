@@ -12,4 +12,8 @@ public sealed class BatchQueueProgressMessage
     public BatchProgressStatus StatusCode { get; init; }
     /// <summary>Number of source results — used when StatusCode is ProcessingResults.</summary>
     public int ResultCount { get; init; }
+    /// <summary>Items this run has routed to PendingReview so far.</summary>
+    public int ToReviewCount { get; init; }
+    /// <summary>Items this run has marked Failed so far.</summary>
+    public int FailedCount { get; init; }
 }

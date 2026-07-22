@@ -155,6 +155,32 @@ public sealed class CsvArchiveRestoreServiceTests : IDisposable
     }
 
     [Fact]
+    public async Task Restore_CoversEveryEntitySetInTheModel()
+    {
+        var ct = TestContext.Current.CancellationToken;
+        var archive = await BuildArchiveAsync();
+        var target = BuildFactory(_targetPath);
+
+        var result = await RestoreServiceFor(target).RestoreAsync(archive, _workDir, progress: null, ct: ct);
+
+        Assert.True(result.Data.Outcome == MigrationOutcome.Completed, $"failed at {result.Data.FailedTable}: {result.Data.ErrorMessage}");
+
+        // Every DbSet on the context must appear in the per-table restore results, so a newly added table
+        // can never be silently absent from the restore. Deliberate exceptions: ClientSession never travels;
+        // Settings is upserted outside the verified-count results; BorrowerStatus and BookImageType are
+        // fixed schema-seeded enums the restore leaves as the target's own DDL seeds.
+        var expected = MigrationTableCoverage.TablesForEveryEntitySetExcept(
+            nameof(BookDbContext.ClientSessions), nameof(BookDbContext.Settings),
+            nameof(BookDbContext.BorrowerStatuses), nameof(BookDbContext.BookImageTypes));
+        Assert.NotEmpty(expected);
+
+        var covered = result.Data.Tables.Select(t => t.Table).ToHashSet();
+        var missing = expected.Where(t => !covered.Contains(t)).ToList();
+        Assert.True(missing.Count == 0,
+            $"Restore result is missing per-table entries for: {string.Join(", ", missing)}");
+    }
+
+    [Fact]
     public async Task Restore_RoundTrips_AllImages_AcrossMultipleBatches()
     {
         var ct = TestContext.Current.CancellationToken;

@@ -59,4 +59,49 @@ public sealed class PostgresStatisticsTests : IClassFixture<PostgresTestDbFixtur
         Assert.Contains(result, r => r.Year == 2021 && r.Count >= 2);
         Assert.Contains(result, r => r.Year == 2024 && r.Count >= 1);
     }
+
+    [Fact]
+    public async Task GetTopAuthorsAndGrowth_TranslateAndRank_OnPostgres()
+    {
+        Assert.SkipUnless(_fixture.IsAvailable, _fixture.SkipReason);
+        var ct = TestContext.Current.CancellationToken;
+
+        var runner = new PostgresDbUpRunner(_fixture.ConnectionString, NullLogger<DatabaseStartupService>.Instance);
+        await runner.RunAsync(new Progress<(int applied, int total)>(), ct);
+
+        var services = new ServiceCollection();
+        services.AddSingleton<IDataChangeTracker, DataChangeTracker>();
+        services.AddPostgresProvider(_fixture.ConnectionString);
+        await using var sp = services.BuildServiceProvider();
+        var factory = sp.GetRequiredService<IDbContextFactory<BookDbContext>>();
+
+        var tag = Guid.NewGuid().ToString("N")[..8];
+        await using (var db = await factory.CreateDbContextAsync(ct))
+        {
+            var authorRoleId = db.ContributorRoles.First(r => r.Code == "Author").ContributorRoleId;
+            var pat = new Person { DisplayName = $"{tag}-Pat", SortName = $"Pat, {tag}" };
+            db.People.Add(pat);
+            await db.SaveChangesAsync(ct);
+
+            var now = DateTime.UtcNow;
+            foreach (var i in Enumerable.Range(0, 2))
+            {
+                var book = new Book { Title = $"{tag}-{i}", Added = now, Updated = now };
+                db.Books.Add(book);
+                await db.SaveChangesAsync(ct);
+                db.BookContributors.Add(new BookContributor { BookId = book.BookId, PersonId = pat.PersonId, ContributorRoleId = authorRoleId });
+            }
+            await db.SaveChangesAsync(ct);
+        }
+
+        var service = new StatisticsService(factory);
+
+        var authors = await service.GetTopAuthorsAsync(50, ct);
+        Assert.Contains(authors, a => a.Label == $"{tag}-Pat" && a.Count == 2);
+
+        // The year+month grouping and cumulative mapping must also read back cleanly on Npgsql.
+        var growth = await service.GetLibraryGrowthAsync(ct);
+        Assert.NotEmpty(growth);
+        Assert.True(growth[^1].CumulativeCount >= 2);
+    }
 }

@@ -40,6 +40,36 @@ public class GoogleBooksClientTests
     }
 
     [Fact]
+    public async Task FetchAsync_WithApiKey_AppendsKeyToQuery()
+    {
+        var handler = new MockHttpMessageHandler(ValidGoogleBooksJson, HttpStatusCode.OK);
+        var httpClient = new HttpClient(handler)
+        {
+            BaseAddress = new System.Uri("https://www.googleapis.com/books/v1/")
+        };
+        var client = new GoogleBooksClient(httpClient, new GoogleBooksApiKeyAccessor { ApiKey = "secret-key" });
+
+        await client.FetchAsync("9780000000002", TestContext.Current.CancellationToken);
+
+        Assert.Contains("key=secret-key", handler.LastRequestUri!.Query);
+    }
+
+    [Fact]
+    public async Task FetchAsync_WithoutApiKey_OmitsKeyFromQuery()
+    {
+        var handler = new MockHttpMessageHandler(ValidGoogleBooksJson, HttpStatusCode.OK);
+        var httpClient = new HttpClient(handler)
+        {
+            BaseAddress = new System.Uri("https://www.googleapis.com/books/v1/")
+        };
+        var client = new GoogleBooksClient(httpClient);
+
+        await client.FetchAsync("9780000000002", TestContext.Current.CancellationToken);
+
+        Assert.DoesNotContain("key=", handler.LastRequestUri!.Query);
+    }
+
+    [Fact]
     public async Task FetchAsync_ValidIsbn_ReturnsBookMetadata()
     {
         var client = CreateClient(ValidGoogleBooksJson);

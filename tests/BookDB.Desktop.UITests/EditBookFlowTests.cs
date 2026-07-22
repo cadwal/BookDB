@@ -115,7 +115,7 @@ public class EditBookFlowTests : HeadlessTest
             // Contributors: add a second (Editor). Categories: select the second one too.
             vm.AddContributorCommand.Execute(null);
             var addedContributor = vm.Contributors.Last();
-            addedContributor.PersonName = "New Editor";
+            addedContributor.SearchText = "New Editor";
             addedContributor.RoleId = vm.ContributorRoles.First(r => r.Code == "Editor").ContributorRoleId;
             vm.CategoryRows.First(c => !c.IsSelected).IsSelected = true;
 

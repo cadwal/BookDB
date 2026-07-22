@@ -48,7 +48,7 @@ public sealed class ContributorDirtyTests
 
         // Simulate a contributor already loaded from the book (as CopyBookToEditFields does).
         // Adding a row wires up the PropertyChanged handler on the row.
-        var row = new ContributorRowViewModel { PersonName = "Test Author", IsNew = false };
+        var row = new ContributorRowViewModel(vm.PersonSuggestions) { SearchText = "Test Author", IsNew = false };
         vm.Contributors.Add(row);
 
         // Reset dirty — simulates the state after CopyBookToEditFields completes
@@ -62,7 +62,7 @@ public sealed class ContributorDirtyTests
 
         // While suppression is active, Avalonia fires PropertyChanged on the AutoCompleteBox
         // TwoWay binding (lazy tab render re-initializes the binding value).
-        row.PersonName = "Test Author";   // same value, but PropertyChanged fires regardless
+        row.SearchText = "Test Author";   // same value, but PropertyChanged fires regardless
 
         Assert.False(vm.HasUnsavedChanges,
             "HasUnsavedChanges should stay false while OnContributorsTabActivating suppression is active.");
@@ -74,14 +74,14 @@ public sealed class ContributorDirtyTests
         var vm = CreateVm();
 
         // Add contributor WITHOUT calling OnContributorsTabActivating
-        var row = new ContributorRowViewModel { PersonName = "Test Author", IsNew = false };
+        var row = new ContributorRowViewModel(vm.PersonSuggestions) { SearchText = "Test Author", IsNew = false };
         vm.Contributors.Add(row);
 
         // Reset after Add (which may have dirtied due to CollectionChanged)
         vm.HasUnsavedChanges = false;
 
         // Now fire a property change — no suppression active
-        row.PersonName = "Test Author Changed";
+        row.SearchText = "Test Author Changed";
 
         Assert.True(vm.HasUnsavedChanges,
             "HasUnsavedChanges should become true when no suppression is active and a contributor property changes.");

@@ -1,6 +1,6 @@
 ﻿# Over gegevensbronnen
 
-Wanneer je een boek catalogiseert via ISBN (Ctrl+I of de werkbalkknop), haalt BookDB gelijktijdig metadata op van drie openbare API's.
+Wanneer je een boek catalogiseert via ISBN (Ctrl+I of de werkbalkknop), haalt BookDB gelijktijdig metadata op van vier openbare bronnen.
 
 ## Zoekstroom
 
@@ -26,9 +26,22 @@ Google Books is de grootste algemene boekendatabase, met brede dekking van Engel
 - Categorieën
 
 **Opmerkingen:**
-- Geen API-sleutel vereist voor basiszoekopdrachten
+- Werkt zonder sleutel, maar niet-geverifieerde verzoeken delen een klein dagelijks quotum en worden vaak beperkt (429). Voeg een persoonlijke API-sleutel toe (zie hieronder) om je eigen quotum te gebruiken
 - Dekking is het sterkst voor commerciële publicaties na 1980
 - Auteurnamen komen mogelijk niet altijd overeen met je gewenste opmaak
+
+**Een Google Books API-sleutel aanvragen (optioneel)**
+
+Zonder sleutel deelt BookDB een klein anoniem dagquotum met alle andere niet-geverifieerde aanroepen, waardoor Google Books vaak wordt beperkt — een melding in het samenvoegvenster noemt de overgeslagen bronnen. Een gratis persoonlijke sleutel verplaatst je zoekopdrachten naar je eigen quotum:
+
+1. Meld je aan bij de **Google Cloud Console** op https://console.cloud.google.com.
+2. Maak een nieuw project of selecteer een bestaand project.
+3. Open **APIs & Services → Library**, zoek naar **Books API** en klik op **Enable**.
+4. Open **APIs & Services → Credentials**, klik op **Create credentials → API key** en kopieer de sleutel.
+5. Aanbevolen: bewerk de sleutel en beperk deze onder **API restrictions** tot de **Books API**.
+6. Open in BookDB **Instellingen → Opzoeken**, plak de sleutel onder **Google Books** en klik op **Opslaan**.
+
+De sleutel werkt vanaf de volgende zoekopdracht — geen herstart nodig. Maak het veld leeg en sla op om terug te keren naar het gedeelde quotum.
 
 ## Open Library
 

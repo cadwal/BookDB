@@ -6,6 +6,7 @@
              xmlns:i="using:Avalonia.Xaml.Interactivity"
              xmlns:behaviors="using:BookDB.Desktop.Behaviors"
              xmlns:cvt="using:BookDB.Desktop.Converters"
+             xmlns:views="using:BookDB.Desktop.Views"
              x:Class="BookDB.Desktop.Views.BookEditForm"
              x:DataType="vm:BookEditViewModelBase">
 
@@ -323,7 +324,7 @@
 
                         <TextBlock Text="{x:Static res:Resources.Section_Contributors}"
                                    FontSize="12" FontWeight="SemiBold"
-                                   Foreground="{StaticResource BrushPrimaryBlue}"
+                                   Foreground="{DynamicResource BrushPrimaryBlue}"
                                    Margin="0,0,0,8" />
 
                         <ItemsControl ItemsSource="{Binding Contributors}">
@@ -345,12 +346,7 @@
                                                   SelectedValueBinding="{Binding ContributorRoleId}"
                                                   DisplayMemberBinding="{Binding ResourceKey, Converter={x:Static cvt:ResourceKeyConverter.Instance}}"
                                                   FontSize="13" />
-                                        <AutoCompleteBox Text="{Binding PersonName}"
-                                                         MinimumPrefixLength="2"
-                                                         FilterMode="Contains"
-                                                         ItemsSource="{Binding $parent[ItemsControl].((vm:BookEditViewModelBase)DataContext).AvailablePersonNames}"
-                                                         MinWidth="100"
-                                                         FontSize="13" />
+                                        <views:PersonSuggestionBox MinWidth="100" FontSize="13" />
                                     </DockPanel>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
@@ -364,7 +360,7 @@
                                 FontSize="13" />
 
                         <Rectangle Height="1"
-                                   Fill="{StaticResource BrushBorder}"
+                                   Fill="{DynamicResource BrushBorder}"
                                    Margin="0,12,0,12" />
 
                         <Grid ColumnDefinitions="Auto,*,Auto"
@@ -576,7 +572,7 @@
                             <TextBlock Text="{x:Static res:Resources.ImageEditor_ManageSection_Heading}"
                                        FontSize="12"
                                        FontWeight="SemiBold"
-                                       Foreground="{StaticResource BrushPrimaryBlue}" />
+                                       Foreground="{DynamicResource BrushPrimaryBlue}" />
                             <ItemsControl ItemsSource="{Binding ImageEditor.ImageItems}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate x:DataType="vm:ManageImageItemViewModel">
@@ -594,7 +590,7 @@
                                                         VerticalAlignment="Center">
                                                 <TextBlock Text="{Binding TypeName}" FontSize="12" />
                                                 <TextBlock Text="{Binding OrderLabel}" FontSize="12"
-                                                           Foreground="{StaticResource BrushTextTertiary}" />
+                                                           Foreground="{DynamicResource BrushTextTertiary}" />
                                             </StackPanel>
                                             <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="4"
                                                         VerticalAlignment="Center">

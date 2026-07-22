@@ -13,10 +13,12 @@ namespace BookDB.MetadataSources.Sources;
 public class GoogleBooksClient : IMetadataSource
 {
     private readonly HttpClient _http;
+    private readonly IGoogleBooksApiKeyAccessor? _apiKey;
 
-    public GoogleBooksClient(HttpClient http)
+    public GoogleBooksClient(HttpClient http, IGoogleBooksApiKeyAccessor? apiKey = null)
     {
         _http = http;
+        _apiKey = apiKey;
     }
 
     public string SourceName => "GoogleBooks";
@@ -24,8 +26,12 @@ public class GoogleBooksClient : IMetadataSource
     public async Task<BookMetadata?> FetchAsync(string isbn, CancellationToken ct = default)
     {
         var normalized = IsbnNormalizer.Normalize(isbn);
-        var response = await _http.GetFromJsonAsync<GoogleBooksResponse>(
-            $"volumes?q=isbn:{normalized}", ct);
+        var query = $"volumes?q=isbn:{normalized}";
+        // A personal key moves the request off the shared anonymous per-IP daily quota, which is
+        // routinely exhausted (429). Absent a key, fall back to the anonymous quota.
+        if (_apiKey?.ApiKey is { Length: > 0 } key)
+            query += $"&key={Uri.EscapeDataString(key)}";
+        var response = await _http.GetFromJsonAsync<GoogleBooksResponse>(query, ct);
 
         if (response?.Items is null || response.Items.Count == 0)
             return null;

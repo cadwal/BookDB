@@ -23,8 +23,8 @@ public sealed class BookEditCategoryTests
     private static IBookService BuildBookService()
     {
         var svc = Substitute.For<IBookService>();
-        svc.GetPeopleNamesAsync(Arg.Any<string?>(), Arg.Any<CancellationToken>())
-           .Returns(Task.FromResult<IReadOnlyList<string>>(System.Array.Empty<string>()));
+        svc.GetPeopleAsync(Arg.Any<CancellationToken>())
+           .Returns(Task.FromResult<IReadOnlyList<Person>>(System.Array.Empty<Person>()));
         return svc;
     }
 

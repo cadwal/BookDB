@@ -142,6 +142,9 @@
   <data name="CollectionSelector_AllSelected" xml:space="preserve">
     <value>Toutes les collections</value>
   </data>
+  <data name="CollectionSelector_Uncategorized" xml:space="preserve">
+    <value>Non classés</value>
+  </data>
   <data name="FilterPanel_EmptyState" xml:space="preserve">
     <value>Aucun filtre disponible</value>
   </data>
@@ -316,6 +319,15 @@
   <data name="MergeReview_Title_New" xml:space="preserve">
     <value>Réviser les métadonnées - nouveau livre</value>
   </data>
+  <data name="MergeReview_ErroredNote" xml:space="preserve">
+    <value>Certaines sources n'ont pas pu être contactées et ont été ignorées : {0}. Leurs données peuvent manquer.</value>
+  </data>
+  <data name="MergeReview_NoResultNote" xml:space="preserve">
+    <value>Aucune donnée pour cet ISBN de : {0}.</value>
+  </data>
+  <data name="MergeReview_RateLimitedNote" xml:space="preserve">
+    <value>Certaines sources ont été limitées et ignorées : {0}. Leurs données peuvent manquer — réessayez plus tard pour les inclure.</value>
+  </data>
   <data name="MergeReview_Title_Recatalog" xml:space="preserve">
     <value>Réviser les métadonnées - {0}</value>
   </data>
@@ -324,6 +336,12 @@
   </data>
   <data name="MergeReview_NoConflicts" xml:space="preserve">
     <value>Aucun conflit de champs — toutes les sources concordent.</value>
+  </data>
+  <data name="MergeReview_Identity_Untitled" xml:space="preserve">
+    <value>Sans titre</value>
+  </data>
+  <data name="MergeReview_Identity_Isbn" xml:space="preserve">
+    <value>ISBN {0}</value>
   </data>
   <data name="MergeReview_Field_Authors" xml:space="preserve">
     <value>Auteurs</value>
@@ -382,6 +400,24 @@
   <data name="BatchQueue_StatusSaving" xml:space="preserve">
     <value>Enregistrement…</value>
   </data>
+  <data name="BatchQueue_StatusFetchingCovers" xml:space="preserve">
+    <value>Récupération des couvertures…</value>
+  </data>
+  <data name="BatchQueue_Failure_NoResults" xml:space="preserve">
+    <value>Aucune source n'a trouvé cet ISBN</value>
+  </data>
+  <data name="BatchQueue_Failure_NetworkError" xml:space="preserve">
+    <value>Erreur réseau — aucune source n'a pu être contactée</value>
+  </data>
+  <data name="BatchQueue_Failure_RateLimited" xml:space="preserve">
+    <value>Débit limité — réessayez plus tard</value>
+  </data>
+  <data name="BatchQueue_Failure_AllSourcesDisabled" xml:space="preserve">
+    <value>Toutes les sources de recherche sont désactivées</value>
+  </data>
+  <data name="BatchQueue_Failure_Unexpected" xml:space="preserve">
+    <value>Erreur inattendue</value>
+  </data>
   <data name="BatchQueue_StartReviewButton" xml:space="preserve">
     <value>Réviser les résultats</value>
   </data>
@@ -408,6 +444,27 @@
   </data>
   <data name="StatusBar_BatchQueue_Progress" xml:space="preserve">
     <value>Recherche : {0} sur {1}</value>
+  </data>
+  <data name="PersonSuggestion_NewAuthor_Format" xml:space="preserve">
+    <value>Ajouter un nouvel auteur : {0}</value>
+  </data>
+  <data name="PersonSuggestion_Watermark" xml:space="preserve">
+    <value>Rechercher une personne...</value>
+  </data>
+  <data name="PersonSuggestion_NewBadge" xml:space="preserve">
+    <value>nouveau</value>
+  </data>
+  <data name="StatusBar_BatchQueue_ToReview" xml:space="preserve">
+    <value>{0} à vérifier</value>
+  </data>
+  <data name="StatusBar_BatchQueue_Failed" xml:space="preserve">
+    <value>{0} en échec</value>
+  </data>
+  <data name="StatusBar_BatchQueue_WithOutcome" xml:space="preserve">
+    <value>{0} — {1}</value>
+  </data>
+  <data name="StatusBar_BatchQueue_OutcomePair" xml:space="preserve">
+    <value>{0}, {1}</value>
   </data>
   <data name="Recatalog_NoIsbn_Title" xml:space="preserve">
     <value>Pas d'ISBN</value>
@@ -571,6 +628,45 @@
   <data name="ManageLookups_Name" xml:space="preserve">
     <value>Nom</value>
   </data>
+  <data name="Person_Cleanup_Ignore" xml:space="preserve">
+    <value>Ignorer</value>
+  </data>
+  <data name="Person_Cleanup_ViewIgnored" xml:space="preserve">
+    <value>Voir les éléments ignorés…</value>
+  </data>
+  <data name="Person_Cleanup_IgnoredCount" xml:space="preserve">
+    <value>{0} ignoré(s)</value>
+  </data>
+  <data name="Person_Cleanup_IgnoredTitle" xml:space="preserve">
+    <value>Propositions ignorées</value>
+  </data>
+  <data name="Person_Cleanup_Unignore" xml:space="preserve">
+    <value>Ne plus ignorer</value>
+  </data>
+  <data name="Person_Cleanup_BackToProposals" xml:space="preserve">
+    <value>Retour</value>
+  </data>
+  <data name="Person_Cleanup_Column_Person" xml:space="preserve">
+    <value>Personne</value>
+  </data>
+  <data name="Person_Cleanup_Column_Kind" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="Person_Cleanup_Column_Content" xml:space="preserve">
+    <value>Modification proposée</value>
+  </data>
+  <data name="Person_Cleanup_Kind_Rename" xml:space="preserve">
+    <value>Renommer</value>
+  </data>
+  <data name="Person_Cleanup_Kind_Split" xml:space="preserve">
+    <value>Diviser</value>
+  </data>
+  <data name="Person_Cleanup_ErrorIgnoreFailed" xml:space="preserve">
+    <value>Impossible d'ignorer la proposition.</value>
+  </data>
+  <data name="Person_Cleanup_ErrorUnignoreFailed" xml:space="preserve">
+    <value>Impossible de restaurer la proposition.</value>
+  </data>
   <data name="ManageLookups_NoCleanup" xml:space="preserve">
     <value>Aucun nettoyage nécessaire.</value>
   </data>
@@ -591,6 +687,9 @@
   </data>
   <data name="ManageLookups_SuspectedDuplicates" xml:space="preserve">
     <value>Doublons suspectés</value>
+  </data>
+  <data name="ManageLookups_SuspectedDuplicatesDesc" xml:space="preserve">
+    <value>Ces paires peuvent désigner la même personne. Sélectionnez une paire pour les fusionner, ou ignorez-la.</value>
   </data>
   <data name="ManageLookups_Tab_Category" xml:space="preserve">
     <value>Catégorie</value>
@@ -1655,8 +1754,8 @@ Doublons potentiels : {3}  |  Avec couvertures : {4}</value>
   <data name="Settings_Appearance_Flavour_Vibrant" xml:space="preserve">
     <value>Éclatant</value>
   </data>
-  <data name="Settings_Appearance_RestartNote" xml:space="preserve">
-    <value>Le changement de thème prend effet au prochain lancement.</value>
+  <data name="Settings_Appearance_ApplyNote" xml:space="preserve">
+    <value>Les changements de thème s'appliquent immédiatement.</value>
   </data>
   <data name="Settings_Browse_AuthorFacetLabel" xml:space="preserve">
     <value>Libellé de facette Auteur</value>
@@ -1690,6 +1789,15 @@ Doublons potentiels : {3}  |  Avec couvertures : {4}</value>
   </data>
   <data name="Settings_Lookup_LibrisKB" xml:space="preserve">
     <value>Libris KB</value>
+  </data>
+  <data name="Settings_Lookup_ApiKey" xml:space="preserve">
+    <value>Clé API (facultative)</value>
+  </data>
+  <data name="Settings_Lookup_ApiKey_Watermark" xml:space="preserve">
+    <value>Collez votre clé API Google Books</value>
+  </data>
+  <data name="Settings_Lookup_ApiKey_Hint" xml:space="preserve">
+    <value>Une clé personnelle évite le quota quotidien partagé (erreurs fréquentes de limitation). Voir Aide → À propos des sources de données pour la configuration pas à pas.</value>
   </data>
   <data name="Settings_Lookup_GoogleBooks" xml:space="preserve">
     <value>Google Books</value>
@@ -1760,8 +1868,23 @@ Doublons potentiels : {3}  |  Avec couvertures : {4}</value>
   <data name="Statistics_Section_ByYear" xml:space="preserve">
     <value>Par année de publication</value>
   </data>
+  <data name="Statistics_Section_LibraryGrowth" xml:space="preserve">
+    <value>Croissance de la bibliothèque</value>
+  </data>
+  <data name="Statistics_Section_TopAuthors" xml:space="preserve">
+    <value>Meilleurs auteurs</value>
+  </data>
+  <data name="Statistics_OtherCategory" xml:space="preserve">
+    <value>Autres</value>
+  </data>
+  <data name="Statistics_FullTables" xml:space="preserve">
+    <value>Tableaux complets</value>
+  </data>
   <data name="Statistics_Section_Summary" xml:space="preserve">
     <value>Résumé</value>
+  </data>
+  <data name="Statistics_UnknownCategory" xml:space="preserve">
+    <value>Inconnu</value>
   </data>
   <data name="Statistics_WindowTitle" xml:space="preserve">
     <value>Statistiques</value>
@@ -1784,8 +1907,8 @@ Doublons potentiels : {3}  |  Avec couvertures : {4}</value>
   <data name="Status_Wishlist" xml:space="preserve">
     <value>Liste de souhaits</value>
   </data>
-  <data name="AddBook_Label_Author" xml:space="preserve">
-    <value>Auteur</value>
+  <data name="AddBook_Label_Authors" xml:space="preserve">
+    <value>Auteurs</value>
   </data>
   <data name="AddBook_Label_Isbn" xml:space="preserve">
     <value>ISBN</value>
@@ -2060,6 +2183,9 @@ Doublons potentiels : {3}  |  Avec couvertures : {4}</value>
   <data name="Menu_Help" xml:space="preserve">
     <value>_Aide</value>
   </data>
+  <data name="Menu_Help_GettingStarted" xml:space="preserve">
+    <value>_Prise en main</value>
+  </data>
   <data name="Menu_Help_KeyboardShortcuts" xml:space="preserve">
     <value>_Raccourcis clavier</value>
   </data>
@@ -2077,6 +2203,9 @@ Doublons potentiels : {3}  |  Avec couvertures : {4}</value>
   </data>
   <data name="Help_WindowTitle" xml:space="preserve">
     <value>Aide</value>
+  </data>
+  <data name="Help_Tab_GettingStarted" xml:space="preserve">
+    <value>Prise en main</value>
   </data>
   <data name="Help_Tab_KeyboardShortcuts" xml:space="preserve">
     <value>Raccourcis clavier</value>
@@ -2998,5 +3127,125 @@ Doublons potentiels : {3}  |  Avec couvertures : {4}</value>
   </data>
   <data name="Restore_NoCredentialsForTarget" xml:space="preserve">
     <value>Aucune information d'identification enregistrée pour le serveur de base de données de la sauvegarde. Configurez-le d'abord dans Paramètres → Base de données, puis réessayez.</value>
+  </data>
+  <data name="MergeReview_Authors_AllAgree" xml:space="preserve">
+    <value>Toutes les sources concordent</value>
+  </data>
+  <data name="MergeReview_Authors_OnlySource" xml:space="preserve">
+    <value>Seul {0} a fourni des auteurs</value>
+  </data>
+  <data name="MergeReview_Authors_Label" xml:space="preserve">
+    <value>Auteurs</value>
+  </data>
+  <data name="MergeReview_AddAuthor" xml:space="preserve">
+    <value>+ Ajouter un auteur</value>
+  </data>
+  <data name="MergeReview_RemoveAuthor" xml:space="preserve">
+    <value>Supprimer l'auteur</value>
+  </data>
+  <data name="MergeReview_Collection_Label" xml:space="preserve">
+    <value>Collection</value>
+  </data>
+  <data name="Common_SaveAndOpenEditor" xml:space="preserve">
+    <value>Enregistrer et ouvrir l'éditeur</value>
+  </data>
+  <data name="AddBookIdentify_Title" xml:space="preserve">
+    <value>Ajouter un livre</value>
+  </data>
+  <data name="AddBookIdentify_IsbnLabel" xml:space="preserve">
+    <value>ISBN</value>
+  </data>
+  <data name="AddBookIdentify_Hint" xml:space="preserve">
+    <value>Scannez ou saisissez un ISBN, puis appuyez sur Entrée.</value>
+  </data>
+  <data name="AddBookIdentify_LookUp" xml:space="preserve">
+    <value>Rechercher</value>
+  </data>
+  <data name="AddBookIdentify_ManualEntry" xml:space="preserve">
+    <value>Saisir les détails manuellement</value>
+  </data>
+  <data name="AddBookIdentify_WizardHint" xml:space="preserve">
+    <value>Plusieurs ISBN ? Utilisez Cataloguer par ISBN (Ctrl+I).</value>
+  </data>
+  <data name="AddBookIdentify_LookupFailed" xml:space="preserve">
+    <value>La recherche n'a pas trouvé ce livre : {0}</value>
+  </data>
+  <data name="AddBookIdentify_CancelLookup_Title" xml:space="preserve">
+    <value>Annuler la recherche ?</value>
+  </data>
+  <data name="AddBookIdentify_CancelLookup_Body" xml:space="preserve">
+    <value>Une recherche est en cours. L'annuler et fermer ?</value>
+  </data>
+  <data name="BookList_Empty_Title" xml:space="preserve">
+    <value>Votre bibliothèque est vide</value>
+  </data>
+  <data name="BookList_Empty_Subtitle" xml:space="preserve">
+    <value>Ajoutez votre premier livre, importez un catalogue existant ou connectez-vous à une base de données partagée.</value>
+  </data>
+  <data name="BookList_Empty_AddBook" xml:space="preserve">
+    <value>Ajouter votre premier livre</value>
+  </data>
+  <data name="BookList_Empty_Import" xml:space="preserve">
+    <value>Importer une sauvegarde Readerware</value>
+  </data>
+  <data name="BookList_Empty_ConnectDatabase" xml:space="preserve">
+    <value>Se connecter à une base de données</value>
+  </data>
+  <data name="BookList_Empty_HelpHint" xml:space="preserve">
+    <value>Nouveau ? Consultez l'aide de démarrage.</value>
+  </data>
+  <data name="Delete_LoanedOut_Single_Message" xml:space="preserve">
+    <value>Supprimer « {0} » ? Il est prêté à {1} — son historique de prêts sera également supprimé. Cette action est irréversible.</value>
+  </data>
+  <data name="Delete_LoanedOut_Multiple_Message" xml:space="preserve">
+    <value>Supprimer {0} livres ? {1} sont prêtés — leur historique de prêts sera également supprimé. Cette action est irréversible.</value>
+  </data>
+  <data name="Error_ActionFailed_Title" xml:space="preserve">
+    <value>Une erreur s’est produite</value>
+  </data>
+  <data name="Error_ActionFailed_Message" xml:space="preserve">
+    <value>L’action n’a pas pu être effectuée. Vérifiez que la base de données est accessible, puis réessayez. Consultez le journal pour plus de détails.</value>
+  </data>
+  <data name="Statistics_Column_Author" xml:space="preserve">
+    <value>Auteur</value>
+  </data>
+  <data name="Statistics_Column_Month" xml:space="preserve">
+    <value>Mois</value>
+  </data>
+  <data name="Statistics_Column_Books" xml:space="preserve">
+    <value>Livres</value>
+  </data>
+  <data name="Statistics_Column_RunningTotal" xml:space="preserve">
+    <value>Total de livres</value>
+  </data>
+  <data name="Person_Cleanup_Kind_Duplicate" xml:space="preserve">
+    <value>Doublon</value>
+  </data>
+  <data name="StatusBar_UpdateAvailable" xml:space="preserve">
+    <value>Mise à jour disponible</value>
+  </data>
+  <data name="Update_Dialog_Title" xml:space="preserve">
+    <value>Mise à jour disponible</value>
+  </data>
+  <data name="Update_Dialog_Body" xml:space="preserve">
+    <value>BookDB {0} est disponible. Vous avez {1}.</value>
+  </data>
+  <data name="Update_Hint_Winget" xml:space="preserve">
+    <value>Installé via winget — mettez à jour avec :
+{0}</value>
+  </data>
+  <data name="Update_Hint_AppMan" xml:space="preserve">
+    <value>Installé via AM/AppMan — mettez à jour avec :
+{0}
+(installation utilisateur : appman -u bookdb)</value>
+  </data>
+  <data name="Update_Hint_GitHub" xml:space="preserve">
+    <value>Téléchargez la dernière version depuis GitHub.</value>
+  </data>
+  <data name="Update_CopyCommand" xml:space="preserve">
+    <value>Copier la commande</value>
+  </data>
+  <data name="Update_OpenGitHub" xml:space="preserve">
+    <value>Télécharger depuis GitHub</value>
   </data>
 </root>

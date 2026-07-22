@@ -24,6 +24,10 @@ public static class MetadataSourcesExtensions
             opts.Retry.MaxRetryAttempts = 1;
         }
 
+        // Holds the optional Google Books API key; the Logic layer refreshes it from settings
+        // before each lookup, and GoogleBooksClient reads it to move off the anonymous quota.
+        services.AddSingleton<IGoogleBooksApiKeyAccessor, GoogleBooksApiKeyAccessor>();
+
         // Google Books uses a custom resilience pipeline that respects 429 Retry-After headers.
         // The standard handler retries 429 immediately, making rate limiting worse.
         services.AddHttpClient<GoogleBooksClient>(client =>

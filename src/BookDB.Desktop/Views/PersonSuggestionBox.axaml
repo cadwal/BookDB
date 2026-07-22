@@ -1,0 +1,39 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:BookDB.Desktop.ViewModels"
+             xmlns:res="using:BookDB.Desktop.Localization"
+             x:Class="BookDB.Desktop.Views.PersonSuggestionBox"
+             x:DataType="vm:PersonSuggestionRowViewModel">
+    <DockPanel LastChildFill="True">
+        <!-- "New person" badge: visible while the typed text matches no existing person,
+             so reuse-vs-create is readable per row before saving. -->
+        <Border DockPanel.Dock="Right"
+                IsVisible="{Binding IsNewPerson}"
+                Background="{DynamicResource BrushPrimaryBlue}"
+                CornerRadius="8"
+                Padding="6,1"
+                Margin="4,0,0,0"
+                VerticalAlignment="Center">
+            <TextBlock Text="{x:Static res:Resources.PersonSuggestion_NewBadge}"
+                       Foreground="{DynamicResource BrushBadgeText}"
+                       FontSize="11" />
+        </Border>
+        <!-- The dropdown only suggests; it is intentionally not bound to a SelectedItem. Picking a
+             row just fills the text box (via ValueMemberBinding), so the typed text is the single
+             source of truth — which avoids the AutoCompleteBox feedback loop where auto-selecting
+             the "add new" suggestion (its value equals the input) and then clearing that stale
+             selection on the next keystroke reset the box to the prior text. -->
+        <AutoCompleteBox PlaceholderText="{x:Static res:Resources.PersonSuggestion_Watermark}"
+                         MinimumPrefixLength="1"
+                         FilterMode="None"
+                         ValueMemberBinding="{ReflectionBinding ValueText}"
+                         AsyncPopulator="{Binding Populator}"
+                         Text="{Binding SearchText, Mode=TwoWay}">
+            <AutoCompleteBox.ItemTemplate>
+                <DataTemplate x:DataType="vm:IPersonSuggestion">
+                    <TextBlock Text="{Binding DisplayText}" />
+                </DataTemplate>
+            </AutoCompleteBox.ItemTemplate>
+        </AutoCompleteBox>
+    </DockPanel>
+</UserControl>

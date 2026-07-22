@@ -3,7 +3,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using BookDB.Data;
 using BookDB.Data.DbContexts;
+using System.Linq;
 using BookDB.Logic.Services;
+using BookDB.Models.Entities;
 using BookDB.Models.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -83,6 +85,39 @@ public abstract class MySqlLookupDuplicateTests
 
         await Assert.ThrowsAsync<InvalidOperationException>(
             () => service.RenamePublisherAsync(secondId, $"FIRST{stem}", ct));
+    }
+
+    [Fact]
+    public async Task CleanupIgnore_ExcludesTheProposal_AndCascadesWhenThePersonIsDeleted()
+    {
+        Assert.SkipUnless(_fixture.IsAvailable, _fixture.SkipReason);
+        var ct = TestContext.Current.CancellationToken;
+        var (sp, service) = await BuildAsync(ct);
+        await using var _ = sp;
+        var factory = sp.GetRequiredService<IDbContextFactory<BookDbContext>>();
+
+        var dirty = $"by {Guid.NewGuid():N}.";
+        int personId;
+        await using (var db = await factory.CreateDbContextAsync(ct))
+        {
+            var p = new Person { DisplayName = dirty, SortName = dirty };
+            db.People.Add(p);
+            await db.SaveChangesAsync(ct);
+            personId = p.PersonId;
+        }
+
+        // The shared container may hold other renames, so target this person specifically throughout.
+        var (before, _, _) = await service.ScanPersonNameCleanupAsync(ct);
+        var mine = before.Single(r => r.PersonId == personId);
+        await service.AddCleanupIgnoreAsync(mine, ct);
+
+        var (after, _, ignored) = await service.ScanPersonNameCleanupAsync(ct);
+        Assert.DoesNotContain(after, r => r.PersonId == personId);
+        Assert.True(ignored >= 1);
+        Assert.Contains(await service.GetCleanupIgnoresAsync(ct), i => i.PersonId == personId);
+
+        await service.DeletePersonAsync(personId, ct);
+        Assert.DoesNotContain(await service.GetCleanupIgnoresAsync(ct), i => i.PersonId == personId);
     }
 }
 

@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using BookDB.Data;
 using BookDB.Data.DbContexts;
+using BookDB.Logic.Messages;
 using BookDB.Logic.Services;
 using BookDB.MetadataSources.Services;
 using BookDB.MetadataSources.Sources;
@@ -75,7 +76,10 @@ public sealed class BatchQueueProcessorTests : IDisposable
         IBookService bookService,
         IBookMetadataService bookMetadataService,
         IBookImageService bookImageService,
-        TimeSpan? itemDelay = null)
+        TimeSpan? itemDelay = null,
+        ICoverFetcher? coverFetcher = null,
+        TimeSpan? itemTimeout = null,
+        ICoverCache? coverCache = null)
         => new BatchQueueProcessor(
             _queueService,
             lookupService,
@@ -84,12 +88,15 @@ public sealed class BatchQueueProcessorTests : IDisposable
             bookImageService,
             _messenger,
             NullLogger<BatchQueueProcessor>.Instance,
-            itemDelay ?? TimeSpan.FromMilliseconds(10));
+            itemDelay ?? TimeSpan.FromMilliseconds(10),
+            coverFetcher,
+            itemTimeout,
+            coverCache);
 
     [Fact]
     public async Task Processor_MarksNotFound_WhenNoSourcesReturnResults()
     {
-        var item = await _queueService.EnqueueAsync("9780451526538", bookId: null, TestContext.Current.CancellationToken);
+        var item = await _queueService.EnqueueAsync("9780451526538", bookId: null, ct: TestContext.Current.CancellationToken);
 
         var lookupService = new MockMetadataLookupService(results: []);
         var bookService = new BookService(_factory);
@@ -104,12 +111,181 @@ public sealed class BatchQueueProcessorTests : IDisposable
         var failed = await _queueService.GetItemsByStatusAsync("Failed", TestContext.Current.CancellationToken);
         Assert.Single(failed);
         Assert.Equal(item.BatchQueueItemId, failed[0].BatchQueueItemId);
+        Assert.Equal(nameof(BatchFailureReason.NoResults), failed[0].FailureCode);
+    }
+
+    [Fact]
+    public async Task Processor_MarksNetworkError_WhenEveryQueriedSourceFails()
+    {
+        var item = await _queueService.EnqueueAsync("9780451526538", bookId: null, ct: TestContext.Current.CancellationToken);
+
+        var lookupService = new MockMetadataLookupService(results: [], sourcesQueried: 2, sourcesFailed: 2);
+        var processor = MakeProcessor(lookupService, new BookService(_factory),
+            new BookMetadataService(_factory), new BookImageService(_factory));
+
+        using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+        using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(timeoutCts.Token, TestContext.Current.CancellationToken);
+        await processor.StartBatch([item]).WaitAsync(linkedCts.Token);
+
+        var failed = await _queueService.GetItemsByStatusAsync("Failed", TestContext.Current.CancellationToken);
+        Assert.Single(failed);
+        Assert.Equal(nameof(BatchFailureReason.NetworkError), failed[0].FailureCode);
+    }
+
+    [Fact]
+    public async Task Processor_MarksRateLimited_WhenNoResultsAndASourceWasRateLimited()
+    {
+        var item = await _queueService.EnqueueAsync("9780451526538", bookId: null, ct: TestContext.Current.CancellationToken);
+
+        // No source had the book, and one was rate-limited (429) — surface "rate limited, retry later"
+        // rather than a generic network error, so the reason is not lost.
+        var lookupService = new MockMetadataLookupService(
+            results: [], sourcesQueried: 2, sourcesFailed: 2, rateLimitedSources: ["GoogleBooks"]);
+        var processor = MakeProcessor(lookupService, new BookService(_factory),
+            new BookMetadataService(_factory), new BookImageService(_factory));
+
+        using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+        using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(timeoutCts.Token, TestContext.Current.CancellationToken);
+        await processor.StartBatch([item]).WaitAsync(linkedCts.Token);
+
+        var failed = await _queueService.GetItemsByStatusAsync("Failed", TestContext.Current.CancellationToken);
+        Assert.Single(failed);
+        Assert.Equal(nameof(BatchFailureReason.RateLimited), failed[0].FailureCode);
+    }
+
+    [Fact]
+    public async Task Processor_MarksNoResults_WhenSomeSourcesAnswerButNoneMatch()
+    {
+        var item = await _queueService.EnqueueAsync("9780451526538", bookId: null, ct: TestContext.Current.CancellationToken);
+
+        // One source errored, but the other answered "no hit" — that is a real no-result, not a network problem.
+        var lookupService = new MockMetadataLookupService(results: [], sourcesQueried: 2, sourcesFailed: 1);
+        var processor = MakeProcessor(lookupService, new BookService(_factory),
+            new BookMetadataService(_factory), new BookImageService(_factory));
+
+        using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+        using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(timeoutCts.Token, TestContext.Current.CancellationToken);
+        await processor.StartBatch([item]).WaitAsync(linkedCts.Token);
+
+        var failed = await _queueService.GetItemsByStatusAsync("Failed", TestContext.Current.CancellationToken);
+        Assert.Single(failed);
+        Assert.Equal(nameof(BatchFailureReason.NoResults), failed[0].FailureCode);
+    }
+
+    [Fact]
+    public async Task Processor_MarksAllSourcesDisabled_WhenNothingWasQueried()
+    {
+        var item = await _queueService.EnqueueAsync("9780451526538", bookId: null, ct: TestContext.Current.CancellationToken);
+
+        var lookupService = new MockMetadataLookupService(results: [], sourcesQueried: 0);
+        var processor = MakeProcessor(lookupService, new BookService(_factory),
+            new BookMetadataService(_factory), new BookImageService(_factory));
+
+        using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+        using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(timeoutCts.Token, TestContext.Current.CancellationToken);
+        await processor.StartBatch([item]).WaitAsync(linkedCts.Token);
+
+        var failed = await _queueService.GetItemsByStatusAsync("Failed", TestContext.Current.CancellationToken);
+        Assert.Single(failed);
+        Assert.Equal(nameof(BatchFailureReason.AllSourcesDisabled), failed[0].FailureCode);
+    }
+
+    [Fact]
+    public async Task Processor_MarksNetworkError_WhenTheLookupHitsThePerItemTimeout()
+    {
+        var item = await _queueService.EnqueueAsync("9780451526538", bookId: null, ct: TestContext.Current.CancellationToken);
+
+        var lookupService = new MockMetadataLookupService(
+            results: [MakeMetadata("Never Delivered")], delay: TimeSpan.FromSeconds(30));
+        var processor = MakeProcessor(lookupService, new BookService(_factory),
+            new BookMetadataService(_factory), new BookImageService(_factory),
+            itemTimeout: TimeSpan.FromMilliseconds(100));
+
+        using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+        using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(timeoutCts.Token, TestContext.Current.CancellationToken);
+        await processor.StartBatch([item]).WaitAsync(linkedCts.Token);
+
+        var failed = await _queueService.GetItemsByStatusAsync("Failed", TestContext.Current.CancellationToken);
+        Assert.Single(failed);
+        Assert.Equal(nameof(BatchFailureReason.NetworkError), failed[0].FailureCode);
+    }
+
+    [Fact]
+    public async Task Processor_MarksUnexpected_WhenProcessingThrows()
+    {
+        var item = await _queueService.EnqueueAsync("9780451526538", bookId: null, ct: TestContext.Current.CancellationToken);
+
+        var lookupService = new MockMetadataLookupService(
+            results: [], throwOnFetch: new InvalidOperationException("boom"));
+        var processor = MakeProcessor(lookupService, new BookService(_factory),
+            new BookMetadataService(_factory), new BookImageService(_factory));
+
+        using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+        using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(timeoutCts.Token, TestContext.Current.CancellationToken);
+        await processor.StartBatch([item]).WaitAsync(linkedCts.Token);
+
+        var failed = await _queueService.GetItemsByStatusAsync("Failed", TestContext.Current.CancellationToken);
+        Assert.Single(failed);
+        Assert.Equal(nameof(BatchFailureReason.Unexpected), failed[0].FailureCode);
+    }
+
+    [Fact]
+    public async Task Processor_ClearsFailureCode_WhenARetrySucceeds()
+    {
+        var ct = TestContext.Current.CancellationToken;
+        var item = await _queueService.EnqueueAsync("9780451526538", bookId: null, ct: ct);
+
+        var emptyLookup = new MockMetadataLookupService(results: []);
+        var bookService = new BookService(_factory);
+        var bookMetadataService = new BookMetadataService(_factory);
+        var bookImageService = new BookImageService(_factory);
+
+        using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+        using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(timeoutCts.Token, ct);
+
+        var failingProcessor = MakeProcessor(emptyLookup, bookService, bookMetadataService, bookImageService);
+        await failingProcessor.StartBatch([item]).WaitAsync(linkedCts.Token);
+        Assert.NotNull((await _queueService.GetItemsByStatusAsync("Failed", ct))[0].FailureCode);
+
+        var succeedingLookup = new MockMetadataLookupService(results: [MakeMetadata("Found Now")]);
+        var retryProcessor = MakeProcessor(succeedingLookup, bookService, bookMetadataService, bookImageService);
+        await retryProcessor.StartBatch([item]).WaitAsync(linkedCts.Token);
+
+        var accepted = await _queueService.GetItemsByStatusAsync("AutoAccepted", ct);
+        Assert.Single(accepted);
+        Assert.Null(accepted[0].FailureCode);
+    }
+
+    [Fact]
+    public async Task Processor_ReportsFetchingCovers_WhileDownloadingACover()
+    {
+        var ct = TestContext.Current.CancellationToken;
+        var item = await _queueService.EnqueueAsync("9780451526538", bookId: null, ct: ct);
+
+        var metadata = MakeMetadata("Book With Cover") with { CoverImageUrl = "https://covers.example/1.jpg" };
+        var lookupService = new MockMetadataLookupService(results: [metadata]);
+        var observedStatusCodes = new List<BatchProgressStatus>();
+        _messenger.Register<BatchQueueProgressMessage>(this, (_, m) =>
+        {
+            lock (observedStatusCodes) observedStatusCodes.Add(m.StatusCode);
+        });
+
+        var processor = MakeProcessor(lookupService, new BookService(_factory),
+            new BookMetadataService(_factory), new BookImageService(_factory),
+            coverFetcher: new StubCoverFetcher());
+
+        using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+        using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(timeoutCts.Token, ct);
+        await processor.StartBatch([item]).WaitAsync(linkedCts.Token);
+
+        lock (observedStatusCodes)
+            Assert.Contains(BatchProgressStatus.FetchingCovers, observedStatusCodes);
     }
 
     [Fact]
     public async Task Processor_AutoAcceptsAndMarksDone_WhenNoConflicts()
     {
-        var item = await _queueService.EnqueueAsync("9780451526538", bookId: null, TestContext.Current.CancellationToken);
+        var item = await _queueService.EnqueueAsync("9780451526538", bookId: null, ct: TestContext.Current.CancellationToken);
 
         var metadata = MakeMetadata("Consistent Title");
         var lookupService = new MockMetadataLookupService(results: [metadata]);
@@ -130,7 +306,7 @@ public sealed class BatchQueueProcessorTests : IDisposable
     [Fact]
     public async Task Processor_StoresPendingReview_WhenConflictsExist()
     {
-        var item = await _queueService.EnqueueAsync("9780451526538", bookId: null, TestContext.Current.CancellationToken);
+        var item = await _queueService.EnqueueAsync("9780451526538", bookId: null, ct: TestContext.Current.CancellationToken);
 
         var metadata1 = MakeMetadata("Title A", "Source1");
         var metadata2 = MakeMetadata("Title B", "Source2");
@@ -150,11 +326,154 @@ public sealed class BatchQueueProcessorTests : IDisposable
     }
 
     [Fact]
+    public async Task Processor_StoresPendingReview_WhenForceReviewIsSet_EvenWithoutConflicts()
+    {
+        var ct = TestContext.Current.CancellationToken;
+        var item = await _queueService.EnqueueAsync("9780451526538", bookId: null, forceReview: true, ct: ct);
+
+        var metadata = MakeMetadata("Consistent Title");
+        var lookupService = new MockMetadataLookupService(results: [metadata]);
+        var processor = MakeProcessor(lookupService, new BookService(_factory),
+            new BookMetadataService(_factory), new BookImageService(_factory));
+
+        using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+        using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(timeoutCts.Token, ct);
+        await processor.StartBatch([item]).WaitAsync(linkedCts.Token);
+
+        var pendingReview = await _queueService.GetItemsByStatusAsync("PendingReview", ct);
+        Assert.Single(pendingReview);
+        Assert.Equal(item.BatchQueueItemId, pendingReview[0].BatchQueueItemId);
+        Assert.NotNull(pendingReview[0].ResultJson);
+        var autoAccepted = await _queueService.GetItemsByStatusAsync("AutoAccepted", ct);
+        Assert.Empty(autoAccepted);
+    }
+
+    [Fact]
+    public async Task Processor_PrefetchesEverySourceCoverIntoTheCache_WhenItemLandsInPendingReview()
+    {
+        var ct = TestContext.Current.CancellationToken;
+        var item = await _queueService.EnqueueAsync("9780451526538", bookId: null, ct: ct);
+
+        var metadata1 = MakeMetadata("Title A", "Source1") with { CoverImageUrl = "https://covers.example/a.jpg" };
+        var metadata2 = MakeMetadata("Title B", "Source2") with { CoverImageUrl = "https://covers.example/b.jpg" };
+        var lookupService = new MockMetadataLookupService(results: [metadata1, metadata2]);
+        var cache = new BoundedCoverCache();
+        var fetcher = new PerUrlCoverFetcher();
+        var processor = MakeProcessor(lookupService, new BookService(_factory),
+            new BookMetadataService(_factory), new BookImageService(_factory),
+            coverFetcher: fetcher, coverCache: cache);
+
+        using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+        using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(timeoutCts.Token, ct);
+        await processor.StartBatch([item]).WaitAsync(linkedCts.Token);
+
+        var pendingReview = await _queueService.GetItemsByStatusAsync("PendingReview", ct);
+        Assert.Single(pendingReview);
+        Assert.Equal(fetcher.BytesFor("https://covers.example/a.jpg"),
+            cache.TryGet(item.BatchQueueItemId, "Source1"));
+        Assert.Equal(fetcher.BytesFor("https://covers.example/b.jpg"),
+            cache.TryGet(item.BatchQueueItemId, "Source2"));
+    }
+
+    [Fact]
+    public async Task Processor_ReportsFetchingCovers_WhilePrefetchingForReview()
+    {
+        var ct = TestContext.Current.CancellationToken;
+        var item = await _queueService.EnqueueAsync("9780451526538", bookId: null, ct: ct);
+
+        var metadata1 = MakeMetadata("Title A", "Source1") with { CoverImageUrl = "https://covers.example/a.jpg" };
+        var metadata2 = MakeMetadata("Title B", "Source2");
+        var lookupService = new MockMetadataLookupService(results: [metadata1, metadata2]);
+        var observedStatusCodes = new List<BatchProgressStatus>();
+        _messenger.Register<BatchQueueProgressMessage>(this, (_, m) =>
+        {
+            lock (observedStatusCodes) observedStatusCodes.Add(m.StatusCode);
+        });
+
+        var processor = MakeProcessor(lookupService, new BookService(_factory),
+            new BookMetadataService(_factory), new BookImageService(_factory),
+            coverFetcher: new StubCoverFetcher(), coverCache: new BoundedCoverCache());
+
+        using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+        using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(timeoutCts.Token, ct);
+        await processor.StartBatch([item]).WaitAsync(linkedCts.Token);
+
+        lock (observedStatusCodes)
+            Assert.Contains(BatchProgressStatus.FetchingCovers, observedStatusCodes);
+    }
+
+    [Fact]
+    public async Task Processor_ProgressMessages_CarryTheRunningToReviewCount()
+    {
+        var ct = TestContext.Current.CancellationToken;
+        var item1 = await _queueService.EnqueueAsync("9780451526538", bookId: null, ct: ct);
+        await Task.Delay(5, ct); // ensure ordering by CreatedAt
+        var item2 = await _queueService.EnqueueAsync("9780062315007", bookId: null, ct: ct);
+
+        // Conflicting titles route every item to PendingReview.
+        var metadata1 = MakeMetadata("Title A", "Source1");
+        var metadata2 = MakeMetadata("Title B", "Source2");
+        var lookupService = new MockMetadataLookupService(results: [metadata1, metadata2]);
+        var messages = new List<BatchQueueProgressMessage>();
+        _messenger.Register<BatchQueueProgressMessage>(this, (_, m) =>
+        {
+            lock (messages) messages.Add(m);
+        });
+
+        var processor = MakeProcessor(lookupService, new BookService(_factory),
+            new BookMetadataService(_factory), new BookImageService(_factory));
+
+        using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+        using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(timeoutCts.Token, ct);
+        await processor.StartBatch([item1, item2]).WaitAsync(linkedCts.Token);
+
+        lock (messages)
+        {
+            // The count is visible mid-run (after the first item) and complete at the end.
+            Assert.Contains(messages, m => m.IsRunning && m.ToReviewCount == 1);
+            var final = messages.Last(m => !m.IsRunning);
+            Assert.Equal(2, final.ToReviewCount);
+            Assert.Equal(0, final.FailedCount);
+        }
+    }
+
+    [Fact]
+    public async Task Processor_ProgressMessages_CarryTheRunningFailedCount()
+    {
+        var ct = TestContext.Current.CancellationToken;
+        var item1 = await _queueService.EnqueueAsync("9780451526538", bookId: null, ct: ct);
+        await Task.Delay(5, ct);
+        var item2 = await _queueService.EnqueueAsync("9780062315007", bookId: null, ct: ct);
+
+        var lookupService = new MockMetadataLookupService(results: []);
+        var messages = new List<BatchQueueProgressMessage>();
+        _messenger.Register<BatchQueueProgressMessage>(this, (_, m) =>
+        {
+            lock (messages) messages.Add(m);
+        });
+
+        var processor = MakeProcessor(lookupService, new BookService(_factory),
+            new BookMetadataService(_factory), new BookImageService(_factory));
+
+        using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+        using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(timeoutCts.Token, ct);
+        await processor.StartBatch([item1, item2]).WaitAsync(linkedCts.Token);
+
+        lock (messages)
+        {
+            Assert.Contains(messages, m => m.IsRunning && m.FailedCount == 1);
+            var final = messages.Last(m => !m.IsRunning);
+            Assert.Equal(2, final.FailedCount);
+            Assert.Equal(0, final.ToReviewCount);
+        }
+    }
+
+    [Fact]
     public async Task Processor_ProcessesItemsSequentially()
     {
-        var item1 = await _queueService.EnqueueAsync("9780451526538", bookId: null, TestContext.Current.CancellationToken);
+        var item1 = await _queueService.EnqueueAsync("9780451526538", bookId: null, ct: TestContext.Current.CancellationToken);
         await Task.Delay(5, TestContext.Current.CancellationToken); // ensure ordering by CreatedAt
-        var item2 = await _queueService.EnqueueAsync("9780062315007", bookId: null, TestContext.Current.CancellationToken);
+        var item2 = await _queueService.EnqueueAsync("9780062315007", bookId: null, ct: TestContext.Current.CancellationToken);
 
         var processedOrder = new List<string>();
         var metadata = MakeMetadata("Title");
@@ -181,7 +500,7 @@ public sealed class BatchQueueProcessorTests : IDisposable
     [Fact]
     public async Task Processor_SendsProgressMessages()
     {
-        var item = await _queueService.EnqueueAsync("9780451526538", bookId: null, TestContext.Current.CancellationToken);
+        var item = await _queueService.EnqueueAsync("9780451526538", bookId: null, ct: TestContext.Current.CancellationToken);
         var messages = new List<BookDB.Logic.Messages.BatchQueueProgressMessage>();
         _messenger.Register<BookDB.Logic.Messages.BatchQueueProgressMessage>(this,
             (_, msg) => messages.Add(msg));
@@ -203,7 +522,7 @@ public sealed class BatchQueueProcessorTests : IDisposable
     [Fact]
     public async Task Processor_SendsIsRunningFalse_WhenAllItemsProcessed()
     {
-        var item = await _queueService.EnqueueAsync("9780451526538", bookId: null, TestContext.Current.CancellationToken);
+        var item = await _queueService.EnqueueAsync("9780451526538", bookId: null, ct: TestContext.Current.CancellationToken);
         var completionMessages = new List<BookDB.Logic.Messages.BatchQueueProgressMessage>();
         _messenger.Register<BookDB.Logic.Messages.BatchQueueProgressMessage>(this,
             (_, msg) =>
@@ -240,7 +559,7 @@ public sealed class BatchQueueProcessorTests : IDisposable
         await bookMetadataService.AddBookFromMetadataAsync(existingMetadata, null, null, TestContext.Current.CancellationToken);
 
         // Enqueue with the same ISBN-13 but without BookId (simulates repeated batch run)
-        var item = await _queueService.EnqueueAsync("9780451526538", bookId: null, TestContext.Current.CancellationToken);
+        var item = await _queueService.EnqueueAsync("9780451526538", bookId: null, ct: TestContext.Current.CancellationToken);
 
         var lookupService = new MockMetadataLookupService(results: [existingMetadata]);
         var bookService = new BookService(_factory);
@@ -266,7 +585,7 @@ public sealed class BatchQueueProcessorTests : IDisposable
         await bookMetadataService.AddBookFromMetadataAsync(existingMetadata, null, null, TestContext.Current.CancellationToken);
 
         // Enqueue with ISBN-10 form "0451526538" — processor must cross-format match
-        var item = await _queueService.EnqueueAsync("0451526538", bookId: null, TestContext.Current.CancellationToken);
+        var item = await _queueService.EnqueueAsync("0451526538", bookId: null, ct: TestContext.Current.CancellationToken);
 
         var lookupService = new MockMetadataLookupService(results: [existingMetadata]);
         var bookService = new BookService(_factory);
@@ -291,7 +610,7 @@ public sealed class BatchQueueProcessorTests : IDisposable
         var metadata = MakeMetadata("My Book");
 
         // First run: enqueue, process, should save as Done
-        var item1 = await _queueService.EnqueueAsync("9780451526538", bookId: null, TestContext.Current.CancellationToken);
+        var item1 = await _queueService.EnqueueAsync("9780451526538", bookId: null, ct: TestContext.Current.CancellationToken);
         var lookupService = new MockMetadataLookupService(results: [metadata]);
         var processor = MakeProcessor(lookupService, bookService, bookMetadataService, bookImageService);
 
@@ -303,7 +622,7 @@ public sealed class BatchQueueProcessorTests : IDisposable
         Assert.Single(done);
 
         // Second run: same ISBN, same metadata — should be Skipped (no new data)
-        var item2 = await _queueService.EnqueueAsync("9780451526538", bookId: null, TestContext.Current.CancellationToken);
+        var item2 = await _queueService.EnqueueAsync("9780451526538", bookId: null, ct: TestContext.Current.CancellationToken);
 
         using var timeoutCts2 = new CancellationTokenSource(TimeSpan.FromSeconds(5));
         using var linkedCts2 = CancellationTokenSource.CreateLinkedTokenSource(timeoutCts2.Token, TestContext.Current.CancellationToken);
@@ -319,7 +638,7 @@ public sealed class BatchQueueProcessorTests : IDisposable
         // Enqueue many items and cancel early
         var items = new List<BookDB.Models.Entities.BatchQueueItem>();
         for (int i = 0; i < 5; i++)
-            items.Add(await _queueService.EnqueueAsync($"978045152653{i}", bookId: null, TestContext.Current.CancellationToken));
+            items.Add(await _queueService.EnqueueAsync($"978045152653{i}", bookId: null, ct: TestContext.Current.CancellationToken));
 
         var processedCount = 0;
         var metadata = MakeMetadata("Title");
@@ -347,7 +666,7 @@ public sealed class BatchQueueProcessorTests : IDisposable
     public async Task Processor_DoesNotDoubleProcess_WhenSameItemEnqueuedTwice()
     {
         // Simulate startup reload: item already in DB and passed twice to StartBatch
-        var item = await _queueService.EnqueueAsync("9780451526538", bookId: null, TestContext.Current.CancellationToken);
+        var item = await _queueService.EnqueueAsync("9780451526538", bookId: null, ct: TestContext.Current.CancellationToken);
 
         var processedCount = 0;
         var metadata = MakeMetadata("Title");
@@ -372,7 +691,7 @@ public sealed class BatchQueueProcessorTests : IDisposable
     public async Task Processor_SavesBookWithQueuedIsbn_WhenSourceReturnsNullIsbn()
     {
         // Arrange: metadata from source has no ISBN (null) — processor should use item.Isbn
-        var item = await _queueService.EnqueueAsync("9780451526538", bookId: null, TestContext.Current.CancellationToken);
+        var item = await _queueService.EnqueueAsync("9780451526538", bookId: null, ct: TestContext.Current.CancellationToken);
 
         // Source returns metadata with null ISBN
         var metadataNoIsbn = new BookMetadata(
@@ -407,7 +726,7 @@ public sealed class BatchQueueProcessorTests : IDisposable
         await bookMetadataService.AddBookFromMetadataAsync(existingMetadata, null, null, TestContext.Current.CancellationToken);
 
         // Queue an item with same ISBN
-        var item = await _queueService.EnqueueAsync("9780451526538", bookId: null, TestContext.Current.CancellationToken);
+        var item = await _queueService.EnqueueAsync("9780451526538", bookId: null, ct: TestContext.Current.CancellationToken);
 
         // Source returns metadata with null ISBN — but same title (matching)
         var metadataNoIsbn = new BookMetadata(
@@ -432,26 +751,69 @@ public sealed class BatchQueueProcessorTests : IDisposable
     }
 }
 
+/// <summary>Returns fixed bytes for any cover URL without touching the network.</summary>
+internal sealed class StubCoverFetcher : ICoverFetcher
+{
+    public Task<byte[]?> DownloadCoverAsync(
+        string coverUrl, string isbn, string sourceName, CancellationToken ct = default)
+        => Task.FromResult<byte[]?>([0xFF, 0xD8, 0xFF, 0x42]);
+}
+
+/// <summary>Returns bytes derived from the requested URL, so tests can tell covers apart.</summary>
+internal sealed class PerUrlCoverFetcher : ICoverFetcher
+{
+    public byte[] BytesFor(string coverUrl) =>
+        System.Text.Encoding.UTF8.GetBytes(coverUrl);
+
+    public Task<byte[]?> DownloadCoverAsync(
+        string coverUrl, string isbn, string sourceName, CancellationToken ct = default)
+        => Task.FromResult<byte[]?>(BytesFor(coverUrl));
+}
+
 /// <summary>
-/// Minimal mock for IMetadataLookupService that doesn't call real HTTP.
+/// Minimal mock for IMetadataLookupService that doesn't call real HTTP. Defaults to one queried,
+/// non-failing source; the counts, a fetch delay (for timeout paths), and a thrown exception are
+/// configurable so every processor failure path can be driven.
 /// </summary>
 internal sealed class MockMetadataLookupService : IMetadataLookupService
 {
     private readonly IReadOnlyList<BookMetadata> _results;
     private readonly Action<string>? _onFetch;
+    private readonly int _sourcesQueried;
+    private readonly int _sourcesFailed;
+    private readonly TimeSpan _delay;
+    private readonly Exception? _throwOnFetch;
+    private readonly IReadOnlyList<string> _rateLimitedSources;
 
     public MockMetadataLookupService(
         IReadOnlyList<BookMetadata> results,
-        Action<string>? onFetch = null)
+        Action<string>? onFetch = null,
+        int? sourcesQueried = null,
+        int sourcesFailed = 0,
+        TimeSpan? delay = null,
+        Exception? throwOnFetch = null,
+        IReadOnlyList<string>? rateLimitedSources = null)
     {
         _results = results;
         _onFetch = onFetch;
+        _sourcesQueried = sourcesQueried ?? Math.Max(1, results.Count);
+        _sourcesFailed = sourcesFailed;
+        _delay = delay ?? TimeSpan.Zero;
+        _throwOnFetch = throwOnFetch;
+        _rateLimitedSources = rateLimitedSources ?? [];
     }
 
-    public Task<IReadOnlyList<BookMetadata>> FetchAllSourcesAsync(
+    public async Task<MetadataLookupResult> FetchAllSourcesAsync(
         string isbn, CancellationToken ct = default)
     {
         _onFetch?.Invoke(isbn);
-        return Task.FromResult(_results);
+        if (_throwOnFetch is not null)
+            throw _throwOnFetch;
+        if (_delay > TimeSpan.Zero)
+            await Task.Delay(_delay, ct);
+        var statuses = _rateLimitedSources
+            .Select(s => new SourceLookupStatus(s, SourceLookupOutcome.RateLimited))
+            .ToList();
+        return new MetadataLookupResult(_results, _sourcesQueried, _sourcesFailed, statuses);
     }
 }

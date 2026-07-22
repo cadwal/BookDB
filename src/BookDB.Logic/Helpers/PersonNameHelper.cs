@@ -11,10 +11,11 @@ public static class PersonNameHelper
     private static readonly Regex _roleSuffixRegex = new(@"\s*[\(\[]\s*(?<role>[^\)\]]+?)\s*[\)\]]\s*$", RegexOptions.Compiled | RegexOptions.CultureInvariant);
 
     // Author-list separators other than the comma: symbols and multilingual conjunctions (incl. Swedish "och").
-    // The comma is handled separately — it also means "Last, First" — so it is not in this set. A symbol separator
-    // needs an adjacent space, so a glued token like "n/a" is not split.
+    // The comma is handled separately — it also means "Last, First" — so it is not in this set. The "/", "|" and
+    // "&" separators need an adjacent space, so a glued token like "n/a" or "AT&T" is not split. ";" is the
+    // exception: it never occurs inside a single person's name, so it splits even glued ("Per Johans;Delia Pers").
     private static readonly Regex _listSeparators = new(
-        @"\s+[/;|&]\s*|\s*[/;|&]\s+|\s+(?:and|och|et|und|y|with)\s+",
+        @"\s*;\s*|\s+[/|&]\s*|\s*[/|&]\s+|\s+(?:and|och|et|und|y|with)\s+",
         RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
     // Placeholders that mean "no author" (never a person): n/a, n.a., dashes, question marks.

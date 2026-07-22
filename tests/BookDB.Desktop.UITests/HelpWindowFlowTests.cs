@@ -15,13 +15,13 @@ using Xunit;
 namespace BookDB.Desktop.UITests;
 
 /// <summary>
-/// Help window wiring: opening at any of the five entry points lands on that tab, every tab carries loaded
-/// markdown content, and walking all five realizes each page under the binding gate.
+/// Help window wiring: opening at any entry point lands on that tab, every tab carries loaded markdown
+/// content, and walking all of them realizes each page under the binding gate.
 /// </summary>
 public class HelpWindowFlowTests : HeadlessTest
 {
     [Fact]
-    public async Task OpensAtTheRequestedTab_AndAllFiveTabsRealizeWithContent()
+    public async Task OpensAtTheRequestedTab_AndAllTabsRealizeWithContent()
     {
         await RunUi(async () =>
         {
@@ -42,15 +42,15 @@ public class HelpWindowFlowTests : HeadlessTest
             Ui.Pump();
 
             var tabs = window.Find<TabControl>();
-            Assert.Equal(5, tabs.Items.Count);
+            Assert.Equal(Enum.GetValues<HelpTab>().Length, tabs.Items.Count);
             Assert.Equal((int)HelpTab.ImportGuide, tabs.SelectedIndex);
 
             // Every page loaded real markdown, and each tab realizes cleanly when selected.
             Assert.All(
                 new[]
                 {
-                    vm.ShortcutsContent, vm.GlossaryContent, vm.ImportGuideContent,
-                    vm.DataSourcesContent, vm.RemoteDatabasesContent,
+                    vm.GettingStartedContent, vm.ShortcutsContent, vm.GlossaryContent,
+                    vm.ImportGuideContent, vm.DataSourcesContent, vm.RemoteDatabasesContent,
                 },
                 content => Assert.False(string.IsNullOrWhiteSpace(content)));
             foreach (var index in Enumerable.Range(0, tabs.Items.Count))

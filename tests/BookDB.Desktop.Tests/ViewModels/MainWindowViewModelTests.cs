@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using BookDB.Desktop.Tests.Helpers;
 using BookDB.Desktop.ViewModels;
 using BookDB.Logic.Services;
+using BookDB.Models;
 using CommunityToolkit.Mvvm.Messaging;
 using Xunit;
 
@@ -35,7 +36,8 @@ public class MainWindowViewModelTests
             new BookDB.Models.AppSettings(),
             NSubstitute.Substitute.For<BookDB.Desktop.Services.IMigrationTargetBuilder>(),
             NSubstitute.Substitute.For<BookDB.Data.Interfaces.ISecretStore>(),
-            NSubstitute.Substitute.For<BookDB.Desktop.Services.IReleaseNotesService>());
+            NSubstitute.Substitute.For<BookDB.Desktop.Services.IReleaseNotesService>(),
+            NSubstitute.Substitute.For<BookDB.Desktop.Services.UpdateCheck.IUpdateCheckService>());
         return (vm, factory);
     }
 
@@ -96,7 +98,9 @@ public class MainWindowViewModelTests
 
             await vm.InitializeAsync(TestContext.Current.CancellationToken);
 
-            Assert.Equal(3, vm.CollectionSelector.CollectionItems.Count);
+            // Three real collections plus the Uncategorized entry; first run selects them all so any
+            // orphaned books stay visible.
+            Assert.Equal(4, vm.CollectionSelector.CollectionItems.Count);
             Assert.All(vm.CollectionSelector.CollectionItems, item => Assert.True(item.IsSelected));
         }
     }
@@ -116,6 +120,44 @@ public class MainWindowViewModelTests
             Assert.True(items.First(c => c.Id == 1).IsSelected);
             Assert.False(items.First(c => c.Id == 2).IsSelected);
             Assert.True(items.First(c => c.Id == 3).IsSelected);
+        }
+    }
+
+    [Fact]
+    public async Task InitializeAsync_UpgradeWithoutSeededFlag_SelectsUncategorizedOnce()
+    {
+        var (vm, factory) = CreateTestViewModel();
+        using (factory)
+        {
+            var settings = (ISettingsService)factory.LookupService;
+            await factory.SeedCollectionsAsync((1, "Library", 0), (2, "Wishlist", 1));
+            // A selection persisted before the Uncategorized filter existed: no sentinel, no seeded flag.
+            await settings.SetAsync("LastSelectedCollectionIds", "1,2", TestContext.Current.CancellationToken);
+
+            await vm.InitializeAsync(TestContext.Current.CancellationToken);
+
+            var uncategorized = vm.CollectionSelector.CollectionItems.First(c => c.Id == CollectionFilter.Uncategorized);
+            Assert.True(uncategorized.IsSelected);
+            Assert.Equal("true", await settings.GetAsync("UncategorizedFilterSeeded", TestContext.Current.CancellationToken));
+        }
+    }
+
+    [Fact]
+    public async Task InitializeAsync_AfterSeeded_RespectsDeselectedUncategorized()
+    {
+        var (vm, factory) = CreateTestViewModel();
+        using (factory)
+        {
+            var settings = (ISettingsService)factory.LookupService;
+            await factory.SeedCollectionsAsync((1, "Library", 0), (2, "Wishlist", 1));
+            // Already seeded, and the user has deselected Uncategorized — the sentinel must not be re-added.
+            await settings.SetAsync("UncategorizedFilterSeeded", "true", TestContext.Current.CancellationToken);
+            await settings.SetAsync("LastSelectedCollectionIds", "1,2", TestContext.Current.CancellationToken);
+
+            await vm.InitializeAsync(TestContext.Current.CancellationToken);
+
+            var uncategorized = vm.CollectionSelector.CollectionItems.First(c => c.Id == CollectionFilter.Uncategorized);
+            Assert.False(uncategorized.IsSelected);
         }
     }
 

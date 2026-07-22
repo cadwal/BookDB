@@ -51,6 +51,7 @@ public sealed class PostgresSchemaTests : IClassFixture<PostgresTestDbFixture>
 
         Assert.True((bool)(await ScalarAsync("SELECT to_regclass('public.\"Book\"') IS NOT NULL", ct))!);
         Assert.True((bool)(await ScalarAsync("SELECT to_regclass('public.\"ClientSession\"') IS NOT NULL", ct))!);
+        Assert.True((bool)(await ScalarAsync("SELECT to_regclass('public.\"PersonCleanupIgnore\"') IS NOT NULL", ct))!);
     }
 
     [Fact]
@@ -65,10 +66,12 @@ public sealed class PostgresSchemaTests : IClassFixture<PostgresTestDbFixture>
         Assert.Equal("timestamp without time zone", await ColumnTypeAsync("Book", "Added", ct));
         Assert.Equal("bytea", await ColumnTypeAsync("BookImage", "ImageData", ct));
         Assert.Equal("tsvector", await ColumnTypeAsync("Book", "SearchVector", ct));
+        Assert.Equal("boolean", await ColumnTypeAsync("BatchQueueItem", "ForceReview", ct));
+        Assert.Equal("text", await ColumnTypeAsync("BatchQueueItem", "FailureCode", ct));
     }
 
     [Fact]
-    public async Task DbUp_AppliesOnlyThePostgresScript()
+    public async Task DbUp_AppliesOnlyPostgresScripts()
     {
         Assert.SkipUnless(_fixture.IsAvailable, _fixture.SkipReason);
         var ct = TestContext.Current.CancellationToken;
@@ -76,12 +79,14 @@ public sealed class PostgresSchemaTests : IClassFixture<PostgresTestDbFixture>
         await ApplySchemaAsync(ct);
 
         var count = Convert.ToInt64(await ScalarAsync("SELECT count(*) FROM schemaversions", ct));
-        var scriptName = (string?)await ScalarAsync(
+        var firstScript = (string?)await ScalarAsync(
             "SELECT scriptname FROM schemaversions ORDER BY schemaversionsid LIMIT 1", ct);
+        var foreignScripts = Convert.ToInt64(await ScalarAsync(
+            "SELECT count(*) FROM schemaversions WHERE scriptname NOT LIKE '%PostgreSQL%'", ct));
 
-        Assert.Equal(1, count);
-        Assert.NotNull(scriptName);
-        Assert.Contains("PostgreSQL", scriptName);
-        Assert.Contains("V001_CreateSchema", scriptName);
+        Assert.Equal(2, count);
+        Assert.Equal(0, foreignScripts);
+        Assert.NotNull(firstScript);
+        Assert.Contains("V001_CreateSchema", firstScript);
     }
 }

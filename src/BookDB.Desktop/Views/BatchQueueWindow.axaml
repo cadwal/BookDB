@@ -169,6 +169,27 @@
                            HorizontalAlignment="Right" />
             </Grid>
 
+            <!-- Failure breakdown: one row per localized reason, so a failure never reads as a bare count -->
+            <ItemsControl ItemsSource="{Binding FailureReasons}"
+                          IsVisible="{Binding FailureReasons.Count}"
+                          Margin="16,0,0,0">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="vm:FailureReasonCount">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Grid.Column="0"
+                                       Text="{Binding Reason}"
+                                       FontSize="12"
+                                       Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                            <TextBlock Grid.Column="1"
+                                       Text="{Binding Count}"
+                                       FontSize="12"
+                                       HorizontalAlignment="Right"
+                                       Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                        </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
             <StackPanel Orientation="Horizontal"
                         HorizontalAlignment="Right"
                         Spacing="8"

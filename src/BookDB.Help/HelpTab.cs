@@ -1,3 +1,3 @@
 namespace BookDB.Help;
 
-public enum HelpTab { KeyboardShortcuts = 0, FieldGlossary = 1, ImportGuide = 2, DataSources = 3, RemoteDatabases = 4 }
+public enum HelpTab { GettingStarted = 0, KeyboardShortcuts = 1, FieldGlossary = 2, ImportGuide = 3, DataSources = 4, RemoteDatabases = 5 }

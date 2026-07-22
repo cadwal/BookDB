@@ -44,7 +44,8 @@ public class ReleaseNotesOfferTests
             new BookDB.Models.AppSettings(),
             Substitute.For<IMigrationTargetBuilder>(),
             Substitute.For<BookDB.Data.Interfaces.ISecretStore>(),
-            releaseNotes);
+            releaseNotes,
+            Substitute.For<BookDB.Desktop.Services.UpdateCheck.IUpdateCheckService>());
         return (vm, factory, windowService, releaseNotes);
     }
 

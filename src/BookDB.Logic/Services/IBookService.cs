@@ -28,9 +28,8 @@ public interface IBookService
 
     Task UpdateBookCategoriesAsync(int bookId, IReadOnlyList<int> categoryIds, CancellationToken ct = default);
 
-    Task<IReadOnlyList<string>> GetPeopleNamesAsync(
-        string? prefix = null,
-        CancellationToken ct = default);
+    /// <summary>All people, ordered by sort name — the in-memory snapshot for the person type-ahead.</summary>
+    Task<IReadOnlyList<Person>> GetPeopleAsync(CancellationToken ct = default);
 
     Task<Book?> GetBookByIdAsync(int bookId, CancellationToken ct = default);
 

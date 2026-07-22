@@ -75,6 +75,14 @@ namespace BookDB.Desktop.Localization
             }
         }
 
+        public static string CollectionSelector_Uncategorized
+        {
+            get
+            {
+                return ResourceManager.GetString("CollectionSelector_Uncategorized", resourceCulture) ?? "Uncategorized";
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to Select a book to see details.
         /// </summary>
@@ -105,6 +113,72 @@ namespace BookDB.Desktop.Localization
             get
             {
                 return ResourceManager.GetString("BookList_EmptyState", resourceCulture) ?? "No books to display";
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Your library is empty.
+        /// </summary>
+        public static string BookList_Empty_Title
+        {
+            get
+            {
+                return ResourceManager.GetString("BookList_Empty_Title", resourceCulture) ?? "Your library is empty";
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Add your first book, import an existing catalog, or connect to a shared database.
+        /// </summary>
+        public static string BookList_Empty_Subtitle
+        {
+            get
+            {
+                return ResourceManager.GetString("BookList_Empty_Subtitle", resourceCulture) ?? "Add your first book, import an existing catalog, or connect to a shared database.";
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Add your first book.
+        /// </summary>
+        public static string BookList_Empty_AddBook
+        {
+            get
+            {
+                return ResourceManager.GetString("BookList_Empty_AddBook", resourceCulture) ?? "Add your first book";
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Import from a file.
+        /// </summary>
+        public static string BookList_Empty_Import
+        {
+            get
+            {
+                return ResourceManager.GetString("BookList_Empty_Import", resourceCulture) ?? "Import Readerware backup";
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Connect to a database.
+        /// </summary>
+        public static string BookList_Empty_ConnectDatabase
+        {
+            get
+            {
+                return ResourceManager.GetString("BookList_Empty_ConnectDatabase", resourceCulture) ?? "Connect to a database";
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to New here? See the getting-started help.
+        /// </summary>
+        public static string BookList_Empty_HelpHint
+        {
+            get
+            {
+                return ResourceManager.GetString("BookList_Empty_HelpHint", resourceCulture) ?? "New here? See the getting-started help.";
             }
         }
 
@@ -226,6 +300,50 @@ namespace BookDB.Desktop.Localization
             get
             {
                 return ResourceManager.GetString("Delete_Cancel_Button", resourceCulture) ?? "Keep Book";
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Delete "{0}"? It's on loan to {1} — its loan history will be removed too. This cannot be undone.
+        /// </summary>
+        public static string Delete_LoanedOut_Single_Message
+        {
+            get
+            {
+                return ResourceManager.GetString("Delete_LoanedOut_Single_Message", resourceCulture) ?? "Delete \"{0}\"? It's on loan to {1} — its loan history will be removed too. This cannot be undone.";
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Delete {0} books? {1} are on loan — their loan history will be removed too. This cannot be undone.
+        /// </summary>
+        public static string Delete_LoanedOut_Multiple_Message
+        {
+            get
+            {
+                return ResourceManager.GetString("Delete_LoanedOut_Multiple_Message", resourceCulture) ?? "Delete {0} books? {1} are on loan — their loan history will be removed too. This cannot be undone.";
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Something went wrong.
+        /// </summary>
+        public static string Error_ActionFailed_Title
+        {
+            get
+            {
+                return ResourceManager.GetString("Error_ActionFailed_Title", resourceCulture) ?? "Something went wrong";
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to The action couldn't be completed. Check that the database is reachable, then try again. See the log for details.
+        /// </summary>
+        public static string Error_ActionFailed_Message
+        {
+            get
+            {
+                return ResourceManager.GetString("Error_ActionFailed_Message", resourceCulture) ?? "The action couldn't be completed. Check that the database is reachable, then try again. See the log for details.";
             }
         }
 
@@ -500,6 +618,11 @@ namespace BookDB.Desktop.Localization
             get { return ResourceManager.GetString("MergeReview_Title_New", resourceCulture) ?? "Review metadata - new book"; }
         }
 
+        public static string MergeReview_RateLimitedNote
+        {
+            get { return ResourceManager.GetString("MergeReview_RateLimitedNote", resourceCulture) ?? "Some sources were rate-limited and skipped: {0}. Their data may be missing — retry later to include them."; }
+        }
+
         public static string MergeReview_Title_Recatalog
         {
             get { return ResourceManager.GetString("MergeReview_Title_Recatalog", resourceCulture) ?? "Review metadata - {0}"; }
@@ -513,6 +636,14 @@ namespace BookDB.Desktop.Localization
         public static string MergeReview_NoConflicts
         {
             get { return ResourceManager.GetString("MergeReview_NoConflicts", resourceCulture) ?? "No field conflicts — all sources agree."; }
+        }
+
+        public static string MergeReview_Identity_Isbn {
+            get { return ResourceManager.GetString("MergeReview_Identity_Isbn", resourceCulture) ?? "ISBN {0}"; }
+        }
+
+        public static string MergeReview_Identity_Untitled {
+            get { return ResourceManager.GetString("MergeReview_Identity_Untitled", resourceCulture) ?? "Untitled"; }
         }
 
         public static string MergeReview_Field_Authors
@@ -610,6 +741,36 @@ namespace BookDB.Desktop.Localization
             get { return ResourceManager.GetString("BatchQueue_StatusSaving", resourceCulture) ?? "Saving…"; }
         }
 
+        public static string BatchQueue_StatusFetchingCovers
+        {
+            get { return ResourceManager.GetString("BatchQueue_StatusFetchingCovers", resourceCulture) ?? "Fetching covers…"; }
+        }
+
+        public static string BatchQueue_Failure_NoResults
+        {
+            get { return ResourceManager.GetString("BatchQueue_Failure_NoResults", resourceCulture) ?? "No source had a match for this ISBN"; }
+        }
+
+        public static string BatchQueue_Failure_NetworkError
+        {
+            get { return ResourceManager.GetString("BatchQueue_Failure_NetworkError", resourceCulture) ?? "Network error — no source could be reached"; }
+        }
+
+        public static string BatchQueue_Failure_RateLimited
+        {
+            get { return ResourceManager.GetString("BatchQueue_Failure_RateLimited", resourceCulture) ?? "Rate limited — try again later"; }
+        }
+
+        public static string BatchQueue_Failure_AllSourcesDisabled
+        {
+            get { return ResourceManager.GetString("BatchQueue_Failure_AllSourcesDisabled", resourceCulture) ?? "All lookup sources are disabled"; }
+        }
+
+        public static string BatchQueue_Failure_Unexpected
+        {
+            get { return ResourceManager.GetString("BatchQueue_Failure_Unexpected", resourceCulture) ?? "Unexpected error"; }
+        }
+
         public static string BatchQueue_StartReviewButton
         {
             get { return ResourceManager.GetString("BatchQueue_StartReviewButton", resourceCulture) ?? "Review Results"; }
@@ -653,6 +814,111 @@ namespace BookDB.Desktop.Localization
         public static string StatusBar_BatchQueue_Progress
         {
             get { return ResourceManager.GetString("StatusBar_BatchQueue_Progress", resourceCulture) ?? "Lookup: {0} of {1}"; }
+        }
+
+        public static string PersonSuggestion_NewAuthor_Format
+        {
+            get { return ResourceManager.GetString("PersonSuggestion_NewAuthor_Format", resourceCulture) ?? "Add \"{0}\" as new author"; }
+        }
+
+        public static string PersonSuggestion_Watermark
+        {
+            get { return ResourceManager.GetString("PersonSuggestion_Watermark", resourceCulture) ?? "Search people…"; }
+        }
+
+        public static string PersonSuggestion_NewBadge
+        {
+            get { return ResourceManager.GetString("PersonSuggestion_NewBadge", resourceCulture) ?? "new"; }
+        }
+
+        public static string MergeReview_Authors_Label
+        {
+            get { return ResourceManager.GetString("MergeReview_Authors_Label", resourceCulture) ?? "Authors"; }
+        }
+
+        public static string MergeReview_AddAuthor
+        {
+            get { return ResourceManager.GetString("MergeReview_AddAuthor", resourceCulture) ?? "+ Add author"; }
+        }
+
+        public static string MergeReview_RemoveAuthor
+        {
+            get { return ResourceManager.GetString("MergeReview_RemoveAuthor", resourceCulture) ?? "Remove author"; }
+        }
+
+        public static string MergeReview_Collection_Label
+        {
+            get { return ResourceManager.GetString("MergeReview_Collection_Label", resourceCulture) ?? "Collection"; }
+        }
+
+        public static string Common_SaveAndOpenEditor
+        {
+            get { return ResourceManager.GetString("Common_SaveAndOpenEditor", resourceCulture) ?? "Save & open editor"; }
+        }
+
+        public static string AddBookIdentify_Title
+        {
+            get { return ResourceManager.GetString("AddBookIdentify_Title", resourceCulture) ?? "Add book"; }
+        }
+
+        public static string AddBookIdentify_IsbnLabel
+        {
+            get { return ResourceManager.GetString("AddBookIdentify_IsbnLabel", resourceCulture) ?? "ISBN"; }
+        }
+
+        public static string AddBookIdentify_Hint
+        {
+            get { return ResourceManager.GetString("AddBookIdentify_Hint", resourceCulture) ?? "Scan or type an ISBN, then press Enter."; }
+        }
+
+        public static string AddBookIdentify_LookUp
+        {
+            get { return ResourceManager.GetString("AddBookIdentify_LookUp", resourceCulture) ?? "Look up"; }
+        }
+
+        public static string AddBookIdentify_ManualEntry
+        {
+            get { return ResourceManager.GetString("AddBookIdentify_ManualEntry", resourceCulture) ?? "Enter details manually"; }
+        }
+
+        public static string AddBookIdentify_WizardHint
+        {
+            get { return ResourceManager.GetString("AddBookIdentify_WizardHint", resourceCulture) ?? "Multiple ISBNs? Use Catalog by ISBN (Ctrl+I)."; }
+        }
+
+        public static string AddBookIdentify_LookupFailed
+        {
+            get { return ResourceManager.GetString("AddBookIdentify_LookupFailed", resourceCulture) ?? "The lookup did not find this book: {0}"; }
+        }
+
+        public static string AddBookIdentify_CancelLookup_Title
+        {
+            get { return ResourceManager.GetString("AddBookIdentify_CancelLookup_Title", resourceCulture) ?? "Cancel lookup?"; }
+        }
+
+        public static string AddBookIdentify_CancelLookup_Body
+        {
+            get { return ResourceManager.GetString("AddBookIdentify_CancelLookup_Body", resourceCulture) ?? "A lookup is still running. Cancel it and close?"; }
+        }
+
+        public static string StatusBar_BatchQueue_ToReview
+        {
+            get { return ResourceManager.GetString("StatusBar_BatchQueue_ToReview", resourceCulture) ?? "{0} to review"; }
+        }
+
+        public static string StatusBar_BatchQueue_Failed
+        {
+            get { return ResourceManager.GetString("StatusBar_BatchQueue_Failed", resourceCulture) ?? "{0} failed"; }
+        }
+
+        public static string StatusBar_BatchQueue_WithOutcome
+        {
+            get { return ResourceManager.GetString("StatusBar_BatchQueue_WithOutcome", resourceCulture) ?? "{0} — {1}"; }
+        }
+
+        public static string StatusBar_BatchQueue_OutcomePair
+        {
+            get { return ResourceManager.GetString("StatusBar_BatchQueue_OutcomePair", resourceCulture) ?? "{0}, {1}"; }
         }
 
         public static string Recatalog_NoIsbn_Title
@@ -937,6 +1203,76 @@ namespace BookDB.Desktop.Localization
             get { return ResourceManager.GetString("ManageLookups_NoCleanup", resourceCulture) ?? "No cleanup needed."; }
         }
 
+        public static string Person_Cleanup_Ignore
+        {
+            get { return ResourceManager.GetString("Person_Cleanup_Ignore", resourceCulture) ?? "Ignore"; }
+        }
+
+        public static string Person_Cleanup_ViewIgnored
+        {
+            get { return ResourceManager.GetString("Person_Cleanup_ViewIgnored", resourceCulture) ?? "View ignored…"; }
+        }
+
+        public static string Person_Cleanup_IgnoredCount
+        {
+            get { return ResourceManager.GetString("Person_Cleanup_IgnoredCount", resourceCulture) ?? "{0} ignored"; }
+        }
+
+        public static string Person_Cleanup_IgnoredTitle
+        {
+            get { return ResourceManager.GetString("Person_Cleanup_IgnoredTitle", resourceCulture) ?? "Ignored proposals"; }
+        }
+
+        public static string Person_Cleanup_Unignore
+        {
+            get { return ResourceManager.GetString("Person_Cleanup_Unignore", resourceCulture) ?? "Un-ignore"; }
+        }
+
+        public static string Person_Cleanup_BackToProposals
+        {
+            get { return ResourceManager.GetString("Person_Cleanup_BackToProposals", resourceCulture) ?? "Back"; }
+        }
+
+        public static string Person_Cleanup_Column_Person
+        {
+            get { return ResourceManager.GetString("Person_Cleanup_Column_Person", resourceCulture) ?? "Person"; }
+        }
+
+        public static string Person_Cleanup_Column_Kind
+        {
+            get { return ResourceManager.GetString("Person_Cleanup_Column_Kind", resourceCulture) ?? "Kind"; }
+        }
+
+        public static string Person_Cleanup_Column_Content
+        {
+            get { return ResourceManager.GetString("Person_Cleanup_Column_Content", resourceCulture) ?? "Proposed change"; }
+        }
+
+        public static string Person_Cleanup_Kind_Rename
+        {
+            get { return ResourceManager.GetString("Person_Cleanup_Kind_Rename", resourceCulture) ?? "Rename"; }
+        }
+
+        public static string Person_Cleanup_Kind_Split
+        {
+            get { return ResourceManager.GetString("Person_Cleanup_Kind_Split", resourceCulture) ?? "Split"; }
+        }
+
+        public static string Person_Cleanup_Kind_Duplicate
+        {
+            get { return ResourceManager.GetString("Person_Cleanup_Kind_Duplicate", resourceCulture) ?? "Duplicate"; }
+        }
+
+        public static string Person_Cleanup_ErrorIgnoreFailed
+        {
+            get { return ResourceManager.GetString("Person_Cleanup_ErrorIgnoreFailed", resourceCulture) ?? "Could not ignore the proposal."; }
+        }
+
+        public static string Person_Cleanup_ErrorUnignoreFailed
+        {
+            get { return ResourceManager.GetString("Person_Cleanup_ErrorUnignoreFailed", resourceCulture) ?? "Could not restore the proposal."; }
+        }
+
         public static string ManageLookups_Scanning
         {
             get { return ResourceManager.GetString("ManageLookups_Scanning", resourceCulture) ?? "Scanning..."; }
@@ -965,6 +1301,11 @@ namespace BookDB.Desktop.Localization
         public static string ManageLookups_SuspectedDuplicates
         {
             get { return ResourceManager.GetString("ManageLookups_SuspectedDuplicates", resourceCulture) ?? "Suspected duplicates"; }
+        }
+
+        public static string ManageLookups_SuspectedDuplicatesDesc
+        {
+            get { return ResourceManager.GetString("ManageLookups_SuspectedDuplicatesDesc", resourceCulture) ?? "These pairs may name the same person. Select a pair to merge them, or ignore it."; }
         }
 
         public static string ManageLookups_Tab_Category
@@ -2842,9 +3183,9 @@ namespace BookDB.Desktop.Localization
             get { return ResourceManager.GetString("Settings_Appearance_Flavour_Vibrant", resourceCulture) ?? "Vibrant"; }
         }
 
-        public static string Settings_Appearance_RestartNote
+        public static string Settings_Appearance_ApplyNote
         {
-            get { return ResourceManager.GetString("Settings_Appearance_RestartNote", resourceCulture) ?? "Theme change takes effect on next launch."; }
+            get { return ResourceManager.GetString("Settings_Appearance_ApplyNote", resourceCulture) ?? "Theme changes apply immediately."; }
         }
 
         public static string Settings_Browse_AuthorFacetLabel
@@ -2960,9 +3301,29 @@ namespace BookDB.Desktop.Localization
             get { return ResourceManager.GetString("Settings_WindowTitle", resourceCulture) ?? "Settings"; }
         }
 
+        public static string Statistics_Column_Author
+        {
+            get { return ResourceManager.GetString("Statistics_Column_Author", resourceCulture) ?? "Author"; }
+        }
+
         public static string Statistics_Column_Collection
         {
             get { return ResourceManager.GetString("Statistics_Column_Collection", resourceCulture) ?? "Collection"; }
+        }
+
+        public static string Statistics_Column_Month
+        {
+            get { return ResourceManager.GetString("Statistics_Column_Month", resourceCulture) ?? "Month"; }
+        }
+
+        public static string Statistics_Column_Books
+        {
+            get { return ResourceManager.GetString("Statistics_Column_Books", resourceCulture) ?? "Books"; }
+        }
+
+        public static string Statistics_Column_RunningTotal
+        {
+            get { return ResourceManager.GetString("Statistics_Column_RunningTotal", resourceCulture) ?? "Total books"; }
         }
 
         public static string Statistics_Column_Count
@@ -3020,9 +3381,34 @@ namespace BookDB.Desktop.Localization
             get { return ResourceManager.GetString("Statistics_Section_ByYear", resourceCulture) ?? "By Published Year"; }
         }
 
+        public static string Statistics_Section_LibraryGrowth
+        {
+            get { return ResourceManager.GetString("Statistics_Section_LibraryGrowth", resourceCulture) ?? "Library growth"; }
+        }
+
+        public static string Statistics_Section_TopAuthors
+        {
+            get { return ResourceManager.GetString("Statistics_Section_TopAuthors", resourceCulture) ?? "Top authors"; }
+        }
+
+        public static string Statistics_OtherCategory
+        {
+            get { return ResourceManager.GetString("Statistics_OtherCategory", resourceCulture) ?? "Other"; }
+        }
+
+        public static string Statistics_FullTables
+        {
+            get { return ResourceManager.GetString("Statistics_FullTables", resourceCulture) ?? "Full tables"; }
+        }
+
         public static string Statistics_Section_Summary
         {
             get { return ResourceManager.GetString("Statistics_Section_Summary", resourceCulture) ?? "Summary"; }
+        }
+
+        public static string Statistics_UnknownCategory
+        {
+            get { return ResourceManager.GetString("Statistics_UnknownCategory", resourceCulture) ?? "Unknown"; }
         }
 
         public static string Statistics_WindowTitle
@@ -3060,9 +3446,9 @@ namespace BookDB.Desktop.Localization
             get { return ResourceManager.GetString("Status_Wishlist", resourceCulture) ?? "Wishlist"; }
         }
 
-        public static string AddBook_Label_Author
+        public static string AddBook_Label_Authors
         {
-            get { return ResourceManager.GetString("AddBook_Label_Author", resourceCulture) ?? "Author"; }
+            get { return ResourceManager.GetString("AddBook_Label_Authors", resourceCulture) ?? "Authors"; }
         }
 
         public static string AddBook_Label_Isbn
@@ -3520,6 +3906,46 @@ namespace BookDB.Desktop.Localization
             get { return ResourceManager.GetString("Menu_Help", resourceCulture) ?? "_Help"; }
         }
 
+        public static string Settings_Lookup_ApiKey
+        {
+            get { return ResourceManager.GetString("Settings_Lookup_ApiKey", resourceCulture) ?? "API key (optional)"; }
+        }
+
+        public static string Settings_Lookup_ApiKey_Watermark
+        {
+            get { return ResourceManager.GetString("Settings_Lookup_ApiKey_Watermark", resourceCulture) ?? "Paste your Google Books API key"; }
+        }
+
+        public static string Settings_Lookup_ApiKey_Hint
+        {
+            get { return ResourceManager.GetString("Settings_Lookup_ApiKey_Hint", resourceCulture) ?? "A personal key avoids the shared daily quota (frequent rate-limit errors). See Help → Data Sources for step-by-step setup."; }
+        }
+
+        public static string MergeReview_ErroredNote
+        {
+            get { return ResourceManager.GetString("MergeReview_ErroredNote", resourceCulture) ?? "Some sources couldn't be reached and were skipped: {0}. Their data may be missing."; }
+        }
+
+        public static string MergeReview_NoResultNote
+        {
+            get { return ResourceManager.GetString("MergeReview_NoResultNote", resourceCulture) ?? "No data for this ISBN from: {0}."; }
+        }
+
+        public static string MergeReview_Authors_AllAgree
+        {
+            get { return ResourceManager.GetString("MergeReview_Authors_AllAgree", resourceCulture) ?? "All sources agree"; }
+        }
+
+        public static string MergeReview_Authors_OnlySource
+        {
+            get { return ResourceManager.GetString("MergeReview_Authors_OnlySource", resourceCulture) ?? "Only {0} provided authors"; }
+        }
+
+        public static string Menu_Help_GettingStarted
+        {
+            get { return ResourceManager.GetString("Menu_Help_GettingStarted", resourceCulture) ?? "_Getting Started"; }
+        }
+
         public static string Menu_Help_KeyboardShortcuts
         {
             get { return ResourceManager.GetString("Menu_Help_KeyboardShortcuts", resourceCulture) ?? "_Keyboard Shortcuts"; }
@@ -3543,6 +3969,11 @@ namespace BookDB.Desktop.Localization
         public static string Help_WindowTitle
         {
             get { return ResourceManager.GetString("Help_WindowTitle", resourceCulture) ?? "Help"; }
+        }
+
+        public static string Help_Tab_GettingStarted
+        {
+            get { return ResourceManager.GetString("Help_Tab_GettingStarted", resourceCulture) ?? "Getting started"; }
         }
 
         public static string Help_Tab_KeyboardShortcuts
@@ -4974,5 +5405,45 @@ namespace BookDB.Desktop.Localization
         {
             get { return ResourceManager.GetString("Restore_NoCredentialsForTarget", resourceCulture) ?? "No saved credentials for the backup's database server. Configure it in Settings → Database first, then try again."; }
         }
+        public static string StatusBar_UpdateAvailable
+        {
+            get { return ResourceManager.GetString("StatusBar_UpdateAvailable", resourceCulture) ?? "Update available"; }
+        }
+
+        public static string Update_Dialog_Title
+        {
+            get { return ResourceManager.GetString("Update_Dialog_Title", resourceCulture) ?? "Update available"; }
+        }
+
+        public static string Update_Dialog_Body
+        {
+            get { return ResourceManager.GetString("Update_Dialog_Body", resourceCulture) ?? "BookDB {0} is available. You have {1}."; }
+        }
+
+        public static string Update_Hint_Winget
+        {
+            get { return ResourceManager.GetString("Update_Hint_Winget", resourceCulture) ?? "Installed via winget — upgrade with:\n{0}"; }
+        }
+
+        public static string Update_Hint_AppMan
+        {
+            get { return ResourceManager.GetString("Update_Hint_AppMan", resourceCulture) ?? "Installed via AM/AppMan — upgrade with:\n{0}\n(user install: appman -u bookdb)"; }
+        }
+
+        public static string Update_Hint_GitHub
+        {
+            get { return ResourceManager.GetString("Update_Hint_GitHub", resourceCulture) ?? "Download the latest release from GitHub."; }
+        }
+
+        public static string Update_CopyCommand
+        {
+            get { return ResourceManager.GetString("Update_CopyCommand", resourceCulture) ?? "Copy command"; }
+        }
+
+        public static string Update_OpenGitHub
+        {
+            get { return ResourceManager.GetString("Update_OpenGitHub", resourceCulture) ?? "Download from GitHub"; }
+        }
+
     }
 }

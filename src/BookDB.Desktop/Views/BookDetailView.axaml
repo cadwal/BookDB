@@ -63,7 +63,7 @@
 
                 <!-- Separator 1 -->
                 <Rectangle Height="1"
-                           Fill="{StaticResource BrushBorder}"
+                           Fill="{DynamicResource BrushBorder}"
                            Margin="0,0,0,8" />
 
                 <!-- Section 2: Publication info -->
@@ -115,7 +115,7 @@
 
                 <!-- Separator 2 -->
                 <Rectangle Height="1"
-                           Fill="{StaticResource BrushBorder}"
+                           Fill="{DynamicResource BrushBorder}"
                            Margin="0,0,0,8" />
 
                 <!-- Section 3: Classification and Identifiers -->
@@ -166,7 +166,7 @@
 
                 <!-- Separator before thumbnail strip: only visible when thumbnail strip is visible -->
                 <Rectangle Height="1"
-                           Fill="{StaticResource BrushBorder}"
+                           Fill="{DynamicResource BrushBorder}"
                            Margin="0,0,0,8"
                            IsVisible="{Binding HasAnyImage}" />
 
@@ -209,7 +209,7 @@
 
                 <!-- Separator before Book Info: only visible when book info exists -->
                 <Rectangle Height="1"
-                           Fill="{StaticResource BrushBorder}"
+                           Fill="{DynamicResource BrushBorder}"
                            Margin="0,0,0,8"
                            IsVisible="{Binding BookInfoDisplay, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
 

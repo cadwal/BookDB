@@ -4,15 +4,35 @@
         xmlns:res="using:BookDB.Desktop.Localization"
         xmlns:sp="using:ScottPlot.Avalonia"
         xmlns:behaviors="using:BookDB.Desktop.Behaviors"
+        xmlns:converters="using:BookDB.Desktop.Converters"
         xmlns:i="using:Avalonia.Xaml.Interactivity"
         x:Class="BookDB.Desktop.Views.StatisticsWindow"
         x:DataType="vm:StatisticsWindowViewModel"
         Title="{x:Static res:Resources.Statistics_WindowTitle}"
-        Width="800" MinWidth="640"
-        Height="600" MinHeight="480"
+        Width="800" MinWidth="480"
+        Height="640" MinHeight="480"
         WindowStartupLocation="CenterOwner"
         ShowInTaskbar="False"
         CanResize="True">
+
+    <Window.Styles>
+        <!-- A titled card wrapping one chart or figure. -->
+        <Style Selector="Border.card">
+            <Setter Property="BorderBrush" Value="{DynamicResource BrushBorder}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="4" />
+            <Setter Property="Padding" Value="12" />
+        </Style>
+        <Style Selector="TextBlock.cardTitle">
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Margin" Value="0,0,0,8" />
+        </Style>
+        <Style Selector="TextBlock.sectionTitle">
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+    </Window.Styles>
 
     <DockPanel>
 
@@ -29,122 +49,244 @@
         <ScrollViewer>
             <StackPanel Margin="16" Spacing="16">
 
-                <!-- Section 1: Summary -->
-                <TextBlock Text="{x:Static res:Resources.Statistics_Section_Summary}"
-                           FontSize="14"
-                           FontWeight="SemiBold" />
-                <Border BorderBrush="{DynamicResource BrushBorder}"
-                        BorderThickness="1"
-                        CornerRadius="4"
-                        Padding="16">
-                    <StackPanel Orientation="Horizontal" Spacing="32">
-                        <StackPanel>
-                            <TextBlock Text="{Binding TotalBooks}"
-                                       FontSize="20"
-                                       FontWeight="SemiBold" />
-                            <TextBlock Text="{x:Static res:Resources.Statistics_Label_TotalBooks}"
-                                       FontSize="12"
-                                       Foreground="{DynamicResource BrushTextSecondary}" />
-                        </StackPanel>
+                <!-- Summary header: total + refresh -->
+                <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+                    <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                        <TextBlock Text="{Binding TotalBooks}"
+                                   FontSize="22"
+                                   FontWeight="SemiBold" />
+                        <TextBlock Text="{x:Static res:Resources.Statistics_Label_TotalBooks}"
+                                   FontSize="13"
+                                   VerticalAlignment="Bottom"
+                                   Margin="0,0,0,3"
+                                   Foreground="{DynamicResource BrushTextSecondary}" />
+                    </StackPanel>
+                    <Button Grid.Column="1"
+                            Content="{x:Static res:Resources.Statistics_RefreshButton}"
+                            Command="{Binding RefreshCommand}" />
+                </Grid>
+
+                <!-- Library growth (cumulative line) -->
+                <Border Classes="card">
+                    <StackPanel>
+                        <TextBlock Classes="cardTitle"
+                                   Text="{x:Static res:Resources.Statistics_Section_LibraryGrowth}" />
+                        <sp:AvaPlot Height="200">
+                            <i:Interaction.Behaviors>
+                                <behaviors:CumulativeLineChartBehavior Points="{Binding LibraryGrowth}" />
+                            </i:Interaction.Behaviors>
+                        </sp:AvaPlot>
                     </StackPanel>
                 </Border>
 
-                <!-- Section 2: Books Added Per Year chart -->
-                <TextBlock Text="{x:Static res:Resources.Statistics_Section_BooksPerYear}"
-                           FontSize="14"
-                           FontWeight="SemiBold" />
-                <sp:AvaPlot Height="220">
-                    <i:Interaction.Behaviors>
-                        <behaviors:BooksPerYearChartBehavior Points="{Binding BooksPerYear}" />
-                    </i:Interaction.Behaviors>
-                </sp:AvaPlot>
-                <Button Content="{x:Static res:Resources.Statistics_RefreshButton}"
-                        Command="{Binding RefreshCommand}"
-                        HorizontalAlignment="Right" />
+                <!-- Books added per year (vertical bars) -->
+                <Border Classes="card">
+                    <StackPanel>
+                        <TextBlock Classes="cardTitle"
+                                   Text="{x:Static res:Resources.Statistics_Section_BooksPerYear}" />
+                        <sp:AvaPlot Height="200">
+                            <i:Interaction.Behaviors>
+                                <behaviors:VerticalBarChartBehavior Points="{Binding BooksPerYear}" />
+                            </i:Interaction.Behaviors>
+                        </sp:AvaPlot>
+                    </StackPanel>
+                </Border>
 
-                <!-- Section 3: By Format -->
-                <TextBlock Text="{x:Static res:Resources.Statistics_Section_ByFormat}"
-                           FontSize="14"
-                           FontWeight="SemiBold" />
-                <DataGrid ItemsSource="{Binding FormatBreakdown}"
-                          IsReadOnly="True"
-                          CanUserSortColumns="False"
-                          AutoGenerateColumns="False"
-                          MaxHeight="240">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="{x:Static res:Resources.Statistics_Column_Format}"
-                                            Binding="{Binding Label}"
-                                            Width="*"
-                                            SortMemberPath="Label" />
-                        <DataGridTextColumn Header="{x:Static res:Resources.Statistics_Column_Count}"
-                                            Binding="{Binding CountText}"
-                                            Width="120"
-                                            SortMemberPath="Count" />
-                    </DataGrid.Columns>
-                </DataGrid>
+                <!-- 2x2 horizontal-bar cards; collapses to one column below the breakpoint -->
+                <ItemsControl>
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <UniformGrid Columns="{Binding $parent[ItemsControl].Bounds.Width,
+                                                    Converter={x:Static converters:WidthToColumnsConverter.Instance}}" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
 
-                <!-- Section 4: By Collection -->
-                <TextBlock Text="{x:Static res:Resources.Statistics_Section_ByCollection}"
-                           FontSize="14"
-                           FontWeight="SemiBold" />
-                <DataGrid ItemsSource="{Binding CollectionBreakdown}"
-                          IsReadOnly="True"
-                          CanUserSortColumns="False"
-                          AutoGenerateColumns="False"
-                          MaxHeight="240">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="{x:Static res:Resources.Statistics_Column_Collection}"
-                                            Binding="{Binding Label}"
-                                            Width="*"
-                                            SortMemberPath="Label" />
-                        <DataGridTextColumn Header="{x:Static res:Resources.Statistics_Column_Count}"
-                                            Binding="{Binding CountText}"
-                                            Width="120"
-                                            SortMemberPath="Count" />
-                    </DataGrid.Columns>
-                </DataGrid>
+                    <Border Classes="card" Margin="0,0,8,8">
+                        <StackPanel>
+                            <TextBlock Classes="cardTitle"
+                                       Text="{x:Static res:Resources.Statistics_Section_ByFormat}" />
+                            <sp:AvaPlot Height="180">
+                                <i:Interaction.Behaviors>
+                                    <behaviors:HorizontalBarChartBehavior Points="{Binding FormatChart}" />
+                                </i:Interaction.Behaviors>
+                            </sp:AvaPlot>
+                        </StackPanel>
+                    </Border>
 
-                <!-- Section 5: By Language -->
-                <TextBlock Text="{x:Static res:Resources.Statistics_Section_ByLanguage}"
-                           FontSize="14"
-                           FontWeight="SemiBold" />
-                <DataGrid ItemsSource="{Binding LanguageBreakdown}"
-                          IsReadOnly="True"
-                          CanUserSortColumns="False"
-                          AutoGenerateColumns="False"
-                          MaxHeight="240">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="{x:Static res:Resources.Statistics_Column_Language}"
-                                            Binding="{Binding Label}"
-                                            Width="*"
-                                            SortMemberPath="Label" />
-                        <DataGridTextColumn Header="{x:Static res:Resources.Statistics_Column_Count}"
-                                            Binding="{Binding CountText}"
-                                            Width="120"
-                                            SortMemberPath="Count" />
-                    </DataGrid.Columns>
-                </DataGrid>
+                    <Border Classes="card" Margin="0,0,0,8">
+                        <StackPanel>
+                            <TextBlock Classes="cardTitle"
+                                       Text="{x:Static res:Resources.Statistics_Section_ByLanguage}" />
+                            <sp:AvaPlot Height="180">
+                                <i:Interaction.Behaviors>
+                                    <behaviors:HorizontalBarChartBehavior Points="{Binding LanguageChart}" />
+                                </i:Interaction.Behaviors>
+                            </sp:AvaPlot>
+                        </StackPanel>
+                    </Border>
 
-                <!-- Section 6: By Published Year -->
-                <TextBlock Text="{x:Static res:Resources.Statistics_Section_ByYear}"
-                           FontSize="14"
-                           FontWeight="SemiBold" />
-                <DataGrid ItemsSource="{Binding PublishedYearBreakdown}"
-                          IsReadOnly="True"
-                          CanUserSortColumns="False"
-                          AutoGenerateColumns="False"
-                          MaxHeight="240">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="{x:Static res:Resources.Statistics_Column_Year}"
-                                            Binding="{Binding Label}"
-                                            Width="*"
-                                            SortMemberPath="Label" />
-                        <DataGridTextColumn Header="{x:Static res:Resources.Statistics_Column_Count}"
-                                            Binding="{Binding CountText}"
-                                            Width="120"
-                                            SortMemberPath="Count" />
-                    </DataGrid.Columns>
-                </DataGrid>
+                    <Border Classes="card" Margin="0,0,8,8">
+                        <StackPanel>
+                            <TextBlock Classes="cardTitle"
+                                       Text="{x:Static res:Resources.Statistics_Section_ByCollection}" />
+                            <sp:AvaPlot Height="180">
+                                <i:Interaction.Behaviors>
+                                    <behaviors:HorizontalBarChartBehavior Points="{Binding CollectionChart}" />
+                                </i:Interaction.Behaviors>
+                            </sp:AvaPlot>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Classes="card" Margin="0,0,0,8">
+                        <StackPanel>
+                            <TextBlock Classes="cardTitle"
+                                       Text="{x:Static res:Resources.Statistics_Section_TopAuthors}" />
+                            <sp:AvaPlot Height="180">
+                                <i:Interaction.Behaviors>
+                                    <behaviors:HorizontalBarChartBehavior Points="{Binding TopAuthorsChart}" />
+                                </i:Interaction.Behaviors>
+                            </sp:AvaPlot>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Classes="card" Margin="0,0,8,0">
+                        <StackPanel>
+                            <TextBlock Classes="cardTitle"
+                                       Text="{x:Static res:Resources.Statistics_Section_ByYear}" />
+                            <sp:AvaPlot Height="180">
+                                <i:Interaction.Behaviors>
+                                    <behaviors:HorizontalBarChartBehavior Points="{Binding PublishedYearChart}" />
+                                </i:Interaction.Behaviors>
+                            </sp:AvaPlot>
+                        </StackPanel>
+                    </Border>
+                </ItemsControl>
+
+                <!-- Full tables (collapsed) -->
+                <Expander Header="{x:Static res:Resources.Statistics_FullTables}">
+                    <StackPanel Spacing="16" Margin="0,8,0,0">
+
+                        <TextBlock Classes="sectionTitle"
+                                   Text="{x:Static res:Resources.Statistics_Section_LibraryGrowth}" />
+                        <DataGrid ItemsSource="{Binding LibraryGrowth}"
+                                  IsReadOnly="True"
+                                  CanUserSortColumns="False"
+                                  AutoGenerateColumns="False"
+                                  MaxHeight="240">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="{x:Static res:Resources.Statistics_Column_Month}"
+                                                    Binding="{Binding Label}"
+                                                    Width="*" />
+                                <DataGridTextColumn Header="{x:Static res:Resources.Statistics_Column_RunningTotal}"
+                                                    Binding="{Binding Value}"
+                                                    Width="120" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+
+                        <TextBlock Classes="sectionTitle"
+                                   Text="{x:Static res:Resources.Statistics_Section_BooksPerYear}" />
+                        <DataGrid ItemsSource="{Binding BooksPerYear}"
+                                  IsReadOnly="True"
+                                  CanUserSortColumns="False"
+                                  AutoGenerateColumns="False"
+                                  MaxHeight="240">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="{x:Static res:Resources.Statistics_Column_Year}"
+                                                    Binding="{Binding Label}"
+                                                    Width="*" />
+                                <DataGridTextColumn Header="{x:Static res:Resources.Statistics_Column_Books}"
+                                                    Binding="{Binding Value}"
+                                                    Width="120" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+
+                        <TextBlock Classes="sectionTitle"
+                                   Text="{x:Static res:Resources.Statistics_Section_ByFormat}" />
+                        <DataGrid ItemsSource="{Binding FormatBreakdown}"
+                                  IsReadOnly="True"
+                                  CanUserSortColumns="False"
+                                  AutoGenerateColumns="False"
+                                  MaxHeight="240">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="{x:Static res:Resources.Statistics_Column_Format}"
+                                                    Binding="{Binding Label}"
+                                                    Width="*" />
+                                <DataGridTextColumn Header="{x:Static res:Resources.Statistics_Column_Count}"
+                                                    Binding="{Binding CountText}"
+                                                    Width="120" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+
+                        <TextBlock Classes="sectionTitle"
+                                   Text="{x:Static res:Resources.Statistics_Section_ByCollection}" />
+                        <DataGrid ItemsSource="{Binding CollectionBreakdown}"
+                                  IsReadOnly="True"
+                                  CanUserSortColumns="False"
+                                  AutoGenerateColumns="False"
+                                  MaxHeight="240">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="{x:Static res:Resources.Statistics_Column_Collection}"
+                                                    Binding="{Binding Label}"
+                                                    Width="*" />
+                                <DataGridTextColumn Header="{x:Static res:Resources.Statistics_Column_Count}"
+                                                    Binding="{Binding CountText}"
+                                                    Width="120" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+
+                        <TextBlock Classes="sectionTitle"
+                                   Text="{x:Static res:Resources.Statistics_Section_ByLanguage}" />
+                        <DataGrid ItemsSource="{Binding LanguageBreakdown}"
+                                  IsReadOnly="True"
+                                  CanUserSortColumns="False"
+                                  AutoGenerateColumns="False"
+                                  MaxHeight="240">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="{x:Static res:Resources.Statistics_Column_Language}"
+                                                    Binding="{Binding Label}"
+                                                    Width="*" />
+                                <DataGridTextColumn Header="{x:Static res:Resources.Statistics_Column_Count}"
+                                                    Binding="{Binding CountText}"
+                                                    Width="120" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+
+                        <TextBlock Classes="sectionTitle"
+                                   Text="{x:Static res:Resources.Statistics_Section_TopAuthors}" />
+                        <DataGrid ItemsSource="{Binding TopAuthorsBreakdown}"
+                                  IsReadOnly="True"
+                                  CanUserSortColumns="False"
+                                  AutoGenerateColumns="False"
+                                  MaxHeight="240">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="{x:Static res:Resources.Statistics_Column_Author}"
+                                                    Binding="{Binding Label}"
+                                                    Width="*" />
+                                <DataGridTextColumn Header="{x:Static res:Resources.Statistics_Column_Count}"
+                                                    Binding="{Binding CountText}"
+                                                    Width="120" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+
+                        <TextBlock Classes="sectionTitle"
+                                   Text="{x:Static res:Resources.Statistics_Section_ByYear}" />
+                        <DataGrid ItemsSource="{Binding PublishedYearBreakdown}"
+                                  IsReadOnly="True"
+                                  CanUserSortColumns="False"
+                                  AutoGenerateColumns="False"
+                                  MaxHeight="240">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="{x:Static res:Resources.Statistics_Column_Year}"
+                                                    Binding="{Binding Label}"
+                                                    Width="*" />
+                                <DataGridTextColumn Header="{x:Static res:Resources.Statistics_Column_Count}"
+                                                    Binding="{Binding CountText}"
+                                                    Width="120" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+
+                    </StackPanel>
+                </Expander>
 
             </StackPanel>
         </ScrollViewer>

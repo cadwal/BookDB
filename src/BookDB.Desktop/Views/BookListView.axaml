@@ -13,7 +13,7 @@
         <Border DockPanel.Dock="Top"
                 Height="36"
                 Padding="8,4"
-                Background="{StaticResource BrushBackgroundAlt}">
+                Background="{DynamicResource BrushBackgroundAlt}">
             <DockPanel LastChildFill="False">
                 <!-- Left: action buttons -->
                 <StackPanel DockPanel.Dock="Left"
@@ -73,7 +73,7 @@
                 <!-- Vertical separator -->
                 <Border DockPanel.Dock="Left"
                         Classes="toolbarSeparator"
-                        Background="{StaticResource BrushBorder}" />
+                        Background="{DynamicResource BrushBorder}" />
 
                 <!-- Advanced search button -->
                 <Button DockPanel.Dock="Left"
@@ -260,7 +260,7 @@
                                            VerticalAlignment="Center"
                                            FontFamily="Consolas"
                                            FontSize="11"
-                                           Foreground="{StaticResource BrushTextTertiary}" />
+                                           Foreground="{DynamicResource BrushTextTertiary}" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
@@ -272,7 +272,7 @@
                                             CanUserSort="False">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate x:DataType="vm:BookRowViewModel">
-                                <Border Background="{StaticResource BrushBackground}"
+                                <Border Background="{DynamicResource BrushBackground}"
                                         Width="30"
                                         Height="36"
                                         IsVisible="{Binding CoverThumbnail, Converter={x:Static ObjectConverters.IsNotNull}}">
@@ -282,7 +282,7 @@
                                     <Grid>
                                         <Image Source="{Binding CoverThumbnail}"
                                                Stretch="Uniform" />
-                                        <Border Background="{StaticResource BrushWarning}"
+                                        <Border Background="{DynamicResource BrushWarning}"
                                                 CornerRadius="2"
                                                 Padding="2,1"
                                                 Width="18"
@@ -298,7 +298,7 @@
                                                        FontSize="11"
                                                        HorizontalAlignment="Center"
                                                        VerticalAlignment="Center"
-                                                       Foreground="{StaticResource BrushTextPrimary}" />
+                                                       Foreground="{DynamicResource BrushTextPrimary}" />
                                         </Border>
                                     </Grid>
                                 </Border>
@@ -425,7 +425,7 @@
                                         Classes="statusBadge"
                                         IsVisible="{Binding StatusDisplay, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
                                     <TextBlock Text="{Binding StatusDisplay}"
-                                               Foreground="{StaticResource BrushBadgeText}"
+                                               Foreground="{DynamicResource BrushBadgeText}"
                                                FontSize="13" />
                                 </Border>
                             </DataTemplate>
@@ -459,19 +459,82 @@
                                  Height="4" />
                     <TextBlock Text="{x:Static res:Resources.BookList_Loading}"
                                FontSize="12"
-                               Foreground="{StaticResource BrushTextTertiary}"
+                               Foreground="{DynamicResource BrushTextTertiary}"
                                VerticalAlignment="Center" />
                 </StackPanel>
             </Border>
 
-            <!-- Empty state overlay — rendered on top of grid only when no books -->
+            <!-- Filtered-empty overlay — a search/filter matched nothing (library itself is not empty) -->
             <TextBlock Text="{x:Static res:Resources.BookList_EmptyState}"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center"
                        FontSize="13"
-                       Foreground="{StaticResource BrushTextTertiary}"
+                       Foreground="{DynamicResource BrushTextTertiary}"
                        IsHitTestVisible="False"
-                       IsVisible="{Binding !HasBooks}" />
+                       IsVisible="{Binding IsFilteredEmpty}" />
+
+            <!-- Guided empty state — the library has no books at all -->
+            <Border IsVisible="{Binding IsLibraryEmpty}"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    MaxWidth="440"
+                    Padding="24">
+                <StackPanel Spacing="12" HorizontalAlignment="Center">
+                    <Image Width="48" Height="48"
+                           HorizontalAlignment="Center"
+                           Opacity="0.7"
+                           Source="{StaticResource Icon.Book}" />
+                    <TextBlock Text="{x:Static res:Resources.BookList_Empty_Title}"
+                               HorizontalAlignment="Center"
+                               FontSize="18"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource BrushTextPrimary}" />
+                    <TextBlock Text="{x:Static res:Resources.BookList_Empty_Subtitle}"
+                               HorizontalAlignment="Center"
+                               TextAlignment="Center"
+                               TextWrapping="Wrap"
+                               FontSize="13"
+                               Foreground="{DynamicResource BrushTextTertiary}" />
+                    <!-- Buttons stack vertically; the panel sizes to the widest label and the stretched
+                         buttons all take that width, so they stay even without clipping any text. -->
+                    <StackPanel Spacing="8"
+                                HorizontalAlignment="Center"
+                                Margin="0,8,0,0">
+                        <!-- Primary action: accent outline so it carries the flavour's accent colour. -->
+                        <Button Classes="accentOutline"
+                                HorizontalAlignment="Stretch"
+                                HorizontalContentAlignment="Left"
+                                Command="{Binding AddBookCommand}">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <Image Width="16" Height="16" Source="{StaticResource Icon.Add}" />
+                                <TextBlock Text="{x:Static res:Resources.BookList_Empty_AddBook}" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Button>
+                        <Button Classes="secondaryButton"
+                                HorizontalAlignment="Stretch"
+                                HorizontalContentAlignment="Left"
+                                Command="{Binding ImportBooksCommand}">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <Image Width="16" Height="16" Source="{StaticResource Icon.ArrowImport}" />
+                                <TextBlock Text="{x:Static res:Resources.BookList_Empty_Import}" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Button>
+                        <Button Classes="secondaryButton"
+                                HorizontalAlignment="Stretch"
+                                HorizontalContentAlignment="Left"
+                                Command="{Binding ConnectDatabaseCommand}">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <Image Width="16" Height="16" Source="{StaticResource Icon.DatabaseLink}" />
+                                <TextBlock Text="{x:Static res:Resources.BookList_Empty_ConnectDatabase}" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                    <Button Classes="helpLink"
+                            HorizontalAlignment="Center"
+                            Content="{x:Static res:Resources.BookList_Empty_HelpHint}"
+                            Command="{Binding OpenGettingStartedHelpCommand}" />
+                </StackPanel>
+            </Border>
         </Panel>
 
     </DockPanel>

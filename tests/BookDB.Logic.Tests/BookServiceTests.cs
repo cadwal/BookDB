@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using BookDB.Data;
 using BookDB.Data.DbContexts;
 using BookDB.Logic.Services;
+using BookDB.Models;
 using BookDB.Models.Entities;
 using BookDB.Models.Enums;
 using DbUp;
@@ -116,6 +117,33 @@ public sealed class BookServiceTests : IDisposable
     }
 
     [Fact]
+    public async Task GetBooksAsync_ShowsUncategorizedBooksOnlyWhenTheSentinelIsSelected()
+    {
+        var ct = TestContext.Current.CancellationToken;
+        await using var setup = await _factory.CreateDbContextAsync(ct);
+        var c1 = new Collection { Name = "UncatC1", SortOrder = 92 };
+        setup.Collections.Add(c1);
+        await setup.SaveChangesAsync(ct);
+
+        await _sut.AddBookAsync(new Book { Title = "In collection", CollectionId = c1.CollectionId }, ct);
+        await _sut.AddBookAsync(new Book { Title = "Orphan", CollectionId = null }, ct);
+
+        async Task<List<string>> TitlesFor(params int[] ids)
+        {
+            var (books, _, _) = await _sut.GetBooksAsync(
+                new HashSet<int>(ids), null, null, null, true, 0, 100, ct: ct);
+            return books.Select(b => b.Title).OrderBy(t => t).ToList();
+        }
+
+        // Only the real collection selected -> the orphan is filtered out.
+        Assert.Equal(new[] { "In collection" }, await TitlesFor(c1.CollectionId));
+        // Only Uncategorized selected -> just the orphan.
+        Assert.Equal(new[] { "Orphan" }, await TitlesFor(CollectionFilter.Uncategorized));
+        // Both selected -> both books.
+        Assert.Equal(new[] { "In collection", "Orphan" }, await TitlesFor(c1.CollectionId, CollectionFilter.Uncategorized));
+    }
+
+    [Fact]
     public async Task UpdateBook_PersistsChanges()
     {
         await _sut.AddBookAsync(new Book { Title = "Original" }, TestContext.Current.CancellationToken);
@@ -144,6 +172,34 @@ public sealed class BookServiceTests : IDisposable
         var remaining = await db.Books.ToListAsync(TestContext.Current.CancellationToken);
         Assert.Single(remaining);
         Assert.Equal("Keep", remaining[0].Title);
+    }
+
+    [Fact]
+    public async Task DeleteBooks_RemovesBookWithLoanHistory()
+    {
+        var book = await _sut.AddBookAsync(new Book { Title = "Loaned" }, TestContext.Current.CancellationToken);
+
+        await using (var seed = await _factory.CreateDbContextAsync(TestContext.Current.CancellationToken))
+        {
+            var borrower = new Borrower { StatusId = 0, FirstName = "Reader" };
+            seed.Borrowers.Add(borrower);
+            await seed.SaveChangesAsync(TestContext.Current.CancellationToken);
+            seed.Loans.Add(new Loan
+            {
+                BookId = book.BookId,
+                BorrowerId = borrower.BorrowerId,
+                LoanedDate = DateTime.UtcNow.AddDays(-30),
+                ReturnedDate = DateTime.UtcNow.AddDays(-1),
+            });
+            await seed.SaveChangesAsync(TestContext.Current.CancellationToken);
+        }
+
+        // Loan.BookId is ON DELETE RESTRICT; deleting the book must remove its loan rows first.
+        await _sut.DeleteBooksAsync([book.BookId], TestContext.Current.CancellationToken);
+
+        await using var db = await _factory.CreateDbContextAsync(TestContext.Current.CancellationToken);
+        Assert.Empty(await db.Books.ToListAsync(TestContext.Current.CancellationToken));
+        Assert.Empty(await db.Loans.ToListAsync(TestContext.Current.CancellationToken));
     }
 
     [Fact]

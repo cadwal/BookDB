@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using BookDB.Desktop.Messages;
 using BookDB.Desktop.ViewModels;
+using BookDB.Models;
 using BookDB.Models.Entities;
 using CommunityToolkit.Mvvm.Messaging;
 using Xunit;
@@ -40,12 +41,30 @@ public class CollectionSelectorViewModelTests
 
         vm.Initialize(collections, selectedIds);
 
-        Assert.Equal(3, vm.CollectionItems.Count);
-        Assert.All(vm.CollectionItems, item => Assert.True(item.IsSelected));
+        // Three real collections plus the always-present Uncategorized filter entry.
+        Assert.Equal(4, vm.CollectionItems.Count);
         Assert.Equal(1, vm.CollectionItems[0].Id);
         Assert.Equal("A", vm.CollectionItems[0].Name);
         Assert.Equal(2, vm.CollectionItems[1].Id);
         Assert.Equal(3, vm.CollectionItems[2].Id);
+        // Real collections were selected; the Uncategorized entry trails and follows its own sentinel.
+        Assert.All(vm.CollectionItems.Where(i => i.Id > 0), item => Assert.True(item.IsSelected));
+        Assert.Equal(CollectionFilter.Uncategorized, vm.CollectionItems[3].Id);
+        Assert.False(vm.CollectionItems[3].IsSelected);
+    }
+
+    [Fact]
+    public void Initialize_SelectsUncategorized_WhenSentinelInSelectedIds()
+    {
+        var messenger = new WeakReferenceMessenger();
+        var vm = new TestableCollectionSelectorViewModel(messenger);
+        var collections = MakeCollections((1, "A"), (2, "B"));
+        var selectedIds = new HashSet<int> { 1, 2, CollectionFilter.Uncategorized };
+
+        vm.Initialize(collections, selectedIds);
+
+        var uncategorized = vm.CollectionItems.First(c => c.Id == CollectionFilter.Uncategorized);
+        Assert.True(uncategorized.IsSelected);
     }
 
     [Fact]
@@ -69,7 +88,8 @@ public class CollectionSelectorViewModelTests
         var messenger = new WeakReferenceMessenger();
         var vm = new TestableCollectionSelectorViewModel(messenger);
         var collections = MakeCollections((1, "A"), (2, "B"), (3, "C"));
-        var selectedIds = new HashSet<int> { 1, 2, 3 };
+        // Every item, including the Uncategorized entry, must be selected for the "all" summary.
+        var selectedIds = new HashSet<int> { 1, 2, 3, CollectionFilter.Uncategorized };
 
         vm.Initialize(collections, selectedIds);
 

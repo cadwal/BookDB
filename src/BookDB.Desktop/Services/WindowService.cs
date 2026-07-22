@@ -9,6 +9,8 @@ using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Threading;
 using BookDB.Data.Interfaces;
+using BookDB.Desktop.Helpers;
+using BookDB.Desktop.Services.UpdateCheck;
 using BookDB.Desktop.ViewModels;
 using BookDB.Desktop.Views;
 using BookDB.Help;
@@ -80,6 +82,15 @@ public sealed class WindowService : IWindowService
 
         var dialog = new AddBookDialog();
         dialog.DataContext = viewModel;
+        viewModel.CloseDialog = result => dialog.Close(result);
+        return await dialog.ShowDialog<bool?>(GetMainWindow());
+    }
+
+    public async Task<bool?> ShowAddBookIdentifyDialogAsync(int? collectionId = null)
+    {
+        var viewModel = _serviceProvider.GetRequiredService<AddBookIdentifyViewModel>();
+        viewModel.Initialize(collectionId);
+        var dialog = new AddBookIdentifyDialog { DataContext = viewModel };
         viewModel.CloseDialog = result => dialog.Close(result);
         return await dialog.ShowDialog<bool?>(GetMainWindow());
     }
@@ -181,6 +192,9 @@ public sealed class WindowService : IWindowService
         IReadOnlyList<CoverOption> coverOptions,
         int? existingBookId,
         int? collectionId,
+        IReadOnlyList<string>? rateLimitedSources = null,
+        IReadOnlyList<string>? noResultSources = null,
+        IReadOnlyList<string>? erroredSources = null,
         Window? ownerWindow = null)
     {
         var dialog = new MergeReviewDialog();
@@ -195,7 +209,13 @@ public sealed class WindowService : IWindowService
             existingBookId: existingBookId,
             collectionId: collectionId,
             closeDialog: result => dialog.Close(result),
-            windowService: this);
+            windowService: this,
+            bookService: _serviceProvider.GetRequiredService<BookDB.Logic.Services.IBookService>(),
+            lookupService: _serviceProvider.GetRequiredService<BookDB.Logic.Services.ILookupService>(),
+            rateLimitedSources: rateLimitedSources,
+            noResultSources: noResultSources,
+            erroredSources: erroredSources);
+        await viewModel.InitializeAsync();
         dialog.DataContext = viewModel;
         var owner = ownerWindow ?? GetMainWindow();
         return await dialog.ShowDialog<bool?>(owner);
@@ -215,6 +235,45 @@ public sealed class WindowService : IWindowService
             SafeCloseResult: DuplicateIsbnResult.Cancel,
             MinWidth: 380);
         return (DuplicateIsbnResult)(await ShowMessageDialogAsync(spec, GetMainWindow()))!;
+    }
+
+    public async Task ShowUpdateHintAsync(InstallChannel channel, string latestVersion, string currentVersion)
+    {
+        const string releaseUrl = "https://github.com/cadwal/BookDB/releases/latest";
+        const string copyResult = "copy";
+        const string openResult = "open";
+
+        var header = string.Format(Localization.Resources.Update_Dialog_Body, latestVersion, currentVersion);
+        string body;
+        string? command = null;
+        var buttons = new List<DialogButton>();
+        switch (channel)
+        {
+            case InstallChannel.Winget:
+                command = "winget upgrade cadwal.BookDB";
+                body = header + "\n\n" + string.Format(Localization.Resources.Update_Hint_Winget, command);
+                buttons.Add(new DialogButton(Localization.Resources.Update_CopyCommand, copyResult, DialogButtonRole.Primary, IsDefault: true));
+                break;
+            case InstallChannel.AppMan:
+                command = "am -u bookdb";
+                body = header + "\n\n" + string.Format(Localization.Resources.Update_Hint_AppMan, command);
+                buttons.Add(new DialogButton(Localization.Resources.Update_CopyCommand, copyResult, DialogButtonRole.Primary, IsDefault: true));
+                break;
+            default:
+                body = header + "\n\n" + Localization.Resources.Update_Hint_GitHub;
+                buttons.Add(new DialogButton(Localization.Resources.Update_OpenGitHub, openResult, DialogButtonRole.Primary, IsDefault: true));
+                break;
+        }
+        buttons.Add(new DialogButton(Localization.Resources.Common_Close, null, IsCancel: true));
+
+        var spec = new MessageDialogSpec(
+            Localization.Resources.Update_Dialog_Title, body, buttons, SafeCloseResult: null, MinWidth: 440);
+        var result = await ShowMessageDialogAsync(spec, GetMainWindow());
+
+        if (result as string == copyResult && command is not null)
+            await _serviceProvider.GetRequiredService<IClipboardService>().SetTextAsync(command);
+        else if (result as string == openResult)
+            SystemLauncher.Open(releaseUrl);
     }
 
     public async Task<BackupConflictChoice> ShowBackupConflictAsync(string existingPath)
@@ -405,9 +464,11 @@ public sealed class WindowService : IWindowService
         win.Show(GetMainWindow());
     }
 
-    public async Task ShowSettingsAsync(Window? owner = null)
+    public async Task ShowSettingsAsync(Window? owner = null, SettingsSection? section = null)
     {
         var viewModel = _serviceProvider.GetRequiredService<SettingsWindowViewModel>();
+        if (section == SettingsSection.Database)
+            viewModel.ShowDatabaseTab();
         var window = new SettingsWindow { DataContext = viewModel };
         viewModel.CloseDialog = _ => window.Close();
         _secondaryWindows.Add(window);

@@ -185,6 +185,27 @@ public sealed class LibraryMigrationServiceTests : IDisposable
     }
 
     [Fact]
+    public async Task Migrate_CoversEveryEntitySetInTheModel()
+    {
+        await SeedSourceAsync();
+
+        var result = await MigrateAsync();
+
+        Assert.True(result.Outcome == MigrationOutcome.Completed, $"failed at {result.FailedTable}: {result.ErrorMessage}");
+
+        // Every DbSet on the context must appear in the per-table results, so a newly added table can
+        // never be silently absent from the move. ClientSession is the one deliberate exception — it is
+        // live process presence, not library data, and never travels.
+        var expected = MigrationTableCoverage.TablesForEveryEntitySetExcept(nameof(BookDbContext.ClientSessions));
+        Assert.NotEmpty(expected);
+
+        var covered = result.Tables.Select(t => t.Table).ToHashSet();
+        var missing = expected.Where(t => !covered.Contains(t)).ToList();
+        Assert.True(missing.Count == 0,
+            $"Move result is missing per-table entries for: {string.Join(", ", missing)}");
+    }
+
+    [Fact]
     public async Task Migrate_ExcludesClientSession()
     {
         await SeedSourceAsync();

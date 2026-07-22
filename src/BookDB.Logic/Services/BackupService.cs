@@ -184,6 +184,8 @@ public sealed class BackupService : IBackupService
                 await dbContext.SavedSearches.AsNoTracking().ToListAsync(ct));
             await WriteCsvAsync(tempDir, "BatchQueueItems.csv",
                 await dbContext.BatchQueueItems.AsNoTracking().ToListAsync(ct));
+            await WriteCsvAsync(tempDir, "PersonCleanupIgnores.csv",
+                await dbContext.PersonCleanupIgnores.AsNoTracking().ToListAsync(ct));
 
             progress?.Report(new ProgressUpdate<BackupProgressStep>(BackupProgressStep.ExportingCoverImages));
             var imagesDir = Path.Combine(tempDir, "images");

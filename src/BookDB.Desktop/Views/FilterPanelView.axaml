@@ -5,7 +5,7 @@
              xmlns:res="using:BookDB.Desktop.Localization"
              x:Class="BookDB.Desktop.Views.FilterPanelView"
              x:DataType="vm:FilterPanelViewModel"
-             Background="{StaticResource BrushBackgroundAlt}">
+             Background="{DynamicResource BrushBackgroundAlt}">
     <ScrollViewer>
         <StackPanel>
             <!-- Clear Filters button at top -->
@@ -21,7 +21,7 @@
                         <Expander HorizontalAlignment="Stretch"
                                   IsExpanded="{Binding IsExpanded}"
                                   Padding="8,6"
-                                  BorderBrush="{StaticResource BrushBorderInput}"
+                                  BorderBrush="{DynamicResource BrushBorderInput}"
                                   BorderThickness="0,1,0,0">
                             <Expander.Header>
                                 <DockPanel HorizontalAlignment="Stretch" LastChildFill="True">

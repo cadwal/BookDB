@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using BookDB.MetadataSources.Services;
@@ -37,13 +38,15 @@ public class MetadataLookupServiceTests
             [source1, source2],
             NullLogger<MetadataLookupService>.Instance);
 
-        var results = await service.FetchAllSourcesAsync("1234567890", CancellationToken.None);
+        var lookup = await service.FetchAllSourcesAsync("1234567890", CancellationToken.None);
 
-        Assert.Equal(2, results.Count);
+        Assert.Equal(2, lookup.Results.Count);
+        Assert.Equal(2, lookup.SourcesQueried);
+        Assert.Equal(0, lookup.SourcesFailed);
     }
 
     [Fact]
-    public async Task FetchAllSourcesAsync_OneSourceThrows_ReturnsPartialResults()
+    public async Task FetchAllSourcesAsync_OneSourceThrows_ReturnsPartialResults_AndCountsTheFailure()
     {
         var source1 = new StubMetadataSource("Source1", MakeResult("Source1"));
         var source2 = new ThrowingMetadataSource("Source2");
@@ -51,10 +54,64 @@ public class MetadataLookupServiceTests
             [source1, source2],
             NullLogger<MetadataLookupService>.Instance);
 
-        var results = await service.FetchAllSourcesAsync("1234567890", CancellationToken.None);
+        var lookup = await service.FetchAllSourcesAsync("1234567890", CancellationToken.None);
 
-        Assert.Single(results);
-        Assert.Equal("Source1", results[0].SourceName);
+        Assert.Single(lookup.Results);
+        Assert.Equal("Source1", lookup.Results[0].SourceName);
+        Assert.Equal(2, lookup.SourcesQueried);
+        Assert.Equal(1, lookup.SourcesFailed);
+    }
+
+    [Fact]
+    public async Task FetchAllSourcesAsync_SourceReturnsNoHit_IsNotCountedAsFailed()
+    {
+        var source1 = new StubMetadataSource("Source1", result: null);
+        var source2 = new ThrowingMetadataSource("Source2");
+        var service = new MetadataLookupService(
+            [source1, source2],
+            NullLogger<MetadataLookupService>.Instance);
+
+        var lookup = await service.FetchAllSourcesAsync("1234567890", CancellationToken.None);
+
+        // A source that answered "no hit" is a valid response, distinct from the one that errored.
+        Assert.Empty(lookup.Results);
+        Assert.Equal(2, lookup.SourcesQueried);
+        Assert.Equal(1, lookup.SourcesFailed);
+    }
+
+    [Fact]
+    public async Task FetchAllSourcesAsync_SourceRateLimited_RecordsRateLimitOutcome_NotSilentSuccess()
+    {
+        var source1 = new StubMetadataSource("Source1", MakeResult("Source1"));
+        var source2 = new RateLimitedMetadataSource("Source2");
+        var service = new MetadataLookupService(
+            [source1, source2],
+            NullLogger<MetadataLookupService>.Instance);
+
+        var lookup = await service.FetchAllSourcesAsync("1234567890", CancellationToken.None);
+
+        Assert.Single(lookup.Results);
+        Assert.Equal(1, lookup.SourcesFailed); // a 429 is a failure, not a silent success
+        Assert.Equal(["Source2"], lookup.RateLimitedSources);
+        Assert.Contains(lookup.SourceStatuses!, s => s.SourceName == "Source2" && s.Outcome == SourceLookupOutcome.RateLimited);
+        Assert.Contains(lookup.SourceStatuses!, s => s.SourceName == "Source1" && s.Outcome == SourceLookupOutcome.Success);
+    }
+
+    [Fact]
+    public async Task FetchAllSourcesAsync_ProjectsNoResultAndErroredSources_ByOutcome()
+    {
+        var ok = new StubMetadataSource("Ok", MakeResult("Ok"));
+        var empty = new StubMetadataSource("Empty", result: null);
+        var broken = new ThrowingMetadataSource("Broken");
+        var service = new MetadataLookupService(
+            [ok, empty, broken],
+            NullLogger<MetadataLookupService>.Instance);
+
+        var lookup = await service.FetchAllSourcesAsync("1234567890", CancellationToken.None);
+
+        Assert.Equal(["Empty"], lookup.NoResultSources);
+        Assert.Equal(["Broken"], lookup.ErroredSources);
+        Assert.Empty(lookup.RateLimitedSources);
     }
 
     private class StubMetadataSource(string sourceName, BookMetadata? result) : IMetadataSource
@@ -73,5 +130,13 @@ public class MetadataLookupServiceTests
 
         public Task<BookMetadata?> FetchAsync(string isbn, CancellationToken ct = default)
             => throw new InvalidOperationException("Simulated source failure");
+    }
+
+    private class RateLimitedMetadataSource(string sourceName) : IMetadataSource
+    {
+        public string SourceName { get; } = sourceName;
+
+        public Task<BookMetadata?> FetchAsync(string isbn, CancellationToken ct = default)
+            => throw new HttpRequestException("Simulated 429", null, System.Net.HttpStatusCode.TooManyRequests);
     }
 }

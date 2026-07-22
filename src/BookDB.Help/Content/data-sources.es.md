@@ -1,6 +1,6 @@
 ﻿# Acerca de las fuentes de datos
 
-Cuando cataloga un libro por ISBN (Ctrl+I o el botón de la barra de herramientas), BookDB obtiene metadatos de tres API públicas simultáneamente.
+Cuando cataloga un libro por ISBN (Ctrl+I o el botón de la barra de herramientas), BookDB obtiene metadatos de cuatro fuentes públicas simultáneamente.
 
 ## Flujo de búsqueda
 
@@ -26,9 +26,22 @@ Google Books es la mayor base de datos de libros de propósito general, con ampl
 - Categorías
 
 **Notas:**
-- No se requiere clave de API para búsquedas básicas
+- Funciona sin clave, pero las solicitudes sin autenticar comparten una pequeña cuota diaria y suelen sufrir límite de peticiones (429). Añade una clave de API personal (más abajo) para usar tu propia cuota
 - La cobertura es mayor para publicaciones comerciales posteriores a 1980
 - Los nombres de los autores pueden no coincidir siempre con el formato preferido
+
+**Obtener una clave de API de Google Books (opcional)**
+
+Sin una clave, BookDB comparte una pequeña cuota diaria anónima con el resto de llamadas sin autenticar, por lo que Google Books sufre límite de peticiones con frecuencia — un aviso en el diálogo de revisión de combinación indica las fuentes omitidas. Una clave personal gratuita traslada tus búsquedas a tu propia cuota:
+
+1. Inicia sesión en la **Google Cloud Console** en https://console.cloud.google.com.
+2. Crea un proyecto nuevo o selecciona uno existente.
+3. Abre **APIs & Services → Library**, busca **Books API** y haz clic en **Enable**.
+4. Abre **APIs & Services → Credentials**, haz clic en **Create credentials → API key** y copia la clave.
+5. Recomendado: edita la clave y, en **API restrictions**, restríngela a la **Books API**.
+6. En BookDB, abre **Configuración → Búsqueda**, pega la clave en **Google Books** y haz clic en **Guardar**.
+
+La clave se aplica en la siguiente búsqueda, sin necesidad de reiniciar. Vacía el campo y guarda para volver a la cuota compartida.
 
 ## Open Library
 

@@ -4,11 +4,12 @@
         xmlns:res="using:BookDB.Desktop.Localization"
         xmlns:behaviors="using:BookDB.Desktop.Behaviors"
         xmlns:i="using:Avalonia.Xaml.Interactivity"
+        xmlns:views="using:BookDB.Desktop.Views"
         x:Class="BookDB.Desktop.Views.AddBookDialog"
         x:DataType="vm:AddBookDialogViewModel"
         Title="{x:Static res:Resources.AddBookDialog_Title}"
         Width="480"
-        Height="420"
+        SizeToContent="Height"
         WindowStartupLocation="CenterOwner"
         CanResize="False"
         ShowInTaskbar="False">
@@ -21,8 +22,29 @@
                 </i:Interaction.Behaviors>
             </TextBox>
 
-            <TextBlock Text="{x:Static res:Resources.AddBook_Label_Author}" FontSize="12"/>
-            <TextBox Text="{Binding Author}" FontSize="13"/>
+            <TextBlock Text="{x:Static res:Resources.AddBook_Label_Authors}" FontSize="12"/>
+            <ItemsControl ItemsSource="{Binding AuthorRows}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="vm:PersonSuggestionRowViewModel">
+                        <DockPanel LastChildFill="True" Margin="0,0,0,4">
+                            <Button DockPanel.Dock="Right"
+                                    Width="28" Height="28"
+                                    Classes="iconButton"
+                                    Content="×"
+                                    AutomationProperties.Name="{x:Static res:Resources.MergeReview_RemoveAuthor}"
+                                    Command="{Binding $parent[ItemsControl].((vm:AddBookDialogViewModel)DataContext).RemoveAuthorRowCommand}"
+                                    CommandParameter="{Binding}"
+                                    Margin="4,0,0,0" />
+                            <views:PersonSuggestionBox MinWidth="100" FontSize="13" />
+                        </DockPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <Button Content="{x:Static res:Resources.MergeReview_AddAuthor}"
+                    Command="{Binding AddAuthorRowCommand}"
+                    Classes="secondaryButton"
+                    HorizontalAlignment="Left"
+                    FontSize="13" />
 
             <TextBlock Text="{x:Static res:Resources.AddBook_Label_Isbn}" FontSize="12"/>
             <TextBox Text="{Binding Isbn}" FontSize="13"/>
@@ -45,6 +67,9 @@
                     Command="{Binding CancelCommand}"
                     FontSize="13"
                     IsCancel="True"/>
+            <Button Content="{x:Static res:Resources.Common_SaveAndOpenEditor}"
+                    Command="{Binding SaveAndOpenEditorCommand}"
+                    FontSize="13"/>
             <Button Content="{x:Static res:Resources.AddBookDialog_AddButton}"
                     Command="{Binding SaveCommand}"
                     FontSize="13"

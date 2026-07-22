@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/semver-spec
 
 ## [Unreleased]
 
+## [3.1.0] - 2026-07-22
+
+### Added
+- **Guided book adding.** Adding a book now starts with the ISBN: BookDB looks it up across your enabled sources and walks you through a short confirm step — pick the best value for each field, tidy up the authors, choose the collection — instead of dropping you straight into the full multi-tab editor. Manual entry is still one click away, and picks up the ISBN you already typed.
+- **Author type-ahead everywhere.** When you type an author — adding a book, in the lookup review, or on the Contributors tab — BookDB suggests people already in your library and reuses them, matching either "First Last" or "Last, First" and ignoring case, so you stop accidentally creating duplicate authors.
+- **Getting started help.** A new **Help → Getting started** topic introduces the basics for new users, in all nine languages.
+- **Guided empty state.** An empty library now opens to a guided start screen (add your first book, import an existing catalog, or connect to a shared database) instead of a bare grid.
+- **Uncategorized filter.** The collection sidebar has an **Uncategorized** entry that shows books not in any collection, so orphaned books are always findable — select it on its own to isolate them and bulk **Move to collection**.
+- **Richer statistics.** The Statistics window is now charts backed by a tables view, adding **library growth over time** and **top authors** alongside the existing breakdowns.
+- **Weekly update check.** BookDB quietly checks about once a week whether a newer version is available and shows a small indicator in the status bar; clicking it explains how to update for the way you installed it. It only reads the public release list — no telemetry, no account.
+- **Persistent cleanup dismissals.** In the person data-cleanup panel, dismissing a suggested rename, split, or duplicate now sticks — it won't reappear on the next scan unless the underlying names change.
+- **Optional Google Books API key.** You can add your own Google Books API key in Settings to move lookups onto your own quota. It's optional; BookDB works without one.
+
+### Changed
+- **Every book belongs to a collection.** New books are always filed into a collection — the one you're viewing, or a sensible default — and the old "No collection" option is gone, so nothing silently ends up uncategorized. Any existing uncategorized books stay visible through the new Uncategorized filter.
+- **Live theme switching.** Changing the colour theme in Settings now takes effect immediately, with no restart.
+- **Faster, clearer cataloguing.** The lookup review opens right away instead of waiting on every source's cover to download: covers already fetched during the lookup appear at once, and the rest stream in with a loading indicator while the dialog is open. The status bar shows how many books are queued for review or have failed, and a failed lookup now says why — no results, rate-limited, offline, or all sources disabled — instead of a bare "failed". When a source is rate-limited or has no record, the review tells you, so you know some data may be worth a retry.
+
+### Fixed
+- Deleting a book that had ever been loaned no longer fails; its loan history is removed with it, with a clear warning when the book is currently on loan.
+- Checking a book in or out from the list now refreshes an open detail or edit view instead of leaving it showing stale loan status.
+- A book action that fails (delete, import, move, and the like) now shows an error instead of silently doing nothing.
+
 ## [3.0.0] - 2026-07-17
 
 ### Changed
@@ -129,7 +152,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/semver-spec
 - Multi-language UI: EN, SV, DE, ES, FR, NL, IT, PT-BR, PT-PT
 - Help system with per-screen contextual help
 
-[Unreleased]: https://github.com/cadwal/BookDB/compare/v3.0.0...HEAD
+[Unreleased]: https://github.com/cadwal/BookDB/compare/v3.1.0...HEAD
 [2.1.0]: https://github.com/cadwal/BookDB/releases/tag/v2.1.0
 [1.1.0]: https://github.com/cadwal/BookDB/releases/tag/v1.1.0
 [1.0.0]: https://github.com/cadwal/BookDB/releases/tag/v1.0.0
@@ -139,3 +162,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/semver-spec
 [2.2.0]: https://github.com/cadwal/BookDB/releases/tag/v2.2.0
 [2.3.0]: https://github.com/cadwal/BookDB/releases/tag/v2.3.0
 [3.0.0]: https://github.com/cadwal/BookDB/releases/tag/v3.0.0
+[3.1.0]: https://github.com/cadwal/BookDB/releases/tag/v3.1.0

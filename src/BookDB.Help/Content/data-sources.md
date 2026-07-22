@@ -1,6 +1,6 @@
 ﻿# About Data Sources
 
-When you catalog a book by ISBN (Ctrl+I or the toolbar button), BookDB fetches metadata from three public APIs simultaneously.
+When you catalog a book by ISBN (Ctrl+I or the toolbar button), BookDB fetches metadata from four public sources simultaneously.
 
 ## Lookup Flow
 
@@ -26,9 +26,22 @@ Google Books is the largest general-purpose book database, with broad coverage o
 - Categories
 
 **Notes:**
-- No API key required for basic searches
+- Works without a key, but unauthenticated requests share a small daily quota and are frequently rate-limited (429). Add a personal API key (see below) to use your own quota
 - Coverage is strongest for post-1980 commercial publications
 - Author names may not always match your preferred format
+
+**Getting a Google Books API key (optional)**
+
+Without a key, BookDB shares a small anonymous daily quota with every other unauthenticated caller, so Google Books is frequently rate-limited — a banner in the merge-review dialog names the sources that were dropped. A free personal key moves your lookups onto your own quota:
+
+1. Sign in to the **Google Cloud Console** at https://console.cloud.google.com.
+2. Create a new project, or select an existing one.
+3. Open **APIs & Services → Library**, search for **Books API**, and click **Enable**.
+4. Open **APIs & Services → Credentials**, click **Create credentials → API key**, and copy the key.
+5. Recommended: edit the key and, under **API restrictions**, restrict it to the **Books API**.
+6. In BookDB, open **Settings → Lookup**, paste the key under **Google Books**, and click **Save**.
+
+The key takes effect on the next lookup — no restart needed. Clear the field and save to go back to the shared quota.
 
 ## Open Library
 

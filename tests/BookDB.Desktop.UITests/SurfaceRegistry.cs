@@ -107,6 +107,14 @@ public static class SurfaceRegistry
         // A non-default Settings tab, so it never realizes in-situ — covered standalone via its parent's child VM.
         new("DatabaseSettings", host => Pane(new DatabaseSettingsView(), host.Resolve<SettingsWindowViewModel>().DatabaseTab)),
 
+        // Shared person type-ahead row; consumers arrive with the guided flow, covered standalone until then.
+        new("PersonSuggestionRow", host =>
+        {
+            var provider = new PersonSuggestionProvider();
+            provider.LoadSnapshot([new Person { PersonId = 1, DisplayName = "Smoke Person", SortName = "Person, Smoke" }]);
+            return Pane(new PersonSuggestionBox(), new PersonSuggestionRowViewModel(provider));
+        }),
+
         // The wizard shell realizes its step panes through the app-level ViewLocator, which the headless app
         // skips — so each step is covered standalone with its wizard-wired step VM (the wizard ctor delegates
         // the step commands, so the buttons bind to real commands here too).
@@ -136,6 +144,13 @@ public static class SurfaceRegistry
             vm.Reset(null);
             await vm.InitializeAsync();
             return new AddBookDialog { DataContext = vm };
+        }),
+
+        new("AddBookIdentify", host =>
+        {
+            var vm = host.Resolve<AddBookIdentifyViewModel>();
+            vm.Initialize(null);
+            return Task.FromResult<Control>(new AddBookIdentifyDialog { DataContext = vm });
         }),
 
         new("BulkEdit", async host =>

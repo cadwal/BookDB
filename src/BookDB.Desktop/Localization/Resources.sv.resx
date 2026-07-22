@@ -142,6 +142,9 @@
   <data name="CollectionSelector_AllSelected" xml:space="preserve">
     <value>Alla samlingar</value>
   </data>
+  <data name="CollectionSelector_Uncategorized" xml:space="preserve">
+    <value>Okategoriserade</value>
+  </data>
   <data name="FilterPanel_EmptyState" xml:space="preserve">
     <value>Inga filter tillgängliga</value>
   </data>
@@ -316,6 +319,15 @@
   <data name="MergeReview_Title_New" xml:space="preserve">
     <value>Granska metadata - ny bok</value>
   </data>
+  <data name="MergeReview_ErroredNote" xml:space="preserve">
+    <value>Vissa källor kunde inte nås och hoppades över: {0}. Deras data kan saknas.</value>
+  </data>
+  <data name="MergeReview_NoResultNote" xml:space="preserve">
+    <value>Inga data för detta ISBN från: {0}.</value>
+  </data>
+  <data name="MergeReview_RateLimitedNote" xml:space="preserve">
+    <value>Vissa källor hastighetsbegränsades och hoppades över: {0}. Deras data kan saknas — försök igen senare för att inkludera dem.</value>
+  </data>
   <data name="MergeReview_Title_Recatalog" xml:space="preserve">
     <value>Granska metadata - {0}</value>
   </data>
@@ -324,6 +336,12 @@
   </data>
   <data name="MergeReview_NoConflicts" xml:space="preserve">
     <value>Inga fältkonflikter — alla källor stämmer överens.</value>
+  </data>
+  <data name="MergeReview_Identity_Untitled" xml:space="preserve">
+    <value>Utan titel</value>
+  </data>
+  <data name="MergeReview_Identity_Isbn" xml:space="preserve">
+    <value>ISBN {0}</value>
   </data>
   <data name="MergeReview_Field_Authors" xml:space="preserve">
     <value>Upphovsmän</value>
@@ -382,6 +400,24 @@
   <data name="BatchQueue_StatusSaving" xml:space="preserve">
     <value>Sparar…</value>
   </data>
+  <data name="BatchQueue_StatusFetchingCovers" xml:space="preserve">
+    <value>Hämtar omslag…</value>
+  </data>
+  <data name="BatchQueue_Failure_NoResults" xml:space="preserve">
+    <value>Ingen källa hade en träff för detta ISBN</value>
+  </data>
+  <data name="BatchQueue_Failure_NetworkError" xml:space="preserve">
+    <value>Nätverksfel — ingen källa kunde nås</value>
+  </data>
+  <data name="BatchQueue_Failure_RateLimited" xml:space="preserve">
+    <value>Hastighetsbegränsad — försök igen senare</value>
+  </data>
+  <data name="BatchQueue_Failure_AllSourcesDisabled" xml:space="preserve">
+    <value>Alla uppslagskällor är inaktiverade</value>
+  </data>
+  <data name="BatchQueue_Failure_Unexpected" xml:space="preserve">
+    <value>Oväntat fel</value>
+  </data>
   <data name="BatchQueue_StartReviewButton" xml:space="preserve">
     <value>Granska resultat</value>
   </data>
@@ -408,6 +444,27 @@
   </data>
   <data name="StatusBar_BatchQueue_Progress" xml:space="preserve">
     <value>Sökning: {0} av {1}</value>
+  </data>
+  <data name="PersonSuggestion_NewAuthor_Format" xml:space="preserve">
+    <value>Lägg till ny författare: {0}</value>
+  </data>
+  <data name="PersonSuggestion_Watermark" xml:space="preserve">
+    <value>Sök personer...</value>
+  </data>
+  <data name="PersonSuggestion_NewBadge" xml:space="preserve">
+    <value>ny</value>
+  </data>
+  <data name="StatusBar_BatchQueue_ToReview" xml:space="preserve">
+    <value>{0} att granska</value>
+  </data>
+  <data name="StatusBar_BatchQueue_Failed" xml:space="preserve">
+    <value>{0} misslyckades</value>
+  </data>
+  <data name="StatusBar_BatchQueue_WithOutcome" xml:space="preserve">
+    <value>{0} — {1}</value>
+  </data>
+  <data name="StatusBar_BatchQueue_OutcomePair" xml:space="preserve">
+    <value>{0}, {1}</value>
   </data>
   <data name="Recatalog_NoIsbn_Title" xml:space="preserve">
     <value>Inget ISBN</value>
@@ -571,6 +628,45 @@
   <data name="ManageLookups_Name" xml:space="preserve">
     <value>Namn</value>
   </data>
+  <data name="Person_Cleanup_Ignore" xml:space="preserve">
+    <value>Ignorera</value>
+  </data>
+  <data name="Person_Cleanup_ViewIgnored" xml:space="preserve">
+    <value>Visa ignorerade…</value>
+  </data>
+  <data name="Person_Cleanup_IgnoredCount" xml:space="preserve">
+    <value>{0} ignorerade</value>
+  </data>
+  <data name="Person_Cleanup_IgnoredTitle" xml:space="preserve">
+    <value>Ignorerade förslag</value>
+  </data>
+  <data name="Person_Cleanup_Unignore" xml:space="preserve">
+    <value>Sluta ignorera</value>
+  </data>
+  <data name="Person_Cleanup_BackToProposals" xml:space="preserve">
+    <value>Tillbaka</value>
+  </data>
+  <data name="Person_Cleanup_Column_Person" xml:space="preserve">
+    <value>Person</value>
+  </data>
+  <data name="Person_Cleanup_Column_Kind" xml:space="preserve">
+    <value>Typ</value>
+  </data>
+  <data name="Person_Cleanup_Column_Content" xml:space="preserve">
+    <value>Föreslagen ändring</value>
+  </data>
+  <data name="Person_Cleanup_Kind_Rename" xml:space="preserve">
+    <value>Byt namn</value>
+  </data>
+  <data name="Person_Cleanup_Kind_Split" xml:space="preserve">
+    <value>Dela</value>
+  </data>
+  <data name="Person_Cleanup_ErrorIgnoreFailed" xml:space="preserve">
+    <value>Det gick inte att ignorera förslaget.</value>
+  </data>
+  <data name="Person_Cleanup_ErrorUnignoreFailed" xml:space="preserve">
+    <value>Det gick inte att återställa förslaget.</value>
+  </data>
   <data name="ManageLookups_NoCleanup" xml:space="preserve">
     <value>Ingen rensning behövs.</value>
   </data>
@@ -591,6 +687,9 @@
   </data>
   <data name="ManageLookups_SuspectedDuplicates" xml:space="preserve">
     <value>Misstänkta dubbletter</value>
+  </data>
+  <data name="ManageLookups_SuspectedDuplicatesDesc" xml:space="preserve">
+    <value>Dessa par kan avse samma person. Välj ett par för att slå ihop dem, eller ignorera det.</value>
   </data>
   <data name="ManageLookups_Tab_Category" xml:space="preserve">
     <value>Kategori</value>
@@ -1655,8 +1754,8 @@ Möjliga dubletter: {3}  |  Med omslag: {4}</value>
   <data name="Settings_Appearance_Flavour_Vibrant" xml:space="preserve">
     <value>Färgstark</value>
   </data>
-  <data name="Settings_Appearance_RestartNote" xml:space="preserve">
-    <value>Temaändringen träder i kraft vid nästa start.</value>
+  <data name="Settings_Appearance_ApplyNote" xml:space="preserve">
+    <value>Temaändringar tillämpas direkt.</value>
   </data>
   <data name="Settings_Browse_AuthorFacetLabel" xml:space="preserve">
     <value>Visningsetikett för författare</value>
@@ -1690,6 +1789,15 @@ Möjliga dubletter: {3}  |  Med omslag: {4}</value>
   </data>
   <data name="Settings_Lookup_LibrisKB" xml:space="preserve">
     <value>Libris KB</value>
+  </data>
+  <data name="Settings_Lookup_ApiKey" xml:space="preserve">
+    <value>API-nyckel (valfritt)</value>
+  </data>
+  <data name="Settings_Lookup_ApiKey_Watermark" xml:space="preserve">
+    <value>Klistra in din Google Books API-nyckel</value>
+  </data>
+  <data name="Settings_Lookup_ApiKey_Hint" xml:space="preserve">
+    <value>En personlig nyckel undviker den delade dagliga kvoten (ofta återkommande hastighetsbegränsningar). Se Hjälp → Om datakällor för steg-för-steg-instruktioner.</value>
   </data>
   <data name="Settings_Lookup_GoogleBooks" xml:space="preserve">
     <value>Google Books</value>
@@ -1760,8 +1868,23 @@ Möjliga dubletter: {3}  |  Med omslag: {4}</value>
   <data name="Statistics_Section_ByYear" xml:space="preserve">
     <value>Per utgivningsår</value>
   </data>
+  <data name="Statistics_Section_LibraryGrowth" xml:space="preserve">
+    <value>Bibliotekets tillväxt</value>
+  </data>
+  <data name="Statistics_Section_TopAuthors" xml:space="preserve">
+    <value>Toppförfattare</value>
+  </data>
+  <data name="Statistics_OtherCategory" xml:space="preserve">
+    <value>Övriga</value>
+  </data>
+  <data name="Statistics_FullTables" xml:space="preserve">
+    <value>Fullständiga tabeller</value>
+  </data>
   <data name="Statistics_Section_Summary" xml:space="preserve">
     <value>Sammanfattning</value>
+  </data>
+  <data name="Statistics_UnknownCategory" xml:space="preserve">
+    <value>Okänd</value>
   </data>
   <data name="Statistics_WindowTitle" xml:space="preserve">
     <value>Statistik</value>
@@ -1784,8 +1907,8 @@ Möjliga dubletter: {3}  |  Med omslag: {4}</value>
   <data name="Status_Wishlist" xml:space="preserve">
     <value>Önskelista</value>
   </data>
-  <data name="AddBook_Label_Author" xml:space="preserve">
-    <value>Författare</value>
+  <data name="AddBook_Label_Authors" xml:space="preserve">
+    <value>Upphovsmän</value>
   </data>
   <data name="AddBook_Label_Isbn" xml:space="preserve">
     <value>ISBN</value>
@@ -1914,7 +2037,7 @@ Möjliga dubletter: {3}  |  Med omslag: {4}</value>
     <value>Nuvarande namn</value>
   </data>
   <data name="Person_Column_ProposedName" xml:space="preserve">
-    <value>Föreslagnet namn</value>
+    <value>Föreslaget namn</value>
   </data>
   <data name="Person_Column_SortName" xml:space="preserve">
     <value>Sorteringsnamn</value>
@@ -2060,6 +2183,9 @@ Möjliga dubletter: {3}  |  Med omslag: {4}</value>
   <data name="Menu_Help" xml:space="preserve">
     <value>_Hjälp</value>
   </data>
+  <data name="Menu_Help_GettingStarted" xml:space="preserve">
+    <value>_Kom igång</value>
+  </data>
   <data name="Menu_Help_KeyboardShortcuts" xml:space="preserve">
     <value>_Tangentbordsgenvägar</value>
   </data>
@@ -2077,6 +2203,9 @@ Möjliga dubletter: {3}  |  Med omslag: {4}</value>
   </data>
   <data name="Help_WindowTitle" xml:space="preserve">
     <value>Hjälp</value>
+  </data>
+  <data name="Help_Tab_GettingStarted" xml:space="preserve">
+    <value>Kom igång</value>
   </data>
   <data name="Help_Tab_KeyboardShortcuts" xml:space="preserve">
     <value>Tangentbordsgenvägar</value>
@@ -2998,5 +3127,125 @@ Möjliga dubletter: {3}  |  Med omslag: {4}</value>
   </data>
   <data name="Restore_NoCredentialsForTarget" xml:space="preserve">
     <value>Inga sparade autentiseringsuppgifter för säkerhetskopians databasserver. Konfigurera den först under Inställningar → Databas och försök igen.</value>
+  </data>
+  <data name="MergeReview_Authors_AllAgree" xml:space="preserve">
+    <value>Alla källor är överens</value>
+  </data>
+  <data name="MergeReview_Authors_OnlySource" xml:space="preserve">
+    <value>Endast {0} angav upphovsmän</value>
+  </data>
+  <data name="MergeReview_Authors_Label" xml:space="preserve">
+    <value>Upphovsmän</value>
+  </data>
+  <data name="MergeReview_AddAuthor" xml:space="preserve">
+    <value>+ Lägg till upphovsman</value>
+  </data>
+  <data name="MergeReview_RemoveAuthor" xml:space="preserve">
+    <value>Ta bort upphovsman</value>
+  </data>
+  <data name="MergeReview_Collection_Label" xml:space="preserve">
+    <value>Samling</value>
+  </data>
+  <data name="Common_SaveAndOpenEditor" xml:space="preserve">
+    <value>Spara och öppna redigeraren</value>
+  </data>
+  <data name="AddBookIdentify_Title" xml:space="preserve">
+    <value>Lägg till bok</value>
+  </data>
+  <data name="AddBookIdentify_IsbnLabel" xml:space="preserve">
+    <value>ISBN</value>
+  </data>
+  <data name="AddBookIdentify_Hint" xml:space="preserve">
+    <value>Skanna eller skriv ett ISBN och tryck på Enter.</value>
+  </data>
+  <data name="AddBookIdentify_LookUp" xml:space="preserve">
+    <value>Slå upp</value>
+  </data>
+  <data name="AddBookIdentify_ManualEntry" xml:space="preserve">
+    <value>Ange uppgifterna manuellt</value>
+  </data>
+  <data name="AddBookIdentify_WizardHint" xml:space="preserve">
+    <value>Flera ISBN? Använd Katalogisera med ISBN (Ctrl+I).</value>
+  </data>
+  <data name="AddBookIdentify_LookupFailed" xml:space="preserve">
+    <value>Uppslagningen hittade inte den här boken: {0}</value>
+  </data>
+  <data name="AddBookIdentify_CancelLookup_Title" xml:space="preserve">
+    <value>Avbryta uppslagningen?</value>
+  </data>
+  <data name="AddBookIdentify_CancelLookup_Body" xml:space="preserve">
+    <value>En uppslagning pågår fortfarande. Avbryta den och stänga?</value>
+  </data>
+  <data name="BookList_Empty_Title" xml:space="preserve">
+    <value>Ditt bibliotek är tomt</value>
+  </data>
+  <data name="BookList_Empty_Subtitle" xml:space="preserve">
+    <value>Lägg till din första bok, importera en befintlig katalog eller anslut till en delad databas.</value>
+  </data>
+  <data name="BookList_Empty_AddBook" xml:space="preserve">
+    <value>Lägg till din första bok</value>
+  </data>
+  <data name="BookList_Empty_Import" xml:space="preserve">
+    <value>Importera Readerware-säkerhetskopia</value>
+  </data>
+  <data name="BookList_Empty_ConnectDatabase" xml:space="preserve">
+    <value>Anslut till en databas</value>
+  </data>
+  <data name="BookList_Empty_HelpHint" xml:space="preserve">
+    <value>Ny här? Läs hjälpen för att komma igång.</value>
+  </data>
+  <data name="Delete_LoanedOut_Single_Message" xml:space="preserve">
+    <value>Ta bort ”{0}”? Den är utlånad till {1} – även lånehistoriken tas bort. Detta kan inte ångras.</value>
+  </data>
+  <data name="Delete_LoanedOut_Multiple_Message" xml:space="preserve">
+    <value>Ta bort {0} böcker? {1} av dem är utlånade – även deras lånehistorik tas bort. Detta kan inte ångras.</value>
+  </data>
+  <data name="Error_ActionFailed_Title" xml:space="preserve">
+    <value>Något gick fel</value>
+  </data>
+  <data name="Error_ActionFailed_Message" xml:space="preserve">
+    <value>Åtgärden kunde inte slutföras. Kontrollera att databasen är nåbar och försök igen. Se loggen för detaljer.</value>
+  </data>
+  <data name="Statistics_Column_Author" xml:space="preserve">
+    <value>Författare</value>
+  </data>
+  <data name="Statistics_Column_Month" xml:space="preserve">
+    <value>Månad</value>
+  </data>
+  <data name="Statistics_Column_Books" xml:space="preserve">
+    <value>Böcker</value>
+  </data>
+  <data name="Statistics_Column_RunningTotal" xml:space="preserve">
+    <value>Totalt antal böcker</value>
+  </data>
+  <data name="Person_Cleanup_Kind_Duplicate" xml:space="preserve">
+    <value>Dubblett</value>
+  </data>
+  <data name="StatusBar_UpdateAvailable" xml:space="preserve">
+    <value>Uppdatering tillgänglig</value>
+  </data>
+  <data name="Update_Dialog_Title" xml:space="preserve">
+    <value>Uppdatering tillgänglig</value>
+  </data>
+  <data name="Update_Dialog_Body" xml:space="preserve">
+    <value>BookDB {0} finns tillgänglig. Du har {1}.</value>
+  </data>
+  <data name="Update_Hint_Winget" xml:space="preserve">
+    <value>Installerad via winget — uppgradera med:
+{0}</value>
+  </data>
+  <data name="Update_Hint_AppMan" xml:space="preserve">
+    <value>Installerad via AM/AppMan — uppgradera med:
+{0}
+(användarinstallation: appman -u bookdb)</value>
+  </data>
+  <data name="Update_Hint_GitHub" xml:space="preserve">
+    <value>Ladda ner den senaste versionen från GitHub.</value>
+  </data>
+  <data name="Update_CopyCommand" xml:space="preserve">
+    <value>Kopiera kommando</value>
+  </data>
+  <data name="Update_OpenGitHub" xml:space="preserve">
+    <value>Ladda ner från GitHub</value>
   </data>
 </root>

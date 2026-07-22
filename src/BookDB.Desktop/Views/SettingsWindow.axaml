@@ -78,9 +78,9 @@
                     DisplayMemberBinding="{Binding DisplayName}"
                     HorizontalAlignment="Stretch"
                     Margin="0,0,0,8"/>
-          <!-- Row 1: Restart note -->
+          <!-- Row 1: applies-immediately note (theme switches live, unlike language/log level) -->
           <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
-                     Text="{x:Static res:Resources.Settings_Appearance_RestartNote}"
+                     Text="{x:Static res:Resources.Settings_Appearance_ApplyNote}"
                      FontSize="11"
                      Opacity="0.6"
                      TextWrapping="Wrap"
@@ -104,10 +104,19 @@
 
           <!-- Google Books -->
           <TextBlock Text="{x:Static res:Resources.Settings_Lookup_GoogleBooks}" FontSize="14" FontWeight="SemiBold" Margin="0,8,0,0"/>
-          <Grid ColumnDefinitions="200,*" RowDefinitions="Auto" HorizontalAlignment="Stretch">
+          <Grid ColumnDefinitions="200,*" RowDefinitions="Auto,Auto,Auto" HorizontalAlignment="Stretch">
             <TextBlock Grid.Row="0" Grid.Column="0" Text="{x:Static res:Resources.Settings_Lookup_Enabled}" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,0"/>
             <CheckBox Grid.Row="0" Grid.Column="1"
                       IsChecked="{Binding GoogleBooksEnabled}"/>
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="{x:Static res:Resources.Settings_Lookup_ApiKey}" FontSize="12" VerticalAlignment="Center" Margin="0,4,8,0"/>
+            <TextBox Grid.Row="1" Grid.Column="1"
+                     Margin="0,4,0,0"
+                     PasswordChar="•"
+                     Text="{Binding GoogleBooksApiKey}"
+                     PlaceholderText="{x:Static res:Resources.Settings_Lookup_ApiKey_Watermark}"/>
+            <TextBlock Grid.Row="2" Grid.Column="1"
+                       Text="{x:Static res:Resources.Settings_Lookup_ApiKey_Hint}"
+                       FontSize="11" Opacity="0.7" TextWrapping="Wrap" Margin="0,4,0,0"/>
           </Grid>
 
           <!-- Open Library -->

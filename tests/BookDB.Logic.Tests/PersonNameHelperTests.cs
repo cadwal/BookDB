@@ -44,6 +44,7 @@ public class PersonNameHelperTests
     [Theory]
     [InlineData("Smith, John / Jones, Mary", 2, new[] { "Smith, John", "Jones, Mary" })]
     [InlineData("A; B ; C", 3, new[] { "A", "B", "C" })]
+    [InlineData("Per Johans;Delia Pers", 2, new[] { "Per Johans", "Delia Pers" })] // glued semicolon still splits
     [InlineData("A | B", 2, new[] { "A", "B" })]
     [InlineData("Smith, John", 1, new[] { "Smith, John" })]
     [InlineData("Smith, John / Jones, Mary; Extra", 3, new[] { "Smith, John", "Jones, Mary", "Extra" })]

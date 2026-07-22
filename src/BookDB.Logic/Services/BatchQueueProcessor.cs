@@ -25,14 +25,18 @@ public sealed class BatchQueueProcessor : IBatchQueueProcessor, IDisposable
     private readonly IBookMetadataService _bookMetadataService;
     private readonly IBookImageService _bookImageService;
     private readonly ICoverFetcher? _coverFetcher;
+    private readonly ICoverCache? _coverCache;
     private readonly IMessenger _messenger;
     private readonly ILogger<BatchQueueProcessor> _logger;
     private readonly TimeSpan _itemDelay;
+    private readonly TimeSpan _itemTimeout;
 
     private readonly SemaphoreSlim _pauseGate = new(1, 1);
     private bool _isPaused;
     private int _processedCount;
     private int _totalCount;
+    private int _toReviewCount;
+    private int _failedCount;
 
     private CancellationTokenSource? _batchCts;
     private Task? _batchTask;
@@ -50,7 +54,9 @@ public sealed class BatchQueueProcessor : IBatchQueueProcessor, IDisposable
         IMessenger messenger,
         ILogger<BatchQueueProcessor> logger,
         TimeSpan? itemDelay = null,
-        ICoverFetcher? coverFetcher = null)
+        ICoverFetcher? coverFetcher = null,
+        TimeSpan? itemTimeout = null,
+        ICoverCache? coverCache = null)
     {
         _queueService = queueService;
         _lookupService = lookupService;
@@ -58,9 +64,11 @@ public sealed class BatchQueueProcessor : IBatchQueueProcessor, IDisposable
         _bookMetadataService = bookMetadataService;
         _bookImageService = bookImageService;
         _coverFetcher = coverFetcher;
+        _coverCache = coverCache;
         _messenger = messenger;
         _logger = logger;
         _itemDelay = itemDelay ?? TimeSpan.FromSeconds(1.5);
+        _itemTimeout = itemTimeout ?? TimeSpan.FromSeconds(30);
     }
 
     /// <summary>
@@ -96,6 +104,8 @@ public sealed class BatchQueueProcessor : IBatchQueueProcessor, IDisposable
 
         _processedCount = 0;
         _totalCount = items.Count;
+        _toReviewCount = 0;
+        _failedCount = 0;
 
         _batchCts = new CancellationTokenSource();
 
@@ -140,6 +150,22 @@ public sealed class BatchQueueProcessor : IBatchQueueProcessor, IDisposable
         }
     }
 
+    /// <summary>Single funnel for progress messages so every send carries the running outcome counts.</summary>
+    private void SendProgress(
+        int current, string? isbn, bool isRunning,
+        BatchProgressStatus statusCode = BatchProgressStatus.None, int resultCount = 0)
+        => _messenger.Send(new BatchQueueProgressMessage
+        {
+            Current = current,
+            Total = _totalCount,
+            CurrentIsbn = isbn,
+            IsRunning = isRunning,
+            StatusCode = statusCode,
+            ResultCount = resultCount,
+            ToReviewCount = _toReviewCount,
+            FailedCount = _failedCount
+        });
+
     private async Task ProcessBatchInternalAsync(
         IReadOnlyList<BatchQueueItem> items, CancellationToken ct)
     {
@@ -155,14 +181,8 @@ public sealed class BatchQueueProcessor : IBatchQueueProcessor, IDisposable
                 _pauseGate.Release();
 
                 // Send pre-processing status (1-indexed so UI shows "N/Total" while Nth item fetches)
-                _messenger.Send(new BatchQueueProgressMessage
-                {
-                    Current = _processedCount + 1,
-                    Total = _totalCount,
-                    CurrentIsbn = item.Isbn,
-                    IsRunning = true,
-                    StatusCode = BatchProgressStatus.QueryingSources
-                });
+                SendProgress(_processedCount + 1, item.Isbn, isRunning: true,
+                    BatchProgressStatus.QueryingSources);
 
                 try
                 {
@@ -177,21 +197,17 @@ public sealed class BatchQueueProcessor : IBatchQueueProcessor, IDisposable
                     _logger.LogError(ex, "Failed to process batch item {ItemId} ISBN {Isbn}",
                         item.BatchQueueItemId, item.Isbn);
                     await _queueService.UpdateStatusAsync(
-                        item.BatchQueueItemId, BatchStatus.Failed, null, ct).ConfigureAwait(false);
+                        item.BatchQueueItemId, BatchStatus.Failed, null,
+                        BatchFailureReason.Unexpected.ToString(), ct).ConfigureAwait(false);
+                    _failedCount++;
                 }
 
                 _processedCount++;
 
                 bool batchComplete = _totalCount > 0 && _processedCount >= _totalCount;
 
-                _messenger.Send(new BatchQueueProgressMessage
-                {
-                    Current = _processedCount,
-                    Total = _totalCount,
-                    CurrentIsbn = item.Isbn,
-                    IsRunning = !batchComplete,
-                    StatusCode = batchComplete ? BatchProgressStatus.Complete : BatchProgressStatus.None
-                });
+                SendProgress(_processedCount, item.Isbn, isRunning: !batchComplete,
+                    batchComplete ? BatchProgressStatus.Complete : BatchProgressStatus.None);
 
                 if (!batchComplete && !ct.IsCancellationRequested)
                     await Task.Delay(_itemDelay, ct).ConfigureAwait(false);
@@ -204,41 +220,48 @@ public sealed class BatchQueueProcessor : IBatchQueueProcessor, IDisposable
         finally
         {
             // Always send IsRunning=false on exit so UI updates correctly
-            _messenger.Send(new BatchQueueProgressMessage
-            {
-                Current = _processedCount,
-                Total = _totalCount,
-                CurrentIsbn = null,
-                IsRunning = false
-            });
+            SendProgress(_processedCount, null, isRunning: false);
         }
     }
 
     private async Task ProcessItemAsync(BatchQueueItem item, CancellationToken ct)
     {
-        await _queueService.UpdateStatusAsync(item.BatchQueueItemId, BatchStatus.Processing, null, ct);
+        await _queueService.UpdateStatusAsync(item.BatchQueueItemId, BatchStatus.Processing, null, ct: ct);
 
-        // 30-second per-item timeout guard — prevents hangs if sources are unreachable
-        using var itemTimeout = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+        // Per-item timeout guard — prevents hangs if sources are unreachable
+        using var itemTimeout = new CancellationTokenSource(_itemTimeout);
         using var linked = CancellationTokenSource.CreateLinkedTokenSource(ct, itemTimeout.Token);
 
-        var results = await _lookupService.FetchAllSourcesAsync(item.Isbn, linked.Token);
-
-        if (results.Count == 0)
+        MetadataLookupResult lookup;
+        try
         {
-            await _queueService.UpdateStatusAsync(item.BatchQueueItemId, BatchStatus.Failed, null, ct);
+            lookup = await _lookupService.FetchAllSourcesAsync(item.Isbn, linked.Token);
+        }
+        catch (OperationCanceledException) when (itemTimeout.IsCancellationRequested && !ct.IsCancellationRequested)
+        {
+            // The per-item timeout fired while the sources hung — a network failure, not a user cancel.
+            await _queueService.UpdateStatusAsync(item.BatchQueueItemId, BatchStatus.Failed, null,
+                BatchFailureReason.NetworkError.ToString(), ct);
+            _failedCount++;
             return;
         }
 
-        _messenger.Send(new BatchQueueProgressMessage
+        var results = lookup.Results;
+        if (results.Count == 0)
         {
-            Current = _processedCount,
-            Total = _totalCount,
-            CurrentIsbn = item.Isbn,
-            IsRunning = true,
-            StatusCode = BatchProgressStatus.ProcessingResults,
-            ResultCount = results.Count
-        });
+            var reason =
+                lookup.SourcesQueried == 0 ? BatchFailureReason.AllSourcesDisabled
+                : lookup.RateLimitedSources.Count > 0 ? BatchFailureReason.RateLimited
+                : lookup.SourcesFailed >= lookup.SourcesQueried ? BatchFailureReason.NetworkError
+                : BatchFailureReason.NoResults;
+            await _queueService.UpdateStatusAsync(item.BatchQueueItemId, BatchStatus.Failed, null,
+                reason.ToString(), ct);
+            _failedCount++;
+            return;
+        }
+
+        SendProgress(_processedCount, item.Isbn, isRunning: true,
+            BatchProgressStatus.ProcessingResults, results.Count);
 
         // Always look up existing book by ISBN (handles ISBN-10/13 cross-format matching).
         // item.BookId is only set for explicit re-catalog; for new ISBNs we still need to
@@ -275,7 +298,7 @@ public sealed class BatchQueueProcessor : IBatchQueueProcessor, IDisposable
 
         var diffs = FieldDiffComputer.ComputeDiffs(results, currentBookMetadata);
 
-        if (diffs.Count == 0)
+        if (diffs.Count == 0 && !item.ForceReview)
         {
             // No conflicts — auto-accept
             if (existingBookId.HasValue)
@@ -292,7 +315,7 @@ public sealed class BatchQueueProcessor : IBatchQueueProcessor, IDisposable
                             await _bookMetadataService.UpdateBookFromMetadataAsync(
                                 existingBookId.Value, results[0], coverBytes, ct);
                         }
-                        await _queueService.UpdateStatusAsync(item.BatchQueueItemId, BatchStatus.Skipped, null, ct);
+                        await _queueService.UpdateStatusAsync(item.BatchQueueItemId, BatchStatus.Skipped, null, ct: ct);
                     }
                     else
                     {
@@ -310,14 +333,24 @@ public sealed class BatchQueueProcessor : IBatchQueueProcessor, IDisposable
                                 // Different cover — route to PendingReview so user can accept/reject.
                                 var resultJson = JsonSerializer.Serialize(
                                     new BatchReviewPayload(results, existingBookId, currentBookMetadata,
-                                        WasNewIsbn: item.BookId is null));
+                                        WasNewIsbn: item.BookId is null,
+                                        RateLimitedSources: lookup.RateLimitedSources,
+                                        NoResultSources: lookup.NoResultSources,
+                                        ErroredSources: lookup.ErroredSources));
                                 await _queueService.UpdateStatusAsync(
-                                    item.BatchQueueItemId, BatchStatus.PendingReview, resultJson, ct);
+                                    item.BatchQueueItemId, BatchStatus.PendingReview, resultJson, ct: ct);
+                                _toReviewCount++;
+                                // Seed the cache with the bytes just downloaded for the comparison
+                                // (DownloadBestCoverAsync uses the first source with a URL), then
+                                // prefetch the remaining sources.
+                                var comparedSource = results.First(r => !string.IsNullOrEmpty(r.CoverImageUrl));
+                                _coverCache?.Set(item.BatchQueueItemId, comparedSource.SourceName, apiCoverBytes);
+                                await PrefetchCoversAsync(results, item, ct);
                                 return;
                             }
                         }
                         // Identical cover (or no API cover) — skip silently.
-                        await _queueService.UpdateStatusAsync(item.BatchQueueItemId, BatchStatus.Skipped, null, ct);
+                        await _queueService.UpdateStatusAsync(item.BatchQueueItemId, BatchStatus.Skipped, null, ct: ct);
                     }
                 }
                 else
@@ -326,20 +359,13 @@ public sealed class BatchQueueProcessor : IBatchQueueProcessor, IDisposable
                     var coverBytes = await DownloadBestCoverAsync(results, item.Isbn, ct);
                     await _bookMetadataService.UpdateBookFromMetadataAsync(
                         existingBookId.Value, results[0], coverBytes, ct);
-                    await _queueService.UpdateStatusAsync(item.BatchQueueItemId, BatchStatus.Done, null, ct);
+                    await _queueService.UpdateStatusAsync(item.BatchQueueItemId, BatchStatus.Done, null, ct: ct);
                 }
             }
             else
             {
                 // New book — save using first source that has the most data
-                _messenger.Send(new BatchQueueProgressMessage
-                {
-                    Current = _processedCount,
-                    Total = _totalCount,
-                    CurrentIsbn = item.Isbn,
-                    IsRunning = true,
-                    StatusCode = BatchProgressStatus.Saving
-                });
+                SendProgress(_processedCount, item.Isbn, isRunning: true, BatchProgressStatus.Saving);
                 var coverBytes = await DownloadBestCoverAsync(results, item.Isbn, ct);
                 // Ensure the stored book has an ISBN so it can be found by FindBookByIsbnAsync
                 // on future runs. If the source returned a null ISBN, fall back to item.Isbn.
@@ -347,19 +373,61 @@ public sealed class BatchQueueProcessor : IBatchQueueProcessor, IDisposable
                     ? results[0] with { Isbn = item.Isbn }
                     : results[0];
                 await _bookMetadataService.AddBookFromMetadataAsync(metadata, coverBytes, null, ct);
-                await _queueService.UpdateStatusAsync(item.BatchQueueItemId, BatchStatus.AutoAccepted, null, ct);
+                await _queueService.UpdateStatusAsync(item.BatchQueueItemId, BatchStatus.AutoAccepted, null, ct: ct);
             }
         }
         else
         {
-            // Conflicts — queue for review.
+            // Conflicts — or a force-review item, which lands here even when sources agree,
+            // because the guided single-book add promised the user a confirm step.
             // Store the current book metadata snapshot alongside the source results so the review
             // dialog can recompute the same diffs against the same baseline (not against null).
             var resultJson = JsonSerializer.Serialize(
                 new BatchReviewPayload(results, existingBookId, currentBookMetadata,
-                    WasNewIsbn: item.BookId is null));
+                    WasNewIsbn: item.BookId is null,
+                    RateLimitedSources: lookup.RateLimitedSources,
+                    NoResultSources: lookup.NoResultSources,
+                    ErroredSources: lookup.ErroredSources));
             await _queueService.UpdateStatusAsync(
-                item.BatchQueueItemId, BatchStatus.PendingReview, resultJson, ct);
+                item.BatchQueueItemId, BatchStatus.PendingReview, resultJson, ct: ct);
+            _toReviewCount++;
+            await PrefetchCoversAsync(results, item, ct);
+        }
+    }
+
+    /// <summary>
+    /// Downloads every source cover for an item that just landed in PendingReview into the
+    /// in-memory cache, so the review dialog can show them without touching the network.
+    /// Best-effort: the status is already persisted, and a miss simply streams into the
+    /// dialog later — so failures are swallowed and cancellation returns quietly.
+    /// </summary>
+    private async Task PrefetchCoversAsync(
+        IReadOnlyList<BookMetadata> results, BatchQueueItem item, CancellationToken ct)
+    {
+        if (_coverFetcher is null || _coverCache is null) return;
+
+        var sourcesWithCovers = results
+            .Where(r => !string.IsNullOrEmpty(r.CoverImageUrl))
+            .Where(r => _coverCache.TryGet(item.BatchQueueItemId, r.SourceName) is null)
+            .ToList();
+        if (sourcesWithCovers.Count == 0) return;
+
+        SendProgress(_processedCount, item.Isbn, isRunning: true, BatchProgressStatus.FetchingCovers);
+
+        foreach (var source in sourcesWithCovers)
+        {
+            if (ct.IsCancellationRequested) return;
+            try
+            {
+                var bytes = await _coverFetcher.DownloadCoverAsync(
+                    source.CoverImageUrl!, item.Isbn, source.SourceName, ct);
+                if (bytes is not null)
+                    _coverCache.Set(item.BatchQueueItemId, source.SourceName, bytes);
+            }
+            catch
+            {
+                // Best-effort per the summary above; the fetcher already logs its own failures.
+            }
         }
     }
 
@@ -374,6 +442,8 @@ public sealed class BatchQueueProcessor : IBatchQueueProcessor, IDisposable
 
         var sourceWithCover = results.FirstOrDefault(r => !string.IsNullOrEmpty(r.CoverImageUrl));
         if (sourceWithCover?.CoverImageUrl is null) return null;
+
+        SendProgress(_processedCount, isbn, isRunning: true, BatchProgressStatus.FetchingCovers);
 
         return await _coverFetcher.DownloadCoverAsync(
             sourceWithCover.CoverImageUrl, isbn, sourceWithCover.SourceName, ct);
@@ -463,4 +533,7 @@ public record BatchReviewPayload(
     IReadOnlyList<BookMetadata> Sources,
     int? ExistingBookId,
     BookMetadata? CurrentBookMetadata = null,
-    bool WasNewIsbn = false);
+    bool WasNewIsbn = false,
+    IReadOnlyList<string>? RateLimitedSources = null,
+    IReadOnlyList<string>? NoResultSources = null,
+    IReadOnlyList<string>? ErroredSources = null);

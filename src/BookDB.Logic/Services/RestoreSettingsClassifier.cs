@@ -29,10 +29,10 @@ public static class RestoreSettingsClassifier
         ["Window", "DetailPanel", "ColumnVisible.", "BookList_"];
 
     private static readonly string[] SkipExact =
-        ["FilterPanelWidth", "LastBackupFolder", "Import.ReaderwareToolPath"];
+        ["FilterPanelWidth", "LastBackupFolder", "Import.ReaderwareToolPath", "UncategorizedFilterSeeded"];
 
     private static readonly string[] ApplyPrefixes =
-        ["AutoBackup.", "LookupEnabled."];
+        ["AutoBackup.", "LookupEnabled.", "LookupApiKey."];
 
     private static readonly string[] ApplyExact =
         ["DefaultCollectionId", "LastSelectedCollectionIds", "Import.OverwritePolicy", "PrintPresets",

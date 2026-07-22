@@ -38,6 +38,7 @@
     <svg:SvgImage x:Key="Icon.Settings" Source="avares://BookDB.Desktop/Assets/Icons/settings.svg" Css="{DynamicResource IconCss}" />
     <svg:SvgImage x:Key="Icon.Keyboard" Source="avares://BookDB.Desktop/Assets/Icons/keyboard.svg" Css="{DynamicResource IconCss}" />
     <svg:SvgImage x:Key="Icon.BookQuestionMark" Source="avares://BookDB.Desktop/Assets/Icons/book-question-mark.svg" Css="{DynamicResource IconCss}" />
+    <svg:SvgImage x:Key="Icon.Book" Source="avares://BookDB.Desktop/Assets/Icons/book.svg" Css="{DynamicResource IconCssAccent}" />
     <svg:SvgImage x:Key="Icon.DocumentArrowDown" Source="avares://BookDB.Desktop/Assets/Icons/document-arrow-down.svg" Css="{DynamicResource IconCss}" />
     <svg:SvgImage x:Key="Icon.Globe" Source="avares://BookDB.Desktop/Assets/Icons/globe.svg" Css="{DynamicResource IconCss}" />
     <svg:SvgImage x:Key="Icon.DatabaseLink" Source="avares://BookDB.Desktop/Assets/Icons/database-link.svg" Css="{DynamicResource IconCss}" />

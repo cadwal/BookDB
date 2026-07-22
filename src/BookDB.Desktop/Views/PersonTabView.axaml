@@ -15,44 +15,33 @@
                Margin="8,8,8,4"
                PlaceholderText="{x:Static res:Resources.ManageLookups_Filter_Watermark}"
                Text="{Binding FilterText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-      <Button DockPanel.Dock="Bottom"
-              Margin="8,4,8,8"
-              HorizontalAlignment="Left"
-              Content="{x:Static res:Resources.ManageLookups_Add}"
-              Command="{Binding AddCommand}"/>
+      <StackPanel DockPanel.Dock="Bottom"
+                  Spacing="4"
+                  Margin="8,4,8,8">
+        <Button Content="{x:Static res:Resources.ManageLookups_Add}"
+                HorizontalAlignment="Left"
+                Command="{Binding AddCommand}"/>
+        <!-- Library-wide cleanup entry: always reachable (no person selection needed), and badges the
+             pending count so a waiting duplicate/rename/split is visible without opening the panel. -->
+        <Button Command="{Binding OpenDataCleanupCommand}"
+                HorizontalAlignment="Left">
+          <StackPanel Orientation="Horizontal" Spacing="6">
+            <TextBlock Text="{x:Static res:Resources.ManageLookups_DataCleanup}"
+                       VerticalAlignment="Center"/>
+            <Border IsVisible="{Binding HasCleanupWork}"
+                    Background="{DynamicResource BrushPrimaryBlue}"
+                    CornerRadius="8"
+                    Padding="6,1"
+                    VerticalAlignment="Center">
+              <TextBlock Text="{Binding CleanupBadgeText}"
+                         FontSize="11"
+                         Foreground="White"/>
+            </Border>
+          </StackPanel>
+        </Button>
+      </StackPanel>
       <ScrollViewer>
         <StackPanel Spacing="0">
-          <!-- Suspected duplicates section -->
-          <Border Background="{DynamicResource BrushBackgroundAlt}"
-                  BorderBrush="{DynamicResource BrushBorder}"
-                  BorderThickness="1"
-                  CornerRadius="4"
-                  Margin="8,4,8,0"
-                  Padding="8"
-                  IsVisible="{Binding HasSuspectedDuplicates}">
-            <StackPanel Spacing="4">
-              <TextBlock Text="{x:Static res:Resources.ManageLookups_SuspectedDuplicates}"
-                         FontSize="12" FontWeight="SemiBold"
-                         Foreground="{DynamicResource BrushPrimaryBlue}"
-                         Margin="0,0,0,4"/>
-              <ItemsControl ItemsSource="{Binding SuspectedDuplicates}">
-                <ItemsControl.ItemTemplate>
-                  <DataTemplate x:DataType="vm:SuspectedDuplicatePair">
-                    <Button Padding="0,4"
-                            Background="Transparent"
-                            HorizontalAlignment="Stretch"
-                            HorizontalContentAlignment="Left"
-                            Command="{Binding #Root.((vm:PersonTabViewModel)DataContext).SelectDuplicatePairCommand}"
-                            CommandParameter="{Binding}"
-                            Cursor="Hand">
-                      <TextBlock Text="{Binding DisplayText}" FontSize="12"/>
-                    </Button>
-                  </DataTemplate>
-                </ItemsControl.ItemTemplate>
-              </ItemsControl>
-            </StackPanel>
-          </Border>
-
           <!-- Scanning indicator -->
           <TextBlock Text="{x:Static res:Resources.ManageLookups_Scanning}"
                      FontSize="11"
@@ -142,9 +131,6 @@
                   Command="{Binding FilterToAuthorCommand}"
                   HorizontalAlignment="Left"
                   IsVisible="{Binding HasSelection}"/>
-          <Button Content="{x:Static res:Resources.ManageLookups_DataCleanup}"
-                  Command="{Binding OpenDataCleanupCommand}"
-                  HorizontalAlignment="Left"/>
           <!-- Bio section — editable (PersonId > 0 only) -->
           <Border IsVisible="{Binding IsBioSectionVisible}"
                   BorderBrush="{DynamicResource BrushBorder}"
@@ -268,72 +254,206 @@
       </ScrollViewer>
 
       <!-- State D: data cleanup -->
-      <DockPanel IsVisible="{Binding IsCleanupPanelVisible}">
-        <StackPanel DockPanel.Dock="Top" Margin="16,16,16,8" Spacing="8">
-          <TextBlock Text="{x:Static res:Resources.ManageLookups_DataCleanupTitle}"
-                     FontSize="14" FontWeight="SemiBold"/>
-          <TextBlock Text="{x:Static res:Resources.ManageLookups_DataCleanupDesc}"
-                     FontSize="12"
-                     Foreground="{DynamicResource BrushTextSecondary}"
-                     TextWrapping="Wrap"/>
-          <StackPanel Orientation="Horizontal" Spacing="8">
+      <Panel IsVisible="{Binding IsCleanupPanelVisible}">
+
+        <!-- Proposals view -->
+        <DockPanel IsVisible="{Binding IsCleanupProposalsVisible}">
+          <!-- Header -->
+          <StackPanel DockPanel.Dock="Top" Margin="16,16,16,8" Spacing="8">
+            <TextBlock Text="{x:Static res:Resources.ManageLookups_DataCleanupTitle}"
+                       FontSize="14" FontWeight="SemiBold"/>
+            <TextBlock Text="{x:Static res:Resources.ManageLookups_DataCleanupDesc}"
+                       FontSize="12"
+                       Foreground="{DynamicResource BrushTextSecondary}"
+                       TextWrapping="Wrap"/>
+            <TextBlock Text="{x:Static res:Resources.ManageLookups_NoCleanup}"
+                       FontSize="13"
+                       Foreground="{DynamicResource BrushTextSecondary}"
+                       IsVisible="{Binding HasNoCleanup}"/>
+          </StackPanel>
+
+          <!-- Cleanups block header row: select-all/deselect scope the proposal grid below; Tillämpa (docked
+               just under the grid) applies only to these rename/split proposals, never to the duplicates. -->
+          <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="8" Margin="16,0,16,8">
             <Button Content="{x:Static res:Resources.ManageLookups_SelectAll}"
                     Command="{Binding SelectAllCleanupCommand}"/>
             <Button Content="{x:Static res:Resources.ManageLookups_DeselectAll}"
                     Command="{Binding DeselectAllCleanupCommand}"/>
           </StackPanel>
-          <TextBlock Text="{x:Static res:Resources.ManageLookups_NoCleanup}"
-                     FontSize="13"
-                     Foreground="{DynamicResource BrushTextSecondary}"
-                     IsVisible="{Binding HasNoCleanup}"/>
-        </StackPanel>
 
-        <StackPanel DockPanel.Dock="Bottom"
-                    Orientation="Horizontal"
-                    Spacing="8"
-                    Margin="16,8,16,16"
-                    HorizontalAlignment="Right">
-          <Button Classes="accent"
-                  Content="{x:Static res:Resources.Common_Apply}"
-                  Command="{Binding ApplyCleanupCommand}"/>
-          <Button Content="{x:Static res:Resources.Common_Close}"
-                  Command="{Binding CloseDataCleanupCommand}"/>
-        </StackPanel>
+          <!-- Footer: shared across both blocks — show-ignored sits below both; Stäng closes the whole panel. -->
+          <Grid DockPanel.Dock="Bottom" Margin="16,8,16,16" ColumnDefinitions="*,Auto">
+            <StackPanel Orientation="Horizontal" Spacing="8"
+                        VerticalAlignment="Center"
+                        IsVisible="{Binding HasIgnored}">
+              <TextBlock Text="{Binding IgnoredCountText}"
+                         VerticalAlignment="Center"
+                         Foreground="{DynamicResource BrushTextSecondary}"/>
+              <Button Content="{x:Static res:Resources.Person_Cleanup_ViewIgnored}"
+                      Command="{Binding ViewIgnoredCommand}"/>
+            </StackPanel>
+            <Button Grid.Column="1"
+                    Content="{x:Static res:Resources.Common_Close}"
+                    HorizontalAlignment="Right"
+                    Command="{Binding CloseDataCleanupCommand}"/>
+          </Grid>
 
-        <DataGrid ItemsSource="{Binding CleanupProposals}"
-                  Margin="16,0,16,0"
-                  IsReadOnly="False"
-                  CanUserResizeColumns="True"
-                  CanUserReorderColumns="False"
-                  GridLinesVisibility="Horizontal"
-                  SelectionMode="Single"
-                  AutoGenerateColumns="False">
-          <DataGrid.Columns>
-            <DataGridTextColumn Header="{x:Static res:Resources.Person_Column_CurrentName}"
-                                Binding="{Binding CurrentDisplayName}"
-                                IsReadOnly="True"
-                                Width="*"/>
-            <DataGridTextColumn Header="{x:Static res:Resources.Person_Column_ProposedName}"
-                                Binding="{Binding ProposedDisplayName}"
-                                IsReadOnly="True"
-                                Width="*"/>
-            <DataGridTextColumn Header="{x:Static res:Resources.Person_Column_SortName}"
-                                Binding="{Binding SuggestedSortName, Mode=TwoWay}"
-                                IsReadOnly="False"
-                                Width="*"/>
-            <DataGridTemplateColumn Header="{x:Static res:Resources.Person_Column_Apply}"
-                                    Width="80"
-                                    SortMemberPath="ApplyChecked">
-              <DataGridTemplateColumn.CellTemplate>
-                <DataTemplate x:DataType="vm:CleanupProposalRow">
-                  <CheckBox IsChecked="{Binding ApplyChecked, Mode=TwoWay}"
-                            HorizontalAlignment="Center"/>
-                </DataTemplate>
-              </DataGridTemplateColumn.CellTemplate>
-            </DataGridTemplateColumn>
-          </DataGrid.Columns>
-        </DataGrid>
-      </DockPanel>
+          <!-- Divider between the duplicates block and the footer button row; shown only alongside the
+               duplicates so the block reads as bracketed between its two dividers. -->
+          <Separator DockPanel.Dock="Bottom" Margin="16,4"
+                     IsVisible="{Binding HasSuspectedDuplicates}"/>
+
+          <!-- Duplicates block: possible same-person pairs. Each row opens the merge flow (clickable across its
+               full width) or can be ignored. This is its own block, below the cleanups, above the footer. -->
+          <StackPanel DockPanel.Dock="Bottom" Margin="16,8,16,8" Spacing="4"
+                      IsVisible="{Binding HasSuspectedDuplicates}">
+            <TextBlock Text="{x:Static res:Resources.ManageLookups_SuspectedDuplicates}"
+                       FontSize="14" FontWeight="SemiBold"/>
+            <TextBlock Text="{x:Static res:Resources.ManageLookups_SuspectedDuplicatesDesc}"
+                       FontSize="12"
+                       Foreground="{DynamicResource BrushTextSecondary}"
+                       TextWrapping="Wrap"/>
+            <!-- Bounded so a long duplicates list scrolls internally instead of growing without limit and
+                 pushing the rename/split DataGrid above it off the visible panel. -->
+            <ScrollViewer MaxHeight="180">
+              <ItemsControl ItemsSource="{Binding SuspectedDuplicates}">
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate x:DataType="vm:SuspectedDuplicatePair">
+                    <Grid ColumnDefinitions="*,Auto" Margin="0,1">
+                      <Button Grid.Column="0"
+                              Classes="link"
+                              FontSize="12"
+                              Padding="4,6"
+                              HorizontalAlignment="Stretch"
+                              HorizontalContentAlignment="Left"
+                              VerticalAlignment="Center"
+                              Command="{Binding #Root.((vm:PersonTabViewModel)DataContext).SelectDuplicatePairCommand}"
+                              CommandParameter="{Binding}">
+                        <TextBlock Text="{Binding DisplayText}"/>
+                      </Button>
+                      <Button Grid.Column="1"
+                              Content="{x:Static res:Resources.Person_Cleanup_Ignore}"
+                              MinWidth="80"
+                              VerticalAlignment="Center"
+                              Command="{Binding #Root.((vm:PersonTabViewModel)DataContext).IgnoreDuplicateCommand}"
+                              CommandParameter="{Binding}"/>
+                    </Grid>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </ScrollViewer>
+          </StackPanel>
+
+          <!-- Divider between the two parts (cleanups above, suspected duplicates below); only shown when there
+               are duplicates so it never floats alone. -->
+          <Separator DockPanel.Dock="Bottom" Margin="16,4"
+                     IsVisible="{Binding HasSuspectedDuplicates}"/>
+
+          <!-- Tillämpa: applies only to the checked cleanup proposals in the grid above. -->
+          <Grid DockPanel.Dock="Bottom" Margin="16,8,16,8">
+            <Button Classes="accent"
+                    Content="{x:Static res:Resources.Common_Apply}"
+                    HorizontalAlignment="Right"
+                    Command="{Binding ApplyCleanupCommand}"/>
+          </Grid>
+
+          <DataGrid ItemsSource="{Binding CleanupProposals}"
+                    Margin="16,0,16,0"
+                    IsReadOnly="False"
+                    CanUserResizeColumns="True"
+                    CanUserReorderColumns="False"
+                    GridLinesVisibility="Horizontal"
+                    SelectionMode="Single"
+                    AutoGenerateColumns="False">
+            <DataGrid.Columns>
+              <DataGridTextColumn Header="{x:Static res:Resources.Person_Column_CurrentName}"
+                                  Binding="{Binding CurrentNameDisplay}"
+                                  IsReadOnly="True"
+                                  Width="*"/>
+              <DataGridTextColumn Header="{x:Static res:Resources.Person_Column_ProposedName}"
+                                  Binding="{Binding ProposedDisplayName}"
+                                  IsReadOnly="True"
+                                  Width="*"/>
+              <DataGridTextColumn Header="{x:Static res:Resources.Person_Column_SortName}"
+                                  Binding="{Binding SuggestedSortName, Mode=TwoWay}"
+                                  IsReadOnly="False"
+                                  Width="*"/>
+              <DataGridTemplateColumn Header="{x:Static res:Resources.Person_Column_Apply}"
+                                      Width="Auto"
+                                      SortMemberPath="ApplyChecked">
+                <DataGridTemplateColumn.CellTemplate>
+                  <DataTemplate x:DataType="vm:CleanupProposalRow">
+                    <CheckBox IsChecked="{Binding ApplyChecked, Mode=TwoWay}"
+                              HorizontalAlignment="Center"/>
+                  </DataTemplate>
+                </DataGridTemplateColumn.CellTemplate>
+              </DataGridTemplateColumn>
+              <DataGridTemplateColumn Header="{x:Static res:Resources.Person_Cleanup_Ignore}"
+                                      Width="Auto">
+                <DataGridTemplateColumn.CellTemplate>
+                  <DataTemplate x:DataType="vm:CleanupProposalRow">
+                    <Button Content="{x:Static res:Resources.Person_Cleanup_Ignore}"
+                            MinWidth="80"
+                            HorizontalAlignment="Center"
+                            IsVisible="{Binding !IsSplitContinuation}"
+                            Command="{Binding #Root.((vm:PersonTabViewModel)DataContext).IgnoreProposalCommand}"
+                            CommandParameter="{Binding}"/>
+                  </DataTemplate>
+                </DataGridTemplateColumn.CellTemplate>
+              </DataGridTemplateColumn>
+            </DataGrid.Columns>
+          </DataGrid>
+        </DockPanel>
+
+        <!-- Ignored list view -->
+        <DockPanel IsVisible="{Binding IsIgnoredListVisible}">
+          <StackPanel DockPanel.Dock="Top" Margin="16,16,16,8" Spacing="8">
+            <TextBlock Text="{x:Static res:Resources.Person_Cleanup_IgnoredTitle}"
+                       FontSize="14" FontWeight="SemiBold"/>
+          </StackPanel>
+
+          <StackPanel DockPanel.Dock="Bottom"
+                      Orientation="Horizontal"
+                      Spacing="8"
+                      Margin="16,8,16,16"
+                      HorizontalAlignment="Right">
+            <Button Content="{x:Static res:Resources.Person_Cleanup_BackToProposals}"
+                    Command="{Binding CloseIgnoredListCommand}"/>
+          </StackPanel>
+
+          <DataGrid ItemsSource="{Binding IgnoredProposals}"
+                    Margin="16,0,16,0"
+                    IsReadOnly="True"
+                    CanUserReorderColumns="False"
+                    GridLinesVisibility="Horizontal"
+                    SelectionMode="Single"
+                    AutoGenerateColumns="False">
+            <DataGrid.Columns>
+              <DataGridTextColumn Header="{x:Static res:Resources.Person_Cleanup_Column_Person}"
+                                  Binding="{Binding PersonDisplayName}"
+                                  Width="*"/>
+              <DataGridTextColumn Header="{x:Static res:Resources.Person_Cleanup_Column_Kind}"
+                                  Binding="{Binding KindLabel}"
+                                  Width="100"/>
+              <DataGridTextColumn Header="{x:Static res:Resources.Person_Cleanup_Column_Content}"
+                                  Binding="{Binding ProposedContent}"
+                                  Width="2*"/>
+              <DataGridTemplateColumn Header="{x:Static res:Resources.Person_Cleanup_Unignore}"
+                                      Width="Auto">
+                <DataGridTemplateColumn.CellTemplate>
+                  <DataTemplate x:DataType="vm:IgnoredProposalRow">
+                    <Button Content="{x:Static res:Resources.Person_Cleanup_Unignore}"
+                            HorizontalAlignment="Center"
+                            Command="{Binding #Root.((vm:PersonTabViewModel)DataContext).UnignoreCommand}"
+                            CommandParameter="{Binding}"/>
+                  </DataTemplate>
+                </DataGridTemplateColumn.CellTemplate>
+              </DataGridTemplateColumn>
+            </DataGrid.Columns>
+          </DataGrid>
+        </DockPanel>
+
+      </Panel>
 
     </Panel>
   </Grid>

@@ -14,6 +14,12 @@
 
     <TabControl SelectedIndex="{Binding SelectedTabIndex}">
 
+        <TabItem Header="{x:Static res:Resources.Help_Tab_GettingStarted}">
+            <Border Padding="16">
+                <md:MarkdownScrollViewer Markdown="{Binding GettingStartedContent}" />
+            </Border>
+        </TabItem>
+
         <TabItem Header="{x:Static res:Resources.Help_Tab_KeyboardShortcuts}">
             <Border Padding="16">
                 <md:MarkdownScrollViewer Markdown="{Binding ShortcutsContent}" />

@@ -18,7 +18,7 @@
             <Separator/>
             <TextBlock Text="{Binding ErrorMessage}"
                        FontSize="12"
-                       Foreground="{StaticResource BrushDestructive}"
+                       Foreground="{DynamicResource BrushDestructive}"
                        IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
                        Margin="0,8,0,0"/>
             <TextBlock Text="{Binding GenerationStatus}"
@@ -49,7 +49,7 @@
         <TextBlock DockPanel.Dock="Top"
                    Text="{Binding ScopeSummaryText}"
                    FontSize="13"
-                   Foreground="{StaticResource BrushTextSecondary}"
+                   Foreground="{DynamicResource BrushTextSecondary}"
                    Margin="0,0,0,12"/>
 
         <!-- Zone 3a: Preset selector row (normal state) -->
@@ -116,7 +116,7 @@
             </Grid>
             <TextBlock Text="{Binding PresetNameError}"
                        FontSize="12"
-                       Foreground="{StaticResource BrushDestructive}"
+                       Foreground="{DynamicResource BrushDestructive}"
                        IsVisible="{Binding PresetNameError, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
                        Margin="0,4,0,0"/>
         </StackPanel>
@@ -130,7 +130,7 @@
                  which transiently nulls SelectedPreset, so a SelectedPreset.Name path would raise binding errors. -->
             <TextBlock Grid.Column="0"
                        FontSize="13"
-                       Foreground="{StaticResource BrushTextPrimary}"
+                       Foreground="{DynamicResource BrushTextPrimary}"
                        VerticalAlignment="Center">
                 <TextBlock.Text>
                     <MultiBinding StringFormat="{x:Static res:Resources.Print_DeletePresetConfirm}">
@@ -141,7 +141,7 @@
             <Button Grid.Column="1"
                     Content="{x:Static res:Resources.Print_ConfirmDeletePreset}"
                     Command="{Binding ConfirmDeleteCommand}"
-                    Foreground="{StaticResource BrushDestructive}"
+                    Foreground="{DynamicResource BrushDestructive}"
                     Margin="8,0,4,0"/>
             <Button Grid.Column="2"
                     Content="{x:Static res:Resources.Common_Cancel}"

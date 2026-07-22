@@ -15,8 +15,8 @@
         TransparencyLevelHint="Transparent"
         WindowStartupLocation="CenterScreen">
 
-    <Border Background="{StaticResource BrushBackground}"
-            BorderBrush="{StaticResource BrushPrimaryBlue}"
+    <Border Background="{DynamicResource BrushBackground}"
+            BorderBrush="{DynamicResource BrushPrimaryBlue}"
             BorderThickness="1"
             CornerRadius="8"
             Padding="32,28">
@@ -37,10 +37,10 @@
                     <TextBlock Text="{Binding AppName}"
                                FontSize="26"
                                FontWeight="Bold"
-                               Foreground="{StaticResource BrushPrimaryBlue}" />
+                               Foreground="{DynamicResource BrushPrimaryBlue}" />
                     <TextBlock Text="{Binding VersionText}"
                                FontSize="12"
-                               Foreground="{StaticResource BrushTextTertiary}" />
+                               Foreground="{DynamicResource BrushTextTertiary}" />
                 </StackPanel>
             </StackPanel>
 
@@ -53,7 +53,7 @@
                              AutomationProperties.Name="Startup progress" />
                 <TextBlock Text="{Binding StatusText}"
                            FontSize="12"
-                           Foreground="{StaticResource BrushTextSecondary}"
+                           Foreground="{DynamicResource BrushTextSecondary}"
                            TextWrapping="Wrap" />
             </StackPanel>
         </Grid>

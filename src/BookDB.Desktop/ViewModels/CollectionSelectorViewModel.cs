@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using BookDB.Desktop.Localization;
 using BookDB.Desktop.Messages;
+using BookDB.Models;
 using BookDB.Models.Entities;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
@@ -33,22 +34,13 @@ public partial class CollectionSelectorViewModel : ObservableRecipient
         CollectionItems.Clear();
 
         foreach (var collection in collections)
-        {
-            var item = new CollectionItemViewModel
-            {
-                Id = collection.CollectionId,
-                Name = collection.Name,
-                IsSelected = selectedIds.Contains(collection.CollectionId)
-            };
+            AddItem(collection.CollectionId, collection.Name, selectedIds.Contains(collection.CollectionId));
 
-            item.PropertyChanged += (_, args) =>
-            {
-                if (args.PropertyName == nameof(CollectionItemViewModel.IsSelected))
-                    OnItemSelectionChanged();
-            };
-
-            CollectionItems.Add(item);
-        }
+        // Uncategorized: a filter-only pseudo-entry for books with no collection. It is never a real
+        // collection (so it never appears as a move-to target), and books with no collection are shown only
+        // when it is selected — keeping orphaned books findable and cleanable without leaking into every view.
+        AddItem(CollectionFilter.Uncategorized, Resources.CollectionSelector_Uncategorized,
+            selectedIds.Contains(CollectionFilter.Uncategorized));
 
         _lastValidSelection = CollectionItems.Where(c => c.IsSelected).ToList();
         UpdateSummary();
@@ -56,6 +48,17 @@ public partial class CollectionSelectorViewModel : ObservableRecipient
         var initialIds = new System.Collections.Generic.HashSet<int>(
             _lastValidSelection.Select(c => c.Id));
         Messenger.Send(new CollectionSelectionChangedMessage(initialIds));
+    }
+
+    private void AddItem(int id, string name, bool isSelected)
+    {
+        var item = new CollectionItemViewModel { Id = id, Name = name, IsSelected = isSelected };
+        item.PropertyChanged += (_, args) =>
+        {
+            if (args.PropertyName == nameof(CollectionItemViewModel.IsSelected))
+                OnItemSelectionChanged();
+        };
+        CollectionItems.Add(item);
     }
 
     private void OnItemSelectionChanged()

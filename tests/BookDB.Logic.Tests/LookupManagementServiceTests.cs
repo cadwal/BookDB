@@ -436,7 +436,7 @@ public sealed class LookupManagementServiceTests : IDisposable
         await SeedPersonAsync("Alice", ct);
         await SeedPersonAsync("by Alice.", ct);
 
-        var (proposals, _) = await _sut.ScanPersonNameCleanupAsync(ct);
+        var (proposals, _, _) = await _sut.ScanPersonNameCleanupAsync(ct);
 
         Assert.Single(proposals);
         Assert.Equal("by Alice.", proposals[0].CurrentDisplayName);
@@ -449,7 +449,7 @@ public sealed class LookupManagementServiceTests : IDisposable
         var ct = TestContext.Current.CancellationToken;
         await SeedPersonAsync("by Stephen King.", ct);
 
-        var (proposals, _) = await _sut.ScanPersonNameCleanupAsync(ct);
+        var (proposals, _, _) = await _sut.ScanPersonNameCleanupAsync(ct);
 
         Assert.Single(proposals);
         Assert.Equal("King, Stephen", proposals[0].SuggestedSortName);
@@ -461,7 +461,7 @@ public sealed class LookupManagementServiceTests : IDisposable
         var ct = TestContext.Current.CancellationToken;
         var personId = await SeedPersonAsync("by Jane Smith (editor).", ct);
 
-        var (proposals, _) = await _sut.ScanPersonNameCleanupAsync(ct);
+        var (proposals, _, _) = await _sut.ScanPersonNameCleanupAsync(ct);
         await _sut.ApplyPersonNameCleanupAsync(proposals, ct);
 
         await using var db = GetTrackingContext();
@@ -477,13 +477,127 @@ public sealed class LookupManagementServiceTests : IDisposable
         await SeedPersonAsync("Alice", ct);
         await SeedPersonAsync("by Jane Smith.", ct);
 
-        var (proposals, _) = await _sut.ScanPersonNameCleanupAsync(ct);
+        var (proposals, _, _) = await _sut.ScanPersonNameCleanupAsync(ct);
         var filtered = proposals.Where(p => p.CurrentDisplayName == "by Jane Smith.").ToList().AsReadOnly();
         await _sut.ApplyPersonNameCleanupAsync(filtered, ct);
 
         await using var db = GetTrackingContext();
         var alice = await db.People.FirstOrDefaultAsync(p => p.DisplayName == "Alice", ct);
         Assert.NotNull(alice);
+    }
+
+    // -----------------------------------------------------------------------
+    // Cleanup ignores (persisted proposal fingerprints)
+    // -----------------------------------------------------------------------
+
+    [Fact]
+    public async Task IgnoredRename_ExcludedOnReScan_AndReportedInCount()
+    {
+        var ct = TestContext.Current.CancellationToken;
+        await SeedPersonAsync("by Alice.", ct);
+
+        var (before, _, ignoredBefore) = await _sut.ScanPersonNameCleanupAsync(ct);
+        Assert.Single(before);
+        Assert.Equal(0, ignoredBefore);
+
+        await _sut.AddCleanupIgnoreAsync(before[0], ct);
+
+        var (after, _, ignoredAfter) = await _sut.ScanPersonNameCleanupAsync(ct);
+        Assert.Empty(after);
+        Assert.Equal(1, ignoredAfter);
+    }
+
+    [Fact]
+    public async Task IgnoredRename_ResurfacesWhenThePersonChanges()
+    {
+        var ct = TestContext.Current.CancellationToken;
+        var personId = await SeedPersonAsync("by Alice.", ct);
+
+        var (props, _, _) = await _sut.ScanPersonNameCleanupAsync(ct);
+        await _sut.AddCleanupIgnoreAsync(props[0], ct);
+        Assert.Empty((await _sut.ScanPersonNameCleanupAsync(ct)).Renames);
+
+        // A different dirty value derives a different proposal, so the fingerprint no longer matches the ignore.
+        await _sut.UpdatePersonAsync(personId, "by Bob.", "by Bob.", ct);
+
+        var (after, _, ignored) = await _sut.ScanPersonNameCleanupAsync(ct);
+        Assert.Single(after);
+        Assert.Equal("Bob", after[0].ProposedDisplayName);
+        Assert.Equal(0, ignored);
+    }
+
+    [Fact]
+    public async Task IgnoredRename_ResurfacesWhenOnlyTheSortNameChanges()
+    {
+        var ct = TestContext.Current.CancellationToken;
+        // Display name is already clean; only the sort name is "wrong" (no comma), so the only proposed
+        // change is the sort-name correction.
+        var personId = await SeedPersonAsync("Alice Anderson", ct, sortName: "Alice Anderson");
+
+        var (props, _, _) = await _sut.ScanPersonNameCleanupAsync(ct);
+        Assert.Single(props);
+        await _sut.AddCleanupIgnoreAsync(props[0], ct);
+        Assert.Empty((await _sut.ScanPersonNameCleanupAsync(ct)).Renames);
+
+        // The display name never changes; only the current sort name does. The re-derived proposal
+        // (ProposedDisplayName/SuggestedSortName) is identical to before, so the fingerprint must fold in
+        // the current sort name for this to resurface.
+        await _sut.UpdatePersonAsync(personId, "Alice Anderson", "Anderson Alice", ct);
+
+        var (after, _, ignored) = await _sut.ScanPersonNameCleanupAsync(ct);
+        Assert.Single(after);
+        Assert.Equal("Anderson, Alice", after[0].SuggestedSortName);
+        Assert.Equal(0, ignored);
+    }
+
+    [Fact]
+    public async Task IgnoredSplit_ExcludedOnReScan_ForTheWholeGroup()
+    {
+        var ct = TestContext.Current.CancellationToken;
+        await SeedPersonAsync("Alice; Bob", ct);
+
+        var (_, splits, _) = await _sut.ScanPersonNameCleanupAsync(ct);
+        Assert.Single(splits);
+
+        await _sut.AddCleanupIgnoreAsync(splits[0], ct);
+
+        var (_, afterSplits, ignored) = await _sut.ScanPersonNameCleanupAsync(ct);
+        Assert.Empty(afterSplits);
+        Assert.Equal(1, ignored);
+    }
+
+    [Fact]
+    public async Task AddCleanupIgnore_IsIdempotent()
+    {
+        var ct = TestContext.Current.CancellationToken;
+        await SeedPersonAsync("by Alice.", ct);
+
+        var (props, _, _) = await _sut.ScanPersonNameCleanupAsync(ct);
+        await _sut.AddCleanupIgnoreAsync(props[0], ct);
+        await _sut.AddCleanupIgnoreAsync(props[0], ct); // must not throw on the unique fingerprint index
+
+        Assert.Single(await _sut.GetCleanupIgnoresAsync(ct));
+    }
+
+    [Fact]
+    public async Task GetAndRemoveCleanupIgnore_RoundTripsAndResurfacesTheProposal()
+    {
+        var ct = TestContext.Current.CancellationToken;
+        var personId = await SeedPersonAsync("by Alice.", ct);
+
+        var (props, _, _) = await _sut.ScanPersonNameCleanupAsync(ct);
+        await _sut.AddCleanupIgnoreAsync(props[0], ct);
+
+        var row = Assert.Single(await _sut.GetCleanupIgnoresAsync(ct));
+        Assert.Equal(personId, row.PersonId);
+        Assert.Equal("by Alice.", row.PersonDisplayName);   // the current display name, joined from People
+        Assert.Equal(CleanupIgnoreKind.Rename, row.Kind);
+        Assert.Equal("by Alice.|Alice|Alice", row.ProposedContent);
+
+        await _sut.RemoveCleanupIgnoreAsync(row.IgnoreId, ct);
+
+        Assert.Empty(await _sut.GetCleanupIgnoresAsync(ct));
+        Assert.Single((await _sut.ScanPersonNameCleanupAsync(ct)).Renames);
     }
 
     // -----------------------------------------------------------------------
@@ -496,7 +610,7 @@ public sealed class LookupManagementServiceTests : IDisposable
         var ct = TestContext.Current.CancellationToken;
         await SeedPersonAsync("Smith, John / Jones, Mary", ct);
 
-        var (renames, splits) = await _sut.ScanPersonNameCleanupAsync(ct);
+        var (renames, splits, _) = await _sut.ScanPersonNameCleanupAsync(ct);
 
         Assert.Single(splits);
         Assert.Equal("Smith, John / Jones, Mary", splits[0].CurrentDisplayName);
@@ -511,7 +625,7 @@ public sealed class LookupManagementServiceTests : IDisposable
         var ct = TestContext.Current.CancellationToken;
         await SeedPersonAsync("Alice; Bob", ct);
 
-        var (_, splits) = await _sut.ScanPersonNameCleanupAsync(ct);
+        var (_, splits, _) = await _sut.ScanPersonNameCleanupAsync(ct);
 
         Assert.Single(splits);
         Assert.Equal(2, splits[0].Fragments.Count);
@@ -525,7 +639,7 @@ public sealed class LookupManagementServiceTests : IDisposable
         var ct = TestContext.Current.CancellationToken;
         await SeedPersonAsync("Alice | Bob", ct);
 
-        var (_, splits) = await _sut.ScanPersonNameCleanupAsync(ct);
+        var (_, splits, _) = await _sut.ScanPersonNameCleanupAsync(ct);
 
         Assert.Single(splits);
         Assert.Equal(2, splits[0].Fragments.Count);
@@ -539,7 +653,7 @@ public sealed class LookupManagementServiceTests : IDisposable
         var ct = TestContext.Current.CancellationToken;
         await SeedPersonAsync("Smith, John / Jones, Mary", ct);
 
-        var (renames, splits) = await _sut.ScanPersonNameCleanupAsync(ct);
+        var (renames, splits, _) = await _sut.ScanPersonNameCleanupAsync(ct);
 
         Assert.Empty(renames);
         Assert.Single(splits);
@@ -551,7 +665,7 @@ public sealed class LookupManagementServiceTests : IDisposable
         var ct = TestContext.Current.CancellationToken;
         await SeedPersonAsync("Smith, John / by Jones, Mary.", ct);
 
-        var (_, splits) = await _sut.ScanPersonNameCleanupAsync(ct);
+        var (_, splits, _) = await _sut.ScanPersonNameCleanupAsync(ct);
 
         Assert.Single(splits);
         var fragments = splits[0].Fragments;

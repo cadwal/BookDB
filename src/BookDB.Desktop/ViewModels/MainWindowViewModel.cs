@@ -10,6 +10,7 @@ using Avalonia.Threading;
 using BookDB.Desktop.Helpers;
 using BookDB.Desktop.Messages;
 using BookDB.Desktop.Services;
+using BookDB.Desktop.Services.UpdateCheck;
 using BookDB.Data.Interfaces;
 using BookDB.Data.MySql;
 using BookDB.Data.PostgreSQL;
@@ -42,8 +43,19 @@ public partial class MainWindowViewModel : ObservableObject
     private readonly IMigrationTargetBuilder _targetBuilder;
     private readonly ISecretStore _secretStore;
     private readonly IReleaseNotesService _releaseNotesService;
+    private readonly IUpdateCheckService _updateCheckService;
 
     private const string LastSeenReleaseNotesVersionKey = "ReleaseNotes.LastSeenVersion";
+
+    // Set by the weekly update check when a newer version is available; consumed by the status-bar hint.
+    private InstallChannel _updateChannel;
+    private string _latestVersionText = string.Empty;
+    private string _currentVersionText = string.Empty;
+
+    [ObservableProperty]
+    private bool _showUpdateAvailable;
+
+    public string UpdateAvailableText => Localization.Resources.StatusBar_UpdateAvailable;
 
     public FilterPanelViewModel FilterPanel { get; }
     public BookListViewModel BookList { get; }
@@ -232,7 +244,8 @@ public partial class MainWindowViewModel : ObservableObject
         AppSettings appSettings,
         IMigrationTargetBuilder targetBuilder,
         ISecretStore secretStore,
-        IReleaseNotesService releaseNotesService)
+        IReleaseNotesService releaseNotesService,
+        IUpdateCheckService updateCheckService)
     {
         OpenWindowEntries.Add(_noWindowsSentinel);
         FilterPanel = filterPanel;
@@ -255,6 +268,7 @@ public partial class MainWindowViewModel : ObservableObject
         _targetBuilder = targetBuilder;
         _secretStore = secretStore;
         _releaseNotesService = releaseNotesService;
+        _updateCheckService = updateCheckService;
 
         IsRemoteStorage = _appSettings.Backend.IsRemote();
         // Load() never returns null in production; substituted test doubles may, so fall back to defaults.
@@ -296,15 +310,9 @@ public partial class MainWindowViewModel : ObservableObject
         messenger.Register<BatchQueueProgressMessage>(this, (_, msg) =>
         {
             IsBatchQueueRunning = msg.IsRunning;
-            if (msg.IsRunning)
-                BatchQueueStatusText = string.Format(
-                    Localization.Resources.StatusBar_BatchQueue_Progress,
-                    msg.Current,
-                    msg.Total);
-            else if (IsBatchWindowMinimized)
-                BatchQueueStatusText = Localization.Resources.BatchQueue_CompleteHeader;
-            else
-                BatchQueueStatusText = string.Empty;
+            BatchQueueStatusText = ComposeBatchStatusText(
+                msg.IsRunning, IsBatchWindowMinimized, msg.Current, msg.Total,
+                msg.ToReviewCount, msg.FailedCount);
             OnPropertyChanged(nameof(ShowBatchStatusBar));
         });
 
@@ -317,6 +325,43 @@ public partial class MainWindowViewModel : ObservableObject
             if (e.PropertyName == nameof(IsBatchWindowMinimized))
                 OnPropertyChanged(nameof(ShowBatchStatusBar));
         };
+    }
+
+    /// <summary>
+    /// Status-bar batch text: progress while running (or the completion header once minimized),
+    /// plus the running outcome — items routed to review and failures — so a batch can be
+    /// followed and judged without opening its window. Outcome parts appear only when non-zero.
+    /// </summary>
+    internal static string ComposeBatchStatusText(
+        bool isRunning, bool isMinimized, int current, int total, int toReview, int failed)
+    {
+        string baseText;
+        if (isRunning)
+            baseText = string.Format(Localization.Resources.StatusBar_BatchQueue_Progress, current, total);
+        else if (isMinimized)
+            baseText = Localization.Resources.BatchQueue_CompleteHeader;
+        else
+            return string.Empty;
+
+        var toReviewText = toReview > 0
+            ? string.Format(Localization.Resources.StatusBar_BatchQueue_ToReview, toReview)
+            : null;
+        var failedText = failed > 0
+            ? string.Format(Localization.Resources.StatusBar_BatchQueue_Failed, failed)
+            : null;
+
+        var outcome = (toReviewText, failedText) switch
+        {
+            (null, null) => null,
+            ({ } review, null) => review,
+            (null, { } fail) => fail,
+            ({ } review, { } fail) => string.Format(
+                Localization.Resources.StatusBar_BatchQueue_OutcomePair, review, fail)
+        };
+
+        return outcome is null
+            ? baseText
+            : string.Format(Localization.Resources.StatusBar_BatchQueue_WithOutcome, baseText, outcome);
     }
 
     private void UpdateBookCountText(int filteredTotal, int grandTotal)
@@ -347,12 +392,13 @@ public partial class MainWindowViewModel : ObservableObject
         {
             var collections = await _lookupService.GetCollectionsAsync();
             var existingIds = collections.Select(c => c.CollectionId).ToHashSet();
+            // The Uncategorized sentinel is a valid selection even though it is not a real collection id.
             var selectedIds = CollectionSelector.CollectionItems
-                .Where(i => i.IsSelected && existingIds.Contains(i.Id))
+                .Where(i => i.IsSelected && (existingIds.Contains(i.Id) || i.Id == CollectionFilter.Uncategorized))
                 .Select(i => i.Id)
                 .ToHashSet();
             if (selectedIds.Count == 0)
-                selectedIds = existingIds;
+                selectedIds = existingIds.Append(CollectionFilter.Uncategorized).ToHashSet();
             CollectionSelector.Initialize(collections, selectedIds);
         }
         catch (Exception ex)
@@ -380,19 +426,33 @@ public partial class MainWindowViewModel : ObservableObject
             var collections = await _lookupService.GetCollectionsAsync(ct);
 
             var selectedIdsStr = await _settingsService.GetAsync("LastSelectedCollectionIds", ct);
-            System.Collections.Generic.IReadOnlySet<int> selectedIds;
+            System.Collections.Generic.HashSet<int> selectedIds;
             if (selectedIdsStr != null)
             {
+                // Keep positive collection ids and the Uncategorized sentinel; drop parse failures and junk.
                 selectedIds = selectedIdsStr
-                    .Split(',')
-                    .Select(s => int.TryParse(s, out var id) ? id : -1)
-                    .Where(id => id >= 0)
+                    .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                    .Select(s => int.TryParse(s, out var id) ? (int?)id : null)
+                    .Where(id => id is > 0 or CollectionFilter.Uncategorized)
+                    .Select(id => id!.Value)
                     .ToHashSet();
             }
             else
             {
-                // First run: all collections selected
-                selectedIds = collections.Select(c => c.CollectionId).ToHashSet();
+                // First run: all collections selected, plus Uncategorized so any orphaned books stay visible.
+                selectedIds = collections.Select(c => c.CollectionId)
+                    .Append(CollectionFilter.Uncategorized)
+                    .ToHashSet();
+            }
+
+            // One-time upgrade: a selection persisted before the Uncategorized filter existed has no sentinel,
+            // so orphaned books would be hidden. Seed it selected exactly once; after that the user's own
+            // choice (including deselecting it) is respected because the flag is set.
+            var seeded = await _settingsService.GetAsync("UncategorizedFilterSeeded", ct);
+            if (!bool.TryParse(seeded, out var wasSeeded) || !wasSeeded)
+            {
+                selectedIds.Add(CollectionFilter.Uncategorized);
+                await _settingsService.SetAsync("UncategorizedFilterSeeded", "true", ct);
             }
 
             CollectionSelector.Initialize(collections, selectedIds);
@@ -470,6 +530,39 @@ public partial class MainWindowViewModel : ObservableObject
         {
             Log.Error(ex, "Failed to offer release notes");
         }
+    }
+
+    [RelayCommand]
+    private async Task CheckForUpdatesAsync()
+    {
+        try
+        {
+            var status = await _updateCheckService.CheckAsync();
+            if (status.IsUpdateAvailable && status.Latest is { } latest)
+            {
+                _updateChannel = status.Channel;
+                _latestVersionText = latest.ToString();
+                _currentVersionText = status.Current.ToString();
+                ShowUpdateAvailable = true;
+            }
+            else
+            {
+                // Cleared immediately once the running version has caught up — no manual dismiss.
+                ShowUpdateAvailable = false;
+            }
+        }
+        catch (Exception ex)
+        {
+            // A failed update check never surfaces to the user.
+            Log.Error(ex, "Update check failed");
+        }
+    }
+
+    [RelayCommand]
+    private async Task OpenUpdateHintAsync()
+    {
+        if (!ShowUpdateAvailable) return;
+        await _windowService.ShowUpdateHintAsync(_updateChannel, _latestVersionText, _currentVersionText);
     }
 
     [RelayCommand]
@@ -551,6 +644,10 @@ public partial class MainWindowViewModel : ObservableObject
             Log.Error(ex, "Failed to open Maintenance");
         }
     }
+
+    [RelayCommand]
+    private void OpenHelpGettingStarted() =>
+        _windowService.OpenHelpWindow(HelpTab.GettingStarted);
 
     [RelayCommand]
     private void OpenHelpKeyboardShortcuts() =>

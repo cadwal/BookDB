@@ -5,6 +5,7 @@ using Avalonia.Controls;
 using BookDB.Data.Interfaces;
 using BookDB.Desktop.Localization;
 using BookDB.Desktop.Services;
+using BookDB.Desktop.Theming;
 using BookDB.Desktop.ViewModels;
 using BookDB.Desktop.Views;
 using BookDB.Logic.Services;
@@ -89,6 +90,35 @@ public class SettingsFlowTests : HeadlessTest
             Assert.Equal("true", await settings.GetAsync("AutoBackup.Enabled"));
             Assert.Equal("CsvArchive", await settings.GetAsync("AutoBackup.Format"));
             window.Close();
+        });
+    }
+
+    [Fact]
+    public async Task ChangingOnlyTheTheme_SavesWithoutARestartPrompt_AndAppliesImmediately()
+    {
+        await RunUi(async () =>
+        {
+            using var host = TestHost.Create();
+            var (vm, window) = await OpenSettingsAsync(host);
+            try
+            {
+                vm.AppearanceTab.SelectedFlavour =
+                    vm.AppearanceTab.AvailableFlavours.First(f => f.Flavour == ThemeFlavour.Vibrant);
+
+                await ((IAsyncRelayCommand)vm.SaveCommand).ExecuteAsync(null);
+                Ui.Pump();
+
+                // The flavour persists and is live on the running app — no restart was offered.
+                Assert.Equal("Vibrant", host.Resolve<IBootstrapConfigService>().Load().UiTheme);
+                var restart = host.Resolve<IApplicationRestartService>();
+                await restart.DidNotReceive().ConfirmRestartAsync(Arg.Any<string>());
+                Assert.False(vm.AppearanceTab.ThemeChanged); // re-baselined after applying
+            }
+            finally
+            {
+                ThemeApplier.Apply(ThemeFlavour.Default);
+                window.Close();
+            }
         });
     }
 

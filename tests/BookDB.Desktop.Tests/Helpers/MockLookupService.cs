@@ -75,6 +75,7 @@ public sealed class TestLookupServiceFactory : IDisposable
     public sealed class NullWindowService : IWindowService
     {
         public Task<bool?> ShowAddBookDialogAsync(int? defaultCollectionId = null, string? prefillIsbn = null) => Task.FromResult<bool?>(null);
+        public Task<bool?> ShowAddBookIdentifyDialogAsync(int? collectionId = null) => Task.FromResult<bool?>(null);
         public Task<bool?> ShowBulkEditDialogAsync(IReadOnlyList<int> bookIds) => Task.FromResult<bool?>(null);
         public Task<bool?> ShowAdvancedSearchDialogAsync(SavedSearch? searchToEdit = null) => Task.FromResult<bool?>(null);
         public Task<UnsavedChangesResult> ShowUnsavedChangesDialogAsync(string bookTitle) => Task.FromResult(UnsavedChangesResult.Discard);
@@ -87,8 +88,12 @@ public sealed class TestLookupServiceFactory : IDisposable
             IReadOnlyList<CoverOption> coverOptions,
             int? existingBookId,
             int? collectionId,
+            IReadOnlyList<string>? rateLimitedSources = null,
+            IReadOnlyList<string>? noResultSources = null,
+            IReadOnlyList<string>? erroredSources = null,
             Window? ownerWindow = null) => Task.FromResult<bool?>(null);
         public Task<DuplicateIsbnResult> ShowDuplicateIsbnDialogAsync(string isbn, string existingTitle) => Task.FromResult(DuplicateIsbnResult.Cancel);
+        public Task ShowUpdateHintAsync(BookDB.Desktop.Services.UpdateCheck.InstallChannel channel, string latestVersion, string currentVersion) => Task.CompletedTask;
         public void OpenBatchQueueWindow() { }
         public BatchQueueWindowViewModel? GetBatchQueueWindowViewModel() => null;
         public Task<string?> ShowIsbnPromptDialogAsync(string bookTitle) => Task.FromResult<string?>(null);
@@ -102,7 +107,7 @@ public sealed class TestLookupServiceFactory : IDisposable
         public void CloseAllSecondaryWindows() { }
         public Task<bool> ConfirmCloseGuardedWindowsAsync() => Task.FromResult(true);
         public Task ShowManageLookupsAsync(string? initialTab = null) => Task.CompletedTask;
-        public Task ShowSettingsAsync(Avalonia.Controls.Window? owner = null) => Task.CompletedTask;
+        public Task ShowSettingsAsync(Avalonia.Controls.Window? owner = null, BookDB.Desktop.Services.SettingsSection? section = null) => Task.CompletedTask;
         public Task ShowMaintenanceDialogAsync() => Task.CompletedTask;
         public Task OpenStatisticsWindowAsync() => Task.CompletedTask;
         public void OpenHelpWindow(HelpTab tab) { }

@@ -1,0 +1,78 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:BookDB.Desktop.ViewModels"
+        xmlns:res="using:BookDB.Desktop.Localization"
+        xmlns:behaviors="using:BookDB.Desktop.Behaviors"
+        xmlns:i="using:Avalonia.Xaml.Interactivity"
+        x:Class="BookDB.Desktop.Views.AddBookIdentifyDialog"
+        x:DataType="vm:AddBookIdentifyViewModel"
+        Title="{x:Static res:Resources.AddBookIdentify_Title}"
+        Width="480"
+        SizeToContent="Height"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False"
+        ShowInTaskbar="False">
+    <i:Interaction.Behaviors>
+        <behaviors:WindowCloseGuardBehavior />
+    </i:Interaction.Behaviors>
+
+    <StackPanel Margin="24" Spacing="8">
+        <TextBlock Text="{x:Static res:Resources.AddBookIdentify_IsbnLabel}" FontSize="12" />
+        <DockPanel LastChildFill="True">
+            <Button DockPanel.Dock="Right"
+                    Content="{x:Static res:Resources.AddBookIdentify_LookUp}"
+                    Command="{Binding LookUpCommand}"
+                    IsDefault="True"
+                    Classes="accent"
+                    FontSize="13"
+                    Margin="8,0,0,0" />
+            <TextBox Text="{Binding IsbnText}" FontSize="13">
+                <i:Interaction.Behaviors>
+                    <behaviors:FocusOnLoadedBehavior />
+                </i:Interaction.Behaviors>
+            </TextBox>
+        </DockPanel>
+        <TextBlock Text="{x:Static res:Resources.AddBookIdentify_Hint}"
+                   FontSize="11"
+                   Opacity="0.6"
+                   TextWrapping="Wrap" />
+
+        <!-- Progress / failure row: reserved height so the dialog never jumps when it appears -->
+        <Panel MinHeight="20">
+            <StackPanel Orientation="Horizontal" Spacing="8" IsVisible="{Binding IsRunning}">
+                <ProgressBar IsIndeterminate="True" Width="80" />
+                <TextBlock Text="{Binding ProgressText}" FontSize="12" VerticalAlignment="Center" />
+            </StackPanel>
+            <TextBlock Text="{Binding FailureText}"
+                       IsVisible="{Binding HasFailure}"
+                       FontSize="12"
+                       TextWrapping="Wrap"
+                       Foreground="{DynamicResource SystemControlErrorTextForegroundBrush}" />
+        </Panel>
+
+        <Separator Margin="0,4" />
+
+        <Button Content="{x:Static res:Resources.AddBookIdentify_ManualEntry}"
+                Command="{Binding ManualEntryCommand}"
+                Classes="secondaryButton"
+                HorizontalAlignment="Left"
+                FontSize="13" />
+
+        <Button Content="{x:Static res:Resources.AddBookIdentify_WizardHint}"
+                Command="{Binding OpenWizardCommand}"
+                Classes="hyperlink"
+                Padding="0"
+                Background="Transparent"
+                BorderThickness="0"
+                HorizontalAlignment="Left"
+                FontSize="11"
+                Opacity="0.7" />
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8" Margin="0,8,0,0">
+            <Button Content="{x:Static res:Resources.Common_Cancel}"
+                    Command="{Binding CancelCommand}"
+                    FontSize="13"
+                    IsCancel="True" />
+        </StackPanel>
+    </StackPanel>
+</Window>

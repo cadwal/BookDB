@@ -363,6 +363,59 @@ public sealed class SchemaTests(TestDbFixture fixture) : IClassFixture<TestDbFix
     }
 
     [Fact]
+    public async Task BatchQueueItemHasReviewAndFailureColumns()
+    {
+        var columns = new List<string>();
+
+        await using var conn = new SqliteConnection(_fixture.ConnectionString);
+        await conn.OpenAsync(TestContext.Current.CancellationToken);
+
+        await using var cmd = conn.CreateCommand();
+        cmd.CommandText = "PRAGMA table_info(BatchQueueItem)";
+        await using var reader = await cmd.ExecuteReaderAsync(TestContext.Current.CancellationToken);
+        while (await reader.ReadAsync(TestContext.Current.CancellationToken))
+            columns.Add(reader.GetString(1));
+
+        Assert.Contains("ForceReview", columns);
+        Assert.Contains("FailureCode", columns);
+    }
+
+    [Fact]
+    public async Task PersonCleanupIgnoreTableExistsWithCascade()
+    {
+        var columns = new List<string>();
+
+        await using var conn = new SqliteConnection(_fixture.ConnectionString);
+        await conn.OpenAsync(TestContext.Current.CancellationToken);
+
+        await using var colCmd = conn.CreateCommand();
+        colCmd.CommandText = "PRAGMA table_info(PersonCleanupIgnore)";
+        await using var colReader = await colCmd.ExecuteReaderAsync(TestContext.Current.CancellationToken);
+        while (await colReader.ReadAsync(TestContext.Current.CancellationToken))
+            columns.Add(colReader.GetString(1));
+
+        Assert.Contains("PersonCleanupIgnoreId", columns);
+        Assert.Contains("PersonId", columns);
+        Assert.Contains("Kind", columns);
+        Assert.Contains("ProposedContent", columns);
+        Assert.Contains("CreatedAt", columns);
+
+        string? fkTable = null;
+        string? fkOnDelete = null;
+        await using var fkCmd = conn.CreateCommand();
+        fkCmd.CommandText = "PRAGMA foreign_key_list(PersonCleanupIgnore)";
+        await using var fkReader = await fkCmd.ExecuteReaderAsync(TestContext.Current.CancellationToken);
+        while (await fkReader.ReadAsync(TestContext.Current.CancellationToken))
+        {
+            fkTable = fkReader.GetString(2);
+            fkOnDelete = fkReader.GetString(6);
+        }
+
+        Assert.Equal("Person", fkTable);
+        Assert.Equal("CASCADE", fkOnDelete);
+    }
+
+    [Fact]
     public async Task PersonAndContributorRoleTablesExist()
     {
         var tables = new List<string>();

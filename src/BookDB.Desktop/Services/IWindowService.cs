@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using BookDB.Data.Interfaces;
+using BookDB.Desktop.Services.UpdateCheck;
 using BookDB.Desktop.ViewModels;
 using BookDB.Help;
 using BookDB.Logic.Import;
@@ -19,6 +20,9 @@ public enum BackupConflictChoice { Overwrite, AddSuffix, Cancel }
 
 public enum RestoreTargetChoice { Current, Archived, Cancel }
 
+/// <summary>A settings section a caller can request the Settings window open directly to.</summary>
+public enum SettingsSection { Database }
+
 public enum ReleaseNotesChoice { Show, Skip, Defer }
 
 /// <summary>
@@ -33,6 +37,12 @@ public interface IProgressWindowHandle : System.IProgress<string>
 public interface IWindowService
 {
     Task<bool?> ShowAddBookDialogAsync(int? defaultCollectionId = null, string? prefillIsbn = null);
+
+    /// <summary>
+    /// Opens the guided add-book identify dialog (ISBN-first entry). New books default into
+    /// <paramref name="collectionId"/> — the caller's currently selected collection.
+    /// </summary>
+    Task<bool?> ShowAddBookIdentifyDialogAsync(int? collectionId = null);
     Task<bool?> ShowBulkEditDialogAsync(IReadOnlyList<int> bookIds);
     Task<bool?> ShowAdvancedSearchDialogAsync(SavedSearch? searchToEdit = null);
     Task<UnsavedChangesResult> ShowUnsavedChangesDialogAsync(string bookTitle);
@@ -45,8 +55,15 @@ public interface IWindowService
         IReadOnlyList<CoverOption> coverOptions,
         int? existingBookId,
         int? collectionId,
+        IReadOnlyList<string>? rateLimitedSources = null,
+        IReadOnlyList<string>? noResultSources = null,
+        IReadOnlyList<string>? erroredSources = null,
         Window? ownerWindow = null);
     Task<DuplicateIsbnResult> ShowDuplicateIsbnDialogAsync(string isbn, string existingTitle);
+
+    /// <summary>Shows the channel-specific upgrade hint (copyable command for winget/AppMan, or a GitHub
+    /// download link) when the user clicks the status-bar update indicator.</summary>
+    Task ShowUpdateHintAsync(InstallChannel channel, string latestVersion, string currentVersion);
 
     /// <summary>
     /// A manual backup would overwrite <paramref name="existingPath"/>. Offers saving under the next free
@@ -72,7 +89,7 @@ public interface IWindowService
     Task<bool?> ShowBatchShutdownWarningAsync();
     Task<bool?> ShowMainShutdownWarningAsync();
     Task ShowManageLookupsAsync(string? initialTab = null);
-    Task ShowSettingsAsync(Window? owner = null);
+    Task ShowSettingsAsync(Window? owner = null, SettingsSection? section = null);
     Task ShowMaintenanceDialogAsync();
     Task OpenStatisticsWindowAsync();
     void OpenHelpWindow(HelpTab tab);

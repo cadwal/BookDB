@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using BookDB.Data;
 using BookDB.Data.Interfaces;
 using BookDB.Data.MySql;
@@ -6,6 +7,7 @@ using BookDB.Data.PostgreSQL;
 using BookDB.Data.Sqlite;
 using BookDB.Security;
 using BookDB.Desktop.Services;
+using BookDB.Desktop.Services.UpdateCheck;
 using BookDB.Desktop.ViewModels;
 using BookDB.Desktop.Views;
 using BookDB.Logic.Services;
@@ -13,6 +15,7 @@ using BookDB.Models;
 using BookDB.Models.Interfaces;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Serilog;
 
 namespace BookDB.Desktop;
@@ -66,8 +69,35 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IFileSystemService, FileSystemService>();
         services.AddSingleton<IReleaseNotesService, ReleaseNotesService>();
         services.AddSingleton<IShortcutService, ShortcutService>();
+
+        // Weekly update check: channel detection + per-machine state + channel-picked version source.
+        services.AddSingleton<IInstallChannelProvider, InstallChannelProvider>();
+        services.AddHttpClient<GitHubReleaseVersionSource>();
+        services.AddSingleton<WingetVersionSource>();
+        services.AddSingleton<IUpdateCheckStateStore>(sp =>
+            new UpdateCheckStateStore(
+                Path.Combine(AppHost.GetAppDataPath(), "update-check.json"),
+                sp.GetRequiredService<ILogger<UpdateCheckStateStore>>()));
+        services.AddSingleton<IUpdateCheckService>(sp =>
+        {
+            var assemblyVersion = typeof(AboutWindowViewModel).Assembly.GetName().Version;
+            var current = assemblyVersion is not null
+                ? new UpdateVersion(assemblyVersion.Major, assemblyVersion.Minor, assemblyVersion.Build)
+                : new UpdateVersion(0, 0, 0);
+            return new UpdateCheckService(
+                current,
+                sp.GetRequiredService<IInstallChannelProvider>(),
+                sp.GetRequiredService<IUpdateCheckStateStore>(),
+                channel => channel == InstallChannel.Winget
+                    ? sp.GetRequiredService<WingetVersionSource>()
+                    : sp.GetRequiredService<GitHubReleaseVersionSource>(),
+                () => DateTimeOffset.UtcNow,
+                sp.GetRequiredService<ILogger<UpdateCheckService>>());
+        });
+
         services.AddSingleton<IWindowService, WindowService>();
         services.AddSingleton<IRecatalogFlowService, RecatalogFlowService>();
+        services.AddSingleton<IBatchReviewRunner, BatchReviewRunner>();
         services.AddSingleton<IRemoteWriteGuard, RemoteWriteGuard>();
         services.AddSingleton<IMigrationTargetBuilder, MigrationTargetBuilder>();
         services.AddSingleton<IApplicationRestartService, ApplicationRestartService>();
@@ -134,6 +164,7 @@ public static class ServiceCollectionExtensions
         services.AddTransient<MergeReviewViewModel>();
         services.AddTransient<AdvancedSearchViewModel>();
         services.AddTransient<AddBookDialogViewModel>();
+        services.AddTransient<AddBookIdentifyViewModel>();
         services.AddTransient<FullDetailsWindowViewModel>();
         services.AddTransient<BulkEditViewModel>();
         services.AddTransient<CheckOutDialogViewModel>();

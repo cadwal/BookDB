@@ -151,6 +151,8 @@ public sealed class CsvArchiveRestoreService : ICsvArchiveRestoreService
                     await Import<Book>(MigrationTable.Book, "Books.csv");
                     await Import<SavedSearch>(MigrationTable.SavedSearch, "SavedSearches.csv");
                     await Import<BatchQueueItem>(MigrationTable.BatchQueueItem, "BatchQueueItems.csv");
+                    // Absent from pre-3.1 archives; ReadCsv treats the missing file as zero rows.
+                    await Import<PersonCleanupIgnore>(MigrationTable.PersonCleanupIgnore, "PersonCleanupIgnores.csv");
 
                     await Import<BookContributor>(MigrationTable.BookContributor, "BookContributors.csv");
                     await Import<BookCategory>(MigrationTable.BookCategory, "BookCategories.csv");
@@ -295,6 +297,7 @@ public sealed class CsvArchiveRestoreService : ICsvArchiveRestoreService
         await ctx.Set<Book>().ExecuteDeleteAsync(ct);
         await ctx.Set<CategoryCollection>().ExecuteDeleteAsync(ct);
         await ctx.Set<Collection>().ExecuteDeleteAsync(ct);
+        await ctx.Set<PersonCleanupIgnore>().ExecuteDeleteAsync(ct);
         await ctx.Set<Person>().ExecuteDeleteAsync(ct);
         await ctx.Set<ContributorRole>().ExecuteDeleteAsync(ct);
         await ctx.Set<Publisher>().ExecuteDeleteAsync(ct);

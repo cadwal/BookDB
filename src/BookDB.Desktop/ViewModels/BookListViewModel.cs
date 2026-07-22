@@ -12,6 +12,7 @@ using BookDB.Desktop.Helpers;
 using BookDB.Desktop.Localization;
 using BookDB.Desktop.Messages;
 using BookDB.Desktop.Services;
+using BookDB.Help;
 using BookDB.Logic.Services;
 using BookDB.Models.Entities;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -29,7 +30,8 @@ public partial class BookListViewModel :
     IRecipient<AdvancedSearchResultMessage>,
     IRecipient<FilterChangedMessage>,
     IRecipient<ClearFiltersRequestedMessage>,
-    IRecipient<ImportCompleteMessage>
+    IRecipient<ImportCompleteMessage>,
+    IRecipient<ThemeAppliedMessage>
 {
     private readonly IBookService _bookService;
     private readonly IBookSearchService _bookSearchService;
@@ -70,6 +72,12 @@ public partial class BookListViewModel :
     public ObservableCollection<CollectionMenuEntry> CollectionMenuEntries { get; } = [];
     public bool HasBooks => Books.Count > 0;
 
+    // The two empty states are distinct: a truly empty library gets the guided panel, a filter/search that
+    // matched nothing keeps the plain "no matches" message. Both gated on HasLoadedOnce so neither flashes before
+    // the first load resolves GrandTotal.
+    public bool IsLibraryEmpty => HasLoadedOnce && GrandTotal == 0;
+    public bool IsFilteredEmpty => HasLoadedOnce && GrandTotal > 0 && Books.Count == 0;
+
     [ObservableProperty]
     private string _searchText = string.Empty;
 
@@ -95,7 +103,14 @@ public partial class BookListViewModel :
     private int _filteredTotal;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsLibraryEmpty))]
+    [NotifyPropertyChangedFor(nameof(IsFilteredEmpty))]
     private int _grandTotal;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsLibraryEmpty))]
+    [NotifyPropertyChangedFor(nameof(IsFilteredEmpty))]
+    private bool _hasLoadedOnce;
 
     // Column visibility properties
     [ObservableProperty]
@@ -210,7 +225,12 @@ public partial class BookListViewModel :
         _connectionClassifier = connectionClassifier;
         IsActive = true;
 
-        Books.CollectionChanged += (_, _) => OnPropertyChanged(nameof(HasBooks));
+        Books.CollectionChanged += (_, _) =>
+        {
+            OnPropertyChanged(nameof(HasBooks));
+            OnPropertyChanged(nameof(IsLibraryEmpty));
+            OnPropertyChanged(nameof(IsFilteredEmpty));
+        };
 
         SelectedBooks.CollectionChanged += (_, _) =>
         {
@@ -253,13 +273,10 @@ public partial class BookListViewModel :
 
     public void Receive(BooksDeletedMessage message)
     {
-        Dispatcher.UIThread.Post(() =>
-        {
-            var deletedIds = message.Value.ToHashSet();
-            var toRemove = Books.Where(b => deletedIds.Contains(b.BookId)).ToList();
-            foreach (var item in toRemove)
-                Books.Remove(item);
-        });
+        // Reload rather than remove rows in place: GrandTotal (a scoped DB count that drives IsLibraryEmpty)
+        // must come from the database, not be arithmetic'd down — otherwise deleting the last book left the
+        // guided empty state hidden until the next reload. Mirrors the other mutation handlers.
+        UIThreadHelper.PostAsync(() => LoadBooksAsync(), "refresh book list after delete");
     }
 
     public void Receive(ImportCompleteMessage message)
@@ -290,6 +307,14 @@ public partial class BookListViewModel :
         UIThreadHelper.PostAsync(() => LoadBooksAsync(), "re-filter books for facet filter change");
     }
 
+    // Status-badge colours come from an imperative converter (StatusBadgeColorConverter), so a live flavour switch
+    // needs each row to re-raise its badge binding — DynamicResource can't reach through the converter.
+    public void Receive(ThemeAppliedMessage message)
+    {
+        foreach (var row in Books)
+            row.RefreshThemedBrushes();
+    }
+
     public void Receive(ClearFiltersRequestedMessage message)
     {
         _activeFilterState = null;
@@ -302,18 +327,75 @@ public partial class BookListViewModel :
     {
         try
         {
-            var defaultIdStr = await _settingsService.GetAsync("DefaultCollectionId");
-            int? collectionId = int.TryParse(defaultIdStr, out var storedId) ? storedId : null;
-
-            var result = await _windowService.ShowAddBookDialogAsync(collectionId);
+            var result = await _windowService.ShowAddBookIdentifyDialogAsync(await ResolveNewBookCollectionIdAsync());
             if (result == true)
                 Messenger.Send(new BookSavedMessage(0));
         }
         catch (Exception ex)
         {
             Log.Error(ex, "Add book dialog failed");
+            await ShowActionErrorAsync();
         }
     }
+
+    private async Task<int?> ResolveNewBookCollectionIdAsync()
+    {
+        var defaultIdStr = await _settingsService.GetAsync("DefaultCollectionId");
+        int? configuredDefault = int.TryParse(defaultIdStr, out var storedId) ? storedId : null;
+        return ResolveNewBookCollectionId(_cachedCollections, _activeCollectionIds, configuredDefault);
+    }
+
+    // The collection a guided new book files into. Every book must land in a real collection, so this never
+    // returns null while any collection exists. Precedence: a single explicitly-selected collection is the
+    // clearest intent (the currently selected collection); otherwise the configured default collection;
+    // otherwise the first selected collection (display order), then simply the first collection. The
+    // Uncategorized filter sentinel is skipped — collections holds only real collections — so a new book is
+    // never filed as uncategorised.
+    internal static int? ResolveNewBookCollectionId(
+        IReadOnlyList<Collection> collections,
+        IReadOnlySet<int> selectedIds,
+        int? configuredDefaultId)
+    {
+        var selectedReal = collections.Where(c => selectedIds.Contains(c.CollectionId)).ToList();
+        if (selectedReal.Count == 1) return selectedReal[0].CollectionId;
+
+        if (configuredDefaultId is int id && collections.Any(c => c.CollectionId == id))
+            return id;
+
+        return (selectedReal.FirstOrDefault() ?? collections.FirstOrDefault())?.CollectionId;
+    }
+
+    // Empty-state actions — reuse the same seams the menu/toolbar drive.
+    [RelayCommand]
+    private async Task ImportBooksAsync()
+    {
+        try
+        {
+            await _windowService.ShowImportWizardAsync();
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Import wizard failed to open");
+            await ShowActionErrorAsync();
+        }
+    }
+
+    [RelayCommand]
+    private async Task ConnectDatabaseAsync()
+    {
+        try
+        {
+            await _windowService.ShowSettingsAsync(section: SettingsSection.Database);
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Settings (database) failed to open");
+            await ShowActionErrorAsync();
+        }
+    }
+
+    [RelayCommand]
+    private void OpenGettingStartedHelp() => _windowService.OpenHelpWindow(HelpTab.GettingStarted);
 
     [RelayCommand(CanExecute = nameof(CanEditBook))]
     private void EditBook()
@@ -331,24 +413,37 @@ public partial class BookListViewModel :
         try
         {
             var bookIds = SelectedBooks.Select(b => b.BookId).ToList();
-            string message = SelectedBooks.Count == 1
-                ? string.Format(Localization.Resources.Delete_SingleBook_Message, SelectedBooks[0].Title)
-                : string.Format(Localization.Resources.Delete_MultipleBooks_Message, SelectedBooks.Count);
+            var onLoan = SelectedBooks.Where(b => !string.IsNullOrEmpty(b.LoanedToName)).ToList();
+
+            // A book that is currently on loan gets a pointed warning: deleting it discards its loan
+            // history too (Loan.BookId is ON DELETE RESTRICT, so the delete removes the loan rows).
+            string message = (SelectedBooks.Count, onLoan.Count) switch
+            {
+                (1, > 0) => string.Format(Resources.Delete_LoanedOut_Single_Message, SelectedBooks[0].Title, onLoan[0].LoanedToName),
+                (_, > 0) => string.Format(Resources.Delete_LoanedOut_Multiple_Message, SelectedBooks.Count, onLoan.Count),
+                (1, _) => string.Format(Resources.Delete_SingleBook_Message, SelectedBooks[0].Title),
+                _ => string.Format(Resources.Delete_MultipleBooks_Message, SelectedBooks.Count),
+            };
 
             var confirmed = await _windowService.ShowDeleteConfirmationAsync(message);
-            if (confirmed == true)
-            {
-                await _bookService.DeleteBooksAsync(bookIds);
-                Messenger.Send(new BooksDeletedMessage(bookIds));
-            }
+            if (confirmed != true) return;
+
+            await _bookService.DeleteBooksAsync(bookIds);
+            Messenger.Send(new BooksDeletedMessage(bookIds));
         }
         catch (Exception ex)
         {
             Log.Error(ex, "Delete books failed");
+            await ShowActionErrorAsync();
         }
     }
 
     private bool CanDeleteBooks() => SelectedBooks.Count >= 1;
+
+    // A user-triggered command that fails must say so, not just log; a silent catch leaves the user
+    // staring at an unchanged screen with no idea the action was even attempted.
+    private Task ShowActionErrorAsync() =>
+        _windowService.ShowInfoAsync(Resources.Error_ActionFailed_Message, Resources.Error_ActionFailed_Title);
 
     [RelayCommand(CanExecute = nameof(CanDuplicateBook))]
     private async Task DuplicateBookAsync()
@@ -362,6 +457,7 @@ public partial class BookListViewModel :
         catch (Exception ex)
         {
             Log.Error(ex, "Duplicate book failed");
+            await ShowActionErrorAsync();
         }
     }
 
@@ -388,6 +484,7 @@ public partial class BookListViewModel :
         catch (Exception ex)
         {
             Log.Error(ex, "Bulk edit failed");
+            await ShowActionErrorAsync();
         }
     }
 
@@ -403,6 +500,7 @@ public partial class BookListViewModel :
         catch (Exception ex)
         {
             Log.Error(ex, "Advanced search failed");
+            await ShowActionErrorAsync();
         }
     }
 
@@ -445,6 +543,7 @@ public partial class BookListViewModel :
         catch (Exception ex)
         {
             Log.Error(ex, "Failed to start re-catalog");
+            await ShowActionErrorAsync();
         }
     }
 
@@ -461,6 +560,7 @@ public partial class BookListViewModel :
         catch (Exception ex)
         {
             Log.Error(ex, "Move to collection failed");
+            await ShowActionErrorAsync();
         }
     }
 
@@ -511,15 +611,20 @@ public partial class BookListViewModel :
     private async Task CheckOutAsync()
     {
         if (SelectedBooks.Count != 1) return;
+        int bookId = SelectedBooks[0].BookId;
         try
         {
-            var result = await _windowService.ShowCheckOutDialogAsync(SelectedBooks[0].BookId);
+            var result = await _windowService.ShowCheckOutDialogAsync(bookId);
             if (result == true)
-                await UpdateSingleBookRowAsync(SelectedBooks[0].BookId);
+            {
+                await UpdateSingleBookRowAsync(bookId);
+                Messenger.Send(new LoanChangedMessage(bookId));
+            }
         }
         catch (Exception ex)
         {
             Log.Error(ex, "CheckOut failed");
+            await ShowActionErrorAsync();
         }
     }
 
@@ -529,14 +634,17 @@ public partial class BookListViewModel :
     private async Task CheckInAsync()
     {
         if (SelectedBooks.Count != 1) return;
+        int bookId = SelectedBooks[0].BookId;
         try
         {
-            await _loanService.CheckInAsync(SelectedBooks[0].BookId);
-            await UpdateSingleBookRowAsync(SelectedBooks[0].BookId);
+            await _loanService.CheckInAsync(bookId);
+            await UpdateSingleBookRowAsync(bookId);
+            Messenger.Send(new LoanChangedMessage(bookId));
         }
         catch (Exception ex)
         {
             Log.Error(ex, "CheckIn failed");
+            await ShowActionErrorAsync();
         }
     }
 
@@ -644,6 +752,7 @@ public partial class BookListViewModel :
 
             FilteredTotal = result.FilteredTotal;
             GrandTotal = result.GrandTotal;
+            HasLoadedOnce = true;
 
             if (result.Books.Count < PageSize || result.FilteredTotal <= PageSize)
                 IsAllLoaded = true;

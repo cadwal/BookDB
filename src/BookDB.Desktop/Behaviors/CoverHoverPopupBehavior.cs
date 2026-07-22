@@ -7,6 +7,8 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Media.Imaging;
 using Avalonia.Xaml.Interactivity;
+using BookDB.Desktop.Messages;
+using CommunityToolkit.Mvvm.Messaging;
 
 namespace BookDB.Desktop.Behaviors;
 
@@ -47,6 +49,9 @@ public class CoverHoverPopupBehavior : Behavior<Control>
         AssociatedObject.DataContextChanged += OnDataContextChanged;
         AssociatedObject.PointerEntered += OnPointerEntered;
         AssociatedObject.PointerExited += OnPointerExited;
+        // The tooltip's brushes are resolved once when its content is built and cached, so a live flavour switch
+        // must rebuild it — drop the cache and re-resolve on the theme-applied signal.
+        WeakReferenceMessenger.Default.Register<ThemeAppliedMessage>(this, (_, _) => OnThemeApplied());
         SubscribeToPropertyChanged();
         UpdateToolTip();
     }
@@ -59,8 +64,17 @@ public class CoverHoverPopupBehavior : Behavior<Control>
             AssociatedObject.PointerEntered -= OnPointerEntered;
             AssociatedObject.PointerExited -= OnPointerExited;
         }
+        WeakReferenceMessenger.Default.Unregister<ThemeAppliedMessage>(this);
         UnsubscribeFromPropertyChanged();
         base.OnDetaching();
+    }
+
+    private void OnThemeApplied()
+    {
+        // Force UpdateToolTip past its unchanged-content guard so the tip rebuilds with the new palette brushes.
+        _lastTipBitmap = null;
+        _lastTipSizeBytes = null;
+        UpdateToolTip();
     }
 
     // A tooltip opened explicitly (see UpdateToolTip) is outside the tooltip service's

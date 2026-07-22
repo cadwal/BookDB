@@ -15,7 +15,7 @@ using Xunit;
 namespace BookDB.Logic.Tests;
 
 /// <summary>
-/// Tests for BookService all-role contributor overload and GetPeopleNamesAsync.
+/// Tests for BookService all-role contributor overload and the people snapshot.
 /// Uses a real temp-file SQLite database so FTS5 is available (in-memory SQLite
 /// does not support the FTS5 module). DbUp runs all migrations before each test.
 /// </summary>
@@ -232,11 +232,11 @@ public sealed class BookServiceContributorTests : IDisposable
     }
 
     // ---------------------------------------------------------------------------
-    // Test 5: get_people_names_no_prefix
+    // Test 5: get_people_snapshot
     // ---------------------------------------------------------------------------
 
     [Fact]
-    public async Task GetPeopleNamesAsync_NoPrefix_ReturnsAllNamesAlphabetically()
+    public async Task GetPeopleAsync_ReturnsAllPeopleOrderedBySortName()
     {
         await using var setup = await _factory.CreateDbContextAsync(TestContext.Current.CancellationToken);
         setup.People.Add(new Person { DisplayName = "Charlie Brown", SortName = "Brown, Charlie" });
@@ -244,49 +244,13 @@ public sealed class BookServiceContributorTests : IDisposable
         setup.People.Add(new Person { DisplayName = "Bob Jones", SortName = "Jones, Bob" });
         await setup.SaveChangesAsync(TestContext.Current.CancellationToken);
 
-        var names = await _sut.GetPeopleNamesAsync(null, TestContext.Current.CancellationToken);
+        var people = await _sut.GetPeopleAsync(TestContext.Current.CancellationToken);
 
-        Assert.Contains("Alice Smith", names);
-        Assert.Contains("Bob Jones", names);
-        Assert.Contains("Charlie Brown", names);
-
-        // Verify alphabetical order for the three seeded names
-        var relevantNames = names.Where(n => n == "Alice Smith" || n == "Bob Jones" || n == "Charlie Brown").ToList();
-        Assert.Equal(new[] { "Alice Smith", "Bob Jones", "Charlie Brown" }, relevantNames);
-    }
-
-    // ---------------------------------------------------------------------------
-    // Test 6: get_people_names_prefix
-    // ---------------------------------------------------------------------------
-
-    [Fact]
-    public async Task GetPeopleNamesAsync_WithPrefix_ReturnsMatchingNamesOnly()
-    {
-        await using var setup = await _factory.CreateDbContextAsync(TestContext.Current.CancellationToken);
-        setup.People.Add(new Person { DisplayName = "Arnold Smith", SortName = "Smith, Arnold" });
-        setup.People.Add(new Person { DisplayName = "Barbara Jones", SortName = "Jones, Barbara" });
-        setup.People.Add(new Person { DisplayName = "Carlos Martin", SortName = "Martin, Carlos" });
-        await setup.SaveChangesAsync(TestContext.Current.CancellationToken);
-
-        var names = await _sut.GetPeopleNamesAsync("ar", TestContext.Current.CancellationToken);
-
-        // case-insensitive: "ar" matches Arnold, Carlos (mARtin), and Barbara (barBARA)
-        Assert.Contains("Arnold Smith", names);
-        Assert.Contains("Barbara Jones", names);
-        Assert.Contains("Carlos Martin", names);
-    }
-
-    [Fact]
-    public async Task GetPeopleNamesAsync_TreatsWildcardsLiterally()
-    {
-        await using var setup = await _factory.CreateDbContextAsync(TestContext.Current.CancellationToken);
-        setup.People.Add(new Person { DisplayName = "Arnold Smith", SortName = "Smith, Arnold" });
-        await setup.SaveChangesAsync(TestContext.Current.CancellationToken);
-
-        // A bare "%" must be escaped to a literal, not act as a match-everything wildcard.
-        var names = await _sut.GetPeopleNamesAsync("%", TestContext.Current.CancellationToken);
-
-        Assert.DoesNotContain("Arnold Smith", names);
+        var seeded = people
+            .Where(p => p.SortName is "Brown, Charlie" or "Jones, Bob" or "Smith, Alice")
+            .Select(p => p.SortName)
+            .ToList();
+        Assert.Equal(new[] { "Brown, Charlie", "Jones, Bob", "Smith, Alice" }, seeded);
     }
 
     // ---------------------------------------------------------------------------
@@ -389,5 +353,46 @@ public sealed class BookServiceContributorTests : IDisposable
         Assert.Equal(2, contributors.Count);
         Assert.Contains(contributors, bc => bc.Person?.DisplayName == "Alice" && bc.ContributorRole?.Code == "Translator");
         Assert.Contains(contributors, bc => bc.Person?.DisplayName == "Bob" && bc.ContributorRole?.Code == "Editor");
+    }
+
+    [Fact]
+    public async Task AddBookWithContributors_ReusesExistingPerson_RegardlessOfCase()
+    {
+        var ct = TestContext.Current.CancellationToken;
+        await using var setup = await _factory.CreateDbContextAsync(ct);
+        var existing = new Person { DisplayName = "Astrid Lindgren", SortName = "Lindgren, Astrid" };
+        setup.People.Add(existing);
+        await setup.SaveChangesAsync(ct);
+
+        var book = await _sut.AddBookWithContributorsAsync(
+            new Book { Title = "Pippi Longstocking" }, ["astrid lindgren"], ct);
+
+        await using var verify = await _factory.CreateDbContextAsync(ct);
+        var contributor = await verify.BookContributors
+            .SingleAsync(bc => bc.BookId == book.BookId, ct);
+        Assert.Equal(existing.PersonId, contributor.PersonId);
+        Assert.Equal(1, await verify.People.CountAsync(p => p.DisplayName.ToLower() == "astrid lindgren", ct));
+    }
+
+    [Fact]
+    public async Task UpdateBookContributors_RoleOverload_ReusesExistingPerson_RegardlessOfCase()
+    {
+        var ct = TestContext.Current.CancellationToken;
+        await using var setup = await _factory.CreateDbContextAsync(ct);
+        var book = new Book { Title = "Case Reuse Book" };
+        setup.Books.Add(book);
+        var existing = new Person { DisplayName = "Tove Jansson", SortName = "Jansson, Tove" };
+        setup.People.Add(existing);
+        await setup.SaveChangesAsync(ct);
+        var authorRole = await setup.ContributorRoles.FirstAsync(r => r.Code == "Author", ct);
+
+        await _sut.UpdateBookContributorsAsync(book.BookId,
+            new[] { ("TOVE JANSSON", (int?)authorRole.ContributorRoleId) }, ct);
+
+        await using var verify = await _factory.CreateDbContextAsync(ct);
+        var contributor = await verify.BookContributors
+            .SingleAsync(bc => bc.BookId == book.BookId, ct);
+        Assert.Equal(existing.PersonId, contributor.PersonId);
+        Assert.Equal(1, await verify.People.CountAsync(p => p.DisplayName.ToLower() == "tove jansson", ct));
     }
 }

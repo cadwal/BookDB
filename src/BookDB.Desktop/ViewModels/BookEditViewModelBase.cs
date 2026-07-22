@@ -118,7 +118,9 @@ public abstract partial class BookEditViewModelBase : ObservableObject
     public ObservableCollection<CategorySelectionItem> CategoryRows { get; } = [];
     public ObservableCollection<ContributorRole> ContributorRoles { get; } = [];
     public ObservableCollection<ContributorRowViewModel> Contributors { get; } = [];
-    public ObservableCollection<string> AvailablePersonNames { get; } = [];
+
+    /// <summary>Shared person type-ahead backing every contributor row (snapshot loaded with the lookups).</summary>
+    public PersonSuggestionProvider PersonSuggestions { get; } = new();
 
     // Loan History tab — overridden in FullDetailsWindowViewModel with real data.
     // Base returns empty so BookDetailViewModel (which also uses BookEditForm) compiles cleanly.
@@ -174,8 +176,8 @@ public abstract partial class BookEditViewModelBase : ObservableObject
                 CopyEditFieldsToBook(CurrentBook);
                 await _bookService.UpdateBookAsync(CurrentBook, ct);
                 var contributorPairs = Contributors
-                    .Where(r => !string.IsNullOrWhiteSpace(r.PersonName) && r.RoleId.HasValue)
-                    .Select(r => (r.PersonName.Trim(), r.RoleId))
+                    .Where(r => !string.IsNullOrWhiteSpace(r.SearchText) && r.RoleId.HasValue)
+                    .Select(r => (r.NameToPersist, r.RoleId))
                     .ToList();
                 await _bookService.UpdateBookContributorsAsync(CurrentBook.BookId, contributorPairs, ct);
                 var categoryIds = CategoryRows.Where(r => r.IsSelected).Select(r => r.CategoryId).ToList();
@@ -277,10 +279,7 @@ public abstract partial class BookEditViewModelBase : ObservableObject
             await PopulateAsync(Sources, () => _lookupService.GetAllAsync<Source>());
             await PopulateAsync(ContributorRoles, () => _lookupService.GetContributorRolesAsync());
 
-            var personNames = await _bookService.GetPeopleNamesAsync();
-            AvailablePersonNames.Clear();
-            foreach (var name in personNames)
-                AvailablePersonNames.Add(name);
+            PersonSuggestions.LoadSnapshot(await _bookService.GetPeopleAsync());
         }
         catch (Exception ex)
         {
@@ -345,9 +344,9 @@ public abstract partial class BookEditViewModelBase : ObservableObject
         Contributors.Clear();
         foreach (var bc in CurrentBook.Contributors.OrderBy(c => c.SortOrder))
         {
-            var row = new ContributorRowViewModel
+            var row = new ContributorRowViewModel(PersonSuggestions)
             {
-                PersonName = bc.Person?.DisplayName ?? string.Empty,
+                SearchText = bc.Person?.DisplayName ?? string.Empty,
                 RoleId = bc.ContributorRoleId,
                 IsNew = false
             };
@@ -561,7 +560,14 @@ public abstract partial class BookEditViewModelBase : ObservableObject
     [RelayCommand]
     private void AddContributor()
     {
-        Contributors.Add(new ContributorRowViewModel { IsNew = true });
+        // Default new rows to Author — rows without a role are skipped on save, so an
+        // unset role would silently drop the typed name.
+        var authorRole = ContributorRoles.FirstOrDefault(r => r.Code == "Author");
+        Contributors.Add(new ContributorRowViewModel(PersonSuggestions)
+        {
+            IsNew = true,
+            RoleId = authorRole?.ContributorRoleId
+        });
     }
 
     [RelayCommand]

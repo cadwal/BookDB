@@ -16,6 +16,7 @@ namespace BookDB.Logic.Services;
 public sealed record CleanupProposal(
     int PersonId,
     string CurrentDisplayName,
+    string CurrentSortName,
     string ProposedDisplayName,
     string SuggestedSortName);
 
@@ -33,6 +34,23 @@ public sealed record PersonBioData(
     string? DeathDate,
     string? DeathPlace,
     string? Website);
+
+/// <summary>An ignored person-name cleanup proposal, joined with the person's current display name for the UI.</summary>
+public sealed record CleanupIgnoreRow(
+    int IgnoreId,
+    int PersonId,
+    string PersonDisplayName,
+    string Kind,
+    string ProposedContent,
+    DateTime CreatedAt);
+
+/// <summary>The proposal kinds an ignore can dismiss; stored verbatim in <c>PersonCleanupIgnore.Kind</c>.</summary>
+public static class CleanupIgnoreKind
+{
+    public const string Rename = "Rename";
+    public const string Split = "Split";
+    public const string Duplicate = "Duplicate";
+}
 
 public sealed class LookupManagementService : ILookupManagementService
 {
@@ -356,7 +374,7 @@ public sealed class LookupManagementService : ILookupManagementService
         }, ct);
     }
 
-    public async Task<(IReadOnlyList<CleanupProposal> Renames, IReadOnlyList<SplitProposal> Splits)>
+    public async Task<(IReadOnlyList<CleanupProposal> Renames, IReadOnlyList<SplitProposal> Splits, int IgnoredCount)>
         ScanPersonNameCleanupAsync(CancellationToken ct = default)
     {
         await using var db = await _factory.CreateDbContextAsync(ct);
@@ -364,8 +382,19 @@ public sealed class LookupManagementService : ILookupManagementService
             .AsNoTracking()
             .Select(p => new { p.PersonId, p.DisplayName, p.SortName })
             .ToListAsync(ct);
+
+        // The fingerprint (person + kind + proposed content) is re-derived on every scan, so a dismissed proposal
+        // is dropped only while it re-derives identically — changed person data yields a new fingerprint and
+        // resurfaces. Ordinal comparison mirrors the derivation below.
+        var ignores = (await db.PersonCleanupIgnores
+                .Select(i => new { i.PersonId, i.Kind, i.ProposedContent })
+                .ToListAsync(ct))
+            .Select(i => (i.PersonId, i.Kind, i.ProposedContent))
+            .ToHashSet();
+
         var proposals = new List<CleanupProposal>();
         var splits = new List<SplitProposal>();
+        var ignoredCount = 0;
         foreach (var p in persons)
         {
             // Check squish first — if it's a squished entry, it becomes a SplitProposal, not a rename
@@ -382,6 +411,11 @@ public sealed class LookupManagementService : ILookupManagementService
                     .Where(fr => !string.IsNullOrWhiteSpace(fr.ProposedDisplayName))
                     .ToList();
                 if (splitFragments.Count < 2) continue; // not a real split if only one valid fragment remains
+                if (ignores.Contains((p.PersonId, CleanupIgnoreKind.Split, SplitFingerprint(splitFragments))))
+                {
+                    ignoredCount++;
+                    continue;
+                }
                 splits.Add(new SplitProposal(p.PersonId, p.DisplayName, splitFragments));
                 continue; // Skip rename check for squished entries
             }
@@ -391,10 +425,110 @@ public sealed class LookupManagementService : ILookupManagementService
             var proposedSort = PersonNameHelper.DeriveSortName(proposedDisplay);
             var displayChanged = !string.Equals(proposedDisplay, p.DisplayName, StringComparison.Ordinal);
             var sortChanged = !string.Equals(proposedSort, p.SortName, StringComparison.Ordinal);
-            if (displayChanged || sortChanged)
-                proposals.Add(new CleanupProposal(p.PersonId, p.DisplayName, proposedDisplay, proposedSort));
+            if (!displayChanged && !sortChanged) continue;
+            if (ignores.Contains((p.PersonId, CleanupIgnoreKind.Rename, RenameFingerprint(p.SortName, proposedDisplay, proposedSort))))
+            {
+                ignoredCount++;
+                continue;
+            }
+            proposals.Add(new CleanupProposal(p.PersonId, p.DisplayName, p.SortName, proposedDisplay, proposedSort));
         }
-        return (proposals, splits);
+        return (proposals, splits, ignoredCount);
+    }
+
+    // Canonical, human-readable fingerprints — stored verbatim so the ignored-list UI can show them without
+    // re-deriving. Ordinal-sensitive, matching the scan's comparison. The rename fingerprint includes the
+    // person's current sort name (not just the proposed values) — DeriveSortName is a pure function of the
+    // display name, so without it, editing only the sort name would re-derive the identical fingerprint and
+    // the ignore would never lift.
+    private static string RenameFingerprint(string currentSortName, string proposedDisplay, string suggestedSort) =>
+        $"{currentSortName}|{proposedDisplay}|{suggestedSort}";
+
+    private static string SplitFingerprint(IEnumerable<SplitFragment> fragments) =>
+        string.Join(";", fragments.Select(f => $"{f.ProposedDisplayName}|{f.SuggestedSortName}"));
+
+    public async Task AddCleanupIgnoreAsync(CleanupProposal proposal, CancellationToken ct = default)
+    {
+        var content = RenameFingerprint(proposal.CurrentSortName, proposal.ProposedDisplayName, proposal.SuggestedSortName);
+        await AddCleanupIgnoreAsync(proposal.PersonId, CleanupIgnoreKind.Rename, content, ct);
+    }
+
+    public async Task AddCleanupIgnoreAsync(SplitProposal proposal, CancellationToken ct = default)
+    {
+        var content = SplitFingerprint(proposal.Fragments);
+        await AddCleanupIgnoreAsync(proposal.PersonId, CleanupIgnoreKind.Split, content, ct);
+    }
+
+    public async Task AddDuplicateIgnoreAsync(
+        int personIdA, string nameA, int personIdB, string nameB, CancellationToken ct = default)
+    {
+        // Anchor on the lower id; the fingerprint carries the OTHER person's id AND current name. The id keeps
+        // two distinct people who share a display name from aliasing onto one ignore (name alone can't tell them
+        // apart); the name keeps the "resurface on rename" behaviour — renaming either changes the fingerprint.
+        var (anchorId, otherId, otherName) = personIdA <= personIdB
+            ? (personIdA, personIdB, nameB)
+            : (personIdB, personIdA, nameA);
+        await AddCleanupIgnoreAsync(anchorId, CleanupIgnoreKind.Duplicate, DuplicateFingerprint(otherId, otherName), ct);
+    }
+
+    /// <summary>
+    /// Duplicate-ignore fingerprint: <c>"{otherPersonId}|{otherName}"</c>. Kept next to its parse in the scan
+    /// (<c>PersonTabViewModel.ScanPairs</c>, which also still matches the pre-3.1 bare-name form) so the two
+    /// never drift.
+    /// </summary>
+    public static string DuplicateFingerprint(int otherPersonId, string otherName) => $"{otherPersonId}|{otherName}";
+
+    public async Task<IReadOnlySet<(int AnchorPersonId, string Fingerprint)>> GetDuplicateIgnoresAsync(
+        CancellationToken ct = default)
+    {
+        await using var db = await _factory.CreateDbContextAsync(ct);
+        var rows = await db.PersonCleanupIgnores
+            .Where(i => i.Kind == CleanupIgnoreKind.Duplicate)
+            .Select(i => new { i.PersonId, i.ProposedContent })
+            .ToListAsync(ct);
+        return rows.Select(r => (r.PersonId, r.ProposedContent)).ToHashSet();
+    }
+
+    private async Task AddCleanupIgnoreAsync(int personId, string kind, string content, CancellationToken ct)
+    {
+        await using var db = await _factory.CreateDbContextAsync(ct);
+        // Idempotent: the (PersonId, Kind, ProposedContent) unique index would otherwise reject a repeat ignore.
+        var exists = await db.PersonCleanupIgnores.AnyAsync(
+            i => i.PersonId == personId && i.Kind == kind && i.ProposedContent == content, ct);
+        if (exists) return;
+        db.PersonCleanupIgnores.Add(new PersonCleanupIgnore
+        {
+            PersonId = personId,
+            Kind = kind,
+            ProposedContent = content,
+            CreatedAt = DateTime.UtcNow,
+        });
+        await db.SaveChangesAsync(ct);
+    }
+
+    public async Task RemoveCleanupIgnoreAsync(int ignoreId, CancellationToken ct = default)
+    {
+        await using var db = await _factory.CreateDbContextAsync(ct);
+        await db.PersonCleanupIgnores.Where(i => i.PersonCleanupIgnoreId == ignoreId).ExecuteDeleteAsync(ct);
+    }
+
+    public async Task<IReadOnlyList<CleanupIgnoreRow>> GetCleanupIgnoresAsync(CancellationToken ct = default)
+    {
+        await using var db = await _factory.CreateDbContextAsync(ct);
+        // Materialise the join as an anonymous row, then build the record in memory — projecting the record
+        // inside the query and ordering over it is not translatable.
+        var rows = await db.PersonCleanupIgnores
+            .Join(db.People, i => i.PersonId, p => p.PersonId,
+                (i, p) => new
+                {
+                    i.PersonCleanupIgnoreId, i.PersonId, p.DisplayName, i.Kind, i.ProposedContent, i.CreatedAt,
+                })
+            .ToListAsync(ct);
+        return rows
+            .OrderByDescending(r => r.CreatedAt)
+            .Select(r => new CleanupIgnoreRow(
+                r.PersonCleanupIgnoreId, r.PersonId, r.DisplayName, r.Kind, r.ProposedContent, r.CreatedAt))
+            .ToList();
     }
 
     public async Task ApplyPersonNameCleanupAsync(IReadOnlyList<CleanupProposal> proposals, CancellationToken ct = default)

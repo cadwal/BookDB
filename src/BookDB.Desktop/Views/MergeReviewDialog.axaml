@@ -3,6 +3,7 @@
         xmlns:vm="using:BookDB.Desktop.ViewModels"
         xmlns:res="using:BookDB.Desktop.Localization"
         xmlns:conv="using:BookDB.Desktop.Converters"
+        xmlns:views="using:BookDB.Desktop.Views"
         x:Class="BookDB.Desktop.Views.MergeReviewDialog"
         x:DataType="vm:MergeReviewViewModel"
         Title="{Binding WindowTitle}"
@@ -22,9 +23,137 @@
                 <Button Content="{x:Static res:Resources.Common_Cancel}"
                         Command="{Binding CancelCommand}"
                         IsCancel="True" />
+                <Button Content="{x:Static res:Resources.Common_SaveAndOpenEditor}"
+                        Command="{Binding SaveAndOpenEditorCommand}" />
                 <Button Content="{x:Static res:Resources.Common_Save}"
                         Classes="accent"
                         Command="{Binding SaveCommand}" />
+            </StackPanel>
+        </Border>
+
+        <!-- Authors / collection stage — pinned below the scrolling diff grid:
+             the picked Authors column seeds these rows; saved contributors come from them. -->
+        <Border DockPanel.Dock="Bottom"
+                Margin="16,0,16,0"
+                Padding="0,8,0,0"
+                BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+                BorderThickness="0,1,0,0">
+            <StackPanel Spacing="6">
+                <TextBlock Text="{x:Static res:Resources.MergeReview_Authors_Label}"
+                           FontWeight="SemiBold"
+                           FontSize="12" />
+                <TextBlock Text="{Binding AuthorsAgreementNote}"
+                           IsVisible="{Binding HasAuthorsAgreementNote}"
+                           FontSize="11"
+                           Opacity="0.7"
+                           TextWrapping="Wrap"
+                           Margin="0,-2,0,0" />
+                <ItemsControl ItemsSource="{Binding AuthorRows}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:PersonSuggestionRowViewModel">
+                            <DockPanel LastChildFill="True" Margin="0,0,0,4">
+                                <Button DockPanel.Dock="Right"
+                                        Width="28" Height="28"
+                                        Classes="iconButton"
+                                        Content="×"
+                                        AutomationProperties.Name="{x:Static res:Resources.MergeReview_RemoveAuthor}"
+                                        Command="{Binding $parent[ItemsControl].((vm:MergeReviewViewModel)DataContext).RemoveAuthorRowCommand}"
+                                        CommandParameter="{Binding}"
+                                        Margin="4,0,0,0" />
+                                <views:PersonSuggestionBox MinWidth="100" FontSize="13" MaxWidth="420" HorizontalAlignment="Left" />
+                            </DockPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <Button Content="{x:Static res:Resources.MergeReview_AddAuthor}"
+                        Command="{Binding AddAuthorRowCommand}"
+                        Classes="secondaryButton"
+                        HorizontalAlignment="Left"
+                        FontSize="13" />
+                <DockPanel IsVisible="{Binding IsNewBook}" Margin="0,2,0,0">
+                    <TextBlock DockPanel.Dock="Left"
+                               Text="{x:Static res:Resources.MergeReview_Collection_Label}"
+                               FontSize="12"
+                               VerticalAlignment="Center"
+                               Margin="0,0,8,0" />
+                    <ComboBox ItemsSource="{Binding Collections}"
+                              SelectedItem="{Binding SelectedCollection}"
+                              DisplayMemberBinding="{Binding Name}"
+                              FontSize="13"
+                              MinWidth="220"
+                              HorizontalAlignment="Left" />
+                </DockPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- Book identity: always visible (title + ISBN) so the book under review is recognizable even when
+             every source agrees and there are no diff rows to show. -->
+        <Border DockPanel.Dock="Top" Margin="16,12,16,0">
+            <StackPanel Spacing="2">
+                <TextBlock Text="{Binding IdentityTitle}"
+                           FontSize="16"
+                           FontWeight="SemiBold"
+                           TextWrapping="Wrap" />
+                <TextBlock Text="{Binding IdentityIsbnDisplay}"
+                           IsVisible="{Binding HasIdentityIsbn}"
+                           FontSize="12"
+                           Opacity="0.7" />
+            </StackPanel>
+        </Border>
+
+        <!-- Rate-limited sources banner: names sources dropped from this review because they returned 429,
+             so the missing data reads as a known gap rather than a silent omission. -->
+        <Border DockPanel.Dock="Top"
+                IsVisible="{Binding HasRateLimitedNote}"
+                Background="{DynamicResource BrushWarningBackground}"
+                BorderBrush="{DynamicResource BrushWarning}"
+                BorderThickness="1"
+                CornerRadius="6"
+                Padding="10,6"
+                Margin="16,12,16,0">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <TextBlock Text="⚠" VerticalAlignment="Center"
+                           Foreground="{DynamicResource BrushWarning}" />
+                <TextBlock Text="{Binding RateLimitedNote}"
+                           FontSize="12"
+                           TextWrapping="Wrap"
+                           VerticalAlignment="Center" />
+            </StackPanel>
+        </Border>
+
+        <!-- Errored sources banner: names sources that failed (non-429) and were skipped, so the gap reads
+             as a known error rather than a silent omission. Styled as an error (red accent). -->
+        <Border DockPanel.Dock="Top"
+                IsVisible="{Binding HasErroredNote}"
+                Background="{DynamicResource BrushWarningBackground}"
+                BorderBrush="{DynamicResource BrushError}"
+                BorderThickness="1"
+                CornerRadius="6"
+                Padding="10,6"
+                Margin="16,8,16,0">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <TextBlock Text="⚠" VerticalAlignment="Center"
+                           Foreground="{DynamicResource BrushError}" />
+                <TextBlock Text="{Binding ErroredNote}"
+                           FontSize="12"
+                           TextWrapping="Wrap"
+                           VerticalAlignment="Center" />
+            </StackPanel>
+        </Border>
+
+        <!-- No-data note: names queried sources that had no record for this ISBN — a normal outcome, so it
+             reads as neutral information (no colored background), not a warning. -->
+        <Border DockPanel.Dock="Top"
+                IsVisible="{Binding HasNoResultNote}"
+                Padding="10,4"
+                Margin="16,8,16,0">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <TextBlock Text="ℹ" VerticalAlignment="Center" Opacity="0.6" />
+                <TextBlock Text="{Binding NoResultNote}"
+                           FontSize="12"
+                           Opacity="0.7"
+                           TextWrapping="Wrap"
+                           VerticalAlignment="Center" />
             </StackPanel>
         </Border>
 
@@ -38,9 +167,10 @@
                            IsVisible="{Binding HasNoConflicts}"
                            Margin="0,8" />
 
-                <!-- Cover comparison row — one cell per AllColumnNames column, aligned to field rows -->
-                <Border IsVisible="{Binding !HasNoConflicts}"
-                        Margin="0,0,0,12">
+                <!-- Cover comparison row — one cell per AllColumnNames column, aligned to field rows. Always
+                     shown (even with no metadata conflicts): sources can still offer different covers, and
+                     hiding it would remove the cover choice entirely. -->
+                <Border Margin="0,0,0,12">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="120" />
@@ -67,57 +197,77 @@
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate x:DataType="vm:CoverCell">
                                     <StackPanel Spacing="2" Margin="4,0">
-                                        <!-- Thumbnail with selection border and hover tooltip preview -->
-                                        <Button Width="80" Height="105"
-                                                HorizontalAlignment="Center"
-                                                CornerRadius="4"
-                                                Padding="0"
-                                                Background="Transparent"
-                                                IsVisible="{Binding HasCover}"
-                                                Classes.selected="{Binding Cover.IsSelected}"
-                                                Command="{Binding $parent[ItemsControl].((vm:MergeReviewViewModel)DataContext).SelectCoverCommand}"
-                                                CommandParameter="{Binding Cover}">
-                                            <Button.Styles>
-                                                <Style Selector="Button.selected">
-                                                    <Setter Property="BorderThickness" Value="2" />
-                                                    <Setter Property="BorderBrush" Value="DodgerBlue" />
-                                                </Style>
-                                                <Style Selector="Button.selected:pointerover /template/ ContentPresenter">
-                                                    <Setter Property="BorderThickness" Value="2" />
-                                                    <Setter Property="BorderBrush" Value="DodgerBlue" />
-                                                </Style>
-                                            </Button.Styles>
-                                            <ToolTip.Tip>
-                                                <ToolTip MaxWidth="420">
-                                                    <StackPanel Spacing="6" Margin="4">
-                                                        <Image Source="{Binding Cover.FullBitmap}"
-                                                               Stretch="Uniform"
-                                                               StretchDirection="DownOnly"
-                                                               RenderOptions.BitmapInterpolationMode = "HighQuality"
-                                                               MaxWidth="400"
-                                                               MaxHeight="560"
-                                                               IsVisible="{Binding Cover.FullBitmap, Converter={x:Static ObjectConverters.IsNotNull}}" />
-                                                        <TextBlock Text="{Binding Cover.SourceName}"
-                                                                   FontWeight="SemiBold" />
-                                                        <TextBlock Text="{Binding Cover.CoverInfo}"
-                                                                   Opacity="0.7"
-                                                                   FontSize="11"
-                                                                   IsVisible="{Binding Cover.CoverInfo, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                                        <!-- A placeholder cell has a null Cover; routing the content through a
+                                             ContentControl means its Cover-typed bindings never evaluate against
+                                             null (which would log a binding error per property, per cell). -->
+                                        <ContentControl Content="{Binding Cover}">
+                                            <ContentControl.ContentTemplate>
+                                                <DataTemplate x:DataType="vm:CoverOption">
+                                                    <StackPanel Spacing="2">
+                                                        <!-- Thumbnail with selection border and hover tooltip preview.
+                                                             Disabled until the streamed cover has decoded — an empty
+                                                             or still-loading slot must not be selectable. -->
+                                                        <Button Width="80" Height="105"
+                                                                HorizontalAlignment="Center"
+                                                                CornerRadius="4"
+                                                                Padding="0"
+                                                                Background="Transparent"
+                                                                IsEnabled="{Binding ThumbnailBitmap, Converter={x:Static ObjectConverters.IsNotNull}}"
+                                                                Classes.selected="{Binding IsSelected}"
+                                                                Command="{Binding $parent[ItemsControl].((vm:MergeReviewViewModel)DataContext).SelectCoverCommand}"
+                                                                CommandParameter="{Binding}">
+                                                            <Button.Styles>
+                                                                <Style Selector="Button.selected">
+                                                                    <Setter Property="BorderThickness" Value="2" />
+                                                                    <Setter Property="BorderBrush" Value="DodgerBlue" />
+                                                                </Style>
+                                                                <Style Selector="Button.selected:pointerover /template/ ContentPresenter">
+                                                                    <Setter Property="BorderThickness" Value="2" />
+                                                                    <Setter Property="BorderBrush" Value="DodgerBlue" />
+                                                                </Style>
+                                                            </Button.Styles>
+                                                            <ToolTip.Tip>
+                                                                <ToolTip MaxWidth="420">
+                                                                    <StackPanel Spacing="6" Margin="4">
+                                                                        <Image Source="{Binding FullBitmap}"
+                                                                               Stretch="Uniform"
+                                                                               StretchDirection="DownOnly"
+                                                                               RenderOptions.BitmapInterpolationMode = "HighQuality"
+                                                                               MaxWidth="400"
+                                                                               MaxHeight="560"
+                                                                               IsVisible="{Binding FullBitmap, Converter={x:Static ObjectConverters.IsNotNull}}" />
+                                                                        <TextBlock Text="{Binding SourceName}"
+                                                                                   FontWeight="SemiBold" />
+                                                                        <TextBlock Text="{Binding CoverInfo}"
+                                                                                   Opacity="0.7"
+                                                                                   FontSize="11"
+                                                                                   IsVisible="{Binding CoverInfo, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                                                                    </StackPanel>
+                                                                </ToolTip>
+                                                            </ToolTip.Tip>
+                                                            <Panel>
+                                                                <Image Source="{Binding ThumbnailBitmap}" Stretch="Uniform" />
+                                                                <ProgressBar IsIndeterminate="{Binding IsLoading}"
+                                                                             IsVisible="{Binding IsLoading}"
+                                                                             Width="56"
+                                                                             HorizontalAlignment="Center"
+                                                                             VerticalAlignment="Center" />
+                                                            </Panel>
+                                                        </Button>
+                                                        <!-- Dimensions and file size below thumbnail -->
+                                                        <TextBlock Text="{Binding CoverInfo}"
+                                                                   FontSize="10"
+                                                                   Opacity="0.6"
+                                                                   HorizontalAlignment="Center"
+                                                                   TextWrapping="NoWrap"
+                                                                   IsVisible="{Binding CoverInfo, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
                                                     </StackPanel>
-                                                </ToolTip>
-                                            </ToolTip.Tip>
-                                            <Image Source="{Binding Cover.ThumbnailBitmap}" Stretch="Uniform" />
-                                        </Button>
+                                                </DataTemplate>
+                                            </ContentControl.ContentTemplate>
+                                        </ContentControl>
                                         <!-- Placeholder to maintain column width when no cover -->
                                         <Border Width="80" Height="105"
                                                 IsVisible="{Binding !HasCover}" />
-                                        <!-- Dimensions and file size below thumbnail -->
-                                        <TextBlock Text="{Binding Cover.CoverInfo}"
-                                                   FontSize="10"
-                                                   Opacity="0.6"
-                                                   HorizontalAlignment="Center"
-                                                   TextWrapping="NoWrap"
-                                                   IsVisible="{Binding Cover.CoverInfo, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
                                         <!-- Column name label -->
                                         <TextBlock Text="{Binding ColumnName}"
                                                    FontSize="12"

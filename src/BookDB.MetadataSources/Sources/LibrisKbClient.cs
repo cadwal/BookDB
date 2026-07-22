@@ -40,12 +40,13 @@ public class LibrisKbClient : IMetadataSource
         var item = list[0];
         if (item is null) return null;
 
-        // Creator is typically "LastName, FirstName, birth-death" — strip the dates
+        // Creator is typically "LastName, FirstName, birth-death" — strip the dates and flip to display order
         var authors = new List<string>();
         if (item.Creator is not null)
         {
             // Remove trailing date ranges like ", 1962-" or ", 1903-1950"
             var clean = System.Text.RegularExpressions.Regex.Replace(item.Creator, @",?\s*\d{4}-\d{0,4}\s*$", string.Empty).Trim();
+            clean = ToDisplayOrder(clean);
             if (clean.Length > 0)
                 authors.Add(clean);
         }
@@ -78,6 +79,20 @@ public class LibrisKbClient : IMetadataSource
             SeriesNumber: null,
             SourceName: SourceName
         );
+    }
+
+    // Libris/MARC creators come in sort order ("Connelly, Michael"); the rest of the app expects display
+    // order ("Michael Connelly"). Flip a single "Last, First" comma only — names with more than one comma
+    // (a "Jr."/"Sr." suffix, or a stray fragment) are left untouched rather than risk mangling them, and a
+    // corporate creator with no comma passes through unchanged.
+    private static string ToDisplayOrder(string name)
+    {
+        var parts = name.Split(',');
+        if (parts.Length != 2) return name;
+        var last = parts[0].Trim();
+        var first = parts[1].Trim();
+        if (last.Length == 0 || first.Length == 0) return name;
+        return $"{first} {last}";
     }
 
     private static string MapLanguageCode(string code)

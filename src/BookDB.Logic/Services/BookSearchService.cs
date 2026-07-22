@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using BookDB.Data.DbContexts;
 using BookDB.Data.Interfaces;
+using BookDB.Models;
 using BookDB.Models.Entities;
 using BookDB.Models.Enums;
 using Microsoft.EntityFrameworkCore;
@@ -118,8 +119,11 @@ public sealed class BookSearchService : IBookSearchService
     {
         await using var dbContext = await _factory.CreateDbContextAsync(ct);
 
-        var baseQuery = dbContext.Books.Where(b =>
-            b.CollectionId == null || collectionIds.Contains(b.CollectionId.Value));
+        // An empty selection means no collection filter (show all) — consistent with GetBooksAsync; a
+        // non-empty selection scopes to it, including the Uncategorized sentinel.
+        var baseQuery = collectionIds is { Count: > 0 }
+            ? dbContext.Books.Where(CollectionFilter.Predicate(collectionIds))
+            : dbContext.Books;
 
         return facetName switch
         {

@@ -64,6 +64,9 @@ public abstract class MySqlSchemaTests
         Assert.Equal("tinyint(1)", (string?)await ColumnTypeAsync("Book", "Signed", ct));
         Assert.Equal("datetime(6)", (string?)await ColumnTypeAsync("Book", "Added", ct));
         Assert.Equal("longblob", (string?)await ColumnTypeAsync("BookImage", "ImageData", ct));
+        Assert.Equal("tinyint(1)", (string?)await ColumnTypeAsync("BatchQueueItem", "ForceReview", ct));
+        Assert.Equal(1L, Convert.ToInt64(await ScalarAsync(
+            "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name = 'PersonCleanupIgnore'", ct)));
     }
 
     [Fact]
@@ -84,13 +87,13 @@ public abstract class MySqlSchemaTests
     }
 
     [Fact]
-    public async Task DbUp_AppliesBothMySqlScripts_AndIsIdempotent()
+    public async Task DbUp_AppliesAllMySqlScripts_AndIsIdempotent()
     {
         Assert.SkipUnless(_fixture.IsAvailable, _fixture.SkipReason);
         var ct = TestContext.Current.CancellationToken;
 
         await ApplySchemaAsync(ct);
-        // A second run must be a no-op: DbUp's journal already records both scripts.
+        // A second run must be a no-op: DbUp's journal already records every script.
         await ApplySchemaAsync(ct);
 
         // DbUp's journal table name casing varies by engine on Linux; resolve it case-insensitively.
@@ -99,7 +102,7 @@ public abstract class MySqlSchemaTests
             "WHERE table_schema = DATABASE() AND LOWER(table_name) = 'schemaversions'", ct))!;
 
         var applied = Convert.ToInt64(await ScalarAsync($"SELECT COUNT(*) FROM `{journal}`", ct));
-        Assert.Equal(2L, applied);
+        Assert.Equal(3L, applied);
 
         var firstScript = (string?)await ScalarAsync(
             $"SELECT scriptname FROM `{journal}` ORDER BY scriptname LIMIT 1", ct);

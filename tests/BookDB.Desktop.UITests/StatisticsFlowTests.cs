@@ -43,15 +43,21 @@ public class StatisticsFlowTests : HeadlessTest
             Assert.Equal(("Stats Klingon", 1, "1 (33.3%)"), Row(vm.LanguageBreakdown, 1));
             Assert.Contains(vm.CollectionBreakdown, r => r.Label == "Stats Shelf" && r.Count == 2);
 
-            // The published-year table only counts books that carry a date, ordered by year.
+            // The published-year breakdown counts books by their publication year, largest-first like the
+            // other breakdowns, and now also feeds a chart card (not only a table).
             Assert.Equal(new[] { ("1990", 2), ("2001", 1) },
                 vm.PublishedYearBreakdown.Select(r => (r.Label, r.Count)));
+            Assert.Equal(2, vm.PublishedYearChart.Count);
 
             // The chart groups by the year the books were added — all three were added today, so one bar of 3.
             var point = Assert.Single(vm.BooksPerYear);
-            Assert.Equal(3, point.Count);
+            Assert.Equal(3, point.Value);
+            Assert.Equal(System.DateTime.Now.Year.ToString(System.Globalization.CultureInfo.CurrentCulture), point.Label);
 
-            // The breakdown rows render in the window's tables, not just on the VM.
+            // The full breakdown tables live in a collapsed expander; open it, then the rows render.
+            var fullTables = window.Descendants<Expander>().Single();
+            fullTables.IsExpanded = true;
+            Ui.Pump();
             Assert.Contains(window.Descendants<TextBlock>(),
                 t => t.IsEffectivelyVisible && t.Text == "Stats Hardcover");
             Assert.Contains(window.Descendants<TextBlock>(),

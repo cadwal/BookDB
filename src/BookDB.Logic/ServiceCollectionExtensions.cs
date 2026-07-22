@@ -31,6 +31,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<BookMetadataService>();
         services.AddSingleton<IBookMetadataService>(sp => sp.GetRequiredService<BookMetadataService>());
         services.AddSingleton<BatchQueueService>();
+        services.AddSingleton<ICoverCache, BoundedCoverCache>();
         services.AddSingleton<BatchQueueProcessor>();
         services.AddSingleton<IBatchQueueProcessor>(sp => sp.GetRequiredService<BatchQueueProcessor>());
         services.AddScoped<ReaderwareBackupParser>();

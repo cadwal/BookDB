@@ -26,6 +26,7 @@ public class DialogDefaultButtonSweepTests : HeadlessTest
     [InlineData(typeof(BulkEditDialog),          true,  false)] // bulk write — no Enter default
     [InlineData(typeof(CheckOutDialog),          true,  true)]
     [InlineData(typeof(AddBookDialog),           true,  true)]
+    [InlineData(typeof(AddBookIdentifyDialog),   true,  true)]  // Enter = look up, the read-only action
     [InlineData(typeof(AdvancedSearchDialog),    true,  true)]
     [InlineData(typeof(BackupFormatDialog),      true,  true)]
     [InlineData(typeof(ConnectDialog),           false, true)]  // startup choice: Retry/Quit primary, no plain dismiss

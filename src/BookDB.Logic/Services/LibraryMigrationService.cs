@@ -103,6 +103,7 @@ public sealed class LibraryMigrationService : ILibraryMigrationService
             await Copy<Settings>(MigrationTable.Settings);
             await Copy<SavedSearch>(MigrationTable.SavedSearch);
             await Copy<BatchQueueItem>(MigrationTable.BatchQueueItem);
+            await Copy<PersonCleanupIgnore>(MigrationTable.PersonCleanupIgnore);
 
             // 3. Book-dependent (images batched), volume-dependent, then borrowers/loans.
             await Copy<BookContributor>(MigrationTable.BookContributor);
@@ -250,6 +251,7 @@ public sealed class LibraryMigrationService : ILibraryMigrationService
         // BookImageType and BorrowerStatus are intentionally NOT cleared — they are fixed schema-seeded enums
         // (with id-0 rows EF can't re-insert) that stay as the target's own DDL seeds.
         await dst.Set<Collection>().ExecuteDeleteAsync(ct);
+        await dst.Set<PersonCleanupIgnore>().ExecuteDeleteAsync(ct);
         await dst.Set<Person>().ExecuteDeleteAsync(ct);
         await dst.Set<ContributorRole>().ExecuteDeleteAsync(ct);
         await dst.Set<Publisher>().ExecuteDeleteAsync(ct);

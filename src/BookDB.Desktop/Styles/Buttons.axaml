@@ -21,7 +21,7 @@
     <!-- Standard (unclassed) buttons follow the palette via DynamicResource so they stay legible in
          every flavour — Fluent's own button brushes don't react to our palette, which left them grey-on-grey
          in High contrast. The accent and custom button classes opt out and keep their own look. -->
-    <Style Selector="Button:not(.accent):not(.iconButton):not(.primaryButton):not(.secondaryButton):not(.accentOutline):not(.helpLink):not(.dangerButton)">
+    <Style Selector="Button:not(.accent):not(.iconButton):not(.primaryButton):not(.secondaryButton):not(.accentOutline):not(.helpLink):not(.link):not(.dangerButton)">
         <Setter Property="BorderBrush" Value="{DynamicResource BrushBorderInput}" />
         <Setter Property="Foreground" Value="{DynamicResource BrushTextPrimary}" />
     </Style>
@@ -42,6 +42,26 @@
         <Setter Property="Foreground" Value="{DynamicResource BrushPrimaryBlueDark}" />
     </Style>
     <Style Selector="Button.helpLink:pressed /template/ ContentPresenter">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{DynamicResource BrushPrimaryBlueDark}" />
+    </Style>
+
+    <!-- Link: a borderless, transparent button that reads as an inline hyperlink (navigates rather than
+         acting). Unlike helpLink it carries no help semantics and no fixed font size, so it inherits the
+         surrounding text metrics. -->
+    <Style Selector="Button.link">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="MinWidth" Value="0" />
+        <Setter Property="Foreground" Value="{DynamicResource BrushPrimaryBlue}" />
+        <Setter Property="Cursor" Value="Hand" />
+    </Style>
+    <Style Selector="Button.link:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{DynamicResource BrushPrimaryBlueDark}" />
+    </Style>
+    <Style Selector="Button.link:pressed /template/ ContentPresenter">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Foreground" Value="{DynamicResource BrushPrimaryBlueDark}" />
     </Style>
@@ -106,11 +126,11 @@
         <Setter Property="Background" Value="{DynamicResource BrushIconActive}" />
     </Style>
 
-    <!-- Primary button: solid blue, white text, semibold -->
+    <!-- Primary button: solid blue, white text, semibold. Padding is left to the theme default so the height
+         matches the neutral/accent buttons it sits beside. -->
     <Style Selector="Button.primaryButton">
         <Setter Property="Background" Value="{DynamicResource BrushPrimaryBlue}" />
         <Setter Property="Foreground" Value="{DynamicResource BrushBadgeText}" />
-        <Setter Property="Padding" Value="10,24" />
         <Setter Property="CornerRadius" Value="4" />
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="FontSize" Value="13" />
@@ -119,13 +139,13 @@
         <Setter Property="Background" Value="{DynamicResource BrushPrimaryBlueDark}" />
     </Style>
 
-    <!-- Secondary button: bordered, transparent background -->
+    <!-- Secondary button: bordered, transparent background. Padding is left to the theme default so the height
+         matches the neutral/accent buttons it sits beside (an explicit tall padding made it look oversized). -->
     <Style Selector="Button.secondaryButton">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderBrush" Value="{DynamicResource BrushBorderInput}" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="Foreground" Value="{DynamicResource BrushTextPrimary}" />
-        <Setter Property="Padding" Value="10,24" />
         <Setter Property="CornerRadius" Value="4" />
     </Style>
     <Style Selector="Button.secondaryButton:pointerover /template/ ContentPresenter">

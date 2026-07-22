@@ -142,6 +142,9 @@
   <data name="CollectionSelector_AllSelected" xml:space="preserve">
     <value>Alle collecties</value>
   </data>
+  <data name="CollectionSelector_Uncategorized" xml:space="preserve">
+    <value>Niet-gecategoriseerd</value>
+  </data>
   <data name="FilterPanel_EmptyState" xml:space="preserve">
     <value>Geen filters beschikbaar</value>
   </data>
@@ -316,6 +319,15 @@
   <data name="MergeReview_Title_New" xml:space="preserve">
     <value>Metadata controleren - nieuw boek</value>
   </data>
+  <data name="MergeReview_ErroredNote" xml:space="preserve">
+    <value>Sommige bronnen konden niet worden bereikt en zijn overgeslagen: {0}. Hun gegevens ontbreken mogelijk.</value>
+  </data>
+  <data name="MergeReview_NoResultNote" xml:space="preserve">
+    <value>Geen gegevens voor dit ISBN van: {0}.</value>
+  </data>
+  <data name="MergeReview_RateLimitedNote" xml:space="preserve">
+    <value>Sommige bronnen zijn overgeslagen wegens een snelheidslimiet: {0}. Hun gegevens ontbreken mogelijk — probeer het later opnieuw om ze mee te nemen.</value>
+  </data>
   <data name="MergeReview_Title_Recatalog" xml:space="preserve">
     <value>Metadata controleren - {0}</value>
   </data>
@@ -324,6 +336,12 @@
   </data>
   <data name="MergeReview_NoConflicts" xml:space="preserve">
     <value>Geen veldconflicten — alle bronnen stemmen overeen.</value>
+  </data>
+  <data name="MergeReview_Identity_Untitled" xml:space="preserve">
+    <value>Zonder titel</value>
+  </data>
+  <data name="MergeReview_Identity_Isbn" xml:space="preserve">
+    <value>ISBN {0}</value>
   </data>
   <data name="MergeReview_Field_Authors" xml:space="preserve">
     <value>Auteurs</value>
@@ -382,6 +400,24 @@
   <data name="BatchQueue_StatusSaving" xml:space="preserve">
     <value>Opslaan…</value>
   </data>
+  <data name="BatchQueue_StatusFetchingCovers" xml:space="preserve">
+    <value>Omslagen ophalen…</value>
+  </data>
+  <data name="BatchQueue_Failure_NoResults" xml:space="preserve">
+    <value>Geen enkele bron had een treffer voor dit ISBN</value>
+  </data>
+  <data name="BatchQueue_Failure_NetworkError" xml:space="preserve">
+    <value>Netwerkfout — geen enkele bron bereikbaar</value>
+  </data>
+  <data name="BatchQueue_Failure_RateLimited" xml:space="preserve">
+    <value>Snelheidslimiet bereikt — probeer het later opnieuw</value>
+  </data>
+  <data name="BatchQueue_Failure_AllSourcesDisabled" xml:space="preserve">
+    <value>Alle opzoekbronnen zijn uitgeschakeld</value>
+  </data>
+  <data name="BatchQueue_Failure_Unexpected" xml:space="preserve">
+    <value>Onverwachte fout</value>
+  </data>
   <data name="BatchQueue_StartReviewButton" xml:space="preserve">
     <value>Resultaten controleren</value>
   </data>
@@ -408,6 +444,27 @@
   </data>
   <data name="StatusBar_BatchQueue_Progress" xml:space="preserve">
     <value>Opzoeken: {0} van {1}</value>
+  </data>
+  <data name="PersonSuggestion_NewAuthor_Format" xml:space="preserve">
+    <value>Nieuwe auteur toevoegen: {0}</value>
+  </data>
+  <data name="PersonSuggestion_Watermark" xml:space="preserve">
+    <value>Personen zoeken...</value>
+  </data>
+  <data name="PersonSuggestion_NewBadge" xml:space="preserve">
+    <value>nieuw</value>
+  </data>
+  <data name="StatusBar_BatchQueue_ToReview" xml:space="preserve">
+    <value>{0} te beoordelen</value>
+  </data>
+  <data name="StatusBar_BatchQueue_Failed" xml:space="preserve">
+    <value>{0} mislukt</value>
+  </data>
+  <data name="StatusBar_BatchQueue_WithOutcome" xml:space="preserve">
+    <value>{0} — {1}</value>
+  </data>
+  <data name="StatusBar_BatchQueue_OutcomePair" xml:space="preserve">
+    <value>{0}, {1}</value>
   </data>
   <data name="Recatalog_NoIsbn_Title" xml:space="preserve">
     <value>Geen ISBN</value>
@@ -571,6 +628,45 @@
   <data name="ManageLookups_Name" xml:space="preserve">
     <value>Naam</value>
   </data>
+  <data name="Person_Cleanup_Ignore" xml:space="preserve">
+    <value>Negeren</value>
+  </data>
+  <data name="Person_Cleanup_ViewIgnored" xml:space="preserve">
+    <value>Genegeerde weergeven…</value>
+  </data>
+  <data name="Person_Cleanup_IgnoredCount" xml:space="preserve">
+    <value>{0} genegeerd</value>
+  </data>
+  <data name="Person_Cleanup_IgnoredTitle" xml:space="preserve">
+    <value>Genegeerde voorstellen</value>
+  </data>
+  <data name="Person_Cleanup_Unignore" xml:space="preserve">
+    <value>Niet meer negeren</value>
+  </data>
+  <data name="Person_Cleanup_BackToProposals" xml:space="preserve">
+    <value>Terug</value>
+  </data>
+  <data name="Person_Cleanup_Column_Person" xml:space="preserve">
+    <value>Persoon</value>
+  </data>
+  <data name="Person_Cleanup_Column_Kind" xml:space="preserve">
+    <value>Soort</value>
+  </data>
+  <data name="Person_Cleanup_Column_Content" xml:space="preserve">
+    <value>Voorgestelde wijziging</value>
+  </data>
+  <data name="Person_Cleanup_Kind_Rename" xml:space="preserve">
+    <value>Hernoemen</value>
+  </data>
+  <data name="Person_Cleanup_Kind_Split" xml:space="preserve">
+    <value>Splitsen</value>
+  </data>
+  <data name="Person_Cleanup_ErrorIgnoreFailed" xml:space="preserve">
+    <value>Kan het voorstel niet negeren.</value>
+  </data>
+  <data name="Person_Cleanup_ErrorUnignoreFailed" xml:space="preserve">
+    <value>Kan het voorstel niet herstellen.</value>
+  </data>
   <data name="ManageLookups_NoCleanup" xml:space="preserve">
     <value>Geen opschoning nodig.</value>
   </data>
@@ -591,6 +687,9 @@
   </data>
   <data name="ManageLookups_SuspectedDuplicates" xml:space="preserve">
     <value>Vermoedelijke duplicaten</value>
+  </data>
+  <data name="ManageLookups_SuspectedDuplicatesDesc" xml:space="preserve">
+    <value>Deze paren verwijzen mogelijk naar dezelfde persoon. Selecteer een paar om ze samen te voegen, of negeer het.</value>
   </data>
   <data name="ManageLookups_Tab_Category" xml:space="preserve">
     <value>Categorie</value>
@@ -1655,8 +1754,8 @@ Mogelijke duplicaten: {3}  |  Met omslag: {4}</value>
   <data name="Settings_Appearance_Flavour_Vibrant" xml:space="preserve">
     <value>Levendig</value>
   </data>
-  <data name="Settings_Appearance_RestartNote" xml:space="preserve">
-    <value>Themawijziging wordt van kracht bij de volgende start.</value>
+  <data name="Settings_Appearance_ApplyNote" xml:space="preserve">
+    <value>Themawijzigingen worden meteen toegepast.</value>
   </data>
   <data name="Settings_Browse_AuthorFacetLabel" xml:space="preserve">
     <value>Label voor auteursfacet</value>
@@ -1690,6 +1789,15 @@ Mogelijke duplicaten: {3}  |  Met omslag: {4}</value>
   </data>
   <data name="Settings_Lookup_LibrisKB" xml:space="preserve">
     <value>Libris KB</value>
+  </data>
+  <data name="Settings_Lookup_ApiKey" xml:space="preserve">
+    <value>API-sleutel (optioneel)</value>
+  </data>
+  <data name="Settings_Lookup_ApiKey_Watermark" xml:space="preserve">
+    <value>Plak je Google Books API-sleutel</value>
+  </data>
+  <data name="Settings_Lookup_ApiKey_Hint" xml:space="preserve">
+    <value>Een persoonlijke sleutel voorkomt het gedeelde dagquotum (regelmatig snelheidslimietfouten). Zie Help → Over gegevensbronnen voor stapsgewijze instructies.</value>
   </data>
   <data name="Settings_Lookup_GoogleBooks" xml:space="preserve">
     <value>Google Books</value>
@@ -1760,8 +1868,23 @@ Mogelijke duplicaten: {3}  |  Met omslag: {4}</value>
   <data name="Statistics_Section_ByYear" xml:space="preserve">
     <value>Per publicatiejaar</value>
   </data>
+  <data name="Statistics_Section_LibraryGrowth" xml:space="preserve">
+    <value>Bibliotheekgroei</value>
+  </data>
+  <data name="Statistics_Section_TopAuthors" xml:space="preserve">
+    <value>Topauteurs</value>
+  </data>
+  <data name="Statistics_OtherCategory" xml:space="preserve">
+    <value>Overige</value>
+  </data>
+  <data name="Statistics_FullTables" xml:space="preserve">
+    <value>Volledige tabellen</value>
+  </data>
   <data name="Statistics_Section_Summary" xml:space="preserve">
     <value>Samenvatting</value>
+  </data>
+  <data name="Statistics_UnknownCategory" xml:space="preserve">
+    <value>Onbekend</value>
   </data>
   <data name="Statistics_WindowTitle" xml:space="preserve">
     <value>Statistieken</value>
@@ -1784,8 +1907,8 @@ Mogelijke duplicaten: {3}  |  Met omslag: {4}</value>
   <data name="Status_Wishlist" xml:space="preserve">
     <value>Verlanglijst</value>
   </data>
-  <data name="AddBook_Label_Author" xml:space="preserve">
-    <value>Auteur</value>
+  <data name="AddBook_Label_Authors" xml:space="preserve">
+    <value>Auteurs</value>
   </data>
   <data name="AddBook_Label_Isbn" xml:space="preserve">
     <value>ISBN</value>
@@ -2060,6 +2183,9 @@ Mogelijke duplicaten: {3}  |  Met omslag: {4}</value>
   <data name="Menu_Help" xml:space="preserve">
     <value>_Help</value>
   </data>
+  <data name="Menu_Help_GettingStarted" xml:space="preserve">
+    <value>_Aan de slag</value>
+  </data>
   <data name="Menu_Help_KeyboardShortcuts" xml:space="preserve">
     <value>_Sneltoetsen</value>
   </data>
@@ -2077,6 +2203,9 @@ Mogelijke duplicaten: {3}  |  Met omslag: {4}</value>
   </data>
   <data name="Help_WindowTitle" xml:space="preserve">
     <value>Help</value>
+  </data>
+  <data name="Help_Tab_GettingStarted" xml:space="preserve">
+    <value>Aan de slag</value>
   </data>
   <data name="Help_Tab_KeyboardShortcuts" xml:space="preserve">
     <value>Sneltoetsen</value>
@@ -2998,5 +3127,125 @@ Mogelijke duplicaten: {3}  |  Met omslag: {4}</value>
   </data>
   <data name="Restore_NoCredentialsForTarget" xml:space="preserve">
     <value>Geen opgeslagen referenties voor de databaseserver van de back-up. Configureer deze eerst in Instellingen → Database en probeer het opnieuw.</value>
+  </data>
+  <data name="MergeReview_Authors_AllAgree" xml:space="preserve">
+    <value>Alle bronnen komen overeen</value>
+  </data>
+  <data name="MergeReview_Authors_OnlySource" xml:space="preserve">
+    <value>Alleen {0} leverde auteurs</value>
+  </data>
+  <data name="MergeReview_Authors_Label" xml:space="preserve">
+    <value>Auteurs</value>
+  </data>
+  <data name="MergeReview_AddAuthor" xml:space="preserve">
+    <value>+ Auteur toevoegen</value>
+  </data>
+  <data name="MergeReview_RemoveAuthor" xml:space="preserve">
+    <value>Auteur verwijderen</value>
+  </data>
+  <data name="MergeReview_Collection_Label" xml:space="preserve">
+    <value>Collectie</value>
+  </data>
+  <data name="Common_SaveAndOpenEditor" xml:space="preserve">
+    <value>Opslaan en editor openen</value>
+  </data>
+  <data name="AddBookIdentify_Title" xml:space="preserve">
+    <value>Boek toevoegen</value>
+  </data>
+  <data name="AddBookIdentify_IsbnLabel" xml:space="preserve">
+    <value>ISBN</value>
+  </data>
+  <data name="AddBookIdentify_Hint" xml:space="preserve">
+    <value>Scan of typ een ISBN en druk op Enter.</value>
+  </data>
+  <data name="AddBookIdentify_LookUp" xml:space="preserve">
+    <value>Opzoeken</value>
+  </data>
+  <data name="AddBookIdentify_ManualEntry" xml:space="preserve">
+    <value>Gegevens handmatig invoeren</value>
+  </data>
+  <data name="AddBookIdentify_WizardHint" xml:space="preserve">
+    <value>Meerdere ISBN's? Gebruik Catalogiseren op ISBN (Ctrl+I).</value>
+  </data>
+  <data name="AddBookIdentify_LookupFailed" xml:space="preserve">
+    <value>De zoekopdracht heeft dit boek niet gevonden: {0}</value>
+  </data>
+  <data name="AddBookIdentify_CancelLookup_Title" xml:space="preserve">
+    <value>Zoekopdracht annuleren?</value>
+  </data>
+  <data name="AddBookIdentify_CancelLookup_Body" xml:space="preserve">
+    <value>Er loopt nog een zoekopdracht. Annuleren en sluiten?</value>
+  </data>
+  <data name="BookList_Empty_Title" xml:space="preserve">
+    <value>Je bibliotheek is leeg</value>
+  </data>
+  <data name="BookList_Empty_Subtitle" xml:space="preserve">
+    <value>Voeg je eerste boek toe, importeer een bestaande catalogus of maak verbinding met een gedeelde database.</value>
+  </data>
+  <data name="BookList_Empty_AddBook" xml:space="preserve">
+    <value>Je eerste boek toevoegen</value>
+  </data>
+  <data name="BookList_Empty_Import" xml:space="preserve">
+    <value>Readerware-back-up importeren</value>
+  </data>
+  <data name="BookList_Empty_ConnectDatabase" xml:space="preserve">
+    <value>Verbinding maken met een database</value>
+  </data>
+  <data name="BookList_Empty_HelpHint" xml:space="preserve">
+    <value>Nieuw hier? Bekijk de introductiehulp.</value>
+  </data>
+  <data name="Delete_LoanedOut_Single_Message" xml:space="preserve">
+    <value>"{0}" verwijderen? Het is uitgeleend aan {1} — ook de uitleengeschiedenis wordt verwijderd. Dit kan niet ongedaan worden gemaakt.</value>
+  </data>
+  <data name="Delete_LoanedOut_Multiple_Message" xml:space="preserve">
+    <value>{0} boeken verwijderen? {1} zijn uitgeleend — ook hun uitleengeschiedenis wordt verwijderd. Dit kan niet ongedaan worden gemaakt.</value>
+  </data>
+  <data name="Error_ActionFailed_Title" xml:space="preserve">
+    <value>Er is iets misgegaan</value>
+  </data>
+  <data name="Error_ActionFailed_Message" xml:space="preserve">
+    <value>De actie kon niet worden voltooid. Controleer of de database bereikbaar is en probeer het opnieuw. Zie het logboek voor details.</value>
+  </data>
+  <data name="Statistics_Column_Author" xml:space="preserve">
+    <value>Auteur</value>
+  </data>
+  <data name="Statistics_Column_Month" xml:space="preserve">
+    <value>Maand</value>
+  </data>
+  <data name="Statistics_Column_Books" xml:space="preserve">
+    <value>Boeken</value>
+  </data>
+  <data name="Statistics_Column_RunningTotal" xml:space="preserve">
+    <value>Totaal boeken</value>
+  </data>
+  <data name="Person_Cleanup_Kind_Duplicate" xml:space="preserve">
+    <value>Duplicaat</value>
+  </data>
+  <data name="StatusBar_UpdateAvailable" xml:space="preserve">
+    <value>Update beschikbaar</value>
+  </data>
+  <data name="Update_Dialog_Title" xml:space="preserve">
+    <value>Update beschikbaar</value>
+  </data>
+  <data name="Update_Dialog_Body" xml:space="preserve">
+    <value>BookDB {0} is beschikbaar. U hebt {1}.</value>
+  </data>
+  <data name="Update_Hint_Winget" xml:space="preserve">
+    <value>Geïnstalleerd via winget — werk bij met:
+{0}</value>
+  </data>
+  <data name="Update_Hint_AppMan" xml:space="preserve">
+    <value>Geïnstalleerd via AM/AppMan — werk bij met:
+{0}
+(gebruikersinstallatie: appman -u bookdb)</value>
+  </data>
+  <data name="Update_Hint_GitHub" xml:space="preserve">
+    <value>Download de nieuwste versie van GitHub.</value>
+  </data>
+  <data name="Update_CopyCommand" xml:space="preserve">
+    <value>Opdracht kopiëren</value>
+  </data>
+  <data name="Update_OpenGitHub" xml:space="preserve">
+    <value>Downloaden van GitHub</value>
   </data>
 </root>

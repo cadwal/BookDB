@@ -69,6 +69,44 @@ public class DeleteDuplicateFlowTests : HeadlessTest
     }
 
     [Fact]
+    public async Task DeleteBook_OnLoan_WarnsAboutLoanHistory_AndRemovesIt()
+    {
+        var ct = TestContext.Current.CancellationToken;
+        var windowService = Substitute.For<IWindowService>();
+        windowService.ShowDeleteConfirmationAsync(Arg.Any<string>()).Returns(true);
+
+        await RunUi(async () =>
+        {
+            using var host = TestHost.Create(s => s.AddSingleton(windowService));
+            var book = await SeedData.AddBookAsync(host, "Loaned Book", ct);
+            var borrower = await SeedData.AddBorrowerAsync(host, "Ada", "Lovelace", ct);
+            await host.Resolve<ILoanService>().CheckOutAsync(book.BookId, borrower.BorrowerId, null, ct);
+
+            var list = host.Resolve<BookListViewModel>();
+            var view = new BookListView { DataContext = list };
+            var window = view.Host();
+            await list.LoadBooksAsync(ct);
+            Ui.Pump();
+
+            var row = list.Books.Single(b => b.BookId == book.BookId);
+            Assert.False(string.IsNullOrEmpty(row.LoanedToName)); // sanity: the row shows it as on loan
+
+            list.UpdateSelectedBooks(new[] { row });
+            await list.DeleteBooksCommand.ExecuteAsync(null);
+
+            // The confirmation uses the loaned-out wording that names the borrower...
+            await windowService.Received(1).ShowDeleteConfirmationAsync(
+                string.Format(Resources.Delete_LoanedOut_Single_Message, "Loaned Book", row.LoanedToName));
+
+            // ...and the delete goes through despite the Loan FK — its loan rows are removed first.
+            await Ui.PumpUntil(() => list.Books.Count == 0, ct);
+            await list.LoadBooksAsync(ct);
+            Assert.Empty(list.Books);
+            window.Close();
+        });
+    }
+
+    [Fact]
     public async Task DeleteKey_OnTheGrid_RunsTheSameConfirmedDelete()
     {
         var ct = TestContext.Current.CancellationToken;

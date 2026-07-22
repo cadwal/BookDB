@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using BookDB.Desktop.Localization;
@@ -113,25 +114,76 @@ public partial class PersonTabViewModel : ObservableObject
     public bool IsSourceCanonical => CanonicalPerson is not null && MergeSource is not null && CanonicalPerson.PersonId == MergeSource.PersonId;
     public bool IsTargetCanonical => CanonicalPerson is not null && MergeTarget is not null && CanonicalPerson.PersonId == MergeTarget.PersonId;
 
+    // A merge launched from the cleanup panel's suspected-duplicate list should return to that panel when
+    // aborted, not to the person list. Tracks that entry point across the merge commands the two paths share.
+    private bool _returnToCleanupAfterMerge;
+
     // --- Cleanup panel state (State D) ---
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsEditorVisible))]
     [NotifyPropertyChangedFor(nameof(IsCleanupPanelVisible))]
+    [NotifyPropertyChangedFor(nameof(IsCleanupProposalsVisible))]
+    [NotifyPropertyChangedFor(nameof(IsIgnoredListVisible))]
     [NotifyPropertyChangedFor(nameof(IsPlaceholderVisible))]
+    // IsMergePanelVisible reads !IsCleanupPanelOpen, so closing cleanup to open the merge panel (from a duplicate
+    // row) must re-evaluate it — otherwise both panels read hidden and the pane goes blank.
+    [NotifyPropertyChangedFor(nameof(IsMergePanelVisible))]
+    // CanOpenDataCleanup depends on this, so closing the panel must re-enable the entry button — otherwise a
+    // CanExecute re-evaluation while the panel was open (e.g. selecting a person) leaves it stuck disabled.
+    [NotifyCanExecuteChangedFor(nameof(OpenDataCleanupCommand))]
     private bool _isCleanupPanelOpen;
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(ApplyCleanupCommand))]
     private int _checkedProposalCount;
 
+    /// <summary>Rename/split proposals suppressed by a persisted ignore that currently re-derive identically.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IgnoredCount))]
+    [NotifyPropertyChangedFor(nameof(HasIgnored))]
+    [NotifyPropertyChangedFor(nameof(IgnoredCountText))]
+    private int _nameIgnoredCount;
+
+    /// <summary>Suspected-duplicate pairs currently suppressed by a persisted duplicate ignore.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IgnoredCount))]
+    [NotifyPropertyChangedFor(nameof(HasIgnored))]
+    [NotifyPropertyChangedFor(nameof(IgnoredCountText))]
+    private int _duplicateIgnoredCount;
+
+    public int IgnoredCount => NameIgnoredCount + DuplicateIgnoredCount;
+
+    public string IgnoredCountText =>
+        string.Format(CultureInfo.CurrentCulture, Resources.Person_Cleanup_IgnoredCount, IgnoredCount);
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsCleanupProposalsVisible))]
+    [NotifyPropertyChangedFor(nameof(IsIgnoredListVisible))]
+    private bool _isIgnoredListOpen;
+
+    public ObservableCollection<IgnoredProposalRow> IgnoredProposals { get; } = [];
+
+    // Count of pending cleanup work (renames + splits + suspected duplicates), scanned on load so the entry
+    // point can advertise there's something to do without the panel being open.
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasCleanupWork))]
+    [NotifyPropertyChangedFor(nameof(CleanupBadgeText))]
+    private int _cleanupPendingCount;
+
+    public bool HasCleanupWork => CleanupPendingCount > 0;
+    public string CleanupBadgeText => CleanupPendingCount.ToString(CultureInfo.CurrentCulture);
+
     public bool HasSelection => SelectedPerson is not null;
     public bool IsPlaceholderVisible => !HasSelection && !IsMergePanelOpen && !IsCleanupPanelOpen;
     public bool IsEditorVisible => HasSelection && !IsMergePanelOpen && !IsCleanupPanelOpen;
     public bool IsMergePanelVisible => IsMergePanelOpen && !IsCleanupPanelOpen;
     public bool IsCleanupPanelVisible => IsCleanupPanelOpen;
+    public bool IsCleanupProposalsVisible => IsCleanupPanelOpen && !IsIgnoredListOpen;
+    public bool IsIgnoredListVisible => IsCleanupPanelOpen && IsIgnoredListOpen;
     public bool HasSuspectedDuplicates => SuspectedDuplicates.Count > 0;
     public bool HasCheckedProposals => CheckedProposalCount > 0;
-    public bool HasNoCleanup => IsCleanupPanelOpen && CleanupProposals.Count == 0;
+    public bool HasIgnored => IgnoredCount > 0;
+    public bool HasNoCleanup => IsCleanupPanelOpen && CleanupProposals.Count == 0 && SuspectedDuplicates.Count == 0;
     public bool IsBioSectionVisible => SelectedPerson is { PersonId: > 0 };
 
     public IEnumerable<PersonRow> FilteredPersons =>
@@ -168,6 +220,21 @@ public partial class PersonTabViewModel : ObservableObject
             Log.Error(ex, "PersonTabViewModel: LoadAsync failed");
         }
         await LoadSuspectedDuplicatesAsync();
+        await RefreshCleanupPendingCountAsync();
+    }
+
+    /// <summary>Scans for pending cleanup work so the entry point's badge reflects it without opening the panel.</summary>
+    private async Task RefreshCleanupPendingCountAsync()
+    {
+        try
+        {
+            var (renames, splits, _) = await Service.ScanPersonNameCleanupAsync();
+            CleanupPendingCount = renames.Count + splits.Count + SuspectedDuplicates.Count;
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "PersonTabViewModel: cleanup pending-count scan failed");
+        }
     }
 
     private async Task LoadSuspectedDuplicatesAsync()
@@ -175,19 +242,16 @@ public partial class PersonTabViewModel : ObservableObject
         try
         {
             IsScanningDuplicates = true;
+            var ignores = await Service.GetDuplicateIgnoresAsync();
             var snapshot = Persons.ToList();
-            List<SuspectedDuplicatePair> pairs;
-            if (snapshot.Count > 500)
-            {
-                pairs = await Task.Run(() => ScanPairs(snapshot));
-            }
-            else
-            {
-                pairs = ScanPairs(snapshot);
-            }
+            var (pairs, suppressed) = snapshot.Count > 500
+                ? await Task.Run(() => ScanPairs(snapshot, ignores))
+                : ScanPairs(snapshot, ignores);
             SuspectedDuplicates.Clear();
             foreach (var p in pairs) SuspectedDuplicates.Add(p);
+            DuplicateIgnoredCount = suppressed;
             OnPropertyChanged(nameof(HasSuspectedDuplicates));
+            OnPropertyChanged(nameof(HasNoCleanup));
         }
         catch (Exception ex)
         {
@@ -199,9 +263,11 @@ public partial class PersonTabViewModel : ObservableObject
         }
     }
 
-    private static List<SuspectedDuplicatePair> ScanPairs(List<PersonRow> snapshot)
+    private static (List<SuspectedDuplicatePair> Pairs, int Suppressed) ScanPairs(
+        List<PersonRow> snapshot, IReadOnlySet<(int AnchorPersonId, string Fingerprint)> ignores)
     {
         var result = new List<SuspectedDuplicatePair>();
+        var suppressed = 0;
         for (int i = 0; i < snapshot.Count; i++)
         {
             for (int j = i + 1; j < snapshot.Count; j++)
@@ -210,11 +276,24 @@ public partial class PersonTabViewModel : ObservableObject
                 var b = snapshot[j];
                 if (string.Equals(a.DisplayName, b.DisplayName, StringComparison.OrdinalIgnoreCase))
                     continue;
-                if (StringSimilarityHelper.IsSuspectedDuplicate(a.DisplayName, b.DisplayName))
-                    result.Add(new SuspectedDuplicatePair(a, b));
+                if (!StringSimilarityHelper.IsSuspectedDuplicate(a.DisplayName, b.DisplayName))
+                    continue;
+                // Mirror AddDuplicateIgnoreAsync: lower id anchors. The fingerprint carries the other person's id
+                // (so two same-named people can't alias onto one ignore) plus name (so a rename resurfaces the
+                // pair). Also match the pre-3.1 bare-name form so existing dismissals survive the upgrade.
+                var anchorId = Math.Min(a.PersonId, b.PersonId);
+                var otherId = Math.Max(a.PersonId, b.PersonId);
+                var otherName = a.PersonId < b.PersonId ? b.DisplayName : a.DisplayName;
+                if (ignores.Contains((anchorId, LookupManagementService.DuplicateFingerprint(otherId, otherName)))
+                    || ignores.Contains((anchorId, otherName)))
+                {
+                    suppressed++;
+                    continue;
+                }
+                result.Add(new SuspectedDuplicatePair(a, b));
             }
         }
-        return result;
+        return (result, suppressed);
     }
 
     partial void OnSelectedPersonChanged(PersonRow? value)
@@ -500,6 +579,7 @@ public partial class PersonTabViewModel : ObservableObject
         MergeSource = source;
         MergeTarget = target;
         CanonicalPerson = null;
+        _returnToCleanupAfterMerge = false;
         IsMergePanelOpen = true;
     }
 
@@ -510,8 +590,29 @@ public partial class PersonTabViewModel : ObservableObject
         MergeSource = pair.Left;
         MergeTarget = pair.Right;
         CanonicalPerson = null;
-        IsMergePanelOpen = true;
+        _returnToCleanupAfterMerge = true;
+        // Close cleanup before opening merge so IsMergePanelVisible (which reads !IsCleanupPanelOpen) settles true.
         IsCleanupPanelOpen = false;
+        IsMergePanelOpen = true;
+    }
+
+    [RelayCommand]
+    private async Task IgnoreDuplicateAsync(SuspectedDuplicatePair? pair)
+    {
+        if (pair is null) return;
+        try
+        {
+            await Service.AddDuplicateIgnoreAsync(
+                pair.Left.PersonId, pair.Left.DisplayName, pair.Right.PersonId, pair.Right.DisplayName);
+            await LoadSuspectedDuplicatesAsync();
+            await RefreshCleanupPendingCountAsync();
+            OnPropertyChanged(nameof(HasNoCleanup));
+        }
+        catch (Exception ex)
+        {
+            StatusMessage = Resources.Person_Cleanup_ErrorIgnoreFailed;
+            Log.Error(ex, "PersonTabViewModel: ignore duplicate failed");
+        }
     }
 
     [RelayCommand]
@@ -538,6 +639,7 @@ public partial class PersonTabViewModel : ObservableObject
             MergeTarget = null;
             CanonicalPerson = null;
             SelectedPerson = null;
+            _returnToCleanupAfterMerge = false;
             await LoadAsync();
         }
         catch (Exception ex)
@@ -554,6 +656,13 @@ public partial class PersonTabViewModel : ObservableObject
         MergeSource = null;
         MergeTarget = null;
         CanonicalPerson = null;
+        // A duplicate fix launched from cleanup returns to the cleanup panel it came from; its proposal and
+        // duplicate lists are untouched by an abort, so no rescan is needed.
+        if (_returnToCleanupAfterMerge)
+        {
+            _returnToCleanupAfterMerge = false;
+            IsCleanupPanelOpen = true;
+        }
     }
 
     // --- Data cleanup flow ---
@@ -565,8 +674,8 @@ public partial class PersonTabViewModel : ObservableObject
     {
         try
         {
-            var (renames, splits) = await Service.ScanPersonNameCleanupAsync();
-            PopulateCleanupProposals(renames, splits);
+            await RescanCleanupAsync();
+            IsIgnoredListOpen = false;
             IsCleanupPanelOpen = true;
         }
         catch (Exception ex)
@@ -574,6 +683,17 @@ public partial class PersonTabViewModel : ObservableObject
             StatusMessage = Resources.ManageLookups_ErrorCleanupScanFailed;
             Log.Error(ex, "PersonTabViewModel: cleanup scan failed");
         }
+    }
+
+    /// <summary>Re-runs the scan and refreshes the proposal rows and the ignored count — the single seam every
+    /// cleanup mutation (apply, ignore, un-ignore) funnels through so the panel stays live.</summary>
+    private async Task RescanCleanupAsync()
+    {
+        var (renames, splits, ignoredCount) = await Service.ScanPersonNameCleanupAsync();
+        PopulateCleanupProposals(renames, splits);
+        NameIgnoredCount = ignoredCount;
+        CleanupPendingCount = renames.Count + splits.Count + SuspectedDuplicates.Count;
+        OnPropertyChanged(nameof(HasNoCleanup));
     }
 
     private void PopulateCleanupProposals(
@@ -590,6 +710,7 @@ public partial class PersonTabViewModel : ObservableObject
             {
                 PersonId = p.PersonId,
                 CurrentDisplayName = p.CurrentDisplayName,
+                CurrentSortName = p.CurrentSortName,
                 SuggestedSortName = p.SuggestedSortName,
                 ApplyChecked = true
             };
@@ -602,6 +723,7 @@ public partial class PersonTabViewModel : ObservableObject
         foreach (var sp in splits)
         {
             var groupId = $"split:{sp.PersonId}";
+            var first = true;
             foreach (var fragment in sp.Fragments)
             {
                 var row = new CleanupProposalRow
@@ -609,9 +731,11 @@ public partial class PersonTabViewModel : ObservableObject
                     PersonId = sp.PersonId,
                     CurrentDisplayName = sp.CurrentDisplayName,
                     SplitGroupId = groupId,
+                    IsSplitContinuation = !first,
                     SuggestedSortName = fragment.SuggestedSortName,
                     ApplyChecked = true
                 };
+                first = false;
                 row.ProposedDisplayName = fragment.ProposedDisplayName;
                 row.PropertyChanged += OnProposalPropertyChanged;
                 CleanupProposals.Add(row);
@@ -651,7 +775,7 @@ public partial class PersonTabViewModel : ObservableObject
             if (renameRows.Count > 0)
             {
                 var toApply = renameRows
-                    .Select(r => new CleanupProposal(r.PersonId, r.CurrentDisplayName, r.ProposedDisplayName, r.SuggestedSortName))
+                    .Select(r => new CleanupProposal(r.PersonId, r.CurrentDisplayName, r.CurrentSortName, r.ProposedDisplayName, r.SuggestedSortName))
                     .ToList();
                 await Service.ApplyPersonNameCleanupAsync(toApply);
             }
@@ -675,8 +799,7 @@ public partial class PersonTabViewModel : ObservableObject
 
             // Refresh: reload person list + re-run scan
             await LoadAsync();
-            var (renames, splits) = await Service.ScanPersonNameCleanupAsync();
-            PopulateCleanupProposals(renames, splits);
+            await RescanCleanupAsync();
         }
         catch (Exception ex)
         {
@@ -686,12 +809,129 @@ public partial class PersonTabViewModel : ObservableObject
     }
 
     [RelayCommand]
+    private async Task IgnoreProposalAsync(CleanupProposalRow? row)
+    {
+        if (row is null) return;
+        try
+        {
+            if (row.IsSplitRow)
+            {
+                // Ignoring one fragment ignores the whole split — the fragments share a SplitGroupId.
+                var fragments = CleanupProposals
+                    .Where(r => r.SplitGroupId == row.SplitGroupId)
+                    .Select(r => new SplitFragment(r.ProposedDisplayName, r.SuggestedSortName))
+                    .ToList();
+                await Service.AddCleanupIgnoreAsync(new SplitProposal(row.PersonId, row.CurrentDisplayName, fragments));
+            }
+            else
+            {
+                await Service.AddCleanupIgnoreAsync(new CleanupProposal(
+                    row.PersonId, row.CurrentDisplayName, row.CurrentSortName, row.ProposedDisplayName, row.SuggestedSortName));
+            }
+            await RescanCleanupAsync();
+        }
+        catch (Exception ex)
+        {
+            StatusMessage = Resources.Person_Cleanup_ErrorIgnoreFailed;
+            Log.Error(ex, "PersonTabViewModel: ignore proposal failed");
+        }
+    }
+
+    [RelayCommand]
+    private async Task ViewIgnoredAsync()
+    {
+        try
+        {
+            await LoadIgnoredAsync();
+            IsIgnoredListOpen = true;
+        }
+        catch (Exception ex)
+        {
+            StatusMessage = Resources.Person_Cleanup_ErrorIgnoreFailed;
+            Log.Error(ex, "PersonTabViewModel: load ignored failed");
+        }
+    }
+
+    private async Task LoadIgnoredAsync()
+    {
+        IgnoredProposals.Clear();
+        foreach (var r in await Service.GetCleanupIgnoresAsync())
+        {
+            var (person, change) = DescribeIgnored(r);
+            IgnoredProposals.Add(new IgnoredProposalRow(r.IgnoreId, person, KindLabel(r.Kind), change));
+        }
+    }
+
+    private static string KindLabel(string kind) => kind switch
+    {
+        CleanupIgnoreKind.Rename => Resources.Person_Cleanup_Kind_Rename,
+        CleanupIgnoreKind.Split => Resources.Person_Cleanup_Kind_Split,
+        CleanupIgnoreKind.Duplicate => Resources.Person_Cleanup_Kind_Duplicate,
+        _ => kind,
+    };
+
+    // The stored ProposedContent is a machine fingerprint (name|sort, or fragment;fragment for splits, or the
+    // paired name for duplicates). Turn it into what the ignored-list columns should read: the pair shown
+    // whole for duplicates, and the raw "display|sort" pipes hidden for renames/splits.
+    private static (string Person, string Change) DescribeIgnored(CleanupIgnoreRow r) => r.Kind switch
+    {
+        CleanupIgnoreKind.Duplicate => ($"{r.PersonDisplayName} / {FormatDuplicateContent(r.ProposedContent)}", string.Empty),
+        CleanupIgnoreKind.Rename => (r.PersonDisplayName, FormatRenameContent(r.ProposedContent)),
+        CleanupIgnoreKind.Split => (r.PersonDisplayName, FormatSplitContent(r.ProposedContent)),
+        _ => (r.PersonDisplayName, r.ProposedContent),
+    };
+
+    private static string FormatRenameContent(string fingerprint)
+    {
+        // Fingerprint is "currentSortName|proposedDisplay|suggestedSort" — only the proposed pair is shown.
+        var parts = fingerprint.Split('|');
+        return parts.Length == 3 ? $"{parts[1]} ({parts[2]})" : fingerprint;
+    }
+
+    private static string FormatSplitContent(string fingerprint) =>
+        string.Join("; ", fingerprint.Split(';').Select(f => f.Split('|')[0]));
+
+    private static string FormatDuplicateContent(string fingerprint)
+    {
+        // New fingerprint is "otherId|otherName" — show only the name. Pre-3.1 rows are the bare name (no leading
+        // id), so leave them untouched; guard the split on an actual numeric id so a name containing '|' survives.
+        var pipe = fingerprint.IndexOf('|');
+        return pipe > 0 && int.TryParse(fingerprint.AsSpan(0, pipe), out _) ? fingerprint[(pipe + 1)..] : fingerprint;
+    }
+
+    [RelayCommand]
+    private void CloseIgnoredList() => IsIgnoredListOpen = false;
+
+    [RelayCommand]
+    private async Task UnignoreAsync(IgnoredProposalRow? row)
+    {
+        if (row is null) return;
+        try
+        {
+            await Service.RemoveCleanupIgnoreAsync(row.IgnoreId);
+            await LoadIgnoredAsync();
+            // The un-ignored proposal reappears in the list and the ignored count drops. Re-scan both the name
+            // proposals and the duplicate pairs, since the ignore could have been either kind.
+            await LoadSuspectedDuplicatesAsync();
+            await RescanCleanupAsync();
+        }
+        catch (Exception ex)
+        {
+            StatusMessage = Resources.Person_Cleanup_ErrorUnignoreFailed;
+            Log.Error(ex, "PersonTabViewModel: un-ignore failed");
+        }
+    }
+
+    [RelayCommand]
     private void CloseDataCleanup()
     {
         foreach (var r in CleanupProposals) r.PropertyChanged -= OnProposalPropertyChanged;
         CleanupProposals.Clear();
+        IgnoredProposals.Clear();
         IsCleanupPanelOpen = false;
+        IsIgnoredListOpen = false;
         CheckedProposalCount = 0;
+        NameIgnoredCount = 0;
     }
 
     [RelayCommand]

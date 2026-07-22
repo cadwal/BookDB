@@ -24,6 +24,7 @@
         <behaviors:WindowPlacementBehavior />
         <behaviors:MainWindowShutdownBehavior />
         <behaviors:OfferReleaseNotesBehavior />
+        <behaviors:CheckForUpdatesBehavior />
     </i:Interaction.Behaviors>
 
     <Window.KeyBindings>
@@ -250,6 +251,12 @@
                 </MenuItem.ItemContainerTheme>
             </MenuItem>
             <MenuItem Header="{x:Static res:Resources.Menu_Help}">
+                <MenuItem Header="{x:Static res:Resources.Menu_Help_GettingStarted}"
+                          Command="{Binding OpenHelpGettingStartedCommand}">
+                    <MenuItem.Icon>
+                        <Image Width="16" Height="16" Source="{StaticResource Icon.Book}" />
+                    </MenuItem.Icon>
+                </MenuItem>
                 <MenuItem Header="{x:Static res:Resources.Menu_Help_KeyboardShortcuts}"
                           Command="{Binding OpenHelpKeyboardShortcutsCommand}">
                     <MenuItem.Icon>
@@ -332,8 +339,9 @@
                     <ColumnDefinition Width="Auto" />  <!-- 1: book count -->
                     <ColumnDefinition Width="Auto" />  <!-- 2: batch queue -->
                     <ColumnDefinition Width="Auto" />  <!-- 3: connection status -->
-                    <ColumnDefinition Width="Auto" />  <!-- 4: storage kind -->
-                    <ColumnDefinition Width="Auto" />  <!-- 5: detail toggle -->
+                    <ColumnDefinition Width="Auto" />  <!-- 4: update available -->
+                    <ColumnDefinition Width="Auto" />  <!-- 5: storage kind -->
+                    <ColumnDefinition Width="Auto" />  <!-- 6: detail toggle -->
                 </Grid.ColumnDefinitions>
 
                 <!-- Left: collection selector -->
@@ -424,7 +432,42 @@
                      under the cursor (observed on scaled Wayland), which closes it instantly in an
                      open/close flicker loop. VerticalOffset must be zeroed — the default 20 would push a
                      top-placed popup back down over the control. -->
-                <Border Grid.Column="4"
+                <!-- Update-available pill: shown only when a newer version exists; click opens the
+                     channel-specific upgrade hint. Clears itself once the running version catches up. -->
+                <Button Grid.Column="4"
+                        IsVisible="{Binding ShowUpdateAvailable}"
+                        Command="{Binding OpenUpdateHintCommand}"
+                        FontSize="11"
+                        Padding="8,1"
+                        Margin="8,0"
+                        VerticalAlignment="Center"
+                        Cursor="Hand"
+                        Background="{DynamicResource BrushWarningBackground}"
+                        BorderBrush="{DynamicResource BrushWarning}"
+                        BorderThickness="1"
+                        CornerRadius="9"
+                        ToolTip.Tip="{Binding UpdateAvailableText}">
+                    <Button.Styles>
+                        <!-- Keep the amber pill amber on hover/press — the default Button theme would swap in a
+                             neutral grey, losing the warning read. -->
+                        <Style Selector="Button:pointerover /template/ ContentPresenter">
+                            <Setter Property="Background" Value="{DynamicResource BrushWarningBackground}" />
+                            <Setter Property="BorderBrush" Value="{DynamicResource BrushWarning}" />
+                        </Style>
+                        <Style Selector="Button:pressed /template/ ContentPresenter">
+                            <Setter Property="Background" Value="{DynamicResource BrushWarningBackground}" />
+                            <Setter Property="BorderBrush" Value="{DynamicResource BrushWarning}" />
+                        </Style>
+                    </Button.Styles>
+                    <StackPanel Orientation="Horizontal" Spacing="4">
+                        <TextBlock Text="⬆" VerticalAlignment="Center"
+                                   Foreground="{DynamicResource BrushWarning}" />
+                        <TextBlock Text="{Binding UpdateAvailableText}" VerticalAlignment="Center"
+                                   FontWeight="SemiBold" />
+                    </StackPanel>
+                </Button>
+
+                <Border Grid.Column="5"
                         Name="StorageKindIndicator"
                         Background="Transparent"
                         Margin="8,0"
@@ -475,7 +518,7 @@
                 </Border>
 
                 <!-- Right: detail panel toggle -->
-                <ToggleButton Grid.Column="5"
+                <ToggleButton Grid.Column="6"
                               IsChecked="{Binding DetailPanelVisible}"
                               Content="{Binding DetailPanelToggleChevron}"
                               VerticalAlignment="Center"

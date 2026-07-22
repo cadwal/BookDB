@@ -37,6 +37,7 @@ public class BookDbContext(DbContextOptions<BookDbContext> options) : DbContext(
     public DbSet<Borrower> Borrowers { get; set; } = null!;
     public DbSet<Loan> Loans { get; set; } = null!;
     public DbSet<ClientSession> ClientSessions { get; set; } = null!;
+    public DbSet<PersonCleanupIgnore> PersonCleanupIgnores { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

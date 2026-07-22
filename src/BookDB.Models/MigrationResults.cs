@@ -28,7 +28,7 @@ public enum MigrationTable
     Collection, Person, ContributorRole, Publisher, Series, Category, Condition, Edition, Format,
     Language, Location, Owner, PurchasePlace, Rating, ReadingLevel, Source, Status, BorrowerStatus,
     BookImageType, CategoryCollection, Book, Settings, SavedSearch, BatchQueueItem, BookContributor,
-    BookCategory, BookImage, BookVolume, BookChapter, Borrower, Loan,
+    BookCategory, BookImage, BookVolume, BookChapter, Borrower, Loan, PersonCleanupIgnore,
 }
 
 /// <summary>A progress tick during migration: the current phase, the table being copied (if any), and its counts.</summary>

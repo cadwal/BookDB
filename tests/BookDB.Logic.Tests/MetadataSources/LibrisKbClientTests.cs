@@ -48,7 +48,27 @@ public class LibrisKbClientTests
 
         Assert.NotNull(result);
         Assert.Equal("Anteckningar fran en kolchos", result.Title);
-        Assert.NotEmpty(result.Authors);
+        // Creator "Rausing, Sigrid, 1962-" is stripped of dates AND flipped from sort order to display order.
+        Assert.Equal("Sigrid Rausing", Assert.Single(result.Authors));
+    }
+
+    [Theory]
+    // Sort order flips to display order; the birth date is stripped first.
+    [InlineData("Connelly, Michael, 1962-", "Michael Connelly")]
+    [InlineData("Rausing, Sigrid, 1962-", "Sigrid Rausing")]
+    // A creator already in display order (no comma) is left as-is.
+    [InlineData("Astrid Lindgren", "Astrid Lindgren")]
+    // A corporate creator with no comma passes through unchanged.
+    [InlineData("Sveriges riksdag", "Sveriges riksdag")]
+    public async Task FetchAsync_NormalizesCreatorToDisplayOrder(string creator, string expectedAuthor)
+    {
+        var json = ValidLibrisXsearchJson.Replace("Rausing, Sigrid, 1962-", creator);
+        var client = CreateClient(json);
+
+        var result = await client.FetchAsync("9789100137403", CancellationToken.None);
+
+        Assert.NotNull(result);
+        Assert.Equal(expectedAuthor, Assert.Single(result.Authors));
     }
 
     [Fact]

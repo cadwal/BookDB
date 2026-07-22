@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using BookDB.Data.DbContexts;
 using BookDB.Logic.Helpers;
+using BookDB.Models;
 using BookDB.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -193,8 +194,7 @@ public sealed class BookService : IBookService
             int i = 0;
             foreach (var (name, roleHint) in ExpandAuthorNames(authorNames))
             {
-                var person = await dbContext.People
-                    .FirstOrDefaultAsync(p => p.DisplayName == name, ct)
+                var person = await PersonQueries.FindByDisplayNameAsync(dbContext, name, ct)
                     ?? await CreatePersonAsync(dbContext, name, ct);
 
                 var resolvedRole = ResolveContributorRoleHint(roleHint, contributorRoles);
@@ -233,8 +233,7 @@ public sealed class BookService : IBookService
         int i = 0;
         foreach (var (name, roleHint) in ExpandAuthorNames(authorNames))
         {
-            var person = await dbContext.People
-                .FirstOrDefaultAsync(p => p.DisplayName == name, ct)
+            var person = await PersonQueries.FindByDisplayNameAsync(dbContext, name, ct)
                 ?? await CreatePersonAsync(dbContext, name, ct);
 
             var resolvedRole = ResolveContributorRoleHint(roleHint, contributorRoles);
@@ -270,8 +269,7 @@ public sealed class BookService : IBookService
                 continue;
 
             var trimmed = personName.Trim();
-            var person = await dbContext.People
-                .FirstOrDefaultAsync(p => p.DisplayName == trimmed, ct)
+            var person = await PersonQueries.FindByDisplayNameAsync(dbContext, trimmed, ct)
                 ?? await CreatePersonAsync(dbContext, trimmed, ct);
 
             dbContext.BookContributors.Add(new BookContributor
@@ -308,20 +306,13 @@ public sealed class BookService : IBookService
         });
     }
 
-    public async Task<IReadOnlyList<string>> GetPeopleNamesAsync(
-        string? prefix = null,
-        CancellationToken ct = default)
+    public async Task<IReadOnlyList<Person>> GetPeopleAsync(CancellationToken ct = default)
     {
         await using var dbContext = await _factory.CreateDbContextAsync(ct);
-        var query = dbContext.People.AsNoTracking().AsQueryable();
-        if (!string.IsNullOrWhiteSpace(prefix))
-        {
-            var pattern = LikePattern.Contains(prefix);
-            query = query.Where(p => EF.Functions.Like(p.DisplayName.ToLower(), pattern, LikePattern.Escape));
-        }
-        return await query
-            .OrderBy(p => p.DisplayName)
-            .Select(p => p.DisplayName)
+        return await dbContext.People
+            .AsNoTracking()
+            .OrderBy(p => p.SortName)
+            .ThenBy(p => p.PersonId)
             .ToListAsync(ct);
     }
 
@@ -358,8 +349,11 @@ public sealed class BookService : IBookService
         CancellationToken ct = default)
     {
         await using var dbContext = await _factory.CreateDbContextAsync(ct);
-        var books = await dbContext.Books
-            .Where(b => b.CollectionId == null || collectionIds.Contains(b.CollectionId.Value))
+        // An empty selection means no collection filter (show all); a non-empty one scopes to it.
+        IQueryable<Book> source = collectionIds is { Count: > 0 }
+            ? dbContext.Books.Where(CollectionFilter.Predicate(collectionIds))
+            : dbContext.Books;
+        var books = await source
             .Include(b => b.Publisher)
             .Include(b => b.Format)
             .Include(b => b.Series)
@@ -422,7 +416,7 @@ public sealed class BookService : IBookService
         // Base collection query
         IQueryable<Book> query = dbContext.Books;
         if (collectionIds is { Count: > 0 })
-            query = query.Where(b => b.CollectionId == null || collectionIds.Contains(b.CollectionId.Value));
+            query = query.Where(CollectionFilter.Predicate(collectionIds));
 
         // GrandTotal is collection-scoped count without search/facet filters
         var grandTotal = await query.CountAsync(ct);
@@ -579,9 +573,18 @@ public sealed class BookService : IBookService
     public async Task DeleteBooksAsync(IReadOnlyList<int> bookIds, CancellationToken ct = default)
     {
         await using var dbContext = await _factory.CreateDbContextAsync(ct);
+        await using var transaction = await dbContext.Database.BeginTransactionAsync(ct);
+
+        // Loan.BookId is ON DELETE RESTRICT (loan history is protected from cascade), so its rows
+        // must be removed explicitly before the book, or the DELETE fails the FK constraint.
+        await dbContext.Loans
+            .Where(l => bookIds.Contains(l.BookId))
+            .ExecuteDeleteAsync(ct);
         await dbContext.Books
             .Where(b => bookIds.Contains(b.BookId))
             .ExecuteDeleteAsync(ct);
+
+        await transaction.CommitAsync(ct);
     }
 
     public async Task<Book> DuplicateBookAsync(int bookId, string? titlePrefix = null, CancellationToken ct = default)

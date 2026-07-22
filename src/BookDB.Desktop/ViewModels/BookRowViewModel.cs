@@ -37,6 +37,13 @@ public partial class BookRowViewModel : ObservableObject, IHoverImageLoader
     public IReadOnlyList<int> CategoryIds { get; init; } = [];
     public string? RatingDisplay { get; init; }
     public string? StatusDisplay { get; init; }
+
+    /// <summary>
+    /// Re-raises the status-badge binding so its <c>StatusBadgeColorConverter</c> re-runs and picks up the new
+    /// palette after a live theme switch. The value is unchanged — only the converter's colour output changes.
+    /// </summary>
+    public void RefreshThemedBrushes() => OnPropertyChanged(nameof(StatusDisplay));
+
     public bool IsLoaned { get; init; }
     public bool IsOverdue { get; init; }
     public string? LoanedToName { get; init; }

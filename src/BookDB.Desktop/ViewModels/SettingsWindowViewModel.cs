@@ -104,6 +104,9 @@ public sealed partial class SettingsWindowViewModel : ObservableObject
     // The Database tab is the last TabItem in SettingsWindow.axaml; Save focuses it to surface a blocking error.
     private const int DatabaseTabIndex = 7;
 
+    /// <summary>Pre-selects the Database tab (e.g. when Settings is opened from the empty-state "Connect to a database" action).</summary>
+    public void ShowDatabaseTab() => SelectedTabIndex = DatabaseTabIndex;
+
     [RelayCommand]
     private async Task SaveAsync()
     {
@@ -148,8 +151,9 @@ public sealed partial class SettingsWindowViewModel : ObservableObject
             await AppearanceTab.SaveAsync();
             _messenger.Send(new SettingsSavedMessage());
 
-            // Language, theme and log level are read once at startup, so each only takes effect after a restart.
-            var restartNeeded = GeneralTab.LanguageChanged || AppearanceTab.ThemeChanged || AdvancedTab.LogLevelChanged;
+            // Language and log level are read once at startup, so each only takes effect after a restart. Theme is
+            // no longer here: AppearanceTab.SaveAsync applies the flavour to the running app immediately.
+            var restartNeeded = GeneralTab.LanguageChanged || AdvancedTab.LogLevelChanged;
             CloseDialog?.Invoke(true);
 
             if (restartNeeded && await _restartService.ConfirmRestartAsync(Resources.Settings_RestartConfirm_Body))
@@ -296,6 +300,9 @@ public sealed partial class SettingsLookupTabViewModel : ObservableObject
     private bool _googleBooksEnabled = true;
 
     [ObservableProperty]
+    private string _googleBooksApiKey = string.Empty;
+
+    [ObservableProperty]
     private bool _openLibraryEnabled = true;
 
     [ObservableProperty]
@@ -312,6 +319,7 @@ public sealed partial class SettingsLookupTabViewModel : ObservableObject
         {
             LibrisKbEnabled      = ParseBool(await _settingsService.GetAsync("LookupEnabled.LibrisKB",      ct), defaultValue: true);
             GoogleBooksEnabled   = ParseBool(await _settingsService.GetAsync("LookupEnabled.GoogleBooks",  ct), defaultValue: true);
+            GoogleBooksApiKey    = await _settingsService.GetAsync("LookupApiKey.GoogleBooks", ct) ?? string.Empty;
             OpenLibraryEnabled   = ParseBool(await _settingsService.GetAsync("LookupEnabled.OpenLibrary",  ct), defaultValue: true);
             IsbnSearchOrgEnabled = ParseBool(await _settingsService.GetAsync("LookupEnabled.IsbnSearchOrg", ct), defaultValue: true);
         }
@@ -327,6 +335,7 @@ public sealed partial class SettingsLookupTabViewModel : ObservableObject
         {
             await _settingsService.SetAsync("LookupEnabled.LibrisKB",      LibrisKbEnabled.ToString().ToLowerInvariant(),      ct);
             await _settingsService.SetAsync("LookupEnabled.GoogleBooks",    GoogleBooksEnabled.ToString().ToLowerInvariant(),   ct);
+            await _settingsService.SetAsync("LookupApiKey.GoogleBooks",     string.IsNullOrWhiteSpace(GoogleBooksApiKey) ? null : GoogleBooksApiKey.Trim(), ct);
             await _settingsService.SetAsync("LookupEnabled.OpenLibrary",    OpenLibraryEnabled.ToString().ToLowerInvariant(),   ct);
             await _settingsService.SetAsync("LookupEnabled.IsbnSearchOrg",  IsbnSearchOrgEnabled.ToString().ToLowerInvariant(), ct);
         }
@@ -710,8 +719,15 @@ public sealed partial class SettingsAppearanceTabViewModel : ObservableObject
         {
             if (SelectedFlavour is not null)
             {
-                var value = ThemeSettings.ToStorageValue(SelectedFlavour.Flavour);
-                _bootstrapConfig.Update(c => c.UiTheme = value);
+                var changed = ThemeChanged;
+                _bootstrapConfig.Update(c => c.UiTheme = ThemeSettings.ToStorageValue(SelectedFlavour.Flavour));
+                if (changed)
+                {
+                    // The flavour applies to the running app immediately — no restart. Re-baseline the loaded
+                    // flavour so a re-save without a further change is a no-op.
+                    ThemeApplier.Apply(SelectedFlavour.Flavour);
+                    _loadedFlavour = SelectedFlavour.Flavour;
+                }
             }
         }
         catch (Exception ex)

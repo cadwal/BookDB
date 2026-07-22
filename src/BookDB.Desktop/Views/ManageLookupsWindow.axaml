@@ -9,7 +9,7 @@
         x:DataType="vm:ManageLookupsViewModel"
         Title="{x:Static res:Resources.ManageLookups_Title}"
         Width="860" MinWidth="720"
-        Height="620" MinHeight="520"
+        Height="720" MinHeight="520"
         WindowStartupLocation="CenterScreen"
         CanResize="True">
 

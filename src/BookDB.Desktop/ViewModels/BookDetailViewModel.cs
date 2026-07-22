@@ -22,9 +22,16 @@ public partial class BookDetailViewModel :
     BookEditViewModelBase,
     IRecipient<BookSelectedMessage>,
     IRecipient<BookSavedMessage>,
-    IRecipient<LookupsChangedMessage>
+    IRecipient<LookupsChangedMessage>,
+    IRecipient<ThemeAppliedMessage>,
+    IRecipient<LoanChangedMessage>
 {
     private readonly IMessenger _messenger;
+
+    // The loan-status foreground is resolved imperatively from the palette, so the current badge kind is kept to
+    // re-resolve it on a live flavour switch (see ApplyLoanStatusForeground / Receive(ThemeAppliedMessage)).
+    private enum LoanBadge { None, Active, Overdue }
+    private LoanBadge _loanBadge = LoanBadge.None;
     private readonly ILoanService _loanService;
     private readonly IRecatalogFlowService _recatalogFlow;
 
@@ -195,6 +202,14 @@ public partial class BookDetailViewModel :
         UIThreadHelper.PostAsync(() => ReloadLookupsOnChangeAsync(), "reload lookups after change");
     }
 
+    public void Receive(LoanChangedMessage message)
+    {
+        // The loan badge and history are read-only, so refresh them even in edit mode (unlike a full
+        // reload, which we skip while editing to protect unsaved field changes).
+        if (CurrentBook == null || message.Value != CurrentBook.BookId) return;
+        UIThreadHelper.PostAsync(() => RefreshLoanAsync(CurrentBook.BookId), "refresh loan after change");
+    }
+
     public void Receive(BookSelectedMessage message)
     {
         UIThreadHelper.PostAsync(async () =>
@@ -314,7 +329,8 @@ public partial class BookDetailViewModel :
             HasUnsavedChanges = false;
             IsLoanVisible = false;
             LoanStatusDisplay = string.Empty;
-            LoanStatusForeground = Brushes.Transparent;
+            _loanBadge = LoanBadge.None;
+            ApplyLoanStatusForeground();
             ImageEditor.ClearForNoBook();
             NotifyDisplayPropertiesChanged();
             return;
@@ -331,36 +347,14 @@ public partial class BookDetailViewModel :
             {
                 IsLoanVisible = false;
                 LoanStatusDisplay = string.Empty;
-                LoanStatusForeground = Brushes.Transparent;
+                _loanBadge = LoanBadge.None;
+                ApplyLoanStatusForeground();
                 ImageEditor.ClearForNoBook();
                 NotifyDisplayPropertiesChanged();
                 return;
             }
 
-            // Load active loan status
-            var loan = await _loanService.GetActiveLoanAsync(book.BookId);
-            if (loan == null)
-            {
-                IsLoanVisible = false;
-                LoanStatusDisplay = string.Empty;
-                LoanStatusForeground = Brushes.Transparent;
-            }
-            else
-            {
-                var (name, dueDate) = loan.Value;
-                bool isOverdue = dueDate.HasValue && dueDate.Value.Date < DateTime.UtcNow.Date;
-                IsLoanVisible = true;
-                if (isOverdue)
-                {
-                    LoanStatusDisplay = string.Format(Resources.BookDetail_OverdueStatus_Format, name);
-                    LoanStatusForeground = Helpers.Palette.Brush("BrushWarning", Brushes.Orange);
-                }
-                else
-                {
-                    LoanStatusDisplay = string.Format(Resources.BookDetail_LoanStatus_Format, name, dueDate?.ToLocalTime().ToShortDateString() ?? string.Empty);
-                    LoanStatusForeground = Helpers.Palette.Brush("BrushTextSecondary", Brushes.Gray);
-                }
-            }
+            ApplyActiveLoan(await _loanService.GetActiveLoanAsync(book.BookId));
 
             await ImageEditor.LoadForBookAsync(book);
 
@@ -424,6 +418,67 @@ public partial class BookDetailViewModel :
         OnPropertyChanged(nameof(HasAnyImage));
         OnPropertyChanged(nameof(IsLoanVisible));
         OnPropertyChanged(nameof(LoanStatusDisplay));
+        OnPropertyChanged(nameof(LoanStatusForeground));
+    }
+
+    // Re-reads the active loan and loan history for a book already on screen (a check-out/in from the
+    // list), without touching editable fields — safe to run while the edit form is open.
+    private async Task RefreshLoanAsync(int bookId)
+    {
+        try
+        {
+            ApplyActiveLoan(await _loanService.GetActiveLoanAsync(bookId));
+            OnPropertyChanged(nameof(IsLoanVisible));
+            OnPropertyChanged(nameof(LoanStatusDisplay));
+            OnPropertyChanged(nameof(LoanStatusForeground));
+
+            var history = await _loanService.GetLoanHistoryAsync(bookId);
+            _loanHistory.Clear();
+            foreach (var row in history)
+                _loanHistory.Add(LoanHistoryRowViewModel.FromLoanHistoryRow(row));
+            OnPropertyChanged(nameof(LoanHistoryIsEmpty));
+        }
+        catch (Exception ex)
+        {
+            ReportIfConnectionLoss(ex);
+            Log.Error(ex, "Failed to refresh loan for book {BookId}", bookId);
+        }
+    }
+
+    private void ApplyActiveLoan((string DisplayName, DateTime? DueDate)? loan)
+    {
+        if (loan == null)
+        {
+            IsLoanVisible = false;
+            LoanStatusDisplay = string.Empty;
+            _loanBadge = LoanBadge.None;
+        }
+        else
+        {
+            var (name, dueDate) = loan.Value;
+            bool isOverdue = dueDate.HasValue && dueDate.Value.Date < DateTime.UtcNow.Date;
+            IsLoanVisible = true;
+            LoanStatusDisplay = isOverdue
+                ? string.Format(Resources.BookDetail_OverdueStatus_Format, name)
+                : string.Format(Resources.BookDetail_LoanStatus_Format, name, dueDate?.ToLocalTime().ToShortDateString() ?? string.Empty);
+            _loanBadge = isOverdue ? LoanBadge.Overdue : LoanBadge.Active;
+        }
+        ApplyLoanStatusForeground();
+    }
+
+    // Resolves the loan-status foreground from the palette for the current badge kind — called both when the loan
+    // state changes and when the theme flavour changes, so the colour follows a live switch.
+    private void ApplyLoanStatusForeground() =>
+        LoanStatusForeground = _loanBadge switch
+        {
+            LoanBadge.Overdue => Helpers.Palette.Brush("BrushWarning", Brushes.Orange),
+            LoanBadge.Active  => Helpers.Palette.Brush("BrushTextSecondary", Brushes.Gray),
+            _                 => Brushes.Transparent,
+        };
+
+    public void Receive(ThemeAppliedMessage message)
+    {
+        ApplyLoanStatusForeground();
         OnPropertyChanged(nameof(LoanStatusForeground));
     }
 }

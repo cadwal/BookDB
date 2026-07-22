@@ -59,23 +59,31 @@ public sealed class PostgresCaseInsensitiveSearchTests : IClassFixture<PostgresT
     }
 
     [Fact]
-    public async Task GetPeopleNames_MatchesRegardlessOfCase()
+    public async Task AddBookWithContributors_ReusesExistingPerson_RegardlessOfCase()
     {
         Assert.SkipUnless(_fixture.IsAvailable, _fixture.SkipReason);
         var ct = TestContext.Current.CancellationToken;
         var (sp, factory) = await BuildAsync(ct);
         await using var _ = sp;
 
-        var display = $"Bartholomew{Guid.NewGuid():N}";
+        var display = $"Selma Lagerlof{Guid.NewGuid():N}";
+        int existingId;
         await using (var db = await factory.CreateDbContextAsync(ct))
         {
-            db.People.Add(new Person { DisplayName = display, SortName = display });
+            var person = new Person { DisplayName = display, SortName = display };
+            db.People.Add(person);
             await db.SaveChangesAsync(ct);
+            existingId = person.PersonId;
         }
 
         var service = new BookService(factory);
-        var names = await service.GetPeopleNamesAsync(display.ToLowerInvariant()[..14], ct);
+        var book = await service.AddBookWithContributorsAsync(
+            new Book { Title = $"Case Reuse {Guid.NewGuid():N}" }, [display.ToLowerInvariant()], ct);
 
-        Assert.Contains(display, names);
+        await using var verify = await factory.CreateDbContextAsync(ct);
+        var contributor = await verify.BookContributors.SingleAsync(bc => bc.BookId == book.BookId, ct);
+        Assert.Equal(existingId, contributor.PersonId);
+        var lowered = display.ToLowerInvariant();
+        Assert.Equal(1, await verify.People.CountAsync(p => p.DisplayName.ToLower() == lowered, ct));
     }
 }

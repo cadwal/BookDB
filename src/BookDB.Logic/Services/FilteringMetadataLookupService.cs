@@ -20,22 +20,29 @@ public sealed class FilteringMetadataLookupService : IMetadataLookupService
 {
     private readonly IEnumerable<IMetadataSource> _sources;
     private readonly ISettingsService _settingsService;
+    private readonly IGoogleBooksApiKeyAccessor _googleApiKey;
     private readonly ILogger<FilteringMetadataLookupService> _logger;
 
     public FilteringMetadataLookupService(
         IEnumerable<IMetadataSource> sources,
         ISettingsService settingsService,
+        IGoogleBooksApiKeyAccessor googleApiKey,
         ILogger<FilteringMetadataLookupService> logger)
     {
         _sources = sources;
         _settingsService = settingsService;
+        _googleApiKey = googleApiKey;
         _logger = logger;
     }
 
-    public async Task<IReadOnlyList<BookMetadata>> FetchAllSourcesAsync(
+    public async Task<MetadataLookupResult> FetchAllSourcesAsync(
         string isbn, CancellationToken ct = default)
     {
         var normalizedIsbn = IsbnNormalizer.Normalize(isbn);
+
+        // Refresh the Google Books key from settings so the client picks up changes without a restart.
+        var apiKey = (await _settingsService.GetAsync("LookupApiKey.GoogleBooks", ct))?.Trim();
+        _googleApiKey.ApiKey = string.IsNullOrEmpty(apiKey) ? null : apiKey;
 
         var librisEnabled     = ParseBool(await _settingsService.GetAsync("LookupEnabled.LibrisKB",      ct), defaultValue: true);
         var googleEnabled     = ParseBool(await _settingsService.GetAsync("LookupEnabled.GoogleBooks",  ct), defaultValue: true);
@@ -51,33 +58,14 @@ public sealed class FilteringMetadataLookupService : IMetadataLookupService
             _               => true
         }).ToList();
 
-        var tasks = enabledSources.Select(s => FetchSafeAsync(s, normalizedIsbn, ct));
-        var results = await Task.WhenAll(tasks);
-        return results.Where(r => r is not null).Select(r => r!).ToList();
-    }
-
-    private async Task<BookMetadata?> FetchSafeAsync(
-        IMetadataSource source, string isbn, CancellationToken ct)
-    {
-        try
-        {
-            _logger.LogDebug("Fetching ISBN {Isbn} from {Source}", isbn, source.SourceName);
-            var result = await source.FetchAsync(isbn, ct);
-            if (result is null)
-                _logger.LogInformation("Source {Source} returned no result for ISBN {Isbn}", source.SourceName, isbn);
-            else
-                _logger.LogInformation("Source {Source} returned result for ISBN {Isbn}: {Title}", source.SourceName, isbn, result.Title);
-            return result;
-        }
-        catch (OperationCanceledException) when (ct.IsCancellationRequested)
-        {
-            throw;
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Metadata source {Source} failed for ISBN {Isbn}: {Message}", source.SourceName, isbn, ex.Message);
-            return null;
-        }
+        var outcomes = await Task.WhenAll(
+            enabledSources.Select(s => MetadataSourceFetch.SafeAsync(s, normalizedIsbn, _logger, ct)));
+        var statuses = outcomes.Select(o => o.Status).ToList();
+        return new MetadataLookupResult(
+            outcomes.Where(o => o.Result is not null).Select(o => o.Result!).ToList(),
+            enabledSources.Count,
+            statuses.Count(s => s.Outcome is SourceLookupOutcome.Error or SourceLookupOutcome.RateLimited),
+            statuses);
     }
 
     private static bool ParseBool(string? value, bool defaultValue)

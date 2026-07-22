@@ -18,6 +18,9 @@ using Serilog;
 
 namespace BookDB.Desktop.ViewModels;
 
+/// <summary>One row of the completed-batch failure breakdown: a localized reason and how many items hit it.</summary>
+public sealed record FailureReasonCount(string Reason, int Count);
+
 public partial class BatchQueueWindowViewModel :
     ObservableObject,
     ICloseGuard,
@@ -25,12 +28,9 @@ public partial class BatchQueueWindowViewModel :
 {
     private readonly IBatchQueueProcessor _processor;
     private readonly BatchQueueService _queueService;
-    private readonly IBookService _bookService;
-    private readonly IBookMetadataService _bookMetadataService;
-    private readonly IBookImageService _bookImageService;
     private readonly IWindowService _windowService;
     private readonly IMessenger _messenger;
-    private readonly CoverFetchService _coverFetcher;
+    private readonly IBatchReviewRunner _reviewRunner;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(ProgressPercent))]
@@ -89,6 +89,13 @@ public partial class BatchQueueWindowViewModel :
     [ObservableProperty]
     private int _skippedCount;
 
+    /// <summary>
+    /// Failed-item counts by localized reason, shown as a breakdown under the summary — a failure is
+    /// never just "failed". Legacy rows without a stored code surface as the generic reason.
+    /// </summary>
+    [ObservableProperty]
+    private IReadOnlyList<FailureReasonCount> _failureReasons = [];
+
     public double ProgressPercent =>
         TotalCount > 0 ? (double)ProcessedCount / TotalCount * 100.0 : 0.0;
 
@@ -105,21 +112,15 @@ public partial class BatchQueueWindowViewModel :
     public BatchQueueWindowViewModel(
         IBatchQueueProcessor processor,
         BatchQueueService queueService,
-        IBookService bookService,
-        IBookMetadataService bookMetadataService,
-        IBookImageService bookImageService,
         IWindowService windowService,
         IMessenger messenger,
-        CoverFetchService coverFetcher)
+        IBatchReviewRunner reviewRunner)
     {
         _processor = processor;
         _queueService = queueService;
-        _bookService = bookService;
-        _bookMetadataService = bookMetadataService;
-        _bookImageService = bookImageService;
         _windowService = windowService;
         _messenger = messenger;
-        _coverFetcher = coverFetcher;
+        _reviewRunner = reviewRunner;
 
         messenger.RegisterAll(this);
     }
@@ -142,8 +143,27 @@ public partial class BatchQueueWindowViewModel :
         NotFoundCount = 0;
         PendingReviewCount = 0;
         SkippedCount = 0;
+        FailureReasons = [];
         IsComplete = false;
     }
+
+    /// <summary>Localized text for a per-item progress stage; empty for stages with no text of their own.</summary>
+    internal static string DescribeStatus(
+        BookDB.Logic.Messages.BatchProgressStatus statusCode, string? currentIsbn, int resultCount) =>
+        statusCode switch
+        {
+            BookDB.Logic.Messages.BatchProgressStatus.QueryingSources =>
+                string.Format(Localization.Resources.BatchQueue_StatusQuerying, currentIsbn),
+            BookDB.Logic.Messages.BatchProgressStatus.ProcessingResults =>
+                string.Format(Localization.Resources.BatchQueue_StatusProcessing, resultCount),
+            BookDB.Logic.Messages.BatchProgressStatus.FetchingCovers =>
+                Localization.Resources.BatchQueue_StatusFetchingCovers,
+            BookDB.Logic.Messages.BatchProgressStatus.Saving =>
+                Localization.Resources.BatchQueue_StatusSaving,
+            BookDB.Logic.Messages.BatchProgressStatus.Complete =>
+                Localization.Resources.BatchQueue_StatusComplete,
+            _ => string.Empty
+        };
 
     public void Receive(BookDB.Logic.Messages.BatchQueueProgressMessage message)
     {
@@ -154,18 +174,7 @@ public partial class BatchQueueWindowViewModel :
             TotalCount = message.Total;
             CurrentIsbn = message.CurrentIsbn ?? string.Empty;
             if (message.StatusCode != BookDB.Logic.Messages.BatchProgressStatus.None)
-                StatusText = message.StatusCode switch
-                {
-                    BookDB.Logic.Messages.BatchProgressStatus.QueryingSources =>
-                        string.Format(Localization.Resources.BatchQueue_StatusQuerying, message.CurrentIsbn),
-                    BookDB.Logic.Messages.BatchProgressStatus.ProcessingResults =>
-                        string.Format(Localization.Resources.BatchQueue_StatusProcessing, message.ResultCount),
-                    BookDB.Logic.Messages.BatchProgressStatus.Saving =>
-                        Localization.Resources.BatchQueue_StatusSaving,
-                    BookDB.Logic.Messages.BatchProgressStatus.Complete =>
-                        Localization.Resources.BatchQueue_StatusComplete,
-                    _ => string.Empty
-                };
+                StatusText = DescribeStatus(message.StatusCode, message.CurrentIsbn, message.ResultCount);
             ProgressText = TotalCount > 0
                 ? string.Format(
                     Localization.Resources.BatchQueue_ProgressCounts,
@@ -195,6 +204,15 @@ public partial class BatchQueueWindowViewModel :
             NotFoundCount = summary.NotFound;
             PendingReviewCount = summary.PendingReview;
             SkippedCount = summary.Skipped;
+
+            // Distinct codes can share a localized text (null and unknown both fall back), so group
+            // by the displayed string to avoid duplicate rows.
+            var failureCounts = await _queueService.GetFailureReasonCountsAsync();
+            FailureReasons = failureCounts
+                .GroupBy(f => Localization.BatchFailureText.DescribeCode(f.FailureCode))
+                .Select(g => new FailureReasonCount(g.Key, g.Sum(f => f.Count)))
+                .OrderByDescending(r => r.Count)
+                .ToList();
         }
         catch (Exception ex)
         {
@@ -248,177 +266,12 @@ public partial class BatchQueueWindowViewModel :
             var pendingItems = await _queueService.GetItemsByStatusAsync(BatchStatus.PendingReview);
             foreach (var item in pendingItems)
             {
-                if (item.ResultJson is null) continue;
+                var outcome = await _reviewRunner.ReviewItemAsync(item);
+                if (outcome == BatchReviewOutcome.NoPayload) continue;
 
-                // Try to deserialize as the new BatchReviewPayload (includes ExistingBookId and CurrentBookMetadata).
-                // Fall back to old plain List<BookMetadata> format for backwards compatibility.
-                List<BookMetadata>? sources = null;
-                int? existingBookId = item.BookId;
-                BookMetadata? currentBook = null;
-                bool wasNewIsbn = false;
-
-                try
-                {
-                    var payload = JsonSerializer.Deserialize<BatchReviewPayload>(item.ResultJson);
-                    if (payload?.Sources is not null)
-                    {
-                        sources = [.. payload.Sources];
-                        existingBookId = payload.ExistingBookId ?? item.BookId;
-                        currentBook = payload.CurrentBookMetadata;
-                        wasNewIsbn = payload.WasNewIsbn;
-                    }
-                }
-                catch
-                {
-                    // Ignore — try old format below
-                }
-
-                if (sources is null)
-                {
-                    try
-                    {
-                        sources = JsonSerializer.Deserialize<List<BookMetadata>>(item.ResultJson);
-                    }
-                    catch (Exception ex)
-                    {
-                        Log.Error(ex, "Failed to deserialize ResultJson for item {ItemId}", item.BatchQueueItemId);
-                        continue;
-                    }
-                }
-
-                if (sources is null || sources.Count == 0) continue;
-
-                // Safety net (Bug 5): if the stored diffs are empty when recomputed against the
-                // stored current-book baseline, auto-accept without showing the dialog at all.
-                // This should not happen after Bug 1 is fixed in the processor, but protects
-                // against stale PendingReview items from before the fix.
-                var diffs = FieldDiffComputer.ComputeDiffs(sources, currentBook);
-                if (diffs.Count == 0)
-                {
-                    try
-                    {
-                        if (existingBookId.HasValue)
-                            await _bookMetadataService.UpdateBookFromMetadataAsync(existingBookId.Value, sources[0], null);
-                        else
-                            await _bookMetadataService.AddBookFromMetadataAsync(sources[0], null, null);
-
-                        await _queueService.UpdateStatusAsync(item.BatchQueueItemId, BatchStatus.Done, null);
-                        PendingReviewCount = Math.Max(0, PendingReviewCount - 1);
-                        SavedCount++;
-                    }
-                    catch (Exception ex)
-                    {
-                        Log.Error(ex, "Auto-accept failed for zero-diff item {ItemId}", item.BatchQueueItemId);
-                        await _queueService.UpdateStatusAsync(item.BatchQueueItemId, BatchStatus.Skipped, null);
-                        PendingReviewCount = Math.Max(0, PendingReviewCount - 1);
-                        SkippedCount++;
-                    }
-                    continue;
-                }
-
-                // Gap 3: Show duplicate ISBN dialog when a LookupWizard item maps to an existing book.
-                if (wasNewIsbn && existingBookId.HasValue)
-                {
-                    var existingBook = await _bookService.GetBookByIdAsync(existingBookId.Value);
-                    var existingTitle = existingBook?.Title ?? sources.FirstOrDefault()?.Title ?? "(unknown)";
-                    var isbn = sources.Select(s => s.Isbn).FirstOrDefault(i => !string.IsNullOrEmpty(i)) ?? item.Isbn;
-
-                    var choice = await _windowService.ShowDuplicateIsbnDialogAsync(isbn, existingTitle);
-
-                    if (choice == DuplicateIsbnResult.Cancel)
-                    {
-                        await _queueService.UpdateStatusAsync(item.BatchQueueItemId, BatchStatus.Skipped, null);
-                        PendingReviewCount = Math.Max(0, PendingReviewCount - 1);
-                        SkippedCount++;
-                        continue;
-                    }
-                    if (choice == DuplicateIsbnResult.AddAsNew)
-                    {
-                        // Treat as new book — clear existingBookId so dialog creates a fresh record
-                        existingBookId = null;
-                    }
-                    // DuplicateIsbnResult.UpdateExisting: keep existingBookId, fall through to review dialog
-                }
-
-                // Gap 2: Fetch cover images from sources before opening the review dialog.
-                var coverOptions = new List<CoverOption>();
-                var coverIsbn = sources.Select(s => s.Isbn).FirstOrDefault(i => !string.IsNullOrEmpty(i)) ?? item.Isbn;
-                foreach (var source in sources.Where(s => !string.IsNullOrEmpty(s.CoverImageUrl)))
-                {
-                    try
-                    {
-                        var imageBytes = await _coverFetcher.DownloadCoverAsync(
-                            source.CoverImageUrl!, coverIsbn, source.SourceName ?? "Unknown");
-                        if (imageBytes is not null)
-                        {
-                            // Decode bitmap from bytes for thumbnail and full-size display.
-                            var bitmap = CoverFetchService.DecodeBitmap(imageBytes);
-                            coverOptions.Add(new CoverOption
-                            {
-                                SourceName = source.SourceName ?? "Unknown",
-                                ImageData = imageBytes,
-                                RemoteUrl = source.CoverImageUrl,
-                                ThumbnailBitmap = bitmap,
-                                FullBitmap = bitmap
-                            });
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Log.Error(ex, "Cover fetch failed for source {Source} ISBN {Isbn}",
-                            source.SourceName, coverIsbn);
-                    }
-                }
-
-                // Load existing book cover so the user can compare and keep it if preferred.
-                // Prepend as "Current" to match the AllColumnNames ordering in MergeReviewViewModel.
-                if (existingBookId.HasValue)
-                {
-                    try
-                    {
-                        var existingCoverBytes = await _bookImageService.GetBookPrimaryCoverBytesAsync(existingBookId.Value);
-                        if (existingCoverBytes is not null && existingCoverBytes.Length > 0)
-                        {
-                            var existingBitmap = CoverFetchService.DecodeBitmap(existingCoverBytes);
-                            coverOptions.Insert(0, new CoverOption
-                            {
-                                SourceName = "Current",
-                                ImageData = existingCoverBytes,
-                                ThumbnailBitmap = existingBitmap,
-                                FullBitmap = existingBitmap
-                            });
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Log.Error(ex, "Failed to load existing cover for book {BookId}", existingBookId.Value);
-                    }
-                }
-
-                // Show dialog with the batch window as owner so it appears on top.
-                // Pass the stored current-book metadata so the dialog computes the same diffs
-                // as the processor did (not against null, which would give different results).
-                var result = await _windowService.ShowMergeReviewDialogAsync(
-                    sources: sources,
-                    currentBook: currentBook,
-                    coverOptions: coverOptions,
-                    existingBookId: existingBookId,
-                    collectionId: null);
-
-                if (result == true)
-                {
-                    await _queueService.UpdateStatusAsync(item.BatchQueueItemId, BatchStatus.Done, null);
-                    PendingReviewCount = Math.Max(0, PendingReviewCount - 1);
-                    SavedCount++;
-                }
-                else
-                {
-                    // User cancelled or dialog closed with an error — mark as Skipped so the
-                    // same item does not reappear in the review queue on the next run.
-                    await _queueService.UpdateStatusAsync(item.BatchQueueItemId, BatchStatus.Skipped, null);
-                    PendingReviewCount = Math.Max(0, PendingReviewCount - 1);
-                    SkippedCount++;
-                }
+                PendingReviewCount = Math.Max(0, PendingReviewCount - 1);
+                if (outcome == BatchReviewOutcome.Saved) SavedCount++;
+                else SkippedCount++;
             }
         }
         catch (Exception ex)
@@ -426,6 +279,7 @@ public partial class BatchQueueWindowViewModel :
             Log.Error(ex, "Error during start review");
         }
     }
+
 
     public bool ShouldGuardClose => IsRunning;
 
@@ -481,6 +335,7 @@ public partial class BatchQueueWindowViewModel :
         NotFoundCount = 0;
         PendingReviewCount = 0;
         SkippedCount = 0;
+        FailureReasons = [];
     }
 
     public async Task StartBatchAsync(IReadOnlyList<string> isbns)

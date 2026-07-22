@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using BookDB.Data.DbContexts;
@@ -31,6 +33,24 @@ public sealed class StatisticsService : IStatisticsService
         return rows.Select(x => (x.Year, x.Count)).ToList();
     }
 
+    public async Task<IReadOnlyList<LibraryGrowthPoint>> GetLibraryGrowthAsync(
+        CancellationToken ct = default)
+    {
+        await using var dbContext = await _factory.CreateDbContextAsync(ct);
+        // Group added dates by year+month as an anonymous row (a tuple projection breaks Npgsql composite reads,
+        // see GetBooksPerYearAsync), then accumulate the running total in memory to get the cumulative line.
+        var monthly = await dbContext.Books
+            .GroupBy(b => new { b.Added.Year, b.Added.Month })
+            .Select(g => new { g.Key.Year, g.Key.Month, Count = g.Count() })
+            .OrderBy(x => x.Year).ThenBy(x => x.Month)
+            .ToListAsync(ct);
+
+        var running = 0;
+        return monthly
+            .Select(x => new LibraryGrowthPoint(x.Year, x.Month, running += x.Count))
+            .ToList();
+    }
+
     public async Task<IReadOnlyList<BreakdownRow>> GetBreakdownByFormatAsync(
         CancellationToken ct = default)
     {
@@ -55,7 +75,7 @@ public sealed class StatisticsService : IStatisticsService
         return counts
             .OrderByDescending(x => x.Count)
             .Select(x => new BreakdownRow(
-                x.FormatId.HasValue && formatMap.TryGetValue(x.FormatId.Value, out var name) ? name : "Unknown",
+                x.FormatId.HasValue && formatMap.TryGetValue(x.FormatId.Value, out var name) ? name : null,
                 x.Count,
                 Math.Round((double)x.Count / total * 100, 1)))
             .ToList();
@@ -84,7 +104,7 @@ public sealed class StatisticsService : IStatisticsService
         return counts
             .OrderByDescending(x => x.Count)
             .Select(x => new BreakdownRow(
-                x.CollectionId.HasValue && collectionMap.TryGetValue(x.CollectionId.Value, out var name) ? name : "Unknown",
+                x.CollectionId.HasValue && collectionMap.TryGetValue(x.CollectionId.Value, out var name) ? name : null,
                 x.Count,
                 Math.Round((double)x.Count / total * 100, 1)))
             .ToList();
@@ -113,7 +133,7 @@ public sealed class StatisticsService : IStatisticsService
         return counts
             .OrderByDescending(x => x.Count)
             .Select(x => new BreakdownRow(
-                x.LanguageId.HasValue && languageMap.TryGetValue(x.LanguageId.Value, out var name) ? name : "Unknown",
+                x.LanguageId.HasValue && languageMap.TryGetValue(x.LanguageId.Value, out var name) ? name : null,
                 x.Count,
                 Math.Round((double)x.Count / total * 100, 1)))
             .ToList();
@@ -128,17 +148,66 @@ public sealed class StatisticsService : IStatisticsService
         if (total == 0)
             return [];
 
-        // PubDate is stored as string — filter out nulls and group by raw string value
-        var counts = await dbContext.Books
+        // PubDate is a free-form string ("2003", "2003-05-01", "May 2003"); pull the raw values and reduce
+        // each to its 4-digit year in memory, since SQL can't parse the varied formats. Books with no
+        // recognisable year drop out, so percentages are over the whole library (matching the other breakdowns).
+        var raw = await dbContext.Books
             .Where(b => b.PubDate != null && b.PubDate != "")
-            .GroupBy(b => b.PubDate)
-            .Select(g => new { PubDate = g.Key, Count = g.Count() })
-            .OrderBy(x => x.PubDate)
+            .Select(b => b.PubDate!)
             .ToListAsync(ct);
+
+        return raw
+            .Select(ExtractYear)
+            .Where(year => year != null)
+            .GroupBy(year => year!.Value)
+            .Select(g => new { Year = g.Key, Count = g.Count() })
+            .OrderByDescending(x => x.Count)
+            .Select(x => new BreakdownRow(
+                x.Year.ToString(CultureInfo.InvariantCulture),
+                x.Count,
+                Math.Round((double)x.Count / total * 100, 1)))
+            .ToList();
+    }
+
+    private static int? ExtractYear(string pubDate)
+    {
+        var match = Regex.Match(pubDate, @"\d{4}");
+        return match.Success && int.TryParse(match.Value, out var year) ? year : null;
+    }
+
+    public async Task<IReadOnlyList<BreakdownRow>> GetTopAuthorsAsync(
+        int limit, CancellationToken ct = default)
+    {
+        await using var dbContext = await _factory.CreateDbContextAsync(ct);
+
+        var total = await dbContext.Books.CountAsync(ct);
+        if (total == 0)
+            return [];
+
+        // Two-query shape mirroring the breakdowns: aggregate contributor counts by PersonId (Author role only),
+        // then map display names from People — EF Core SQLite cannot translate a GroupBy projecting the nav name.
+        var counts = await dbContext.BookContributors
+            .Where(bc => bc.ContributorRole!.Code == "Author")
+            .GroupBy(bc => bc.PersonId)
+            .Select(g => new { PersonId = g.Key, Count = g.Count() })
+            .OrderByDescending(x => x.Count)
+            .Take(limit)
+            .ToListAsync(ct);
+
+        if (counts.Count == 0)
+            return [];
+
+        var personIds = counts.Select(x => x.PersonId).ToList();
+        var names = await dbContext.People
+            .Where(p => personIds.Contains(p.PersonId))
+            .Select(p => new { p.PersonId, p.DisplayName })
+            .ToListAsync(ct);
+
+        var nameMap = names.ToDictionary(p => p.PersonId, p => p.DisplayName);
 
         return counts
             .Select(x => new BreakdownRow(
-                x.PubDate ?? "Unknown",
+                nameMap.TryGetValue(x.PersonId, out var name) ? name : null,
                 x.Count,
                 Math.Round((double)x.Count / total * 100, 1)))
             .ToList();

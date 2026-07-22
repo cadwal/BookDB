@@ -17,6 +17,9 @@ public partial class HelpWindowViewModel : ObservableObject
     private int _selectedTabIndex;
 
     [ObservableProperty]
+    private string _gettingStartedContent = string.Empty;
+
+    [ObservableProperty]
     private string _shortcutsContent = string.Empty;
 
     [ObservableProperty]
@@ -37,6 +40,7 @@ public partial class HelpWindowViewModel : ObservableObject
         try
         {
             var culture = CultureInfo.CurrentUICulture;
+            GettingStartedContent = await HelpContentLoader.LoadAsync("getting-started", culture);
             ShortcutsContent   = await HelpContentLoader.LoadAsync("shortcuts", culture);
             GlossaryContent    = await HelpContentLoader.LoadAsync("glossary", culture);
             ImportGuideContent = await HelpContentLoader.LoadAsync("import-guide", culture);

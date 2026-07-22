@@ -87,10 +87,12 @@ public abstract class MySqlStatisticsTests
 
         // A throwing call here means the provider could not render the query — that is the failure we catch.
         Assert.NotNull(await service.GetBooksPerYearAsync(ct));
+        Assert.NotNull(await service.GetLibraryGrowthAsync(ct));
         Assert.NotNull(await service.GetBreakdownByFormatAsync(ct));
         Assert.NotNull(await service.GetBreakdownByCollectionAsync(ct));
         Assert.NotNull(await service.GetBreakdownByLanguageAsync(ct));
         Assert.NotNull(await service.GetBreakdownByPublishedYearAsync(ct));
+        Assert.NotNull(await service.GetTopAuthorsAsync(12, ct));
         Assert.True(await service.GetTotalBookCountAsync(ct) >= 1);
     }
 }
