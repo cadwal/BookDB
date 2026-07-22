@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using BookDB.Desktop.Services.UpdateCheck;
@@ -72,10 +73,14 @@ public class InstallChannelProviderTests
     public void Detect_AppImageWithAmUpdaterSidecar_IsAppMan()
     {
         var appImage = "/opt/bookdb/bookdb.AppImage";
+        // Build the expected sidecar path the way Detect does (Path.Combine on the AppImage's directory),
+        // so the mock matches on Windows too — there Path.Combine yields a '\' separator. AppImage/AppMan
+        // detection is Linux-only in practice, but the test must stay culture/OS-independent.
+        var sidecar = Path.Combine(Path.GetDirectoryName(appImage)!, "AM-updater");
         Assert.Equal(InstallChannel.AppMan,
             InstallChannelProvider.Detect(
                 processPath: appImage, appImagePath: appImage, localAppData: "",
-                fileExists: p => p == "/opt/bookdb/AM-updater"));
+                fileExists: p => p == sidecar));
     }
 
     [Fact]
