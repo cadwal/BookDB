@@ -272,8 +272,86 @@ jobs:
           name: osx-${{ matrix.arch }}
           path: BookDB-v*-osx-${{ matrix.arch }}.dmg
 
+  # The Android companion app. Non-blocking like the other secondary platforms: a desktop release must not
+  # wait on the phone. The APK is attached to the release only when it can be signed with the project's own
+  # release key — see docs/android-signing.md. Without that key the job deliberately produces nothing rather
+  # than publish a debug-signed APK: Android refuses to upgrade an installed app with one signed by a
+  # different key, so a stopgap build would strand everyone who installed it.
+  build-android:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    env:
+      KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10  # v6.0.3
+
+      - name: Validate tag format
+        env:
+          GH_REF: ${{ github.ref }}
+        run: |
+          if [[ "${GH_REF}" != refs/tags/v[0-9]*.[0-9]*.[0-9]* ]]; then
+            echo "Error: This workflow must be triggered from a version tag (v*.*.*). Got: ${GH_REF}"
+            exit 1
+          fi
+
+      - name: Report a missing signing key
+        if: env.KEYSTORE_BASE64 == ''
+        run: |
+          echo "::notice::ANDROID_KEYSTORE_BASE64 is not set, so no companion APK is attached to this" \
+               "release. See docs/android-signing.md to create the key and add the secrets."
+
+      - uses: actions/setup-dotnet@9a946fdbd5fb07b82b2f5a4466058b876ab72bb2  # v5.3.0
+        if: env.KEYSTORE_BASE64 != ''
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Install Android workload
+        if: env.KEYSTORE_BASE64 != ''
+        run: dotnet workload install android
+
+      - name: Restore the signing key
+        if: env.KEYSTORE_BASE64 != ''
+        run: |
+          echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/bookdb-release.keystore"
+
+      # Version name and code come from Directory.Build.props via the csproj, so the APK carries the same
+      # version as the desktop without this workflow restating it.
+      - name: Build the signed APK
+        if: env.KEYSTORE_BASE64 != ''
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          dotnet publish src/BookDB.Mobile.Android/BookDB.Mobile.Android.csproj \
+            -c Release \
+            -p:AndroidKeyStore=true \
+            -p:AndroidSigningKeyStore="$RUNNER_TEMP/bookdb-release.keystore" \
+            -p:AndroidSigningStorePass="$KEYSTORE_PASSWORD" \
+            -p:AndroidSigningKeyAlias="$KEY_ALIAS" \
+            -p:AndroidSigningKeyPass="$KEY_PASSWORD" \
+            -o publish/android
+
+      - name: Name the APK after the release
+        if: env.KEYSTORE_BASE64 != ''
+        run: |
+          ver="${GITHUB_REF_NAME#v}"
+          apk=$(ls publish/android/*-Signed.apk)
+          mv "$apk" "BookDB-Companion-v${ver}.apk"
+
+      - name: Delete the signing key
+        if: always()
+        run: rm -f "$RUNNER_TEMP/bookdb-release.keystore"
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+        if: env.KEYSTORE_BASE64 != ''
+        with:
+          name: android
+          path: BookDB-Companion-v*.apk
+          if-no-files-found: error
+
   release:
-    needs: [build-windows, build-windows-arm64, build-linux, build-linux-arm64, build-macos]
+    needs: [build-windows, build-windows-arm64, build-linux, build-linux-arm64, build-macos, build-android]
     if: always() && needs.build-windows.result == 'success'
     runs-on: ubuntu-latest
     steps:

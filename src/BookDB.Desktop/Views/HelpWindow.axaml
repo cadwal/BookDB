@@ -50,6 +50,12 @@
             </Border>
         </TabItem>
 
+        <TabItem Header="{x:Static res:Resources.Help_Tab_Companion}">
+            <Border Padding="16">
+                <md:MarkdownScrollViewer Markdown="{Binding CompanionContent}" />
+            </Border>
+        </TabItem>
+
     </TabControl>
 
 </Window>

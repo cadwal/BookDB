@@ -80,6 +80,11 @@
         <views:MoveLibraryView DataContext="{Binding MoveLibrary}"/>
       </TabItem>
 
+      <!-- Tab 3: Devices paired with the companion -->
+      <TabItem Header="{x:Static res:Resources.Maintenance_DevicesHeader}">
+        <views:DevicesView DataContext="{Binding Devices}"/>
+      </TabItem>
+
     </TabControl>
 
   </DockPanel>

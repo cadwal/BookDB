@@ -1,0 +1,127 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:BookDB.Mobile.ViewModels"
+             xmlns:conv="using:BookDB.Mobile.Converters"
+             xmlns:res="using:BookDB.Mobile.Localization"
+             xmlns:views="using:BookDB.Mobile.Views"
+             x:Class="BookDB.Mobile.Views.BrowseView"
+             x:DataType="vm:BrowseViewModel">
+
+  <UserControl.Resources>
+    <conv:JpegToImageConverter x:Key="Jpeg"/>
+  </UserControl.Resources>
+
+  <!-- The page's inset is on the rows rather than here, so the results list reaches both edges — see HubView
+       for what a margin on the grid costs a thumb. -->
+  <Grid RowDefinitions="Auto,Auto,Auto,Auto,*,Auto">
+
+    <Grid Grid.Row="0" ColumnDefinitions="*,12,Auto" Margin="24,16,24,0">
+      <TextBox Grid.Column="0" Text="{Binding SearchText}"
+               IsEnabled="{Binding !ShowsBanner}"
+               PlaceholderText="{x:Static res:Resources.Browse_SearchPlaceholder}"/>
+      <Button Grid.Column="2" Command="{Binding ScanCommand}" Padding="16,10"
+              Content="{x:Static res:Resources.Browse_Scan}"/>
+    </Grid>
+
+    <ComboBox Grid.Row="1" Margin="24,10,24,0"
+              HorizontalAlignment="Stretch"
+              IsVisible="{Binding HasCollections}"
+              ItemsSource="{Binding Collections}"
+              SelectedItem="{Binding SelectedCollection}">
+      <ComboBox.ItemTemplate>
+        <DataTemplate x:DataType="vm:CollectionFilterViewModel">
+          <TextBlock Text="{Binding Label}"/>
+        </DataTemplate>
+      </ComboBox.ItemTemplate>
+    </ComboBox>
+
+    <!-- The answer to a scanned barcode, kept large and unmissable: it is the whole point of the screen. -->
+    <Border Grid.Row="2" Margin="24,10,24,0" CornerRadius="8" Padding="16"
+            IsVisible="{Binding ShowsBanner}"
+            Background="{DynamicResource SystemControlBackgroundListLowBrush}">
+      <StackPanel Spacing="4">
+        <TextBlock FontSize="20" FontWeight="SemiBold" TextWrapping="Wrap"
+                   Text="{x:Static res:Resources.Browse_Owned}"
+                   IsVisible="{Binding IsOwned}"/>
+        <TextBlock FontSize="20" FontWeight="SemiBold" TextWrapping="Wrap"
+                   Text="{x:Static res:Resources.Browse_NotOwned}"
+                   IsVisible="{Binding !IsOwned}"/>
+        <TextBlock Text="{Binding BannerIsbn}" FontSize="12" Opacity="0.7"/>
+        <Button Command="{Binding ClearScanCommand}" Margin="0,8,0,0" Padding="12,8"
+                Content="{x:Static res:Resources.Browse_ClearScan}"/>
+      </StackPanel>
+    </Border>
+
+    <TextBlock Grid.Row="2" Margin="24,10,24,0" Text="{Binding Message}" TextWrapping="Wrap"
+               IsVisible="{Binding Message, Converter={x:Static ObjectConverters.IsNotNull}}"/>
+
+    <views:CameraAccessNotice Grid.Row="3" Margin="24,10,24,0" DataContext="{Binding CameraAccess}"/>
+
+    <!-- The page inset is on the children rather than the scroller, so a result row spans the whole width:
+         its tap target reaches both edges and the press highlight reads as a row of the list rather than a
+         button floating inside one. Raised in UAT (5b/5c-bis) — the rows stopped short of the screen. -->
+    <ScrollViewer Grid.Row="4" Padding="0,12,0,0">
+      <StackPanel Spacing="10">
+
+        <TextBlock Text="{Binding ResultCount}" FontSize="12" Opacity="0.7"
+                   Margin="24,0" IsVisible="{Binding !ShowsBanner}"/>
+
+        <ItemsControl ItemsSource="{Binding Results}">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="vm:BrowseRowViewModel">
+              <Button Command="{Binding OpenCommand}"
+                      HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                      Background="Transparent" BorderThickness="0" Padding="24,6">
+                <Grid ColumnDefinitions="Auto,*">
+                  <Border Grid.Column="0" Width="44" Height="60" Margin="0,0,12,0"
+                          CornerRadius="4"
+                          Background="{DynamicResource SystemControlBackgroundAltHighBrush}">
+                    <Image Source="{Binding Thumbnail, Converter={StaticResource Jpeg}}" Stretch="UniformToFill"/>
+                  </Border>
+                  <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                    <TextBlock Text="{Binding Title}" FontSize="16" TextWrapping="Wrap"/>
+                    <TextBlock Text="{Binding Subline}" FontSize="12" Opacity="0.7"
+                               IsVisible="{Binding HasSubline}"/>
+                  </StackPanel>
+                </Grid>
+              </Button>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <!-- Paging is a deliberate tap rather than an infinite scroll: each page costs the computer a set of
+             covers, and a phone in a shop is not browsing a whole library. -->
+        <Button Command="{Binding LoadMoreCommand}"
+                IsVisible="{Binding HasMore}"
+                HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Padding="0,12"
+                Margin="24,0"
+                Content="{x:Static res:Resources.Browse_LoadMore}"/>
+      </StackPanel>
+    </ScrollViewer>
+
+    <StackPanel Grid.Row="4" Spacing="8" Margin="24,0" VerticalAlignment="Center" IsVisible="{Binding ShowsEmpty}">
+      <TextBlock Text="{x:Static res:Resources.Browse_Empty}"
+                 FontSize="18" HorizontalAlignment="Center" TextWrapping="Wrap"/>
+      <TextBlock Text="{x:Static res:Resources.Browse_EmptyHint}"
+                 HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap" Opacity="0.7"/>
+    </StackPanel>
+
+    <!-- Nothing here is local, so an unreachable computer is an explanation and a retry, not an empty list. -->
+    <StackPanel Grid.Row="4" Spacing="12" Margin="24,0" VerticalAlignment="Center" IsVisible="{Binding IsUnreachable}">
+      <TextBlock Text="{x:Static res:Resources.Browse_Offline}"
+                 HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap"/>
+      <Button Command="{Binding RetryCommand}"
+              HorizontalAlignment="Center" Padding="20,12"
+              Content="{x:Static res:Resources.Browse_Retry}"/>
+    </StackPanel>
+
+    <!-- Removed on the computer: no retry, because retrying is the one thing that cannot help. -->
+    <StackPanel Grid.Row="4" Spacing="12" Margin="24,0" VerticalAlignment="Center" IsVisible="{Binding IsRevoked}">
+      <TextBlock Text="{x:Static res:Resources.Status_RevokedExplanation}"
+                 HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap"/>
+    </StackPanel>
+
+    <ProgressBar Grid.Row="5" Margin="24,8,24,16" IsIndeterminate="True" IsVisible="{Binding IsBusy}"/>
+  </Grid>
+
+</UserControl>

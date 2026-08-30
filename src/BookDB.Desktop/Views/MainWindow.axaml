@@ -341,7 +341,8 @@
                     <ColumnDefinition Width="Auto" />  <!-- 3: connection status -->
                     <ColumnDefinition Width="Auto" />  <!-- 4: update available -->
                     <ColumnDefinition Width="Auto" />  <!-- 5: storage kind -->
-                    <ColumnDefinition Width="Auto" />  <!-- 6: detail toggle -->
+                    <ColumnDefinition Width="Auto" />  <!-- 6: companion -->
+                    <ColumnDefinition Width="Auto" />  <!-- 7: detail toggle -->
                 </Grid.ColumnDefinitions>
 
                 <!-- Left: collection selector -->
@@ -517,8 +518,56 @@
                     </ToolTip.Tip>
                 </Border>
 
+                <!-- Companion indicator: the phone app is a listener with no window of its own, so without
+                     this the only place it is ever mentioned is a row in Settings — and a companion that is
+                     off, or that quietly failed to take its port, looks exactly like one that is working.
+                     Absent while the companion has never been turned on: that is not news. -->
+                <Border Grid.Column="6"
+                        Name="CompanionIndicator"
+                        IsVisible="{Binding ShowCompanionStatus}"
+                        Classes.failed="{Binding IsCompanionFailed}"
+                        BorderThickness="1"
+                        CornerRadius="4"
+                        Padding="3,1"
+                        Margin="8,0"
+                        VerticalAlignment="Center"
+                        ToolTip.Placement="Top"
+                        ToolTip.VerticalOffset="0">
+                    <Border.Styles>
+                        <!-- The resting colours belong here and not on the element: a value set directly in
+                             the element's attributes outranks every style setter, so `Background="Transparent"`
+                             up there silently beat the .failed setter below and the indicator never coloured.
+                             That is UAT 10d — the class was applied the whole time. -->
+                        <Style Selector="Border">
+                            <Setter Property="Background" Value="Transparent" />
+                            <Setter Property="BorderBrush" Value="Transparent" />
+                        </Style>
+                        <!-- Enabled but not listening is the state worth a colour: everything else about it
+                             looks identical to working. Declared after the resting style, which is how one
+                             style wins over another that also matches. -->
+                        <Style Selector="Border.failed">
+                            <Setter Property="BorderBrush" Value="{DynamicResource BrushError}" />
+                            <Setter Property="Background" Value="{DynamicResource BrushWarningBackground}" />
+                        </Style>
+                    </Border.Styles>
+                    <Image Width="16" Height="16" Source="{StaticResource Icon.BarcodeScanner}" />
+                    <ToolTip.Tip>
+                        <StackPanel Spacing="4">
+                            <StackPanel.Styles>
+                                <Style Selector="TextBlock.failed">
+                                    <Setter Property="Foreground" Value="{DynamicResource BrushError}" />
+                                </Style>
+                            </StackPanel.Styles>
+                            <TextBlock Text="{Binding CompanionStatusText}" FontWeight="SemiBold"
+                                       Classes.failed="{Binding IsCompanionFailed}" />
+                            <TextBlock Text="{Binding CompanionDeviceText}"
+                                       IsVisible="{Binding IsCompanionRunning}" />
+                        </StackPanel>
+                    </ToolTip.Tip>
+                </Border>
+
                 <!-- Right: detail panel toggle -->
-                <ToggleButton Grid.Column="6"
+                <ToggleButton Grid.Column="7"
                               IsChecked="{Binding DetailPanelVisible}"
                               Content="{Binding DetailPanelToggleChevron}"
                               VerticalAlignment="Center"

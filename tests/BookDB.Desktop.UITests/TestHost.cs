@@ -27,12 +27,14 @@ public sealed class TestHost : IDisposable
 
     private readonly ServiceProvider _provider;
     private readonly string _dir;
+    private readonly string _connectionString;
 
-    private TestHost(ServiceProvider provider, string dir)
+    private TestHost(ServiceProvider provider, string dir, string connectionString)
     {
         _provider = provider;
         Services = provider;
         _dir = dir;
+        _connectionString = connectionString;
     }
 
     /// <param name="configureOverrides">
@@ -84,13 +86,16 @@ public sealed class TestHost : IDisposable
         configureOverrides?.Invoke(services);
 
         var provider = services.BuildServiceProvider();
-        return new TestHost(provider, dir);
+        return new TestHost(provider, dir, connectionString);
     }
 
     public void Dispose()
     {
         _provider.Dispose();
-        SqliteConnection.ClearAllPools(); // release the file handle before deleting
+        // This database's pool only — ClearAllPools() is process-wide and disposes the native
+        // handle of connections other test classes are using in parallel.
+        using (var poolKey = new SqliteConnection(_connectionString))
+            SqliteConnection.ClearPool(poolKey);
         try { Directory.Delete(_dir, recursive: true); } catch { /* best effort */ }
     }
 }

@@ -51,6 +51,22 @@ public class HelpContentLoaderTests
         Assert.DoesNotContain("Content not found", result);
     }
 
+    [Fact]
+    public async Task LoadAsync_EnglishCompanion_ReturnsNonEmptyContent()
+    {
+        var result = await HelpContentLoader.LoadAsync("companion", new CultureInfo("en"));
+        Assert.False(string.IsNullOrWhiteSpace(result));
+        Assert.DoesNotContain("Content not found", result);
+    }
+
+    [Fact]
+    public async Task LoadAsync_CompanionUnknownCulture_FallsBackToEnglish()
+    {
+        var result = await HelpContentLoader.LoadAsync("companion", new CultureInfo("fi"));
+        Assert.False(string.IsNullOrWhiteSpace(result));
+        Assert.DoesNotContain("Content not found", result);
+    }
+
     // Every shipped locale resolves its own translation of every topic, never the English fallback
     [Theory]
     [InlineData("de")]
@@ -63,7 +79,7 @@ public class HelpContentLoaderTests
     [InlineData("sv")]
     public async Task LoadAsync_ShippedLocale_ResolvesItsOwnVariant(string locale)
     {
-        foreach (var topic in new[] { "shortcuts", "glossary", "import-guide", "data-sources", "remote-databases" })
+        foreach (var topic in new[] { "shortcuts", "glossary", "import-guide", "data-sources", "remote-databases", "companion" })
         {
             var english = await HelpContentLoader.LoadAsync(topic, new CultureInfo("en"));
             var localized = await HelpContentLoader.LoadAsync(topic, new CultureInfo(locale));
@@ -97,5 +113,7 @@ public class HelpContentLoaderTests
         Assert.Contains("BookDB.Help.Content.data-sources.sv.md", names);
         Assert.Contains("BookDB.Help.Content.remote-databases.md", names);
         Assert.Contains("BookDB.Help.Content.remote-databases.sv.md", names);
+        Assert.Contains("BookDB.Help.Content.companion.md", names);
+        Assert.Contains("BookDB.Help.Content.companion.sv.md", names);
     }
 }

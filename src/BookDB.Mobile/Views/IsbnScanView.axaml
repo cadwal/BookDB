@@ -1,0 +1,108 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:BookDB.Mobile.ViewModels"
+             xmlns:res="using:BookDB.Mobile.Localization"
+             xmlns:views="using:BookDB.Mobile.Views"
+             xmlns:ti="using:Avalonia.Input.TextInput"
+             x:Class="BookDB.Mobile.Views.IsbnScanView"
+             x:DataType="vm:IsbnScanViewModel">
+
+  <!-- The page's inset is on the rows rather than here, so the scrolling area reaches both edges — see
+       HubView for what a margin on the grid costs a thumb. -->
+  <Grid RowDefinitions="*,Auto">
+
+    <!-- Scrolls because landscape on a phone leaves barely more height than this content needs, and the way
+         to type a number by hand must not be the part that falls off the bottom. -->
+    <ScrollViewer Grid.Row="0" Padding="24,16,24,0">
+      <StackPanel Spacing="16" VerticalAlignment="Center">
+
+        <Button Command="{Binding ScanCommand}"
+                Classes="accent"
+                HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                Padding="0,28" FontSize="20"
+                Content="{x:Static res:Resources.Scan_ScanButton}"/>
+
+        <views:CameraAccessNotice DataContext="{Binding CameraAccess}"/>
+
+        <TextBlock Text="{x:Static res:Resources.Scan_Or}"
+                   HorizontalAlignment="Center" FontSize="12" Opacity="0.6"/>
+
+        <Grid ColumnDefinitions="*,Auto">
+          <!-- A number is what is being copied off the cover, so the phone opens on the digits rather than
+               on a letter keyboard the user has to switch away from every time. The cost is the check digit
+               X of a pre-2007 ISBN-10, which cannot be typed on a numeric pad; those books carry an EAN-13
+               barcode all the same, and this field is the damaged-barcode fallback. -->
+          <TextBox Grid.Column="0"
+                   Text="{Binding ManualIsbn}"
+                   PlaceholderText="{x:Static res:Resources.Scan_ManualWatermark}"
+                   ti:TextInputOptions.ContentType="Digits"
+                   ti:TextInputOptions.ReturnKeyType="Done"
+                   FontSize="18"/>
+          <!-- The check digit is reported, never enforced: real books carry misprinted ISBNs. -->
+          <TextBlock Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center" FontSize="18"
+                     Text="{x:Static res:Resources.Scan_ChecksumOkMark}"
+                     IsVisible="{Binding ShowsManualValid}"/>
+          <TextBlock Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center" FontSize="18"
+                     Text="{x:Static res:Resources.Scan_ChecksumWarningMark}"
+                     IsVisible="{Binding ShowsManualWarning}"/>
+        </Grid>
+
+        <TextBlock Text="{x:Static res:Resources.Scan_ChecksumWarning}"
+                   IsVisible="{Binding ShowsManualWarning}"
+                   TextWrapping="Wrap" FontSize="12" Opacity="0.8"/>
+
+        <Button Command="{Binding UseManualIsbnCommand}"
+                HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                Padding="0,12"
+                Content="{x:Static res:Resources.Scan_UseManual}"/>
+
+        <TextBlock Text="{Binding Message}"
+                   IsVisible="{Binding Message, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                   TextWrapping="Wrap" Opacity="0.9"/>
+      </StackPanel>
+    </ScrollViewer>
+
+    <!-- The read: number, then whatever the computer could tell us about it, then the moment to take it back. -->
+    <Border Grid.Row="1"
+            IsVisible="{Binding HasResult}"
+            Background="{DynamicResource SystemControlBackgroundListLowBrush}"
+            CornerRadius="8" Padding="16,12" Margin="24,16">
+      <StackPanel Spacing="6">
+        <Grid ColumnDefinitions="*,Auto">
+          <TextBlock Grid.Column="0" Text="{Binding AcceptedIsbn}" FontSize="20" FontWeight="SemiBold"/>
+          <!-- The mark says what the number is, not that a read happened: a cover can carry barcodes that
+               are not the book, and a tick on one of those is the app agreeing with a mistake. -->
+          <TextBlock Grid.Column="1" Text="{x:Static res:Resources.Scan_ChecksumOkMark}"
+                     IsVisible="{Binding ShowsAcceptedValid}"
+                     FontSize="20" VerticalAlignment="Center"/>
+          <TextBlock Grid.Column="1" Text="{x:Static res:Resources.Scan_ChecksumWarningMark}"
+                     IsVisible="{Binding ShowsAcceptedWarning}"
+                     FontSize="20" VerticalAlignment="Center"/>
+        </Grid>
+
+        <!-- MinHeight on the three wrapped lines for the reason PairingView records: on Android a wrapped
+             block is sometimes arranged one line tall and paints only its first line. These are the lines
+             that appear and change length while the panel is on screen, which is what triggers it. -->
+        <TextBlock Text="{x:Static res:Resources.Scan_ChecksumWarning}"
+                   IsVisible="{Binding ShowsAcceptedWarning}"
+                   TextWrapping="Wrap" FontSize="12" Opacity="0.8" MinHeight="34"/>
+
+        <TextBlock Text="{Binding DuplicateLine}"
+                   IsVisible="{Binding IsDuplicate}"
+                   TextWrapping="Wrap" FontWeight="SemiBold" MinHeight="34"/>
+
+        <TextBlock Text="{Binding PreviewLine}"
+                   IsVisible="{Binding PreviewLine, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                   TextWrapping="Wrap" Opacity="0.9" MinHeight="34"/>
+
+        <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding IsAdvancing}">
+          <TextBlock Grid.Column="0" Text="{x:Static res:Resources.Scan_Continuing}"
+                     VerticalAlignment="Center" Opacity="0.7"/>
+          <Button Grid.Column="1" Command="{Binding UndoCommand}"
+                  Content="{x:Static res:Resources.Scan_Undo}"/>
+        </Grid>
+      </StackPanel>
+    </Border>
+  </Grid>
+
+</UserControl>

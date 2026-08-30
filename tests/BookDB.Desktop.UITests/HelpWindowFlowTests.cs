@@ -51,6 +51,7 @@ public class HelpWindowFlowTests : HeadlessTest
                 {
                     vm.GettingStartedContent, vm.ShortcutsContent, vm.GlossaryContent,
                     vm.ImportGuideContent, vm.DataSourcesContent, vm.RemoteDatabasesContent,
+                    vm.CompanionContent,
                 },
                 content => Assert.False(string.IsNullOrWhiteSpace(content)));
             foreach (var index in Enumerable.Range(0, tabs.Items.Count))

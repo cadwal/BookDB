@@ -176,8 +176,9 @@
                        VerticalAlignment="Center"
                        Margin="0,0,12,8"/>
             <NumericUpDown Grid.Row="1" Grid.Column="1"
+                           x:Name="PrintFontSizeField"
                            Value="{Binding FontSize}"
-                           Minimum="7" Maximum="14" Increment="1"
+                           Increment="1"
                            FontSize="13" MinWidth="80"
                            Margin="0,0,0,8"/>
 
@@ -218,14 +219,16 @@
                 <TextBlock Text="{x:Static res:Resources.Print_MarginH}"
                            FontSize="13"
                            VerticalAlignment="Center"/>
-                <NumericUpDown Value="{Binding MarginHorizontalMm}"
-                               Minimum="5" Maximum="40" Increment="1"
+                <NumericUpDown x:Name="PrintMarginHorizontalField"
+                               Value="{Binding MarginHorizontalMm}"
+                               Increment="1"
                                MinWidth="64" FontSize="13"/>
                 <TextBlock Text="{x:Static res:Resources.Print_MarginV}"
                            FontSize="13"
                            VerticalAlignment="Center"/>
-                <NumericUpDown Value="{Binding MarginVerticalMm}"
-                               Minimum="5" Maximum="40" Increment="1"
+                <NumericUpDown x:Name="PrintMarginVerticalField"
+                               Value="{Binding MarginVerticalMm}"
+                               Increment="1"
                                MinWidth="64" FontSize="13"/>
             </StackPanel>
 

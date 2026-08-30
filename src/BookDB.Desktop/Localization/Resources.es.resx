@@ -2225,6 +2225,12 @@ Posibles duplicados: {3}  |  Con portadas: {4}</value>
   <data name="Help_RemoteDatabasesLink" xml:space="preserve">
     <value>Ayuda: bases de datos remotas</value>
   </data>
+  <data name="Help_Tab_Companion" xml:space="preserve">
+    <value>Complemento</value>
+  </data>
+  <data name="Help_CompanionLink" xml:space="preserve">
+    <value>Ayuda: complemento</value>
+  </data>
   <data name="Menu_AboutBookDB" xml:space="preserve">
     <value>_Acerca de BookDB…</value>
   </data>
@@ -2347,6 +2353,9 @@ Posibles duplicados: {3}  |  Con portadas: {4}</value>
   </data>
   <data name="RecatalogAll_Confirm" xml:space="preserve">
     <value>¿Re-catalogar los {0} libros? Esto puede tardar un momento.</value>
+  </data>
+  <data name="RecatalogAll_ConfirmTitle" xml:space="preserve">
+    <value>Re-catalogar todo</value>
   </data>
   <data name="Backup_Saved" xml:space="preserve">
     <value>Copia de seguridad guardada en {0}</value>
@@ -2993,6 +3002,15 @@ Posibles duplicados: {3}  |  Con portadas: {4}</value>
   <data name="StatusBar_Storage_State_Label" xml:space="preserve">
     <value>Conexión</value>
   </data>
+  <data name="StatusBar_Companion_Running" xml:space="preserve">
+    <value>Complemento · puerto {0}</value>
+  </data>
+  <data name="StatusBar_Companion_Failed" xml:space="preserve">
+    <value>El complemento no pudo iniciarse</value>
+  </data>
+  <data name="StatusBar_Companion_Devices" xml:space="preserve">
+    <value>Dispositivos vinculados: {0}</value>
+  </data>
   <data name="StatusBar_Storage_State_Connected" xml:space="preserve">
     <value>Conectada</value>
   </data>
@@ -3247,5 +3265,161 @@ Posibles duplicados: {3}  |  Con portadas: {4}</value>
   </data>
   <data name="Update_OpenGitHub" xml:space="preserve">
     <value>Descargar desde GitHub</value>
+  </data>
+  <data name="Isbn_ChecksumValid" xml:space="preserve">
+    <value>Dígito de control ISBN válido</value>
+  </data>
+  <data name="Isbn_ChecksumWarning" xml:space="preserve">
+    <value>El dígito de control del ISBN no coincide: es posible que el ISBN esté mal escrito</value>
+  </data>
+  <data name="LookupWizard_ChecksumWarnings" xml:space="preserve">
+    <value>Avisos de dígito de control: {0}</value>
+  </data>
+  <data name="BookList_ViewToggle_List" xml:space="preserve">
+    <value>Vista de lista</value>
+  </data>
+  <data name="BookList_ViewToggle_Grid" xml:space="preserve">
+    <value>Vista de cuadrícula</value>
+  </data>
+  <data name="Settings_Tab_Companion" xml:space="preserve">
+    <value>Complemento</value>
+  </data>
+  <data name="Settings_Companion_Enable" xml:space="preserve">
+    <value>Activar complemento</value>
+  </data>
+  <data name="Settings_Companion_EnableHint" xml:space="preserve">
+    <value>Permite que un teléfono o tableta emparejado escanee libros directamente en esta biblioteca a través de tu red local.</value>
+  </data>
+  <data name="Settings_Companion_Status" xml:space="preserve">
+    <value>Estado</value>
+  </data>
+  <data name="Settings_Companion_StatusOff" xml:space="preserve">
+    <value>Desactivado</value>
+  </data>
+  <data name="Settings_Companion_StatusRunning" xml:space="preserve">
+    <value>En ejecución · puerto {0}</value>
+  </data>
+  <data name="Settings_Companion_StatusFailed" xml:space="preserve">
+    <value>No se pudo iniciar: {0}</value>
+  </data>
+  <data name="Settings_Companion_Port" xml:space="preserve">
+    <value>Puerto</value>
+  </data>
+  <data name="Settings_Companion_FirewallHint" xml:space="preserve">
+    <value>Windows preguntará si permitir BookDB a través del firewall: permítelo en redes privadas para que tu dispositivo pueda conectarse.</value>
+  </data>
+  <data name="Settings_Companion_FirewallHintMac" xml:space="preserve">
+    <value>Si macOS pregunta si permite las conexiones entrantes para BookDB, permítalas, o su dispositivo no podrá conectarse. Su cortafuegos está desactivado de forma predeterminada, así que puede que no se le pregunte nada; puede comprobarlo en Ajustes del Sistema › Red › Cortafuegos.</value>
+  </data>
+  <data name="Settings_Companion_PortInvalid" xml:space="preserve">
+    <value>El puerto debe ser un número entre {0} y {1}.</value>
+  </data>
+  <data name="Settings_Companion_FirewallHintUfw" xml:space="preserve">
+    <value>ufw está en ejecución y no le preguntará: ningún dispositivo podrá conectarse hasta que abra el puerto {0}:
+sudo ufw allow from {1} to any port {0} proto tcp
+sudo ufw allow from {1} to any port {0} proto udp
+UDP es como un dispositivo vuelve a encontrar este equipo cuando cambia su dirección.</value>
+  </data>
+  <data name="Settings_Companion_FirewallHintFirewalld" xml:space="preserve">
+    <value>firewalld está en ejecución y no le preguntará: ningún dispositivo podrá conectarse hasta que abra el puerto {0}:
+sudo firewall-cmd --permanent --add-port={0}/tcp --add-port={0}/udp
+sudo firewall-cmd --reload
+UDP es como un dispositivo vuelve a encontrar este equipo cuando cambia su dirección.</value>
+  </data>
+  <data name="Settings_Companion_FirewallHintOpen" xml:space="preserve">
+    <value>{0} está en ejecución y el puerto {1} ya está abierto para TCP y UDP. No hay nada que hacer.</value>
+  </data>
+  <data name="Settings_Companion_FirewallHintUfwUnknown" xml:space="preserve">
+    <value>ufw está en ejecución y no le preguntará. Si un dispositivo no puede conectarse, abra el puerto {0} para su red local:
+sudo ufw allow from {1} to any port {0} proto tcp
+sudo ufw allow from {1} to any port {0} proto udp
+UDP es como un dispositivo vuelve a encontrar este equipo cuando cambia su dirección.</value>
+  </data>
+  <data name="Settings_Companion_FirewallHintFirewalldUnknown" xml:space="preserve">
+    <value>firewalld está en ejecución y no le preguntará. Si un dispositivo no puede conectarse, abra el puerto {0} para su red local:
+sudo firewall-cmd --permanent --add-port={0}/tcp --add-port={0}/udp
+sudo firewall-cmd --reload
+UDP es como un dispositivo vuelve a encontrar este equipo cuando cambia su dirección.</value>
+  </data>
+  <data name="Settings_Companion_CaptureSection" xml:space="preserve">
+    <value>Captura: se aplica a todos los dispositivos conectados</value>
+  </data>
+  <data name="Settings_Companion_MaxImageSize" xml:space="preserve">
+    <value>Tamaño máximo de imagen (px)</value>
+  </data>
+  <data name="Settings_Companion_JpegQuality" xml:space="preserve">
+    <value>Calidad JPEG (1–100)</value>
+  </data>
+  <data name="Maintenance_DevicesHeader" xml:space="preserve">
+    <value>Dispositivos</value>
+  </data>
+  <data name="Devices_Intro" xml:space="preserve">
+    <value>Teléfonos y tabletas emparejados con este equipo.</value>
+  </data>
+  <data name="Devices_CountOfMax" xml:space="preserve">
+    <value>{0} de {1} dispositivos en uso</value>
+  </data>
+  <data name="Devices_AtLimit" xml:space="preserve">
+    <value>Los {0} dispositivos están en uso. Quite uno abajo antes de emparejar otro.</value>
+  </data>
+  <data name="Devices_None" xml:space="preserve">
+    <value>Aún no hay dispositivos emparejados.</value>
+  </data>
+  <data name="Devices_Column_Name" xml:space="preserve">
+    <value>Nombre</value>
+  </data>
+  <data name="Devices_Column_Paired" xml:space="preserve">
+    <value>Emparejado</value>
+  </data>
+  <data name="Devices_Column_LastUsed" xml:space="preserve">
+    <value>Último uso</value>
+  </data>
+  <data name="Devices_Remove" xml:space="preserve">
+    <value>Quitar</value>
+  </data>
+  <data name="Devices_RemoveConfirm" xml:space="preserve">
+    <value>¿Quitar “{0}”? Habrá que emparejarlo de nuevo antes de que pueda escanear en esta biblioteca.</value>
+  </data>
+  <data name="Devices_ShowPairingCode" xml:space="preserve">
+    <value>Mostrar código de emparejamiento…</value>
+  </data>
+  <data name="Devices_CompanionOff" xml:space="preserve">
+    <value>El complemento está desactivado. Actívalo en Configuración ▸ Complemento antes de emparejar un dispositivo.</value>
+  </data>
+  <data name="Devices_ManageButton" xml:space="preserve">
+    <value>Administrar dispositivos emparejados…</value>
+  </data>
+  <data name="Devices_LastUsed_JustNow" xml:space="preserve">
+    <value>Ahora mismo</value>
+  </data>
+  <data name="Devices_LastUsed_MinutesAgo" xml:space="preserve">
+    <value>hace {0} min</value>
+  </data>
+  <data name="Devices_LastUsed_HoursAgo" xml:space="preserve">
+    <value>hace {0} h</value>
+  </data>
+  <data name="Pairing_Title" xml:space="preserve">
+    <value>Emparejar un dispositivo</value>
+  </data>
+  <data name="Pairing_Instruction" xml:space="preserve">
+    <value>En BookDB en tu teléfono o tableta, elige “Escanear código de emparejamiento” y apunta la cámara aquí.</value>
+  </data>
+  <data name="Pairing_Address" xml:space="preserve">
+    <value>Dirección</value>
+  </data>
+  <data name="Pairing_ExpiresIn" xml:space="preserve">
+    <value>Este código caduca en {0}:{1:00}</value>
+  </data>
+  <data name="Pairing_Paired" xml:space="preserve">
+    <value>“{0}” ya está emparejado con este equipo.</value>
+  </data>
+  <data name="Pairing_PairAnother" xml:space="preserve">
+    <value>Emparejar otro dispositivo</value>
+  </data>
+  <data name="Pairing_NoNetwork" xml:space="preserve">
+    <value>Este equipo no tiene una dirección de red por la que un dispositivo pueda alcanzarlo.</value>
+  </data>
+  <data name="Pairing_NotRunning" xml:space="preserve">
+    <value>El complemento no está en ejecución, por lo que no hay ningún código de emparejamiento que mostrar.</value>
   </data>
 </root>

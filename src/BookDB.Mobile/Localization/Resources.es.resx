@@ -1,0 +1,607 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="App_Title" xml:space="preserve">
+    <value>BookDB</value>
+  </data>
+  <data name="Nav_Back" xml:space="preserve">
+    <value>Atrás</value>
+  </data>
+  <data name="Hub_ScanBooks" xml:space="preserve">
+    <value>Escanear libros</value>
+  </data>
+  <data name="Hub_Browse" xml:space="preserve">
+    <value>Explorar</value>
+  </data>
+  <data name="Hub_Settings" xml:space="preserve">
+    <value>Configuración</value>
+  </data>
+  <data name="Status_Connected" xml:space="preserve">
+    <value>Conectado</value>
+  </data>
+  <data name="Status_Reconnecting" xml:space="preserve">
+    <value>Reconectando…</value>
+  </data>
+  <data name="Status_Offline" xml:space="preserve">
+    <value>Sin conexión</value>
+  </data>
+  <data name="Status_Revoked" xml:space="preserve">
+    <value>Eliminado</value>
+  </data>
+  <data name="Status_RevokedExplanation" xml:space="preserve">
+    <value>El ordenador ya no acepta este dispositivo. Desvincúlalo en Configuración y vuelve a emparejarlo con un código nuevo.</value>
+  </data>
+  <data name="Scan_Title" xml:space="preserve">
+    <value>Escanear libros</value>
+  </data>
+  <data name="Browse_Title" xml:space="preserve">
+    <value>Explorar</value>
+  </data>
+  <data name="Settings_Title" xml:space="preserve">
+    <value>Configuración</value>
+  </data>
+  <data name="Pairing_Title" xml:space="preserve">
+    <value>Emparejar con un ordenador</value>
+  </data>
+  <data name="Pairing_Intro" xml:space="preserve">
+    <value>Escanea el código de emparejamiento que aparece en tu ordenador y luego da un nombre a este dispositivo.</value>
+  </data>
+  <data name="Pairing_ScanButton" xml:space="preserve">
+    <value>Escanear código de emparejamiento</value>
+  </data>
+  <data name="Pairing_DeviceNameLabel" xml:space="preserve">
+    <value>Nombre del dispositivo</value>
+  </data>
+  <data name="Pairing_PairButton" xml:space="preserve">
+    <value>Emparejar</value>
+  </data>
+  <data name="Pairing_Scanned" xml:space="preserve">
+    <value>Código escaneado. Nombra el dispositivo y toca Emparejar.</value>
+  </data>
+  <data name="Pairing_ScanCancelled" xml:space="preserve">
+    <value>No se escaneó ningún código.</value>
+  </data>
+  <data name="Pairing_Busy" xml:space="preserve">
+    <value>Emparejando…</value>
+  </data>
+  <data name="Pairing_Result_Paired" xml:space="preserve">
+    <value>Emparejado. Todo listo.</value>
+  </data>
+  <data name="Pairing_Result_InvalidCode" xml:space="preserve">
+    <value>Eso no es un código de emparejamiento de BookDB.</value>
+  </data>
+  <data name="Pairing_Result_CodeExpired" xml:space="preserve">
+    <value>Ese código ha caducado o ya se usó. Muestra uno nuevo en tu ordenador y vuelve a escanear.</value>
+  </data>
+  <data name="Pairing_Result_DeviceLimitReached" xml:space="preserve">
+    <value>Este ordenador ya tiene el máximo de dispositivos emparejados. Quita uno e inténtalo de nuevo.</value>
+  </data>
+  <data name="Pairing_Result_IncompatibleVersion" xml:space="preserve">
+    <value>Esta aplicación y el BookDB del ordenador son de versiones distintas. Actualiza ambos a la última.</value>
+  </data>
+  <data name="Pairing_Result_CannotConnect" xml:space="preserve">
+    <value>No se pudo contactar con el ordenador. Comprueba que ambos estén en la misma red y que el complemento esté en marcha.</value>
+  </data>
+  <data name="Pairing_Result_Failed" xml:space="preserve">
+    <value>El emparejamiento falló. Inténtalo de nuevo.</value>
+  </data>
+  <data name="Settings_Group_Computer" xml:space="preserve">
+    <value>Ordenador</value>
+  </data>
+  <data name="Settings_Group_Capture" xml:space="preserve">
+    <value>Captura</value>
+  </data>
+  <data name="Settings_Group_ThisDevice" xml:space="preserve">
+    <value>Este dispositivo</value>
+  </data>
+  <data name="Settings_CaptureCaption" xml:space="preserve">
+    <value>Se configura en el ordenador.</value>
+  </data>
+  <data name="Settings_Status" xml:space="preserve">
+    <value>Estado</value>
+  </data>
+  <data name="Settings_Library" xml:space="preserve">
+    <value>Biblioteca</value>
+  </data>
+  <data name="Settings_ComputerApp" xml:space="preserve">
+    <value>Aplicación del ordenador</value>
+  </data>
+  <data name="Settings_LongEdge" xml:space="preserve">
+    <value>Lado largo</value>
+  </data>
+  <data name="Settings_JpegQuality" xml:space="preserve">
+    <value>Calidad JPEG</value>
+  </data>
+  <data name="Settings_PixelsValue" xml:space="preserve">
+    <value>{0} px</value>
+  </data>
+  <data name="Settings_DeviceNameLabel" xml:space="preserve">
+    <value>Nombre</value>
+  </data>
+  <data name="Settings_AppVersion" xml:space="preserve">
+    <value>Versión de la aplicación</value>
+  </data>
+  <data name="Settings_CheckConnection" xml:space="preserve">
+    <value>Comprobar conexión</value>
+  </data>
+  <data name="Settings_Unpair" xml:space="preserve">
+    <value>Desvincular este dispositivo</value>
+  </data>
+  <data name="Settings_UnpairWarning" xml:space="preserve">
+    <value>Este dispositivo necesitará un nuevo código de vinculación del ordenador.</value>
+  </data>
+  <data name="Settings_UnpairConfirm" xml:space="preserve">
+    <value>Desvincular</value>
+  </data>
+  <data name="Settings_Cancel" xml:space="preserve">
+    <value>Cancelar</value>
+  </data>
+  <data name="Settings_NotAvailable" xml:space="preserve">
+    <value>—</value>
+  </data>
+  <data name="Settings_OfflineHint" xml:space="preserve">
+    <value>No se puede acceder al ordenador. Comprueba que está encendido, que el complemento está activado y que ambos están en la misma red; después vuelve a comprobarlo.</value>
+  </data>
+  <data name="Scan_ScanButton" xml:space="preserve">
+    <value>Escanear código de barras</value>
+  </data>
+  <data name="Scan_Or" xml:space="preserve">
+    <value>o escríbelo</value>
+  </data>
+  <data name="Scan_ManualWatermark" xml:space="preserve">
+    <value>ISBN</value>
+  </data>
+  <data name="Scan_UseManual" xml:space="preserve">
+    <value>Usar este ISBN</value>
+  </data>
+  <data name="Scan_ChecksumOkMark" xml:space="preserve">
+    <value>✓</value>
+  </data>
+  <data name="Scan_ChecksumWarningMark" xml:space="preserve">
+    <value>⚠</value>
+  </data>
+  <data name="Scan_ChecksumWarning" xml:space="preserve">
+    <value>El dígito de control no coincide. Puedes usarlo igualmente: hay ISBN mal impresos.</value>
+  </data>
+  <data name="Scan_NothingRead" xml:space="preserve">
+    <value>No se leyó ningún código de barras.</value>
+  </data>
+  <data name="Scan_Continuing" xml:space="preserve">
+    <value>Continuando…</value>
+  </data>
+  <data name="Scan_Undo" xml:space="preserve">
+    <value>Deshacer</value>
+  </data>
+  <data name="Scan_AlreadyInLibrary" xml:space="preserve">
+    <value>Ya está en tu biblioteca: las fotos se añadirán a «{0}».</value>
+  </data>
+  <data name="Scan_TitleAndAuthors" xml:space="preserve">
+    <value>{0} · {1}</value>
+  </data>
+  <data name="Scan_AlreadyInBatch" xml:space="preserve">
+    <value>Ya está en el lote: volver a escanearlo prepara una segunda copia.</value>
+  </data>
+  <data name="Scan_NotChecked" xml:space="preserve">
+    <value>Sin comprobar: no hay ningún ordenador al que preguntar.</value>
+  </data>
+  <data name="Scan_UntitledBook" xml:space="preserve">
+    <value>este libro</value>
+  </data>
+  <data name="Builder_Title" xml:space="preserve">
+    <value>Libro</value>
+  </data>
+  <data name="Camera_Instruction" xml:space="preserve">
+    <value>Apunta la cámara al código de barras</value>
+  </data>
+  <data name="Camera_PairingInstruction" xml:space="preserve">
+    <value>Apunte la cámara al código de vinculación de su ordenador</value>
+  </data>
+  <data name="Camera_PairingRationale" xml:space="preserve">
+    <value>BookDB usa la cámara para leer el código de vinculación que aparece en su ordenador. No se fotografía nada y nada sale de su red local.</value>
+  </data>
+  <data name="Camera_Close" xml:space="preserve">
+    <value>Cerrar</value>
+  </data>
+  <data name="Camera_Torch" xml:space="preserve">
+    <value>Flash</value>
+  </data>
+  <data name="Camera_PermissionRationale" xml:space="preserve">
+    <value>BookDB necesita la cámara para leer códigos de barras.</value>
+  </data>
+  <data name="Builder_IsbnLabel" xml:space="preserve">
+    <value>ISBN {0}</value>
+  </data>
+  <data name="Builder_SlotFrontCover" xml:space="preserve">
+    <value>Portada</value>
+  </data>
+  <data name="Builder_SlotBackCover" xml:space="preserve">
+    <value>Contraportada</value>
+  </data>
+  <data name="Builder_SlotSpine" xml:space="preserve">
+    <value>Lomo</value>
+  </data>
+  <data name="Builder_SlotDustJacket" xml:space="preserve">
+    <value>Sobrecubierta</value>
+  </data>
+  <data name="Builder_Optional" xml:space="preserve">
+    <value>opcional</value>
+  </data>
+  <data name="Builder_AddPhoto" xml:space="preserve">
+    <value>Añadir foto</value>
+  </data>
+  <data name="Builder_Retake" xml:space="preserve">
+    <value>Repetir</value>
+  </data>
+  <data name="Builder_UsePhoto" xml:space="preserve">
+    <value>Usar la foto</value>
+  </data>
+  <data name="Builder_Done" xml:space="preserve">
+    <value>Listo: siguiente libro</value>
+  </data>
+  <data name="Builder_SendNow" xml:space="preserve">
+    <value>Enviar ahora</value>
+  </data>
+  <data name="Builder_SaveToBatch" xml:space="preserve">
+    <value>Guardar en el lote</value>
+  </data>
+  <data name="Builder_PhotosOptionalHint" xml:space="preserve">
+    <value>Las fotos son opcionales: un libro puede guardarse solo con su ISBN.</value>
+  </data>
+  <data name="Builder_PlayServicesMissing" xml:space="preserve">
+    <value>La captura de portadas necesita los servicios de Google Play, que este dispositivo no tiene. Puedes seguir guardando libros por ISBN.</value>
+  </data>
+  <data name="Builder_PlayServicesOutdated" xml:space="preserve">
+    <value>La captura de portadas necesita una versión más reciente de los servicios de Google Play. Actualízalos y vuelve a intentarlo.</value>
+  </data>
+  <data name="Builder_ModuleUnavailable" xml:space="preserve">
+    <value>El escáner de portadas todavía tiene que descargarse desde los servicios de Google Play. Conéctate a internet y vuelve a intentarlo.</value>
+  </data>
+  <data name="Builder_CaptureFailed" xml:space="preserve">
+    <value>No se pudo tomar la foto.</value>
+  </data>
+  <data name="Builder_Retry" xml:space="preserve">
+    <value>Volver a intentar</value>
+  </data>
+  <data name="Batch_Title" xml:space="preserve">
+    <value>Lote</value>
+  </data>
+  <data name="Batch_CountLine" xml:space="preserve">
+    <value>Lote ({0})</value>
+  </data>
+  <data name="Batch_IsbnTail" xml:space="preserve">
+    <value>…{0}</value>
+  </data>
+  <data name="Batch_PhotoCount" xml:space="preserve">
+    <value>{0} fotos</value>
+  </data>
+  <data name="Batch_PhotoCountOne" xml:space="preserve">
+    <value>1 foto</value>
+  </data>
+  <data name="Batch_NoPhotos" xml:space="preserve">
+    <value>Sin fotos</value>
+  </data>
+  <data name="Batch_Edit" xml:space="preserve">
+    <value>Editar</value>
+  </data>
+  <data name="Batch_Remove" xml:space="preserve">
+    <value>Quitar</value>
+  </data>
+  <data name="Batch_RemoveConfirm" xml:space="preserve">
+    <value>Quitar</value>
+  </data>
+  <data name="Batch_RemoveWarning" xml:space="preserve">
+    <value>Este libro y sus fotos se descartarán.</value>
+  </data>
+  <data name="Batch_Cancel" xml:space="preserve">
+    <value>Cancelar</value>
+  </data>
+  <data name="Batch_Upload" xml:space="preserve">
+    <value>Subir {0} elementos</value>
+  </data>
+  <data name="Batch_OfflineReason" xml:space="preserve">
+    <value>No se puede contactar con el ordenador, así que aún no se puede enviar nada. El lote está a salvo: espera aquí hasta que vuelvas a la misma red.</value>
+  </data>
+  <data name="Batch_Empty" xml:space="preserve">
+    <value>No hay nada esperando para enviarse</value>
+  </data>
+  <data name="Batch_EmptyHint" xml:space="preserve">
+    <value>Escanea tu primer libro y aparecerá aquí.</value>
+  </data>
+  <data name="Hub_BatchItems" xml:space="preserve">
+    <value>Lote · {0} elementos</value>
+  </data>
+  <data name="Upload_Title" xml:space="preserve">
+    <value>Enviando</value>
+  </data>
+  <data name="Upload_Running" xml:space="preserve">
+    <value>Enviando {0} libros…</value>
+  </data>
+  <data name="Upload_Completed" xml:space="preserve">
+    <value>Todo enviado.</value>
+  </data>
+  <data name="Upload_Interrupted" xml:space="preserve">
+    <value>La conexión se cortó a medias. No se perdió nada: lo que no llegó sigue en el lote.</value>
+  </data>
+  <data name="Upload_Offline" xml:space="preserve">
+    <value>No se puede contactar con el ordenador, así que no se envió nada. El lote está intacto.</value>
+  </data>
+  <data name="Upload_NothingStaged" xml:space="preserve">
+    <value>No había nada que enviar.</value>
+  </data>
+  <data name="Upload_Retry" xml:space="preserve">
+    <value>Volver a intentar</value>
+  </data>
+  <data name="Upload_Finish" xml:space="preserve">
+    <value>Listo</value>
+  </data>
+  <data name="Upload_State_Waiting" xml:space="preserve">
+    <value>En espera</value>
+  </data>
+  <data name="Upload_State_Received" xml:space="preserve">
+    <value>Recibido</value>
+  </data>
+  <data name="Upload_State_Saved" xml:space="preserve">
+    <value>Añadido</value>
+  </data>
+  <data name="Upload_State_AddedToExisting" xml:space="preserve">
+    <value>Fotos añadidas a «{0}»</value>
+  </data>
+  <data name="Upload_State_AddedToExistingUntitled" xml:space="preserve">
+    <value>Fotos añadidas al libro que ya tenías</value>
+  </data>
+  <data name="Upload_State_AlreadyOwned" xml:space="preserve">
+    <value>Ya está en tu biblioteca: «{0}»</value>
+  </data>
+  <data name="Upload_State_AlreadyOwnedUntitled" xml:space="preserve">
+    <value>Ya está en tu biblioteca</value>
+  </data>
+  <data name="Upload_State_Cataloguing" xml:space="preserve">
+    <value>Buscándolo…</value>
+  </data>
+  <data name="Upload_State_Done" xml:space="preserve">
+    <value>Añadido: «{0}»</value>
+  </data>
+  <data name="Upload_State_DoneUntitled" xml:space="preserve">
+    <value>Añadido</value>
+  </data>
+  <data name="Upload_State_NeedsReview" xml:space="preserve">
+    <value>Añadido, pendiente de revisión en el ordenador</value>
+  </data>
+  <data name="Upload_Failure_Unknown" xml:space="preserve">
+    <value>No se pudo añadir</value>
+  </data>
+  <data name="Upload_Failure_InvalidIsbn" xml:space="preserve">
+    <value>Ese número no se aceptó</value>
+  </data>
+  <data name="Upload_Failure_ImageRejected" xml:space="preserve">
+    <value>Una foto no se aceptó</value>
+  </data>
+  <data name="Upload_Failure_SaveFailed" xml:space="preserve">
+    <value>No se pudo guardar</value>
+  </data>
+  <data name="Upload_Failure_CatalogueFailed" xml:space="preserve">
+    <value>Guardado, pero la búsqueda falló</value>
+  </data>
+  <data name="Browse_SearchPlaceholder" xml:space="preserve">
+    <value>Buscar títulos y autores</value>
+  </data>
+  <data name="Browse_Scan" xml:space="preserve">
+    <value>Escanear</value>
+  </data>
+  <data name="Browse_AllCollections" xml:space="preserve">
+    <value>Todas las colecciones</value>
+  </data>
+  <data name="Browse_CollectionWithCount" xml:space="preserve">
+    <value>{0} ({1})</value>
+  </data>
+  <data name="Browse_AuthorsAndYear" xml:space="preserve">
+    <value>{0} · {1}</value>
+  </data>
+  <data name="Browse_Untitled" xml:space="preserve">
+    <value>Sin título</value>
+  </data>
+  <data name="Browse_ResultCount" xml:space="preserve">
+    <value>{0} libros</value>
+  </data>
+  <data name="Browse_Empty" xml:space="preserve">
+    <value>Ningún libro coincide</value>
+  </data>
+  <data name="Browse_EmptyHint" xml:space="preserve">
+    <value>Prueba con menos palabras u otra colección.</value>
+  </data>
+  <data name="Browse_Offline" xml:space="preserve">
+    <value>Explorar requiere tu ordenador. Comprueba que está encendido y en la misma red.</value>
+  </data>
+  <data name="Browse_Retry" xml:space="preserve">
+    <value>Volver a intentar</value>
+  </data>
+  <data name="Browse_LoadMore" xml:space="preserve">
+    <value>Mostrar más</value>
+  </data>
+  <data name="Browse_Owned" xml:space="preserve">
+    <value>En tu biblioteca</value>
+  </data>
+  <data name="Browse_NotOwned" xml:space="preserve">
+    <value>No está en tu biblioteca</value>
+  </data>
+  <data name="Browse_ScannedIsbn" xml:space="preserve">
+    <value>ISBN {0}</value>
+  </data>
+  <data name="Browse_ClearScan" xml:space="preserve">
+    <value>Volver a explorar</value>
+  </data>
+  <data name="Browse_NothingRead" xml:space="preserve">
+    <value>No se leyó ningún código de barras.</value>
+  </data>
+  <data name="Browse_NotAnIsbn" xml:space="preserve">
+    <value>Ese código de barras no es un ISBN</value>
+  </data>
+  <data name="Detail_Field_Authors" xml:space="preserve">
+    <value>Autores</value>
+  </data>
+  <data name="Detail_Field_Series" xml:space="preserve">
+    <value>Serie</value>
+  </data>
+  <data name="Detail_Field_Publisher" xml:space="preserve">
+    <value>Editorial</value>
+  </data>
+  <data name="Detail_Field_Published" xml:space="preserve">
+    <value>Publicado</value>
+  </data>
+  <data name="Detail_Field_Format" xml:space="preserve">
+    <value>Formato</value>
+  </data>
+  <data name="Detail_Field_Language" xml:space="preserve">
+    <value>Idioma</value>
+  </data>
+  <data name="Detail_Field_Pages" xml:space="preserve">
+    <value>Páginas</value>
+  </data>
+  <data name="Detail_Field_Isbn" xml:space="preserve">
+    <value>ISBN</value>
+  </data>
+  <data name="Detail_Field_Collection" xml:space="preserve">
+    <value>Colección</value>
+  </data>
+  <data name="Detail_Field_Comments" xml:space="preserve">
+    <value>Comentarios</value>
+  </data>
+  <data name="Detail_Photos" xml:space="preserve">
+    <value>Fotos</value>
+  </data>
+  <data name="Detail_Missing" xml:space="preserve">
+    <value>Este libro ya no está en la biblioteca.</value>
+  </data>
+  <data name="Detail_Offline" xml:space="preserve">
+    <value>Los detalles del libro requieren tu ordenador. Comprueba que está encendido y en la misma red.</value>
+  </data>
+  <data name="Detail_Retry" xml:space="preserve">
+    <value>Volver a intentar</value>
+  </data>
+  <data name="Detail_Loading" xml:space="preserve">
+    <value>Cargando…</value>
+  </data>
+  <data name="Format_Audiobook" xml:space="preserve">
+    <value>Audiolibro</value>
+  </data>
+  <data name="Format_Comic" xml:space="preserve">
+    <value>Cómic</value>
+  </data>
+  <data name="Format_Ebook" xml:space="preserve">
+    <value>Libro electrónico</value>
+  </data>
+  <data name="Format_GraphicNovel" xml:space="preserve">
+    <value>Novela gráfica</value>
+  </data>
+  <data name="Format_Hardcover" xml:space="preserve">
+    <value>Tapa dura</value>
+  </data>
+  <data name="Format_Magazine" xml:space="preserve">
+    <value>Revista</value>
+  </data>
+  <data name="Format_MassMarketPaperback" xml:space="preserve">
+    <value>Tapa blanda de venta masiva</value>
+  </data>
+  <data name="Format_Paperback" xml:space="preserve">
+    <value>Tapa blanda</value>
+  </data>
+  <data name="Format_TradePaperback" xml:space="preserve">
+    <value>Trade Paperback</value>
+  </data>
+  <data name="Language_Danish" xml:space="preserve">
+    <value>Danés</value>
+  </data>
+  <data name="Language_Finnish" xml:space="preserve">
+    <value>Finlandés</value>
+  </data>
+  <data name="Language_French" xml:space="preserve">
+    <value>Francés</value>
+  </data>
+  <data name="Language_German" xml:space="preserve">
+    <value>Alemán</value>
+  </data>
+  <data name="Language_Italian" xml:space="preserve">
+    <value>Italiano</value>
+  </data>
+  <data name="Language_Japanese" xml:space="preserve">
+    <value>Japonés</value>
+  </data>
+  <data name="Language_Norwegian" xml:space="preserve">
+    <value>Noruego</value>
+  </data>
+  <data name="Language_Spanish" xml:space="preserve">
+    <value>Español</value>
+  </data>
+  <data name="Language_Swedish" xml:space="preserve">
+    <value>Sueco</value>
+  </data>
+  <data name="Camera_Rationale" xml:space="preserve">
+    <value>BookDB usa la cámara para leer el código de barras de un libro. No se fotografía nada hasta que pidas una portada, y nada sale de tu red local.</value>
+  </data>
+  <data name="Camera_PermissionDenied" xml:space="preserve">
+    <value>La cámara está desactivada para BookDB, así que no se pueden leer códigos de barras. Actívala en los ajustes del dispositivo; mientras tanto puedes escribir un ISBN.</value>
+  </data>
+  <data name="Camera_Unavailable" xml:space="preserve">
+    <value>Ahora mismo no hay ninguna cámara disponible. Puede estar en uso por otra aplicación, o este dispositivo puede no tener una.</value>
+  </data>
+  <data name="Camera_OpenSettings" xml:space="preserve">
+    <value>Abrir ajustes</value>
+  </data>
+</root>

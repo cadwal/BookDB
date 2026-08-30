@@ -2225,6 +2225,12 @@ Mogelijke duplicaten: {3}  |  Met omslag: {4}</value>
   <data name="Help_RemoteDatabasesLink" xml:space="preserve">
     <value>Help: externe databases</value>
   </data>
+  <data name="Help_Tab_Companion" xml:space="preserve">
+    <value>Metgezel</value>
+  </data>
+  <data name="Help_CompanionLink" xml:space="preserve">
+    <value>Help: metgezel</value>
+  </data>
   <data name="Menu_AboutBookDB" xml:space="preserve">
     <value>_Over BookDB…</value>
   </data>
@@ -2347,6 +2353,9 @@ Mogelijke duplicaten: {3}  |  Met omslag: {4}</value>
   </data>
   <data name="RecatalogAll_Confirm" xml:space="preserve">
     <value>Alle {0} boeken opnieuw catalogiseren? Dit kan even duren.</value>
+  </data>
+  <data name="RecatalogAll_ConfirmTitle" xml:space="preserve">
+    <value>Alles opnieuw catalogiseren</value>
   </data>
   <data name="Backup_Saved" xml:space="preserve">
     <value>Back-up opgeslagen naar {0}</value>
@@ -2993,6 +3002,15 @@ Mogelijke duplicaten: {3}  |  Met omslag: {4}</value>
   <data name="StatusBar_Storage_State_Label" xml:space="preserve">
     <value>Verbinding</value>
   </data>
+  <data name="StatusBar_Companion_Running" xml:space="preserve">
+    <value>Metgezel · poort {0}</value>
+  </data>
+  <data name="StatusBar_Companion_Failed" xml:space="preserve">
+    <value>Metgezel kon niet starten</value>
+  </data>
+  <data name="StatusBar_Companion_Devices" xml:space="preserve">
+    <value>Gekoppelde apparaten: {0}</value>
+  </data>
   <data name="StatusBar_Storage_State_Connected" xml:space="preserve">
     <value>Verbonden</value>
   </data>
@@ -3247,5 +3265,161 @@ Mogelijke duplicaten: {3}  |  Met omslag: {4}</value>
   </data>
   <data name="Update_OpenGitHub" xml:space="preserve">
     <value>Downloaden van GitHub</value>
+  </data>
+  <data name="Isbn_ChecksumValid" xml:space="preserve">
+    <value>Geldig ISBN-controlecijfer</value>
+  </data>
+  <data name="Isbn_ChecksumWarning" xml:space="preserve">
+    <value>ISBN-controlecijfer klopt niet — het ISBN is mogelijk verkeerd getypt</value>
+  </data>
+  <data name="LookupWizard_ChecksumWarnings" xml:space="preserve">
+    <value>Controlecijferwaarschuwingen: {0}</value>
+  </data>
+  <data name="BookList_ViewToggle_List" xml:space="preserve">
+    <value>Lijstweergave</value>
+  </data>
+  <data name="BookList_ViewToggle_Grid" xml:space="preserve">
+    <value>Rasterweergave</value>
+  </data>
+  <data name="Settings_Tab_Companion" xml:space="preserve">
+    <value>Metgezel</value>
+  </data>
+  <data name="Settings_Companion_Enable" xml:space="preserve">
+    <value>Metgezel inschakelen</value>
+  </data>
+  <data name="Settings_Companion_EnableHint" xml:space="preserve">
+    <value>Laat een gekoppelde telefoon of tablet boeken rechtstreeks in deze bibliotheek scannen via je lokale netwerk.</value>
+  </data>
+  <data name="Settings_Companion_Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Settings_Companion_StatusOff" xml:space="preserve">
+    <value>Uit</value>
+  </data>
+  <data name="Settings_Companion_StatusRunning" xml:space="preserve">
+    <value>Actief · poort {0}</value>
+  </data>
+  <data name="Settings_Companion_StatusFailed" xml:space="preserve">
+    <value>Kan niet starten: {0}</value>
+  </data>
+  <data name="Settings_Companion_Port" xml:space="preserve">
+    <value>Poort</value>
+  </data>
+  <data name="Settings_Companion_FirewallHint" xml:space="preserve">
+    <value>Windows vraagt of BookDB via de firewall wordt toegestaan — sta dit toe op privénetwerken zodat je apparaat verbinding kan maken.</value>
+  </data>
+  <data name="Settings_Companion_FirewallHintMac" xml:space="preserve">
+    <value>Als macOS vraagt of inkomende verbindingen voor BookDB zijn toegestaan, sta ze dan toe, anders kan je apparaat geen verbinding maken. De firewall staat standaard uit, dus mogelijk wordt er niets gevraagd — je kunt dit nakijken via Systeeminstellingen › Netwerk › Firewall.</value>
+  </data>
+  <data name="Settings_Companion_PortInvalid" xml:space="preserve">
+    <value>De poort moet een getal tussen {0} en {1} zijn.</value>
+  </data>
+  <data name="Settings_Companion_FirewallHintUfw" xml:space="preserve">
+    <value>ufw is actief en vraagt niets — geen enkel apparaat kan verbinding maken totdat u poort {0} zelf openzet:
+sudo ufw allow from {1} to any port {0} proto tcp
+sudo ufw allow from {1} to any port {0} proto udp
+Via UDP vindt een apparaat deze computer terug wanneer het adres verandert.</value>
+  </data>
+  <data name="Settings_Companion_FirewallHintFirewalld" xml:space="preserve">
+    <value>firewalld is actief en vraagt niets — geen enkel apparaat kan verbinding maken totdat u poort {0} zelf openzet:
+sudo firewall-cmd --permanent --add-port={0}/tcp --add-port={0}/udp
+sudo firewall-cmd --reload
+Via UDP vindt een apparaat deze computer terug wanneer het adres verandert.</value>
+  </data>
+  <data name="Settings_Companion_FirewallHintOpen" xml:space="preserve">
+    <value>{0} is actief en poort {1} staat al open voor TCP en UDP. Je hoeft niets te doen.</value>
+  </data>
+  <data name="Settings_Companion_FirewallHintUfwUnknown" xml:space="preserve">
+    <value>ufw is actief en vraagt niets. Als een apparaat geen verbinding kan maken, zet dan poort {0} open voor je lokale netwerk:
+sudo ufw allow from {1} to any port {0} proto tcp
+sudo ufw allow from {1} to any port {0} proto udp
+Via UDP vindt een apparaat deze computer terug wanneer het adres verandert.</value>
+  </data>
+  <data name="Settings_Companion_FirewallHintFirewalldUnknown" xml:space="preserve">
+    <value>firewalld is actief en vraagt niets. Als een apparaat geen verbinding kan maken, zet dan poort {0} open voor je lokale netwerk:
+sudo firewall-cmd --permanent --add-port={0}/tcp --add-port={0}/udp
+sudo firewall-cmd --reload
+Via UDP vindt een apparaat deze computer terug wanneer het adres verandert.</value>
+  </data>
+  <data name="Settings_Companion_CaptureSection" xml:space="preserve">
+    <value>Vastleggen — geldt voor elk verbonden apparaat</value>
+  </data>
+  <data name="Settings_Companion_MaxImageSize" xml:space="preserve">
+    <value>Max. beeldgrootte (px)</value>
+  </data>
+  <data name="Settings_Companion_JpegQuality" xml:space="preserve">
+    <value>JPEG-kwaliteit (1–100)</value>
+  </data>
+  <data name="Maintenance_DevicesHeader" xml:space="preserve">
+    <value>Apparaten</value>
+  </data>
+  <data name="Devices_Intro" xml:space="preserve">
+    <value>Telefoons en tablets die aan deze computer zijn gekoppeld.</value>
+  </data>
+  <data name="Devices_CountOfMax" xml:space="preserve">
+    <value>{0} van {1} apparaten in gebruik</value>
+  </data>
+  <data name="Devices_AtLimit" xml:space="preserve">
+    <value>Alle {0} apparaten zijn in gebruik. Verwijder er hieronder een voordat je een ander koppelt.</value>
+  </data>
+  <data name="Devices_None" xml:space="preserve">
+    <value>Er zijn nog geen apparaten gekoppeld.</value>
+  </data>
+  <data name="Devices_Column_Name" xml:space="preserve">
+    <value>Naam</value>
+  </data>
+  <data name="Devices_Column_Paired" xml:space="preserve">
+    <value>Gekoppeld</value>
+  </data>
+  <data name="Devices_Column_LastUsed" xml:space="preserve">
+    <value>Laatst gebruikt</value>
+  </data>
+  <data name="Devices_Remove" xml:space="preserve">
+    <value>Verwijderen</value>
+  </data>
+  <data name="Devices_RemoveConfirm" xml:space="preserve">
+    <value>“{0}” verwijderen? Het apparaat moet opnieuw worden gekoppeld voordat het in deze bibliotheek kan scannen.</value>
+  </data>
+  <data name="Devices_ShowPairingCode" xml:space="preserve">
+    <value>Koppelingscode tonen…</value>
+  </data>
+  <data name="Devices_CompanionOff" xml:space="preserve">
+    <value>De metgezel staat uit. Schakel deze in bij Instellingen ▸ Metgezel voordat je een apparaat koppelt.</value>
+  </data>
+  <data name="Devices_ManageButton" xml:space="preserve">
+    <value>Gekoppelde apparaten beheren…</value>
+  </data>
+  <data name="Devices_LastUsed_JustNow" xml:space="preserve">
+    <value>Zojuist</value>
+  </data>
+  <data name="Devices_LastUsed_MinutesAgo" xml:space="preserve">
+    <value>{0} min geleden</value>
+  </data>
+  <data name="Devices_LastUsed_HoursAgo" xml:space="preserve">
+    <value>{0} uur geleden</value>
+  </data>
+  <data name="Pairing_Title" xml:space="preserve">
+    <value>Een apparaat koppelen</value>
+  </data>
+  <data name="Pairing_Instruction" xml:space="preserve">
+    <value>Kies in BookDB op je telefoon of tablet “Koppelingscode scannen” en richt de camera hierheen.</value>
+  </data>
+  <data name="Pairing_Address" xml:space="preserve">
+    <value>Adres</value>
+  </data>
+  <data name="Pairing_ExpiresIn" xml:space="preserve">
+    <value>Deze code verloopt over {0}:{1:00}</value>
+  </data>
+  <data name="Pairing_Paired" xml:space="preserve">
+    <value>“{0}” is nu gekoppeld aan deze computer.</value>
+  </data>
+  <data name="Pairing_PairAnother" xml:space="preserve">
+    <value>Nog een apparaat koppelen</value>
+  </data>
+  <data name="Pairing_NoNetwork" xml:space="preserve">
+    <value>Deze computer heeft geen netwerkadres waarop een apparaat hem kan bereiken.</value>
+  </data>
+  <data name="Pairing_NotRunning" xml:space="preserve">
+    <value>De metgezel draait niet, dus er is geen koppelingscode om te tonen.</value>
   </data>
 </root>

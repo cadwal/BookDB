@@ -5,24 +5,31 @@
     <Platform Name="x86" />
   </Configurations>
   <Folder Name="/src/">
+    <Project Path="src/BookDB.Companion.Host/BookDB.Companion.Host.csproj" />
+    <Project Path="src/BookDB.Contracts/BookDB.Contracts.csproj" />
     <Project Path="src/BookDB.Data/BookDB.Data.csproj" />
     <Project Path="src/BookDB.Data.Sqlite/BookDB.Data.Sqlite.csproj" />
     <Project Path="src/BookDB.Data.PostgreSQL/BookDB.Data.PostgreSQL.csproj" />
     <Project Path="src/BookDB.Data.MySql/BookDB.Data.MySql.csproj" />
     <Project Path="src/BookDB.Desktop/BookDB.Desktop.csproj" />
     <Project Path="src/BookDB.Help/BookDB.Help.csproj" />
+    <Project Path="src/BookDB.Isbn/BookDB.Isbn.csproj" />
     <Project Path="src/BookDB.Logic/BookDB.Logic.csproj" />
     <Project Path="src/BookDB.MetadataSources/BookDB.MetadataSources.csproj" />
+    <Project Path="src/BookDB.Mobile/BookDB.Mobile.csproj" />
     <Project Path="src/BookDB.Models/BookDB.Models.csproj" />
     <Project Path="src/BookDB.Security/BookDB.Security.csproj" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="tests/BookDB.Companion.Host.Tests/BookDB.Companion.Host.Tests.csproj" />
     <Project Path="tests/BookDB.Data.Tests/BookDB.Data.Tests.csproj" />
     <Project Path="tests/BookDB.Data.PostgreSQL.Tests/BookDB.Data.PostgreSQL.Tests.csproj" />
     <Project Path="tests/BookDB.Data.MySql.Tests/BookDB.Data.MySql.Tests.csproj" />
     <Project Path="tests/BookDB.Desktop.Tests/BookDB.Desktop.Tests.csproj" />
     <Project Path="tests/BookDB.Desktop.UITests/BookDB.Desktop.UITests.csproj" />
     <Project Path="tests/BookDB.Logic.Tests/BookDB.Logic.Tests.csproj" />
+    <Project Path="tests/BookDB.Mobile.Tests/BookDB.Mobile.Tests.csproj" />
+    <Project Path="tests/BookDB.Mobile.UITests/BookDB.Mobile.UITests.csproj" />
     <Project Path="tests/BookDB.Security.Tests/BookDB.Security.Tests.csproj" />
   </Folder>
 </Solution>

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using BookDB.Desktop.Localization;
 using BookDB.Desktop.Services;
+using BookDB.Isbn;
 using BookDB.Models;
 using BookDB.Models.Interfaces;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -29,6 +30,8 @@ public sealed partial class LookupWizardViewModel : ObservableObject
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsbnCount))]
+    [NotifyPropertyChangedFor(nameof(InvalidChecksumCount))]
+    [NotifyPropertyChangedFor(nameof(HasChecksumWarnings))]
     private string _isbnText = string.Empty;
 
     [ObservableProperty]
@@ -41,6 +44,13 @@ public sealed partial class LookupWizardViewModel : ObservableObject
     public bool ShowError => ErrorMessage is not null;
 
     public int IsbnCount => ParseIsbns().Count;
+
+    /// <summary>How many of the entered lines are a full ISBN whose check digit fails — an aggregate,
+    /// non-blocking hint for the multi-line box (per-line indicators don't fit a plain text area).</summary>
+    public int InvalidChecksumCount =>
+        ParseIsbns().Count(isbn => IsbnNormalizer.GetValidity(isbn) == IsbnValidity.Invalid);
+
+    public bool HasChecksumWarnings => InvalidChecksumCount > 0;
 
     public LookupWizardViewModel(
         IWindowService windowService,

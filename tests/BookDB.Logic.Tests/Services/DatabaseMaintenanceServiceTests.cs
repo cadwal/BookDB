@@ -51,7 +51,10 @@ public sealed class DatabaseMaintenanceServiceTests : IDisposable
 
     public void Dispose()
     {
-        SqliteConnection.ClearAllPools();
+        // This database's pool only — ClearAllPools() is process-wide and disposes the native
+        // handle of connections other test classes are using in parallel.
+        using (var poolKey = new SqliteConnection($"Data Source={_dbPath}"))
+            SqliteConnection.ClearPool(poolKey);
         try { File.Delete(_dbPath); } catch { /* best effort */ }
         if (_backup.LastBackupPath != null)
             try { File.Delete(_backup.LastBackupPath); } catch { /* best effort */ }

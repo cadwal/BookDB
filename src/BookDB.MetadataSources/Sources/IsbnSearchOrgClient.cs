@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using BookDB.Isbn;
 using BookDB.Models;
 using BookDB.Models.Metadata;
 

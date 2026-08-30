@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using BookDB.Isbn;
 using BookDB.MetadataSources.Services;
 using BookDB.MetadataSources.Sources;
 using BookDB.Models;

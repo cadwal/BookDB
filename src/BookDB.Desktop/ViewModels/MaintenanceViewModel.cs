@@ -23,6 +23,8 @@ public sealed partial class MaintenanceViewModel : ObservableObject
     /// <summary>The "Move library" section hosted in this dialog's second tab.</summary>
     public MoveLibraryViewModel MoveLibrary { get; }
 
+    public DevicesViewModel Devices { get; }
+
     /// <summary>Closes the dialog. Set by <c>WindowService</c>.</summary>
     public Action? CloseDialog { get; set; }
 
@@ -34,10 +36,15 @@ public sealed partial class MaintenanceViewModel : ObservableObject
     [ObservableProperty]
     private string _logText = string.Empty;
 
-    public MaintenanceViewModel(IDatabaseMaintenanceService maintenanceService, MoveLibraryViewModel moveLibrary)
+    public MaintenanceViewModel(
+        IDatabaseMaintenanceService maintenanceService,
+        MoveLibraryViewModel moveLibrary,
+        DevicesViewModel devices)
     {
         _maintenanceService = maintenanceService;
         MoveLibrary = moveLibrary;
+        Devices = devices;
+        Devices.Load();
     }
 
     private bool CanRun => !IsRunning;

@@ -32,6 +32,7 @@
     <svg:SvgImage x:Key="Icon.Print" Source="avares://BookDB.Desktop/Assets/Icons/print.svg" Css="{DynamicResource IconCss}" />
     <svg:SvgImage x:Key="Icon.ArrowExit" Source="avares://BookDB.Desktop/Assets/Icons/arrow-exit.svg" Css="{DynamicResource IconCss}" />
     <svg:SvgImage x:Key="Icon.TextBulletListSquare" Source="avares://BookDB.Desktop/Assets/Icons/text-bullet-list-square.svg" Css="{DynamicResource IconCss}" />
+    <svg:SvgImage x:Key="Icon.ViewGrid" Source="avares://BookDB.Desktop/Assets/Icons/view-grid.svg" Css="{DynamicResource IconCss}" />
     <svg:SvgImage x:Key="Icon.PeopleList" Source="avares://BookDB.Desktop/Assets/Icons/people-list.svg" Css="{DynamicResource IconCss}" />
     <svg:SvgImage x:Key="Icon.ChartMultiple" Source="avares://BookDB.Desktop/Assets/Icons/chart-multiple.svg" Css="{DynamicResource IconCss}" />
     <svg:SvgImage x:Key="Icon.WrenchScrewdriver" Source="avares://BookDB.Desktop/Assets/Icons/wrench-screwdriver.svg" Css="{DynamicResource IconCss}" />
@@ -52,5 +53,10 @@
 
     <!-- Dismiss / clear (danger) -->
     <svg:SvgImage x:Key="Icon.DismissCircle" Source="avares://BookDB.Desktop/Assets/Icons/dismiss-circle.svg" Css="{DynamicResource IconCssDanger}" />
+
+    <!-- ISBN check-digit indicator: a valid check digit reads success-green, a mismatch reads warning-amber
+         (non-blocking — it never stops a save or lookup, since misprinted ISBNs exist on real books). -->
+    <svg:SvgImage x:Key="Icon.IsbnValid" Source="avares://BookDB.Desktop/Assets/Icons/checkmark-circle.svg" Css="{DynamicResource IconCssSuccess}" />
+    <svg:SvgImage x:Key="Icon.IsbnWarning" Source="avares://BookDB.Desktop/Assets/Icons/warning.svg" Css="{DynamicResource IconCssWarning}" />
 
 </ResourceDictionary>

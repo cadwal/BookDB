@@ -1,0 +1,71 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- The Android head. Deliberately NOT a member of BookDB.slnx: the desktop solution builds and tests on
+       runners without the Android workload, so this project is built on its own (scripts/build-mobile.ps1
+       locally; the guarded android-apk CI job on the public mirror). -->
+  <PropertyGroup>
+    <!-- The target framework sets both compile and target SDK: API 36, which Avalonia.Android 12.1 requires.
+         minSdk stays 26 per the design's device-coverage decision. (An earlier AndroidTargetSdkVersion of 35
+         was removed: it is a legacy Xamarin property that .NET Android ignores, and the built manifest has
+         always said 36 — a claim that never matched the APK.) -->
+    <TargetFramework>net10.0-android36.0</TargetFramework>
+    <SupportedOSPlatformVersion>26</SupportedOSPlatformVersion>
+    <OutputType>Exe</OutputType>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <ApplicationId>com.bookdb.companion</ApplicationId>
+    <!-- We ship a signed APK on the GitHub release, not an AAB to a store. -->
+    <AndroidPackageFormat>apk</AndroidPackageFormat>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <!-- The companion carries the same version as the desktop it pairs with. Version comes from the repo's
+         Directory.Build.props, so bump-version.ps1 already covers the phone. Android additionally wants a
+         version *code*: an integer that only ever goes up, since it is what decides whether an install is an
+         upgrade. Encoded as MMmmpp — 3.1.0 is 30100 — which holds as long as minor and patch stay under 100. -->
+    <ApplicationDisplayVersion>$(Version)</ApplicationDisplayVersion>
+    <_VersionMajor>$(Version.Split('.')[0])</_VersionMajor>
+    <_VersionMinor>$(Version.Split('.')[1])</_VersionMinor>
+    <_VersionPatch>$(Version.Split('.')[2])</_VersionPatch>
+    <ApplicationVersion>$([MSBuild]::Add(
+      $([MSBuild]::Add(
+        $([MSBuild]::Multiply($(_VersionMajor), 10000)),
+        $([MSBuild]::Multiply($(_VersionMinor), 100)))),
+      $(_VersionPatch)))</ApplicationVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <AndroidResource Include="Icon.png">
+      <Link>Resources\drawable\Icon.png</Link>
+    </AndroidResource>
+  </ItemGroup>
+
+  <PropertyGroup>
+    <!-- Release builds ahead-of-time compile by default, and that fails here: protobuf-net accepts WCF's
+         [ServiceContract] as an alternative to its own [Service] attribute (this contract uses [Service]), so
+         protobuf-net.dll carries metadata references to System.ServiceModel.Primitives — which the app never
+         calls, so nothing pulls it into the closure, and the AOT compiler resolves such references eagerly.
+         Referencing that package to satisfy it was tried and rejected: it drags in
+         System.Security.Cryptography.Xml 8.0.2, which carries seven high-severity advisories. Shipping a
+         known-vulnerable assembly to appease a build step is a bad trade for a start-up saving, so the phone
+         JITs instead. Revisit if protobuf-net drops the reference or the WCF package's dependencies are
+         fixed. -->
+    <RunAOTCompilation>false</RunAOTCompilation>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia.Android" />
+    <PackageReference Include="Xamarin.AndroidX.Core.SplashScreen" />
+    <PackageReference Include="Xamarin.AndroidX.Camera.Camera2" />
+    <PackageReference Include="Xamarin.AndroidX.Camera.Lifecycle" />
+    <PackageReference Include="Xamarin.AndroidX.Camera.View" />
+    <PackageReference Include="Xamarin.Google.MLKit.BarcodeScanning" />
+    <PackageReference Include="Xamarin.GooglePlayServices.MLKit.DocumentScanner" />
+    <PackageReference Include="Xamarin.GooglePlayServices.Base" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BookDB.Mobile\BookDB.Mobile.csproj" />
+  </ItemGroup>
+
+</Project>

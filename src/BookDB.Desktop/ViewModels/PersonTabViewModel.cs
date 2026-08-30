@@ -497,7 +497,8 @@ public partial class PersonTabViewModel : ObservableObject
     {
         if (SelectedPerson is null || SelectedPerson.PersonId == 0) return;
         var confirmMessage = string.Format(Resources.ManageLookups_DeleteConfirm, SelectedPerson.DisplayName);
-        var confirmed = await WindowService.ShowDeleteConfirmationAsync(confirmMessage);
+        var confirmed = await WindowService.ShowDeleteConfirmationAsync(
+            confirmMessage, cancelLabel: Resources.Common_Cancel);
         if (confirmed != true) return;
         try
         {

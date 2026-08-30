@@ -87,6 +87,10 @@ public partial class BookListViewModel :
     [ObservableProperty]
     private bool _thumbnailColumnVisible = false;
 
+    // List vs cover-grid view; persisted, drives which surface the view shows and whether tile covers load.
+    [ObservableProperty]
+    private bool _isGridView = false;
+
     [ObservableProperty]
     private string _sortColumn = "Title";
 
@@ -607,6 +611,12 @@ public partial class BookListViewModel :
         // Placeholder — column config UI handled via View menu toggles
     }
 
+    [RelayCommand]
+    private void ShowListView() => IsGridView = false;
+
+    [RelayCommand]
+    private void ShowGridView() => IsGridView = true;
+
     [RelayCommand(CanExecute = nameof(CanCheckOut))]
     private async Task CheckOutAsync()
     {
@@ -696,6 +706,8 @@ public partial class BookListViewModel :
                 // Load thumbnails for newly appended VMs only
                 if (ThumbnailColumnVisible)
                     _ = LoadThumbnailsAsync(newVms, CancellationToken.None);
+                if (IsGridView)
+                    _ = LoadGridThumbnailsAsync(newVms, CancellationToken.None);
             });
         }
         catch (Exception ex)
@@ -738,7 +750,7 @@ public partial class BookListViewModel :
                 ct: linkedCt);
 
             _tooltipLru.Clear();
-            foreach (var old in Books) { old.CoverThumbnail?.Dispose(); old.TooltipBitmap?.Dispose(); }
+            foreach (var old in Books) { old.CoverThumbnail?.Dispose(); old.TooltipBitmap?.Dispose(); old.GridThumbnail?.Dispose(); }
             Books.Clear();
             var newVms = new List<BookRowViewModel>();
             int rowNum = 0;
@@ -763,6 +775,8 @@ public partial class BookListViewModel :
             // Load thumbnails async if visible
             if (ThumbnailColumnVisible)
                 _ = LoadThumbnailsAsync(newVms, linkedCt);
+            if (IsGridView)
+                _ = LoadGridThumbnailsAsync(newVms, linkedCt);
         }
         catch (OperationCanceledException)
         {
@@ -847,6 +861,7 @@ public partial class BookListViewModel :
         _tooltipLru.Remove(existingRow);
         existingRow.CoverThumbnail?.Dispose();
         existingRow.TooltipBitmap?.Dispose();
+        existingRow.GridThumbnail?.Dispose();
         var updatedRowViewModel = CreateRowViewModel(updatedRow);
         Books[index] = updatedRowViewModel;
 
@@ -857,6 +872,8 @@ public partial class BookListViewModel :
 
         if (ThumbnailColumnVisible)
             await LoadThumbnailsAsync([updatedRowViewModel], CancellationToken.None);
+        if (IsGridView)
+            await LoadGridThumbnailsAsync([updatedRowViewModel], CancellationToken.None);
     }
 
     private async Task LoadThumbnailBitmapAsync(BookRowViewModel viewModel, CancellationToken ct)
@@ -922,6 +939,34 @@ public partial class BookListViewModel :
             try { await LoadThumbnailBitmapAsync(viewModel, ct); }
             catch (OperationCanceledException) { break; }
             catch (Exception ex) { Log.Debug(ex, "Failed to load thumbnail for book {BookId}", viewModel.BookId); }
+        }
+    }
+
+    private async Task LoadGridThumbnailBitmapAsync(BookRowViewModel viewModel, CancellationToken ct)
+    {
+        const int tileWidth = 140;
+        // Same source as the list column (pre-sized thumbnail, falling back to the primary cover),
+        // decoded at tile width so grid tiles stay crisp without holding full-size covers in memory.
+        var imageData = await _bookImageService.GetBookThumbnailBytesAsync(viewModel.BookId, ct);
+        if (imageData?.Length > 0)
+        {
+            viewModel.GridThumbnail = await Task.Run(() =>
+            {
+                using var ms = new System.IO.MemoryStream(imageData);
+                return Bitmap.DecodeToWidth(ms, tileWidth);
+            }, ct);
+        }
+    }
+
+    private async Task LoadGridThumbnailsAsync(List<BookRowViewModel> viewModels, CancellationToken ct)
+    {
+        foreach (var viewModel in viewModels)
+        {
+            if (ct.IsCancellationRequested) break;
+            if (!viewModel.HasCoverImage || viewModel.GridThumbnail is not null) continue;
+            try { await LoadGridThumbnailBitmapAsync(viewModel, ct); }
+            catch (OperationCanceledException) { break; }
+            catch (Exception ex) { Log.Debug(ex, "Failed to load grid thumbnail for book {BookId}", viewModel.BookId); }
         }
     }
 
@@ -1013,6 +1058,10 @@ public partial class BookListViewModel :
             var thumbStr = await _settingsService.GetAsync("BookList_ThumbnailVisible", ct);
             if (thumbStr != null && bool.TryParse(thumbStr, out var thumbVisible))
                 ThumbnailColumnVisible = thumbVisible;
+
+            var viewModeStr = await _settingsService.GetAsync("BookList_ViewMode", ct);
+            if (viewModeStr is not null)
+                IsGridView = string.Equals(viewModeStr, "Grid", StringComparison.OrdinalIgnoreCase);
 
             // Read per-column visibility (overrides IsVisible from BookList_ColumnState JSON if present)
             var colVisKeys = new (string Key, Action<bool> Setter)[]
@@ -1141,6 +1190,18 @@ public partial class BookListViewModel :
             var bookRowViewModels = Books.ToList();
             _ = LoadThumbnailsAsync(bookRowViewModels, CancellationToken.None);
         }
+    }
+
+    partial void OnIsGridViewChanged(bool value)
+    {
+        UIThreadHelper.PostAsync(
+            () => _settingsService.SetAsync("BookList_ViewMode", value ? "Grid" : "List"),
+            "persist book list view mode");
+
+        // Switching into grid loads tile covers for books already listed; without this they only
+        // appear after the next reload (collection switch, search).
+        if (value && Books.Count > 0)
+            _ = LoadGridThumbnailsAsync(Books.ToList(), CancellationToken.None);
     }
 
     partial void OnAuthorColumnVisibleChanged(bool value) =>

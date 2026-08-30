@@ -24,7 +24,7 @@ namespace BookDB.Desktop.UITests;
 public class MaintenanceFlowTests : HeadlessTest
 {
     [Fact]
-    public async Task OpeningMaintenance_RealizesBothTabs_AndOffersOnlyNonSourceTargets()
+    public async Task OpeningMaintenance_RealizesEveryTab_AndOffersOnlyNonSourceTargets()
     {
         await RunUi(async () =>
         {
@@ -32,7 +32,7 @@ public class MaintenanceFlowTests : HeadlessTest
             var (vm, window) = Open(host);
 
             var tabs = window.Find<TabControl>();
-            Assert.Equal(2, tabs.ItemCount);
+            Assert.Equal(3, tabs.ItemCount); // integrity, move library, devices
             _ = window.ButtonFor(vm.RunCheckCommand);          // integrity actions are wired
             _ = window.ButtonFor(vm.OptimizeAndRepairCommand);
 

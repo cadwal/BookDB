@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The scanning camera. Labels are left empty here and filled in from the app's own translations when the
+     screen opens, so there is one set of strings for the whole app rather than a second Android one. The
+     reticle's size is set from the scan's kind, so what stands here is only a starting shape. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FF000000">
+
+  <androidx.camera.view.PreviewView
+      android:id="@+id/scan_preview"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent" />
+
+  <View
+      android:id="@+id/scan_reticle"
+      android:layout_width="300dp"
+      android:layout_height="160dp"
+      android:layout_gravity="center"
+      android:background="@drawable/scan_reticle" />
+
+  <TextView
+      android:id="@+id/scan_instruction"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center_horizontal|bottom"
+      android:layout_marginBottom="56dp"
+      android:paddingLeft="16dp"
+      android:paddingRight="16dp"
+      android:textColor="#FFFFFFFF"
+      android:textSize="16sp"
+      android:shadowColor="#FF000000"
+      android:shadowRadius="8" />
+
+  <Button
+      android:id="@+id/scan_close"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="top|start"
+      android:layout_margin="12dp" />
+
+  <Button
+      android:id="@+id/scan_torch"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="top|end"
+      android:layout_margin="12dp" />
+
+</FrameLayout>

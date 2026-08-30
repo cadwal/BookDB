@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The frame the code is meant to sit in. Nothing is enforced by it — decoding works anywhere in the
+     picture — but it tells the eye how close to hold what is being read. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+  <stroke android:width="2dp" android:color="#FFFFFFFF" />
+  <corners android:radius="12dp" />
+</shape>

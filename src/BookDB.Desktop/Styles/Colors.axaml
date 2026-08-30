@@ -54,5 +54,6 @@
     <!-- Per-role icon colours (flat semantic): neutral = IconCss above; flavours override these. -->
     <sys:String x:Key="IconCssAccent">* { fill: #1976d2; }</sys:String>
     <sys:String x:Key="IconCssSuccess">* { fill: #2e7d32; }</sys:String>
+    <sys:String x:Key="IconCssWarning">* { fill: #f57f17; }</sys:String>
     <sys:String x:Key="IconCssDanger">* { fill: #d32f2f; }</sys:String>
 </ResourceDictionary>

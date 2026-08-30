@@ -46,6 +46,18 @@
             </TextBlock.Text>
         </TextBlock>
 
+        <!-- Check-digit aggregate: non-blocking warning of how many typed lines fail their checksum. -->
+        <StackPanel Orientation="Horizontal" Spacing="4" IsVisible="{Binding HasChecksumWarnings}">
+            <Image Source="{StaticResource Icon.IsbnWarning}" Width="14" Height="14" VerticalAlignment="Center" />
+            <TextBlock FontSize="12" VerticalAlignment="Center">
+                <TextBlock.Text>
+                    <MultiBinding StringFormat="{x:Static res:Resources.LookupWizard_ChecksumWarnings}">
+                        <Binding Path="InvalidChecksumCount" />
+                    </MultiBinding>
+                </TextBlock.Text>
+            </TextBlock>
+        </StackPanel>
+
         <!-- Drop area -->
         <Border Name="DropBorder"
                 Height="48"

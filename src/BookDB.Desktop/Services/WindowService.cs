@@ -137,15 +137,18 @@ public sealed class WindowService : IWindowService
         return (UnsavedChangesResult)(await ShowMessageDialogAsync(spec, owner))!;
     }
 
-    public async Task<bool?> ShowDeleteConfirmationAsync(string message)
+    public async Task<bool?> ShowDeleteConfirmationAsync(
+        string message, string? confirmLabel = null, string? cancelLabel = null)
     {
         // Delete never sits on Enter, and Esc/X decline — destructive actions take a pointed click.
         var spec = new MessageDialogSpec(
             Localization.Resources.Delete_Dialog_Title,
             message,
             [
-                new DialogButton(Localization.Resources.Delete_Confirm_Button, true, DialogButtonRole.Danger),
-                new DialogButton(Localization.Resources.Delete_Cancel_Button, false, IsCancel: true),
+                new DialogButton(
+                    confirmLabel ?? Localization.Resources.Delete_Confirm_Button, true, DialogButtonRole.Danger),
+                new DialogButton(
+                    cancelLabel ?? Localization.Resources.Delete_Cancel_Button, false, IsCancel: true),
             ],
             SafeCloseResult: false);
         return (bool?)await ShowMessageDialogAsync(spec, GetMainWindow());
@@ -378,6 +381,9 @@ public sealed class WindowService : IWindowService
 
         var viewModel = _serviceProvider.GetRequiredService<BatchQueueWindowViewModel>();
         viewModel.ResetStats();
+        // What the queue actually holds, so a window opened between runs still shows — and can act on —
+        // anything left waiting to be reviewed.
+        _ = viewModel.ShowStoredSummaryAsync();
         var window = new BatchQueueWindow { DataContext = viewModel };
         viewModel.CloseWindow = () => window.Close();
 
@@ -391,6 +397,32 @@ public sealed class WindowService : IWindowService
 
         RegisterOpenWindow(window, WindowCategory.Utility);
         window.Show(GetMainWindow());
+    }
+
+    public async Task ReviewPendingBatchItemsAsync()
+    {
+        // A window already open — or minimized, which keeps it registered — means the user is watching their
+        // own batch: it offers Start review itself, and starting one under them would take that decision away.
+        if (_secondaryWindows.OfType<BatchQueueWindow>().Any())
+        {
+            return;
+        }
+
+        // The queue decides, not the message: the run's count says what it routed to review, while these may
+        // already have been dealt with. Asked before anything is shown, so nobody gets a window for nothing.
+        var pending = await _serviceProvider.GetRequiredService<BatchQueueService>()
+            .GetItemsByStatusAsync(BatchStatus.PendingReview);
+        if (pending.Count == 0)
+        {
+            return;
+        }
+
+        OpenBatchQueueWindow();
+        var batchVm = GetBatchQueueWindowViewModel();
+        if (batchVm is not null)
+        {
+            await batchVm.ReviewPendingAsync();
+        }
     }
 
     private BatchQueueWindowViewModel? GetBatchQueueWindowViewModel() =>
@@ -486,6 +518,24 @@ public sealed class WindowService : IWindowService
         viewModel.CloseDialog = () => window.Close();
         _secondaryWindows.Add(window);
         window.Closed += (_, _) => _secondaryWindows.Remove(window);
+        await window.ShowDialog<object?>(GetMainWindow());
+    }
+
+    public async Task ShowPairingDialogAsync()
+    {
+        var viewModel = _serviceProvider.GetRequiredService<PairingDialogViewModel>();
+        var window = new PairingDialog { DataContext = viewModel };
+        viewModel.CloseDialog = _ => window.Close();
+
+        // The code rotates while the dialog is open, so the view model's clock runs only that long.
+        viewModel.Start();
+        window.Closed += (_, _) =>
+        {
+            _secondaryWindows.Remove(window);
+            viewModel.Dispose();
+        };
+
+        _secondaryWindows.Add(window);
         await window.ShowDialog<object?>(GetMainWindow());
     }
 

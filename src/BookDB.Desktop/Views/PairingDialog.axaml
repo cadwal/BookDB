@@ -1,0 +1,125 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:BookDB.Desktop.ViewModels"
+        xmlns:res="using:BookDB.Desktop.Localization"
+        xmlns:behaviors="using:BookDB.Desktop.Behaviors"
+        xmlns:conv="using:BookDB.Desktop.Converters"
+        xmlns:i="using:Avalonia.Xaml.Interactivity"
+        x:Class="BookDB.Desktop.Views.PairingDialog"
+        x:DataType="vm:PairingDialogViewModel"
+        Title="{x:Static res:Resources.Pairing_Title}"
+        Width="420" MinWidth="360"
+        Height="560" MinHeight="440"
+        WindowStartupLocation="CenterOwner"
+        ShowInTaskbar="False"
+        CanResize="False">
+
+  <i:Interaction.Behaviors>
+    <behaviors:LinearTabOrderBehavior />
+  </i:Interaction.Behaviors>
+
+  <DockPanel Margin="0">
+
+    <Border DockPanel.Dock="Top"
+            Background="{DynamicResource BrushBackgroundAlt}"
+            Padding="16,12"
+            BorderThickness="0,0,0,1"
+            BorderBrush="{DynamicResource BrushBorder}">
+      <TextBlock Text="{x:Static res:Resources.Pairing_Title}" FontSize="14" FontWeight="SemiBold"/>
+    </Border>
+
+    <Border DockPanel.Dock="Bottom"
+            Padding="16,12"
+            BorderThickness="0,1,0,0"
+            BorderBrush="{DynamicResource BrushBorder}">
+      <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+        <Button Content="{x:Static res:Resources.Pairing_PairAnother}"
+                Command="{Binding PairAnotherCommand}"
+                IsVisible="{Binding IsPaired}"/>
+        <Button Classes="accent" Content="{x:Static res:Resources.Common_Close}" Command="{Binding CloseCommand}"/>
+      </StackPanel>
+    </Border>
+
+    <Grid Margin="16" RowDefinitions="Auto,*,Auto,Auto,Auto">
+
+      <!-- Nothing to show: every device slot is taken, no network address, or the companion isn't running. -->
+      <TextBlock Grid.Row="0"
+                 Text="{Binding ErrorText}"
+                 IsVisible="{Binding HasError}"
+                 FontSize="12" TextWrapping="Wrap"
+                 Foreground="{DynamicResource BrushTextSecondary}"/>
+
+      <!-- Waiting for a scan -->
+      <TextBlock Grid.Row="0"
+                 Text="{x:Static res:Resources.Pairing_Instruction}"
+                 FontSize="12" TextWrapping="Wrap" Margin="0,0,0,12">
+        <TextBlock.IsVisible>
+          <MultiBinding Converter="{x:Static BoolConverters.And}">
+            <Binding Path="!IsPaired"/>
+            <Binding Path="!HasError"/>
+          </MultiBinding>
+        </TextBlock.IsVisible>
+      </TextBlock>
+
+      <Border Grid.Row="1"
+              HorizontalAlignment="Center" VerticalAlignment="Center"
+              Background="White" Padding="8" CornerRadius="4">
+        <Border.IsVisible>
+          <MultiBinding Converter="{x:Static BoolConverters.And}">
+            <Binding Path="!IsPaired"/>
+            <Binding Path="!HasError"/>
+          </MultiBinding>
+        </Border.IsVisible>
+        <!-- Always on white: a scanner needs the contrast, whatever theme the app is in.
+             Stretch="None", and no Width/Height: the renderer sizes the code to a whole number of pixels per
+             module, and any resampling on the way to the screen smears the module edges into each other. At
+             ~150 modules across a 1775-byte payload that is the difference between a read and a camera that
+             stares at it — found in UAT, where the code only became reliable once it was shown at its own
+             size. A hard-coded size would be right only until the payload changed length. -->
+        <Image Source="{Binding QrPng, Converter={x:Static conv:PngBytesToImageConverter.Instance}}"
+               Stretch="None"/>
+      </Border>
+
+      <!-- Paired confirmation, in place of the code -->
+      <StackPanel Grid.Row="1" Spacing="12"
+                  HorizontalAlignment="Center" VerticalAlignment="Center"
+                  IsVisible="{Binding IsPaired}">
+        <TextBlock Text="{Binding PairedDeviceName, StringFormat={x:Static res:Resources.Pairing_Paired}}"
+                   FontSize="14" TextWrapping="Wrap" TextAlignment="Center"/>
+        <TextBlock Text="{Binding DeviceCountText}"
+                   FontSize="12" TextAlignment="Center"
+                   Foreground="{DynamicResource BrushTextSecondary}"/>
+      </StackPanel>
+
+      <Grid Grid.Row="2" ColumnDefinitions="Auto,*" Margin="0,12,0,0">
+        <Grid.IsVisible>
+          <MultiBinding Converter="{x:Static BoolConverters.And}">
+            <Binding Path="!IsPaired"/>
+            <Binding Path="!HasError"/>
+          </MultiBinding>
+        </Grid.IsVisible>
+        <TextBlock Grid.Column="0"
+                   Text="{x:Static res:Resources.Pairing_Address}"
+                   FontSize="12" VerticalAlignment="Center" Margin="0,0,8,0"/>
+        <!-- One code names one endpoint, so picking another address mints a new code. -->
+        <ComboBox Grid.Column="1"
+                  ItemsSource="{Binding Addresses}"
+                  SelectedItem="{Binding SelectedAddress}"
+                  HorizontalAlignment="Stretch"/>
+      </Grid>
+
+      <TextBlock Grid.Row="3"
+                 Text="{Binding ExpiryText}"
+                 FontSize="11" Opacity="0.6" Margin="0,8,0,0">
+        <TextBlock.IsVisible>
+          <MultiBinding Converter="{x:Static BoolConverters.And}">
+            <Binding Path="!IsPaired"/>
+            <Binding Path="!HasError"/>
+          </MultiBinding>
+        </TextBlock.IsVisible>
+      </TextBlock>
+    </Grid>
+
+  </DockPanel>
+
+</Window>

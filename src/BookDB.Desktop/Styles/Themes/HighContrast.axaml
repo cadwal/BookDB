@@ -46,5 +46,6 @@
     <!-- All icon roles collapse to black in High contrast. -->
     <sys:String x:Key="IconCssAccent">* { fill: #000000; }</sys:String>
     <sys:String x:Key="IconCssSuccess">* { fill: #000000; }</sys:String>
+    <sys:String x:Key="IconCssWarning">* { fill: #000000; }</sys:String>
     <sys:String x:Key="IconCssDanger">* { fill: #000000; }</sys:String>
 </ResourceDictionary>

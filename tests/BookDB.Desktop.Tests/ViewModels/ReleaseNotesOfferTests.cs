@@ -45,7 +45,8 @@ public class ReleaseNotesOfferTests
             Substitute.For<IMigrationTargetBuilder>(),
             Substitute.For<BookDB.Data.Interfaces.ISecretStore>(),
             releaseNotes,
-            Substitute.For<BookDB.Desktop.Services.UpdateCheck.IUpdateCheckService>());
+            Substitute.For<BookDB.Desktop.Services.UpdateCheck.IUpdateCheckService>(),
+            Substitute.For<ICompanionStatusReporter>());
         return (vm, factory, windowService, releaseNotes);
     }
 

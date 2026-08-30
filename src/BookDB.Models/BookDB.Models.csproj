@@ -6,4 +6,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <!-- The shared ISBN rule. Everything downstream of Models picks it up from here. -->
+    <ProjectReference Include="..\BookDB.Isbn\BookDB.Isbn.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -37,7 +37,8 @@ public class MainWindowViewModelTests
             NSubstitute.Substitute.For<BookDB.Desktop.Services.IMigrationTargetBuilder>(),
             NSubstitute.Substitute.For<BookDB.Data.Interfaces.ISecretStore>(),
             NSubstitute.Substitute.For<BookDB.Desktop.Services.IReleaseNotesService>(),
-            NSubstitute.Substitute.For<BookDB.Desktop.Services.UpdateCheck.IUpdateCheckService>());
+            NSubstitute.Substitute.For<BookDB.Desktop.Services.UpdateCheck.IUpdateCheckService>(),
+            NSubstitute.Substitute.For<BookDB.Desktop.Services.ICompanionStatusReporter>());
         return (vm, factory);
     }
 

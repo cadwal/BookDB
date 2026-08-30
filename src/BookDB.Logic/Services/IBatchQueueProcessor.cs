@@ -9,7 +9,7 @@ public interface IBatchQueueProcessor
 {
     bool IsPaused { get; }
     Task<IReadOnlyList<BatchQueueItem>> ReloadPendingFromDatabaseAsync(CancellationToken ct = default);
-    Task StartBatch(IReadOnlyList<BatchQueueItem> items);
+    Task EnqueueAsync(IReadOnlyList<BatchQueueItem> items, bool priority = false);
     Task CancelBatchAsync();
     Task PauseAsync();
     void Resume();

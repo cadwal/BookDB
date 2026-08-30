@@ -7,6 +7,102 @@
              xmlns:converters="using:BookDB.Desktop.Converters"
              x:Class="BookDB.Desktop.Views.BookListView"
              x:DataType="vm:BookListViewModel">
+    <UserControl.Resources>
+        <!-- One menu, attached to both the list and the grid: Avalonia's ContextMenu tracks its attached
+             controls in a list, so the same instance serves whichever view is visible. Duplicating the
+             markup per view is what let the grid ship without a menu at all. -->
+        <ContextMenu x:Key="BookContextMenu" x:DataType="vm:BookListViewModel">
+            <!-- Group 1: Open actions (single-select only via CanExecute) -->
+            <MenuItem Header="{x:Static res:Resources.ContextMenu_Edit}"
+                      Command="{Binding EditBookCommand}">
+                <MenuItem.Icon>
+                    <Image Width="16" Height="16" Source="{StaticResource Icon.Edit}" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="{x:Static res:Resources.ContextMenu_OpenInWindow}"
+                      Command="{Binding OpenFullDetailsCommand}">
+                <MenuItem.Icon>
+                    <Image Width="16" Height="16" Source="{StaticResource Icon.Open}" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <Separator />
+            <!-- Group 2: Create / Destroy -->
+            <MenuItem Header="{x:Static res:Resources.ContextMenu_Duplicate}"
+                      Command="{Binding DuplicateBookCommand}">
+                <MenuItem.Icon>
+                    <Image Width="16" Height="16" Source="{StaticResource Icon.DocumentCopy}" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="{x:Static res:Resources.ContextMenu_Delete}"
+                      Command="{Binding DeleteBooksCommand}">
+                <MenuItem.Icon>
+                    <Image Width="16" Height="16" Source="{StaticResource Icon.Delete}" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <Separator />
+            <!-- Group 3: Batch actions -->
+            <MenuItem Header="{x:Static res:Resources.ContextMenu_BulkEdit}"
+                      Command="{Binding BulkEditCommand}">
+                <MenuItem.Icon>
+                    <Image Width="16" Height="16" Source="{StaticResource Icon.TableEdit}" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="{x:Static res:Resources.BookList_ContextMenu_Recatalog}"
+                      Command="{Binding RecatalogSelectedCommand}">
+                <MenuItem.Icon>
+                    <Image Width="16" Height="16" Source="{StaticResource Icon.BookArrowClockwise}" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <Separator />
+            <!-- Group 4: Collection management -->
+            <MenuItem Header="{x:Static res:Resources.ContextMenu_MoveToCollection}"
+                      ItemsSource="{Binding CollectionMenuEntries}">
+                <MenuItem.Icon>
+                    <Image Width="16" Height="16" Source="{StaticResource Icon.FolderArrowRight}" />
+                </MenuItem.Icon>
+                <MenuItem.ItemContainerTheme>
+                    <ControlTheme TargetType="MenuItem"
+                                  x:DataType="vm:CollectionMenuEntry"
+                                  BasedOn="{StaticResource {x:Type MenuItem}}">
+                        <Setter Property="Header" Value="{Binding Name}" />
+                        <Setter Property="ToggleType" Value="CheckBox" />
+                        <Setter Property="IsChecked" Value="{Binding IsCurrentCollection, Mode=OneWay}" />
+                        <Setter Property="Command"
+                                Value="{Binding $parent[MenuItem].((vm:BookListViewModel)DataContext).MoveToCollectionCommand}" />
+                        <Setter Property="CommandParameter" Value="{Binding CollectionId}" />
+                    </ControlTheme>
+                </MenuItem.ItemContainerTheme>
+            </MenuItem>
+            <Separator />
+            <!-- Group 5: Copy -->
+            <MenuItem Header="{x:Static res:Resources.ContextMenu_CopyIsbn}"
+                      Command="{Binding CopyIsbnCommand}">
+                <MenuItem.Icon>
+                    <Image Width="16" Height="16" Source="{StaticResource Icon.Clipboard}" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="{x:Static res:Resources.ContextMenu_CopyTitle}"
+                      Command="{Binding CopyTitleCommand}">
+                <MenuItem.Icon>
+                    <Image Width="16" Height="16" Source="{StaticResource Icon.Clipboard}" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <Separator />
+            <!-- Group 6: Loan -->
+            <MenuItem Header="{x:Static res:Resources.ContextMenu_CheckOut}"
+                      Command="{Binding CheckOutCommand}">
+                <MenuItem.Icon>
+                    <Image Width="16" Height="16" Source="{StaticResource Icon.PersonArrowRight}" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="{x:Static res:Resources.ContextMenu_CheckIn}"
+                      Command="{Binding CheckInCommand}">
+                <MenuItem.Icon>
+                    <Image Width="16" Height="16" Source="{StaticResource Icon.PersonArrowLeft}" />
+                </MenuItem.Icon>
+            </MenuItem>
+        </ContextMenu>
+    </UserControl.Resources>
     <DockPanel LastChildFill="True">
 
         <!-- Toolbar -->
@@ -108,6 +204,26 @@
                     </Button>
                 </StackPanel>
 
+                <!-- View toggle: list vs cover grid (persisted). Left of the search bar. -->
+                <StackPanel DockPanel.Dock="Right"
+                            Orientation="Horizontal"
+                            Spacing="2"
+                            VerticalAlignment="Center"
+                            Margin="4,0,8,0">
+                    <ToggleButton Classes="viewToggle"
+                                  IsChecked="{Binding !IsGridView}"
+                                  Command="{Binding ShowListViewCommand}"
+                                  ToolTip.Tip="{x:Static res:Resources.BookList_ViewToggle_List}">
+                        <Image Width="16" Height="16" Source="{StaticResource Icon.TextBulletListSquare}" />
+                    </ToggleButton>
+                    <ToggleButton Classes="viewToggle"
+                                  IsChecked="{Binding IsGridView}"
+                                  Command="{Binding ShowGridViewCommand}"
+                                  ToolTip.Tip="{x:Static res:Resources.BookList_ViewToggle_Grid}">
+                        <Image Width="16" Height="16" Source="{StaticResource Icon.ViewGrid}" />
+                    </ToggleButton>
+                </StackPanel>
+
                 <!-- Right: search bar -->
                 <StackPanel DockPanel.Dock="Right"
                             Orientation="Horizontal"
@@ -133,6 +249,7 @@
             <!-- DataGrid — always in the tree so it never loses its layout when populated -->
             <DataGrid x:Name="BooksGrid"
                       ItemsSource="{Binding Books}"
+                      IsVisible="{Binding !IsGridView}"
                       SelectionMode="Extended"
                       IsReadOnly="True"
                       CanUserReorderColumns="True"
@@ -141,6 +258,7 @@
                       RowHeight="{Binding RowHeight}"
                       AutoGenerateColumns="False"
                       FontSize="13"
+                      ContextMenu="{StaticResource BookContextMenu}"
                       ScrollViewer.HorizontalScrollBarVisibility="Auto">
                 <i:Interaction.Behaviors>
                     <behaviors:DataGridColumnStateBehavior />
@@ -154,99 +272,6 @@
                 <DataGrid.KeyBindings>
                     <KeyBinding Gesture="Delete" Command="{Binding DeleteBooksCommand}" />
                 </DataGrid.KeyBindings>
-                <DataGrid.ContextMenu>
-                    <ContextMenu>
-                        <!-- Group 1: Open actions (single-select only via CanExecute) -->
-                        <MenuItem Header="{x:Static res:Resources.ContextMenu_Edit}"
-                                  Command="{Binding EditBookCommand}">
-                            <MenuItem.Icon>
-                                <Image Width="16" Height="16" Source="{StaticResource Icon.Edit}" />
-                            </MenuItem.Icon>
-                        </MenuItem>
-                        <MenuItem Header="{x:Static res:Resources.ContextMenu_OpenInWindow}"
-                                  Command="{Binding OpenFullDetailsCommand}">
-                            <MenuItem.Icon>
-                                <Image Width="16" Height="16" Source="{StaticResource Icon.Open}" />
-                            </MenuItem.Icon>
-                        </MenuItem>
-                        <Separator />
-                        <!-- Group 2: Create / Destroy -->
-                        <MenuItem Header="{x:Static res:Resources.ContextMenu_Duplicate}"
-                                  Command="{Binding DuplicateBookCommand}">
-                            <MenuItem.Icon>
-                                <Image Width="16" Height="16" Source="{StaticResource Icon.DocumentCopy}" />
-                            </MenuItem.Icon>
-                        </MenuItem>
-                        <MenuItem Header="{x:Static res:Resources.ContextMenu_Delete}"
-                                  Command="{Binding DeleteBooksCommand}">
-                            <MenuItem.Icon>
-                                <Image Width="16" Height="16" Source="{StaticResource Icon.Delete}" />
-                            </MenuItem.Icon>
-                        </MenuItem>
-                        <Separator />
-                        <!-- Group 3: Batch actions -->
-                        <MenuItem Header="{x:Static res:Resources.ContextMenu_BulkEdit}"
-                                  Command="{Binding BulkEditCommand}">
-                            <MenuItem.Icon>
-                                <Image Width="16" Height="16" Source="{StaticResource Icon.TableEdit}" />
-                            </MenuItem.Icon>
-                        </MenuItem>
-                        <MenuItem Header="{x:Static res:Resources.BookList_ContextMenu_Recatalog}"
-                                  Command="{Binding RecatalogSelectedCommand}">
-                            <MenuItem.Icon>
-                                <Image Width="16" Height="16" Source="{StaticResource Icon.BookArrowClockwise}" />
-                            </MenuItem.Icon>
-                        </MenuItem>
-                        <Separator />
-                        <!-- Group 4: Collection management -->
-                        <MenuItem Header="{x:Static res:Resources.ContextMenu_MoveToCollection}"
-                                  ItemsSource="{Binding CollectionMenuEntries}">
-                            <MenuItem.Icon>
-                                <Image Width="16" Height="16" Source="{StaticResource Icon.FolderArrowRight}" />
-                            </MenuItem.Icon>
-                            <MenuItem.ItemContainerTheme>
-                                <ControlTheme TargetType="MenuItem"
-                                              x:DataType="vm:CollectionMenuEntry"
-                                              BasedOn="{StaticResource {x:Type MenuItem}}">
-                                    <Setter Property="Header" Value="{Binding Name}" />
-                                    <Setter Property="ToggleType" Value="CheckBox" />
-                                    <Setter Property="IsChecked" Value="{Binding IsCurrentCollection, Mode=OneWay}" />
-                                    <Setter Property="Command"
-                                            Value="{Binding $parent[MenuItem].((vm:BookListViewModel)DataContext).MoveToCollectionCommand}" />
-                                    <Setter Property="CommandParameter" Value="{Binding CollectionId}" />
-                                </ControlTheme>
-                            </MenuItem.ItemContainerTheme>
-                        </MenuItem>
-                        <Separator />
-                        <!-- Group 5: Copy -->
-                        <MenuItem Header="{x:Static res:Resources.ContextMenu_CopyIsbn}"
-                                  Command="{Binding CopyIsbnCommand}">
-                            <MenuItem.Icon>
-                                <Image Width="16" Height="16" Source="{StaticResource Icon.Clipboard}" />
-                            </MenuItem.Icon>
-                        </MenuItem>
-                        <MenuItem Header="{x:Static res:Resources.ContextMenu_CopyTitle}"
-                                  Command="{Binding CopyTitleCommand}">
-                            <MenuItem.Icon>
-                                <Image Width="16" Height="16" Source="{StaticResource Icon.Clipboard}" />
-                            </MenuItem.Icon>
-                        </MenuItem>
-                        <Separator />
-                        <!-- Group 6: Loan -->
-                        <MenuItem Header="{x:Static res:Resources.ContextMenu_CheckOut}"
-                                  Command="{Binding CheckOutCommand}">
-                            <MenuItem.Icon>
-                                <Image Width="16" Height="16" Source="{StaticResource Icon.PersonArrowRight}" />
-                            </MenuItem.Icon>
-                        </MenuItem>
-                        <MenuItem Header="{x:Static res:Resources.ContextMenu_CheckIn}"
-                                  Command="{Binding CheckInCommand}">
-                            <MenuItem.Icon>
-                                <Image Width="16" Height="16" Source="{StaticResource Icon.PersonArrowLeft}" />
-                            </MenuItem.Icon>
-                        </MenuItem>
-                    </ContextMenu>
-                </DataGrid.ContextMenu>
                 <DataGrid.Columns>
                     <!-- Row number column: sequential 1-based index, non-interactive, monospace -->
                     <DataGridTemplateColumn Width="48"
@@ -441,6 +466,92 @@
                                         IsVisible="{Binding $parent[DataGrid].((vm:BookListViewModel)DataContext).LoanedToColumnVisible, FallbackValue=False}" />
                 </DataGrid.Columns>
             </DataGrid>
+
+            <!-- Cover-grid view: same Books collection, selection and open flows as the list -->
+            <ListBox x:Name="BooksGridView"
+                     ItemsSource="{Binding Books}"
+                     IsVisible="{Binding IsGridView}"
+                     SelectionMode="Multiple"
+                     Background="Transparent"
+                     BorderThickness="0"
+                     Padding="8"
+                     ContextMenu="{StaticResource BookContextMenu}"
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                     ScrollViewer.VerticalScrollBarVisibility="Auto">
+                <i:Interaction.Behaviors>
+                    <behaviors:ListBoxSelectionBehavior />
+                    <behaviors:ListBoxDoubleTapBehavior />
+                    <behaviors:ListBoxInfiniteScrollBehavior NearBottomThreshold="300" />
+                </i:Interaction.Behaviors>
+                <ListBox.KeyBindings>
+                    <KeyBinding Gesture="Enter" Command="{Binding EditBookCommand}" />
+                    <KeyBinding Gesture="Delete" Command="{Binding DeleteBooksCommand}" />
+                </ListBox.KeyBindings>
+                <ListBox.Styles>
+                    <Style Selector="ListBoxItem">
+                        <Setter Property="Padding" Value="0" />
+                        <Setter Property="Margin" Value="0" />
+                        <Setter Property="CornerRadius" Value="4" />
+                    </Style>
+                </ListBox.Styles>
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel Orientation="Horizontal" />
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+                <ListBox.ItemTemplate>
+                    <DataTemplate x:DataType="vm:BookRowViewModel">
+                        <StackPanel Width="132" Margin="6,6,6,10" Spacing="6">
+                            <Border Width="120" Height="168"
+                                    CornerRadius="3"
+                                    HorizontalAlignment="Center"
+                                    Background="{DynamicResource BrushBackgroundAlt}">
+                                <i:Interaction.Behaviors>
+                                    <behaviors:CoverHoverPopupBehavior ImagePropertyName="TooltipBitmap" Placement="Right" />
+                                </i:Interaction.Behaviors>
+                                <Grid>
+                                    <Image Source="{Binding GridThumbnail}"
+                                           Stretch="Uniform"
+                                           IsVisible="{Binding GridThumbnail, Converter={x:Static ObjectConverters.IsNotNull}}" />
+                                    <!-- Placeholder while there is no cover (none stored, or not yet decoded) -->
+                                    <Image Width="40" Height="40" Opacity="0.35"
+                                           Source="{StaticResource Icon.BookQuestionMark}"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center"
+                                           IsVisible="{Binding GridThumbnail, Converter={x:Static ObjectConverters.IsNull}}" />
+                                    <Border Background="{DynamicResource BrushWarning}"
+                                            CornerRadius="2"
+                                            Padding="2,1"
+                                            HorizontalAlignment="Right"
+                                            VerticalAlignment="Bottom"
+                                            Margin="0,0,3,3"
+                                            IsVisible="{Binding HasMultipleImages}">
+                                        <ToolTip.Tip>
+                                            <TextBlock Text="{Binding ImageCountTooltip}" />
+                                        </ToolTip.Tip>
+                                        <TextBlock Text="{Binding ImageCountBadge}"
+                                                   FontSize="10"
+                                                   Foreground="{DynamicResource BrushTextPrimary}" />
+                                    </Border>
+                                </Grid>
+                            </Border>
+                            <TextBlock Text="{Binding Title}"
+                                       Classes="titleText"
+                                       TextWrapping="Wrap"
+                                       MaxLines="2"
+                                       TextTrimming="CharacterEllipsis"
+                                       TextAlignment="Center"
+                                       HorizontalAlignment="Center"
+                                       ToolTip.Tip="{Binding Title}" />
+                            <TextBlock Text="{Binding AuthorDisplay}"
+                                       Classes="authorText"
+                                       TextTrimming="CharacterEllipsis"
+                                       MaxLines="1"
+                                       TextAlignment="Center"
+                                       HorizontalAlignment="Center" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
 
             <!-- Loading indicator — overlays bottom of DataGrid -->
             <Border IsVisible="{Binding IsLoadingMore}"

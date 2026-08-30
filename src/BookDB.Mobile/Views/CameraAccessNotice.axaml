@@ -1,0 +1,26 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:BookDB.Mobile.ViewModels"
+             xmlns:res="using:BookDB.Mobile.Localization"
+             x:Class="BookDB.Mobile.Views.CameraAccessNotice"
+             x:DataType="vm:CameraAccessViewModel"
+             IsVisible="{Binding IsVisible}">
+
+  <!-- Every screen that scans says the same thing when the camera says no, so they say it in one place. -->
+  <Border CornerRadius="8" Padding="16,12"
+          Background="{DynamicResource SystemControlBackgroundListLowBrush}">
+    <StackPanel Spacing="10">
+      <!-- MinHeight for the reason PairingView records, and seen here in UAT: the notice appears on a screen
+           already laid out, and on that second pass the block came back one line tall — the Swedish text was
+           cut off and the Open settings button went with it, both back on a later attempt. Five lines is what
+           the longest of the two messages needs across the nine languages (the German refusal); the slack in
+           the shorter ones sits inside the card, which is the cheaper of the two costs. -->
+      <TextBlock Text="{Binding Message}" TextWrapping="Wrap" MinHeight="96"/>
+      <Button Command="{Binding OpenSettingsCommand}"
+              IsVisible="{Binding CanOpenSettings}"
+              HorizontalAlignment="Left" Padding="16,10"
+              Content="{x:Static res:Resources.Camera_OpenSettings}"/>
+    </StackPanel>
+  </Border>
+
+</UserControl>

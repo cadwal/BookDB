@@ -1,0 +1,44 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:BookDB.Mobile.ViewModels"
+             xmlns:res="using:BookDB.Mobile.Localization"
+             x:Class="BookDB.Mobile.Views.HubView"
+             x:DataType="vm:HubViewModel">
+
+  <!-- The page's inset lives on the rows, not on this grid: a scrolling area only scrolls where it is, and a
+       margin here would leave a band down each side where a thumb reaches the page instead of the scroller
+       and nothing moves. Found in UAT. -->
+  <Grid RowDefinitions="*,Auto">
+
+    <!-- The two primary jobs, large and centred so they stay thumb-reachable on a phone and
+         well-proportioned on a tablet; they scroll rather than clip where landscape leaves too little
+         height for buttons this size. -->
+    <ScrollViewer Grid.Row="0" Padding="24,24,24,0">
+      <StackPanel Spacing="16"
+                  VerticalAlignment="Center" HorizontalAlignment="Stretch" MaxWidth="420">
+        <Button Command="{Binding ScanCommand}"
+                HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                Padding="0,28" FontSize="20"
+                Content="{x:Static res:Resources.Hub_ScanBooks}"/>
+        <Button Command="{Binding BrowseCommand}"
+                HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                Padding="0,20" FontSize="18"
+                Content="{x:Static res:Resources.Hub_Browse}"/>
+      </StackPanel>
+    </ScrollViewer>
+
+    <StackPanel Grid.Row="1" Spacing="12" Margin="24,0,24,24">
+      <!-- Absent until something is waiting, so the hub stays two jobs and a cog on a fresh device. -->
+      <Button Command="{Binding OpenBatchCommand}"
+              IsVisible="{Binding HasBatch}"
+              HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+              Padding="0,14"
+              Content="{Binding BatchLine}"/>
+
+      <Button Command="{Binding OpenSettingsCommand}"
+              HorizontalAlignment="Right"
+              Content="{x:Static res:Resources.Hub_Settings}"/>
+    </StackPanel>
+  </Grid>
+
+</UserControl>

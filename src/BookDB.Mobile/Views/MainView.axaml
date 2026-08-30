@@ -1,0 +1,48 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:BookDB.Mobile.ViewModels"
+             xmlns:conv="using:BookDB.Mobile.Converters"
+             xmlns:res="using:BookDB.Mobile.Localization"
+             x:Class="BookDB.Mobile.Views.MainView"
+             x:DataType="vm:MainViewModel">
+
+  <UserControl.Resources>
+    <conv:ConnectionStatusToBrushConverter x:Key="ConnectionBrush"/>
+    <conv:ViewportToColumnCapConverter x:Key="ColumnCap"/>
+  </UserControl.Resources>
+
+  <Grid RowDefinitions="Auto,*">
+
+    <!-- Top bar: back (when there is somewhere to go back to), page title, connection status chip. -->
+    <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" Margin="12,10">
+      <Button Grid.Column="0"
+              Content="{x:Static res:Resources.Nav_Back}"
+              Command="{Binding GoBackCommand}"
+              IsVisible="{Binding CanGoBack}"
+              Margin="0,0,12,0"/>
+      <TextBlock Grid.Column="1"
+                 Text="{Binding CurrentPage.Title}"
+                 FontSize="18" FontWeight="SemiBold" VerticalAlignment="Center"/>
+      <Border Grid.Column="2" VerticalAlignment="Center"
+              IsVisible="{Binding ShowsConnection}"
+              Background="{DynamicResource SystemControlBackgroundListLowBrush}"
+              CornerRadius="12" Padding="10,4">
+        <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+          <Ellipse Width="9" Height="9" VerticalAlignment="Center"
+                   Fill="{Binding Connection, Converter={StaticResource ConnectionBrush}}"/>
+          <TextBlock Text="{Binding StatusText}" FontSize="12" VerticalAlignment="Center"/>
+        </StackPanel>
+      </Border>
+    </Grid>
+
+    <!-- Navigation frame. On a tablet the content is kept in a comfortable column so a screen reads as a
+         centred page rather than a stretched phone screen; a handset gets the whole width in both
+         orientations, because a cap on a phone turned on its side is a dead strip down each edge. -->
+    <ContentControl Grid.Row="1"
+                    Content="{Binding CurrentPage}"
+                    HorizontalAlignment="Stretch"
+                    MaxWidth="{Binding $parent[UserControl].Bounds, Converter={StaticResource ColumnCap}}"
+                    HorizontalContentAlignment="Stretch"/>
+  </Grid>
+
+</UserControl>

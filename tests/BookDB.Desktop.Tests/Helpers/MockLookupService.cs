@@ -79,7 +79,8 @@ public sealed class TestLookupServiceFactory : IDisposable
         public Task<bool?> ShowBulkEditDialogAsync(IReadOnlyList<int> bookIds) => Task.FromResult<bool?>(null);
         public Task<bool?> ShowAdvancedSearchDialogAsync(SavedSearch? searchToEdit = null) => Task.FromResult<bool?>(null);
         public Task<UnsavedChangesResult> ShowUnsavedChangesDialogAsync(string bookTitle) => Task.FromResult(UnsavedChangesResult.Discard);
-        public Task<bool?> ShowDeleteConfirmationAsync(string message) => Task.FromResult<bool?>(null);
+        public Task<bool?> ShowDeleteConfirmationAsync(
+            string message, string? confirmLabel = null, string? cancelLabel = null) => Task.FromResult<bool?>(null);
         public Task OpenFullDetailsWindowAsync(int bookId) => Task.CompletedTask;
         public Task<bool?> ShowLookupWizardDialogAsync() => Task.FromResult<bool?>(null);
         public Task<bool?> ShowMergeReviewDialogAsync(
@@ -95,6 +96,7 @@ public sealed class TestLookupServiceFactory : IDisposable
         public Task<DuplicateIsbnResult> ShowDuplicateIsbnDialogAsync(string isbn, string existingTitle) => Task.FromResult(DuplicateIsbnResult.Cancel);
         public Task ShowUpdateHintAsync(BookDB.Desktop.Services.UpdateCheck.InstallChannel channel, string latestVersion, string currentVersion) => Task.CompletedTask;
         public void OpenBatchQueueWindow() { }
+        public Task ReviewPendingBatchItemsAsync() => Task.CompletedTask;
         public BatchQueueWindowViewModel? GetBatchQueueWindowViewModel() => null;
         public Task<string?> ShowIsbnPromptDialogAsync(string bookTitle) => Task.FromResult<string?>(null);
         public Task<bool?> ShowImportWizardAsync(string? initialPath = null) => Task.FromResult<bool?>(null);
@@ -109,6 +111,7 @@ public sealed class TestLookupServiceFactory : IDisposable
         public Task ShowManageLookupsAsync(string? initialTab = null) => Task.CompletedTask;
         public Task ShowSettingsAsync(Avalonia.Controls.Window? owner = null, BookDB.Desktop.Services.SettingsSection? section = null) => Task.CompletedTask;
         public Task ShowMaintenanceDialogAsync() => Task.CompletedTask;
+        public Task ShowPairingDialogAsync() => Task.CompletedTask;
         public Task OpenStatisticsWindowAsync() => Task.CompletedTask;
         public void OpenHelpWindow(HelpTab tab) { }
         public Task<IReadOnlyList<string>?> ShowCsvColumnPickerAsync(

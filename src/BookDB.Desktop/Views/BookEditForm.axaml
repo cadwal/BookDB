@@ -36,7 +36,15 @@
                         <TextBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding EditAltTitle}" FontSize="13" Margin="0,0,0,4" />
 
                         <TextBlock Grid.Row="3" Grid.Column="0" Text="{x:Static res:Resources.BookEditForm_Label_Isbn}" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,4" />
-                        <TextBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding EditIsbn}" FontSize="13" Margin="0,0,0,4" />
+                        <DockPanel Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" LastChildFill="True" Margin="0,0,0,4">
+                            <Image DockPanel.Dock="Right" Width="16" Height="16" Margin="6,0,0,0"
+                                   VerticalAlignment="Center" IsVisible="False">
+                                <i:Interaction.Behaviors>
+                                    <behaviors:IsbnChecksumIndicatorBehavior Isbn="{Binding EditIsbn}" />
+                                </i:Interaction.Behaviors>
+                            </Image>
+                            <TextBox Text="{Binding EditIsbn}" FontSize="13" />
+                        </DockPanel>
 
                         <TextBlock Grid.Row="4" Grid.Column="0" Text="{x:Static res:Resources.BookEditForm_Label_ExtId}" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,4" />
                         <TextBox Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding EditExternalId}" FontSize="13" Margin="0,0,0,4" />

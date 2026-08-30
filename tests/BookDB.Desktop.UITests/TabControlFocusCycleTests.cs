@@ -64,7 +64,7 @@ public class TabControlFocusCycleTests : HeadlessTest
             var window = new SettingsWindow { DataContext = vm };
             window.Show();
             Ui.Pump();
-            vm.SelectedTabIndex = 7; // Database — the backend radio group lives here
+            vm.SelectedTabIndex = 8; // Database — the backend radio group lives here
             vm.DatabaseTab.IsPostgreSqlSelected = true; // reveal the server form so it joins the cycle
             Ui.Pump();
 

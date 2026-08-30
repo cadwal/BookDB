@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/semver-spec
 
 ## [Unreleased]
 
+## [4.0.0] - 2026-08-30
+
+### Added
+- **BookDB Companion — an Android app that catalogues with your phone's camera.** Scan a book's barcode, photograph its cover, and build up a batch of books on the phone; send the batch to your computer and BookDB puts each one through the same lookup and review you get when adding by hand. Works on phones and tablets running Android 8.0 or newer.
+- **Pairing by QR code, over your own network.** Turn the companion on in **Settings → Companion**, then show the phone a pairing code from **Maintenance → Devices**. The phone finds your computer on the network by itself. The link between them is encrypted and each end checks the other's certificate, so another device on the network cannot pose as your phone or your computer. Paired phones are listed, and any of them can be revoked.
+- **Nothing leaves your network.** The phone talks to your computer directly. There is no BookDB account, no cloud service, and no telemetry. The companion is **off until you turn it on**, so no port is opened and no firewall prompt appears until you ask for it.
+- **Browse your library from the phone.** A read-only view of the whole library with covers, details and search, while the phone is on the same network as your computer — at home, or through a VPN into it.
+- **Cover grid view on the desktop.** See the library as a wall of covers instead of a grid of rows, and switch back whenever you like.
+- **ISBN checksum indicator.** While you type an ISBN, BookDB tells you whether it can be a real one — a mistyped digit shows up immediately instead of becoming a failed lookup.
+- **A Companion help topic**, in all nine languages, covering pairing, the firewall, and what to do when the phone cannot find the computer.
+- **The Android companion installs by hand.** Download the APK from this release and allow your browser or file manager to install it once. This release is for you if you are comfortable installing an app that way, or if your device has no Play Store at all — hand-installing stays possible either way. A Play Store listing, for everyone who would rather just tap Install, is coming in 4.1.
+
+### Changed
+- **Nothing changes on the desktop unless you want the phone.** The 4.0 number marks the new companion app, not a change to how BookDB works on your computer: the companion stays off until you turn it on, and everything else is where you left it.
+
 ## [3.1.0] - 2026-07-22
 
 ### Added
@@ -152,7 +167,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/semver-spec
 - Multi-language UI: EN, SV, DE, ES, FR, NL, IT, PT-BR, PT-PT
 - Help system with per-screen contextual help
 
-[Unreleased]: https://github.com/cadwal/BookDB/compare/v3.1.0...HEAD
+[Unreleased]: https://github.com/cadwal/BookDB/compare/v4.0.0...HEAD
 [2.1.0]: https://github.com/cadwal/BookDB/releases/tag/v2.1.0
 [1.1.0]: https://github.com/cadwal/BookDB/releases/tag/v1.1.0
 [1.0.0]: https://github.com/cadwal/BookDB/releases/tag/v1.0.0
@@ -163,3 +178,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/semver-spec
 [2.3.0]: https://github.com/cadwal/BookDB/releases/tag/v2.3.0
 [3.0.0]: https://github.com/cadwal/BookDB/releases/tag/v3.0.0
 [3.1.0]: https://github.com/cadwal/BookDB/releases/tag/v3.1.0
+[4.0.0]: https://github.com/cadwal/BookDB/releases/tag/v4.0.0

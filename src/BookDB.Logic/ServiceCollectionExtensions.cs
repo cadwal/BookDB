@@ -58,6 +58,11 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<ConnectionHealthMonitor>();
         services.AddSingleton<IConnectionHealthMonitor>(sp => sp.GetRequiredService<ConnectionHealthMonitor>());
 
+        services.AddSingleton<ICompanionIntakeService, CompanionIntakeService>();
+        services.AddSingleton<ICompanionQueueStatusService, CompanionQueueStatusService>();
+        services.AddSingleton<ICompanionPreviewService, CompanionPreviewService>();
+        services.AddSingleton<ICompanionBrowseService, CompanionBrowseService>();
+
         services.AddSingleton<ILibraryMigrationService, LibraryMigrationService>();
         services.AddSingleton<ICsvArchiveRestoreService, CsvArchiveRestoreService>();
         return services;

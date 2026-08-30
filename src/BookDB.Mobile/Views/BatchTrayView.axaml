@@ -1,0 +1,94 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:BookDB.Mobile.ViewModels"
+             xmlns:conv="using:BookDB.Mobile.Converters"
+             xmlns:res="using:BookDB.Mobile.Localization"
+             x:Class="BookDB.Mobile.Views.BatchTrayView"
+             x:DataType="vm:BatchTrayViewModel">
+
+  <UserControl.Resources>
+    <conv:JpegToImageConverter x:Key="Jpeg"/>
+  </UserControl.Resources>
+
+  <!-- The page's inset is on the rows rather than here, so the scrolling area reaches both edges — see
+       HubView for what a margin on the grid costs a thumb. -->
+  <Grid RowDefinitions="Auto,*,Auto">
+
+    <TextBlock Grid.Row="0" Text="{Binding CountLine}" FontSize="16" FontWeight="SemiBold"
+               Margin="24,16,24,0" IsVisible="{Binding !IsEmpty}"/>
+
+    <!-- Nothing staged is a normal state, not an error: say what to do about it. -->
+    <StackPanel Grid.Row="1" Spacing="8" Margin="24,0" VerticalAlignment="Center" IsVisible="{Binding IsEmpty}">
+      <TextBlock Text="{x:Static res:Resources.Batch_Empty}"
+                 FontSize="18" HorizontalAlignment="Center" TextWrapping="Wrap"/>
+      <TextBlock Text="{x:Static res:Resources.Batch_EmptyHint}"
+                 HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap" Opacity="0.7"/>
+    </StackPanel>
+
+    <ScrollViewer Grid.Row="1" Padding="24,12,24,0" IsVisible="{Binding !IsEmpty}">
+      <ItemsControl ItemsSource="{Binding Items}">
+        <ItemsControl.ItemTemplate>
+          <DataTemplate x:DataType="vm:BatchItemViewModel">
+            <Border Background="{DynamicResource SystemControlBackgroundListLowBrush}"
+                    CornerRadius="8" Padding="12" Margin="0,0,0,10">
+              <StackPanel Spacing="10">
+
+                <Grid ColumnDefinitions="Auto,*,Auto">
+                  <Border Grid.Column="0" Width="48" Height="64" Margin="0,0,12,0"
+                          CornerRadius="4"
+                          Background="{DynamicResource SystemControlBackgroundAltHighBrush}">
+                    <Image Source="{Binding Thumbnail, Converter={StaticResource Jpeg}}" Stretch="UniformToFill"/>
+                  </Border>
+
+                  <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                    <TextBlock Text="{Binding IsbnTail}" FontSize="16"/>
+                    <TextBlock Text="{Binding PhotoCount}" FontSize="12" Opacity="0.7"/>
+                  </StackPanel>
+
+                  <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8"
+                              VerticalAlignment="Center" IsVisible="{Binding !IsConfirmingRemove}">
+                    <Button Command="{Binding EditCommand}" Padding="12,8"
+                            Content="{x:Static res:Resources.Batch_Edit}"/>
+                    <Button Command="{Binding RemoveCommand}" Padding="12,8"
+                            Content="{x:Static res:Resources.Batch_Remove}"/>
+                  </StackPanel>
+                </Grid>
+
+                <!-- The photos are the only copy, so removing asks once. -->
+                <StackPanel Spacing="8" IsVisible="{Binding IsConfirmingRemove}">
+                  <TextBlock Text="{x:Static res:Resources.Batch_RemoveWarning}" TextWrapping="Wrap"/>
+                  <Grid ColumnDefinitions="*,12,*">
+                    <Button Grid.Column="0" Command="{Binding ConfirmRemoveCommand}"
+                            HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Padding="0,10"
+                            Content="{x:Static res:Resources.Batch_RemoveConfirm}"/>
+                    <Button Grid.Column="2" Command="{Binding CancelRemoveCommand}"
+                            HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Padding="0,10"
+                            Content="{x:Static res:Resources.Batch_Cancel}"/>
+                  </Grid>
+                </StackPanel>
+              </StackPanel>
+            </Border>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+    </ScrollViewer>
+
+    <StackPanel Grid.Row="2" Spacing="10" Margin="24,12,24,16" IsVisible="{Binding !IsEmpty}">
+      <!-- A disabled button with no explanation reads as a bug; say what is in the way. -->
+      <TextBlock Text="{x:Static res:Resources.Batch_OfflineReason}"
+                 IsVisible="{Binding ShowsOfflineReason}"
+                 TextWrapping="Wrap" FontSize="12" Opacity="0.8"/>
+
+      <TextBlock Text="{x:Static res:Resources.Status_RevokedExplanation}"
+                 IsVisible="{Binding ShowsRevokedReason}"
+                 TextWrapping="Wrap" FontSize="12" Opacity="0.8"/>
+
+      <Button Command="{Binding UploadCommand}"
+              Classes="accent"
+              HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+              Padding="0,18" FontSize="18"
+              Content="{Binding UploadLabel}"/>
+    </StackPanel>
+  </Grid>
+
+</UserControl>

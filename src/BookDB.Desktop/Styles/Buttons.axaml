@@ -126,6 +126,30 @@
         <Setter Property="Background" Value="{DynamicResource BrushIconActive}" />
     </Style>
 
+    <!-- View-mode toggle (list vs grid): flat like the icon buttons, with a contrast-safe active
+         state. The default ToggleButton fill sat too dark under the dark-tinted icons in the light
+         flavours; here the surface stays transparent and the checked state uses the same subtle,
+         theme-aware active brush the icon buttons use, so the glyph keeps its contrast. -->
+    <Style Selector="ToggleButton.viewToggle">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="6,2" />
+        <Setter Property="CornerRadius" Value="4" />
+        <Setter Property="MinWidth" Value="0" />
+    </Style>
+    <Style Selector="ToggleButton.viewToggle /template/ ContentPresenter">
+        <Setter Property="Background" Value="Transparent" />
+    </Style>
+    <Style Selector="ToggleButton.viewToggle:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource BrushIconHover}" />
+    </Style>
+    <Style Selector="ToggleButton.viewToggle:checked /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource BrushIconActive}" />
+    </Style>
+    <Style Selector="ToggleButton.viewToggle:checked:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource BrushIconActive}" />
+    </Style>
+
     <!-- Primary button: solid blue, white text, semibold. Padding is left to the theme default so the height
          matches the neutral/accent buttons it sits beside. -->
     <Style Selector="Button.primaryButton">

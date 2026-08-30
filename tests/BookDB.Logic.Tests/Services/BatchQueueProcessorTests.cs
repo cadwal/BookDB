@@ -106,7 +106,7 @@ public sealed class BatchQueueProcessorTests : IDisposable
 
         using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
         using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(timeoutCts.Token, TestContext.Current.CancellationToken);
-        await processor.StartBatch([item]).WaitAsync(linkedCts.Token);
+        await processor.EnqueueAsync([item]).WaitAsync(linkedCts.Token);
 
         var failed = await _queueService.GetItemsByStatusAsync("Failed", TestContext.Current.CancellationToken);
         Assert.Single(failed);
@@ -125,7 +125,7 @@ public sealed class BatchQueueProcessorTests : IDisposable
 
         using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
         using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(timeoutCts.Token, TestContext.Current.CancellationToken);
-        await processor.StartBatch([item]).WaitAsync(linkedCts.Token);
+        await processor.EnqueueAsync([item]).WaitAsync(linkedCts.Token);
 
         var failed = await _queueService.GetItemsByStatusAsync("Failed", TestContext.Current.CancellationToken);
         Assert.Single(failed);
@@ -146,7 +146,7 @@ public sealed class BatchQueueProcessorTests : IDisposable
 
         using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
         using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(timeoutCts.Token, TestContext.Current.CancellationToken);
-        await processor.StartBatch([item]).WaitAsync(linkedCts.Token);
+        await processor.EnqueueAsync([item]).WaitAsync(linkedCts.Token);
 
         var failed = await _queueService.GetItemsByStatusAsync("Failed", TestContext.Current.CancellationToken);
         Assert.Single(failed);
@@ -165,7 +165,7 @@ public sealed class BatchQueueProcessorTests : IDisposable
 
         using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
         using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(timeoutCts.Token, TestContext.Current.CancellationToken);
-        await processor.StartBatch([item]).WaitAsync(linkedCts.Token);
+        await processor.EnqueueAsync([item]).WaitAsync(linkedCts.Token);
 
         var failed = await _queueService.GetItemsByStatusAsync("Failed", TestContext.Current.CancellationToken);
         Assert.Single(failed);
@@ -183,7 +183,7 @@ public sealed class BatchQueueProcessorTests : IDisposable
 
         using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
         using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(timeoutCts.Token, TestContext.Current.CancellationToken);
-        await processor.StartBatch([item]).WaitAsync(linkedCts.Token);
+        await processor.EnqueueAsync([item]).WaitAsync(linkedCts.Token);
 
         var failed = await _queueService.GetItemsByStatusAsync("Failed", TestContext.Current.CancellationToken);
         Assert.Single(failed);
@@ -203,7 +203,7 @@ public sealed class BatchQueueProcessorTests : IDisposable
 
         using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
         using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(timeoutCts.Token, TestContext.Current.CancellationToken);
-        await processor.StartBatch([item]).WaitAsync(linkedCts.Token);
+        await processor.EnqueueAsync([item]).WaitAsync(linkedCts.Token);
 
         var failed = await _queueService.GetItemsByStatusAsync("Failed", TestContext.Current.CancellationToken);
         Assert.Single(failed);
@@ -222,7 +222,7 @@ public sealed class BatchQueueProcessorTests : IDisposable
 
         using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
         using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(timeoutCts.Token, TestContext.Current.CancellationToken);
-        await processor.StartBatch([item]).WaitAsync(linkedCts.Token);
+        await processor.EnqueueAsync([item]).WaitAsync(linkedCts.Token);
 
         var failed = await _queueService.GetItemsByStatusAsync("Failed", TestContext.Current.CancellationToken);
         Assert.Single(failed);
@@ -244,12 +244,12 @@ public sealed class BatchQueueProcessorTests : IDisposable
         using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(timeoutCts.Token, ct);
 
         var failingProcessor = MakeProcessor(emptyLookup, bookService, bookMetadataService, bookImageService);
-        await failingProcessor.StartBatch([item]).WaitAsync(linkedCts.Token);
+        await failingProcessor.EnqueueAsync([item]).WaitAsync(linkedCts.Token);
         Assert.NotNull((await _queueService.GetItemsByStatusAsync("Failed", ct))[0].FailureCode);
 
         var succeedingLookup = new MockMetadataLookupService(results: [MakeMetadata("Found Now")]);
         var retryProcessor = MakeProcessor(succeedingLookup, bookService, bookMetadataService, bookImageService);
-        await retryProcessor.StartBatch([item]).WaitAsync(linkedCts.Token);
+        await retryProcessor.EnqueueAsync([item]).WaitAsync(linkedCts.Token);
 
         var accepted = await _queueService.GetItemsByStatusAsync("AutoAccepted", ct);
         Assert.Single(accepted);
@@ -276,7 +276,7 @@ public sealed class BatchQueueProcessorTests : IDisposable
 
         using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
         using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(timeoutCts.Token, ct);
-        await processor.StartBatch([item]).WaitAsync(linkedCts.Token);
+        await processor.EnqueueAsync([item]).WaitAsync(linkedCts.Token);
 
         lock (observedStatusCodes)
             Assert.Contains(BatchProgressStatus.FetchingCovers, observedStatusCodes);
@@ -296,7 +296,7 @@ public sealed class BatchQueueProcessorTests : IDisposable
 
         using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
         using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(timeoutCts.Token, TestContext.Current.CancellationToken);
-        await processor.StartBatch([item]).WaitAsync(linkedCts.Token);
+        await processor.EnqueueAsync([item]).WaitAsync(linkedCts.Token);
 
         var done = await _queueService.GetItemsByStatusAsync("AutoAccepted", TestContext.Current.CancellationToken);
         Assert.Single(done);
@@ -318,7 +318,7 @@ public sealed class BatchQueueProcessorTests : IDisposable
 
         using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
         using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(timeoutCts.Token, TestContext.Current.CancellationToken);
-        await processor.StartBatch([item]).WaitAsync(linkedCts.Token);
+        await processor.EnqueueAsync([item]).WaitAsync(linkedCts.Token);
 
         var pendingReview = await _queueService.GetItemsByStatusAsync("PendingReview", TestContext.Current.CancellationToken);
         Assert.Single(pendingReview);
@@ -338,7 +338,7 @@ public sealed class BatchQueueProcessorTests : IDisposable
 
         using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
         using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(timeoutCts.Token, ct);
-        await processor.StartBatch([item]).WaitAsync(linkedCts.Token);
+        await processor.EnqueueAsync([item]).WaitAsync(linkedCts.Token);
 
         var pendingReview = await _queueService.GetItemsByStatusAsync("PendingReview", ct);
         Assert.Single(pendingReview);
@@ -365,7 +365,7 @@ public sealed class BatchQueueProcessorTests : IDisposable
 
         using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
         using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(timeoutCts.Token, ct);
-        await processor.StartBatch([item]).WaitAsync(linkedCts.Token);
+        await processor.EnqueueAsync([item]).WaitAsync(linkedCts.Token);
 
         var pendingReview = await _queueService.GetItemsByStatusAsync("PendingReview", ct);
         Assert.Single(pendingReview);
@@ -396,7 +396,7 @@ public sealed class BatchQueueProcessorTests : IDisposable
 
         using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
         using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(timeoutCts.Token, ct);
-        await processor.StartBatch([item]).WaitAsync(linkedCts.Token);
+        await processor.EnqueueAsync([item]).WaitAsync(linkedCts.Token);
 
         lock (observedStatusCodes)
             Assert.Contains(BatchProgressStatus.FetchingCovers, observedStatusCodes);
@@ -425,7 +425,7 @@ public sealed class BatchQueueProcessorTests : IDisposable
 
         using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
         using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(timeoutCts.Token, ct);
-        await processor.StartBatch([item1, item2]).WaitAsync(linkedCts.Token);
+        await processor.EnqueueAsync([item1, item2]).WaitAsync(linkedCts.Token);
 
         lock (messages)
         {
@@ -457,7 +457,7 @@ public sealed class BatchQueueProcessorTests : IDisposable
 
         using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
         using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(timeoutCts.Token, ct);
-        await processor.StartBatch([item1, item2]).WaitAsync(linkedCts.Token);
+        await processor.EnqueueAsync([item1, item2]).WaitAsync(linkedCts.Token);
 
         lock (messages)
         {
@@ -490,7 +490,7 @@ public sealed class BatchQueueProcessorTests : IDisposable
 
         using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
         using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(timeoutCts.Token, TestContext.Current.CancellationToken);
-        await processor.StartBatch(items).WaitAsync(linkedCts.Token);
+        await processor.EnqueueAsync(items).WaitAsync(linkedCts.Token);
 
         Assert.Equal(2, processedOrder.Count);
         Assert.Equal(item1.Isbn, processedOrder[0]);
@@ -514,7 +514,7 @@ public sealed class BatchQueueProcessorTests : IDisposable
 
         using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
         using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(timeoutCts.Token, TestContext.Current.CancellationToken);
-        await processor.StartBatch([item]).WaitAsync(linkedCts.Token);
+        await processor.EnqueueAsync([item]).WaitAsync(linkedCts.Token);
 
         Assert.NotEmpty(messages);
     }
@@ -540,7 +540,7 @@ public sealed class BatchQueueProcessorTests : IDisposable
 
         using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
         using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(timeoutCts.Token, TestContext.Current.CancellationToken);
-        await processor.StartBatch([item]).WaitAsync(linkedCts.Token);
+        await processor.EnqueueAsync([item]).WaitAsync(linkedCts.Token);
 
         // Must have received at least one completion message (IsRunning=false)
         Assert.NotEmpty(completionMessages);
@@ -568,7 +568,7 @@ public sealed class BatchQueueProcessorTests : IDisposable
 
         using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
         using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(timeoutCts.Token, TestContext.Current.CancellationToken);
-        await processor.StartBatch([item]).WaitAsync(linkedCts.Token);
+        await processor.EnqueueAsync([item]).WaitAsync(linkedCts.Token);
 
         // Should be Skipped since data matches existing book
         var skipped = await _queueService.GetItemsByStatusAsync("Skipped", TestContext.Current.CancellationToken);
@@ -594,7 +594,7 @@ public sealed class BatchQueueProcessorTests : IDisposable
 
         using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
         using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(timeoutCts.Token, TestContext.Current.CancellationToken);
-        await processor.StartBatch([item]).WaitAsync(linkedCts.Token);
+        await processor.EnqueueAsync([item]).WaitAsync(linkedCts.Token);
 
         // Should be Skipped since data matches existing book (found via ISBN-10/13 cross-format)
         var skipped = await _queueService.GetItemsByStatusAsync("Skipped", TestContext.Current.CancellationToken);
@@ -616,7 +616,7 @@ public sealed class BatchQueueProcessorTests : IDisposable
 
         using var timeoutCts1 = new CancellationTokenSource(TimeSpan.FromSeconds(5));
         using var linkedCts1 = CancellationTokenSource.CreateLinkedTokenSource(timeoutCts1.Token, TestContext.Current.CancellationToken);
-        await processor.StartBatch([item1]).WaitAsync(linkedCts1.Token);
+        await processor.EnqueueAsync([item1]).WaitAsync(linkedCts1.Token);
 
         var done = await _queueService.GetItemsByStatusAsync("AutoAccepted", TestContext.Current.CancellationToken);
         Assert.Single(done);
@@ -626,7 +626,7 @@ public sealed class BatchQueueProcessorTests : IDisposable
 
         using var timeoutCts2 = new CancellationTokenSource(TimeSpan.FromSeconds(5));
         using var linkedCts2 = CancellationTokenSource.CreateLinkedTokenSource(timeoutCts2.Token, TestContext.Current.CancellationToken);
-        await processor.StartBatch([item2]).WaitAsync(linkedCts2.Token);
+        await processor.EnqueueAsync([item2]).WaitAsync(linkedCts2.Token);
 
         var skipped = await _queueService.GetItemsByStatusAsync("Skipped", TestContext.Current.CancellationToken);
         Assert.Single(skipped);
@@ -654,7 +654,7 @@ public sealed class BatchQueueProcessorTests : IDisposable
         var bookImageService = new BookImageService(_factory);
         var processor = MakeProcessor(lookupService, bookService, bookMetadataService, bookImageService);
 
-        var batchTask = processor.StartBatch(items);
+        var batchTask = processor.EnqueueAsync(items);
         await Task.Delay(150, TestContext.Current.CancellationToken);
         await processor.CancelBatchAsync();
         // batchTask is already complete by now
@@ -665,7 +665,7 @@ public sealed class BatchQueueProcessorTests : IDisposable
     [Fact]
     public async Task Processor_DoesNotDoubleProcess_WhenSameItemEnqueuedTwice()
     {
-        // Simulate startup reload: item already in DB and passed twice to StartBatch
+        // Simulate startup reload: item already in DB and passed twice in one enqueue
         var item = await _queueService.EnqueueAsync("9780451526538", bookId: null, ct: TestContext.Current.CancellationToken);
 
         var processedCount = 0;
@@ -681,7 +681,7 @@ public sealed class BatchQueueProcessorTests : IDisposable
         // Pass the same item twice — DistinctBy should deduplicate
         using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
         using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(timeoutCts.Token, TestContext.Current.CancellationToken);
-        await processor.StartBatch([item, item]).WaitAsync(linkedCts.Token);
+        await processor.EnqueueAsync([item, item]).WaitAsync(linkedCts.Token);
 
         // Item should be processed exactly once, not twice
         Assert.Equal(1, processedCount);
@@ -705,7 +705,7 @@ public sealed class BatchQueueProcessorTests : IDisposable
 
         using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
         using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(timeoutCts.Token, TestContext.Current.CancellationToken);
-        await processor.StartBatch([item]).WaitAsync(linkedCts.Token);
+        await processor.EnqueueAsync([item]).WaitAsync(linkedCts.Token);
 
         // Item should be marked AutoAccepted (new book, no conflicts)
         var done = await _queueService.GetItemsByStatusAsync("AutoAccepted", TestContext.Current.CancellationToken);
@@ -739,7 +739,7 @@ public sealed class BatchQueueProcessorTests : IDisposable
 
         using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
         using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(timeoutCts.Token, TestContext.Current.CancellationToken);
-        await processor.StartBatch([item]).WaitAsync(linkedCts.Token);
+        await processor.EnqueueAsync([item]).WaitAsync(linkedCts.Token);
 
         // Since existing book is found (via queued ISBN) and there are no diffs, should be Skipped
         var skipped = await _queueService.GetItemsByStatusAsync("Skipped", TestContext.Current.CancellationToken);
@@ -748,6 +748,128 @@ public sealed class BatchQueueProcessorTests : IDisposable
         // Only one book in DB (not duplicated)
         var found = await bookMetadataService.FindBookByIsbnAsync("9780451526538", TestContext.Current.CancellationToken);
         Assert.NotNull(found);
+    }
+
+    /// <summary>Source metadata with no ISBN, so each queued item saves under its own ISBN (distinct books).</summary>
+    private static BookMetadata MakeMetadataNoIsbn() =>
+        new("Title", null, ["Author"], "Publisher", "2020", "en", null, 200, "Desc", null, null, null, "TestSource");
+
+    [Fact]
+    public async Task Processor_PriorityItem_RunsAheadOfTheBacklog_WithoutCancellingIt()
+    {
+        var ct = TestContext.Current.CancellationToken;
+        var a = await _queueService.EnqueueAsync("9780000000001", bookId: null, ct: ct);
+        var b = await _queueService.EnqueueAsync("9780000000002", bookId: null, ct: ct);
+        var c = await _queueService.EnqueueAsync("9780000000003", bookId: null, ct: ct);
+        var p = await _queueService.EnqueueAsync("9780000000009", bookId: null, ct: ct);
+
+        var order = new List<string>();
+        var injected = false;
+        Task? appendTask = null;
+        IBatchQueueProcessor? proc = null;
+
+        var lookupService = new MockMetadataLookupService(
+            results: [MakeMetadataNoIsbn()],
+            onFetch: isbn =>
+            {
+                order.Add(isbn);
+                if (!injected)
+                {
+                    injected = true;
+                    // Slip a priority single-add in while the first bulk item is in flight.
+                    appendTask = proc!.EnqueueAsync([p], priority: true);
+                }
+            });
+        var processor = MakeProcessor(lookupService, new BookService(_factory),
+            new BookMetadataService(_factory), new BookImageService(_factory));
+        proc = processor;
+
+        using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+        using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(timeoutCts.Token, ct);
+        await processor.EnqueueAsync([a, b, c]).WaitAsync(linkedCts.Token);
+        if (appendTask is not null) await appendTask.WaitAsync(linkedCts.Token);
+
+        // The priority item jumped ahead of the remaining backlog (but after the in-flight item),
+        // and every item still ran — nothing was cancelled.
+        Assert.Equal([a.Isbn, p.Isbn, b.Isbn, c.Isbn], order);
+        var pending = await _queueService.GetItemsByStatusAsync("Pending", ct);
+        Assert.Empty(pending);
+    }
+
+    [Fact]
+    public async Task Processor_PlainAppend_LandsAtTheTail_AndGrowsTheRunningTotal()
+    {
+        var ct = TestContext.Current.CancellationToken;
+        var a = await _queueService.EnqueueAsync("9780000000001", bookId: null, ct: ct);
+        var b = await _queueService.EnqueueAsync("9780000000002", bookId: null, ct: ct);
+        var c = await _queueService.EnqueueAsync("9780000000003", bookId: null, ct: ct);
+        var p = await _queueService.EnqueueAsync("9780000000009", bookId: null, ct: ct);
+
+        var order = new List<string>();
+        var injected = false;
+        Task? appendTask = null;
+        IBatchQueueProcessor? proc = null;
+
+        var messages = new List<BatchQueueProgressMessage>();
+        _messenger.Register<BatchQueueProgressMessage>(this, (_, m) => { lock (messages) messages.Add(m); });
+
+        var lookupService = new MockMetadataLookupService(
+            results: [MakeMetadataNoIsbn()],
+            onFetch: isbn =>
+            {
+                order.Add(isbn);
+                if (!injected)
+                {
+                    injected = true;
+                    appendTask = proc!.EnqueueAsync([p]); // no priority — appends to the tail
+                }
+            });
+        var processor = MakeProcessor(lookupService, new BookService(_factory),
+            new BookMetadataService(_factory), new BookImageService(_factory));
+        proc = processor;
+
+        using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+        using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(timeoutCts.Token, ct);
+        await processor.EnqueueAsync([a, b, c]).WaitAsync(linkedCts.Token);
+        if (appendTask is not null) await appendTask.WaitAsync(linkedCts.Token);
+
+        Assert.Equal([a.Isbn, b.Isbn, c.Isbn, p.Isbn], order);
+        // The append joined the live session: the running total grew from 3 to 4 rather than resetting.
+        lock (messages)
+        {
+            Assert.Contains(messages, m => m.Total == 4);
+            Assert.Equal(4, messages.Last(m => !m.IsRunning).Current);
+        }
+    }
+
+    [Fact]
+    public async Task Processor_Pause_HoldsTheLoop_UntilResume()
+    {
+        var ct = TestContext.Current.CancellationToken;
+        var items = new List<BatchQueueItem>();
+        for (int i = 0; i < 3; i++)
+            items.Add(await _queueService.EnqueueAsync($"97800000000{i:D2}", bookId: null, ct: ct));
+
+        var lookupService = new MockMetadataLookupService(results: [MakeMetadataNoIsbn()]);
+        var processor = MakeProcessor(lookupService, new BookService(_factory),
+            new BookMetadataService(_factory), new BookImageService(_factory));
+
+        // Pause before enqueue: the loop starts, blocks at the pause gate, and processes nothing.
+        await processor.PauseAsync();
+        var ticket = processor.EnqueueAsync(items);
+        await Task.Delay(100, ct);
+        Assert.Equal(0, processor.ProcessedCount);
+        var stillPending = await _queueService.GetItemsByStatusAsync("Pending", ct);
+        Assert.Equal(3, stillPending.Count);
+
+        // Resume drains everything.
+        processor.Resume();
+        using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+        using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(timeoutCts.Token, ct);
+        await ticket.WaitAsync(linkedCts.Token);
+        Assert.Equal(3, processor.ProcessedCount);
+        var pendingAfter = await _queueService.GetItemsByStatusAsync("Pending", ct);
+        Assert.Empty(pendingAfter);
     }
 }
 

@@ -1,0 +1,607 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="App_Title" xml:space="preserve">
+    <value>BookDB</value>
+  </data>
+  <data name="Nav_Back" xml:space="preserve">
+    <value>Tillbaka</value>
+  </data>
+  <data name="Hub_ScanBooks" xml:space="preserve">
+    <value>Skanna böcker</value>
+  </data>
+  <data name="Hub_Browse" xml:space="preserve">
+    <value>Bläddra</value>
+  </data>
+  <data name="Hub_Settings" xml:space="preserve">
+    <value>Inställningar</value>
+  </data>
+  <data name="Status_Connected" xml:space="preserve">
+    <value>Ansluten</value>
+  </data>
+  <data name="Status_Reconnecting" xml:space="preserve">
+    <value>Återansluter…</value>
+  </data>
+  <data name="Status_Offline" xml:space="preserve">
+    <value>Offline</value>
+  </data>
+  <data name="Status_Revoked" xml:space="preserve">
+    <value>Borttagen</value>
+  </data>
+  <data name="Status_RevokedExplanation" xml:space="preserve">
+    <value>Datorn godtar inte längre den här enheten. Koppla bort den under Inställningar och koppla igen med en ny kod.</value>
+  </data>
+  <data name="Scan_Title" xml:space="preserve">
+    <value>Skanna böcker</value>
+  </data>
+  <data name="Browse_Title" xml:space="preserve">
+    <value>Bläddra</value>
+  </data>
+  <data name="Settings_Title" xml:space="preserve">
+    <value>Inställningar</value>
+  </data>
+  <data name="Pairing_Title" xml:space="preserve">
+    <value>Koppla till en dator</value>
+  </data>
+  <data name="Pairing_Intro" xml:space="preserve">
+    <value>Skanna kopplingskoden som visas på din dator och ge sedan den här enheten ett namn.</value>
+  </data>
+  <data name="Pairing_ScanButton" xml:space="preserve">
+    <value>Skanna kopplingskod</value>
+  </data>
+  <data name="Pairing_DeviceNameLabel" xml:space="preserve">
+    <value>Enhetens namn</value>
+  </data>
+  <data name="Pairing_PairButton" xml:space="preserve">
+    <value>Koppla</value>
+  </data>
+  <data name="Pairing_Scanned" xml:space="preserve">
+    <value>Koden är skannad. Namnge enheten och tryck på Koppla.</value>
+  </data>
+  <data name="Pairing_ScanCancelled" xml:space="preserve">
+    <value>Ingen kod skannades.</value>
+  </data>
+  <data name="Pairing_Busy" xml:space="preserve">
+    <value>Kopplar…</value>
+  </data>
+  <data name="Pairing_Result_Paired" xml:space="preserve">
+    <value>Kopplad. Allt är klart.</value>
+  </data>
+  <data name="Pairing_Result_InvalidCode" xml:space="preserve">
+    <value>Det där är ingen BookDB-kopplingskod.</value>
+  </data>
+  <data name="Pairing_Result_CodeExpired" xml:space="preserve">
+    <value>Koden har gått ut eller har redan använts. Visa en ny på din dator och skanna igen.</value>
+  </data>
+  <data name="Pairing_Result_DeviceLimitReached" xml:space="preserve">
+    <value>Datorn har redan högsta antalet kopplade enheter. Ta bort en och försök igen.</value>
+  </data>
+  <data name="Pairing_Result_IncompatibleVersion" xml:space="preserve">
+    <value>Den här appen och BookDB på datorn är olika versioner. Uppdatera båda till den senaste.</value>
+  </data>
+  <data name="Pairing_Result_CannotConnect" xml:space="preserve">
+    <value>Kunde inte nå datorn. Kontrollera att båda är på samma nätverk och att mobilskannern är igång.</value>
+  </data>
+  <data name="Pairing_Result_Failed" xml:space="preserve">
+    <value>Kopplingen misslyckades. Försök igen.</value>
+  </data>
+  <data name="Settings_Group_Computer" xml:space="preserve">
+    <value>Dator</value>
+  </data>
+  <data name="Settings_Group_Capture" xml:space="preserve">
+    <value>Bildtagning</value>
+  </data>
+  <data name="Settings_Group_ThisDevice" xml:space="preserve">
+    <value>Den här enheten</value>
+  </data>
+  <data name="Settings_CaptureCaption" xml:space="preserve">
+    <value>Ställs in på datorn.</value>
+  </data>
+  <data name="Settings_Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Settings_Library" xml:space="preserve">
+    <value>Bibliotek</value>
+  </data>
+  <data name="Settings_ComputerApp" xml:space="preserve">
+    <value>App på datorn</value>
+  </data>
+  <data name="Settings_LongEdge" xml:space="preserve">
+    <value>Längsta sidan</value>
+  </data>
+  <data name="Settings_JpegQuality" xml:space="preserve">
+    <value>JPEG-kvalitet</value>
+  </data>
+  <data name="Settings_PixelsValue" xml:space="preserve">
+    <value>{0} px</value>
+  </data>
+  <data name="Settings_DeviceNameLabel" xml:space="preserve">
+    <value>Namn</value>
+  </data>
+  <data name="Settings_AppVersion" xml:space="preserve">
+    <value>Appversion</value>
+  </data>
+  <data name="Settings_CheckConnection" xml:space="preserve">
+    <value>Kontrollera anslutningen</value>
+  </data>
+  <data name="Settings_Unpair" xml:space="preserve">
+    <value>Koppla bort den här enheten</value>
+  </data>
+  <data name="Settings_UnpairWarning" xml:space="preserve">
+    <value>Enheten behöver då en ny kopplingskod från datorn.</value>
+  </data>
+  <data name="Settings_UnpairConfirm" xml:space="preserve">
+    <value>Koppla bort</value>
+  </data>
+  <data name="Settings_Cancel" xml:space="preserve">
+    <value>Avbryt</value>
+  </data>
+  <data name="Settings_NotAvailable" xml:space="preserve">
+    <value>—</value>
+  </data>
+  <data name="Settings_OfflineHint" xml:space="preserve">
+    <value>Datorn kan inte nås. Kontrollera att den är igång, att mobilskannern är aktiverad och att båda finns på samma nätverk – kontrollera sedan igen.</value>
+  </data>
+  <data name="Scan_ScanButton" xml:space="preserve">
+    <value>Skanna streckkod</value>
+  </data>
+  <data name="Scan_Or" xml:space="preserve">
+    <value>eller skriv in det</value>
+  </data>
+  <data name="Scan_ManualWatermark" xml:space="preserve">
+    <value>ISBN</value>
+  </data>
+  <data name="Scan_UseManual" xml:space="preserve">
+    <value>Använd detta ISBN</value>
+  </data>
+  <data name="Scan_ChecksumOkMark" xml:space="preserve">
+    <value>✓</value>
+  </data>
+  <data name="Scan_ChecksumWarningMark" xml:space="preserve">
+    <value>⚠</value>
+  </data>
+  <data name="Scan_ChecksumWarning" xml:space="preserve">
+    <value>Kontrollsiffran stämmer inte. Du kan använda det ändå – felaktigt tryckta ISBN förekommer.</value>
+  </data>
+  <data name="Scan_NothingRead" xml:space="preserve">
+    <value>Ingen streckkod lästes.</value>
+  </data>
+  <data name="Scan_Continuing" xml:space="preserve">
+    <value>Fortsätter…</value>
+  </data>
+  <data name="Scan_Undo" xml:space="preserve">
+    <value>Ångra</value>
+  </data>
+  <data name="Scan_AlreadyInLibrary" xml:space="preserve">
+    <value>Finns redan i ditt bibliotek – bilderna läggs till i ”{0}”.</value>
+  </data>
+  <data name="Scan_TitleAndAuthors" xml:space="preserve">
+    <value>{0} · {1}</value>
+  </data>
+  <data name="Scan_AlreadyInBatch" xml:space="preserve">
+    <value>Finns redan i batchen – skannar du igen läggs ett andra exemplar till.</value>
+  </data>
+  <data name="Scan_NotChecked" xml:space="preserve">
+    <value>Inte kontrollerad – ingen dator att fråga.</value>
+  </data>
+  <data name="Scan_UntitledBook" xml:space="preserve">
+    <value>den här boken</value>
+  </data>
+  <data name="Builder_Title" xml:space="preserve">
+    <value>Bok</value>
+  </data>
+  <data name="Camera_Instruction" xml:space="preserve">
+    <value>Rikta kameran mot streckkoden</value>
+  </data>
+  <data name="Camera_PairingInstruction" xml:space="preserve">
+    <value>Rikta kameran mot kopplingskoden på din dator</value>
+  </data>
+  <data name="Camera_PairingRationale" xml:space="preserve">
+    <value>BookDB använder kameran för att läsa kopplingskoden som visas på din dator. Ingenting fotograferas, och ingenting lämnar ditt lokala nätverk.</value>
+  </data>
+  <data name="Camera_Close" xml:space="preserve">
+    <value>Stäng</value>
+  </data>
+  <data name="Camera_Torch" xml:space="preserve">
+    <value>Blixt</value>
+  </data>
+  <data name="Camera_PermissionRationale" xml:space="preserve">
+    <value>BookDB behöver kameran för att läsa streckkoder.</value>
+  </data>
+  <data name="Builder_IsbnLabel" xml:space="preserve">
+    <value>ISBN {0}</value>
+  </data>
+  <data name="Builder_SlotFrontCover" xml:space="preserve">
+    <value>Framsida</value>
+  </data>
+  <data name="Builder_SlotBackCover" xml:space="preserve">
+    <value>Baksida</value>
+  </data>
+  <data name="Builder_SlotSpine" xml:space="preserve">
+    <value>Rygg</value>
+  </data>
+  <data name="Builder_SlotDustJacket" xml:space="preserve">
+    <value>Skyddsomslag</value>
+  </data>
+  <data name="Builder_Optional" xml:space="preserve">
+    <value>valfri</value>
+  </data>
+  <data name="Builder_AddPhoto" xml:space="preserve">
+    <value>Lägg till bild</value>
+  </data>
+  <data name="Builder_Retake" xml:space="preserve">
+    <value>Ta om</value>
+  </data>
+  <data name="Builder_UsePhoto" xml:space="preserve">
+    <value>Använd bilden</value>
+  </data>
+  <data name="Builder_Done" xml:space="preserve">
+    <value>Klar – nästa bok</value>
+  </data>
+  <data name="Builder_SendNow" xml:space="preserve">
+    <value>Skicka nu</value>
+  </data>
+  <data name="Builder_SaveToBatch" xml:space="preserve">
+    <value>Spara i batchen</value>
+  </data>
+  <data name="Builder_PhotosOptionalHint" xml:space="preserve">
+    <value>Bilder är valfria – en bok kan sparas med enbart sitt ISBN.</value>
+  </data>
+  <data name="Builder_PlayServicesMissing" xml:space="preserve">
+    <value>Bildtagning av omslag kräver Google Play-tjänster, som saknas på den här enheten. Du kan fortfarande spara böcker med ISBN.</value>
+  </data>
+  <data name="Builder_PlayServicesOutdated" xml:space="preserve">
+    <value>Bildtagning av omslag kräver nyare Google Play-tjänster. Uppdatera dem och försök igen.</value>
+  </data>
+  <data name="Builder_ModuleUnavailable" xml:space="preserve">
+    <value>Omslagsskannern måste först hämtas från Google Play-tjänster. Anslut till internet och försök igen.</value>
+  </data>
+  <data name="Builder_CaptureFailed" xml:space="preserve">
+    <value>Bilden kunde inte tas.</value>
+  </data>
+  <data name="Builder_Retry" xml:space="preserve">
+    <value>Försök igen</value>
+  </data>
+  <data name="Batch_Title" xml:space="preserve">
+    <value>Batch</value>
+  </data>
+  <data name="Batch_CountLine" xml:space="preserve">
+    <value>Batch ({0})</value>
+  </data>
+  <data name="Batch_IsbnTail" xml:space="preserve">
+    <value>…{0}</value>
+  </data>
+  <data name="Batch_PhotoCount" xml:space="preserve">
+    <value>{0} bilder</value>
+  </data>
+  <data name="Batch_PhotoCountOne" xml:space="preserve">
+    <value>1 bild</value>
+  </data>
+  <data name="Batch_NoPhotos" xml:space="preserve">
+    <value>Inga bilder</value>
+  </data>
+  <data name="Batch_Edit" xml:space="preserve">
+    <value>Redigera</value>
+  </data>
+  <data name="Batch_Remove" xml:space="preserve">
+    <value>Ta bort</value>
+  </data>
+  <data name="Batch_RemoveConfirm" xml:space="preserve">
+    <value>Ta bort</value>
+  </data>
+  <data name="Batch_RemoveWarning" xml:space="preserve">
+    <value>Boken och dess bilder kastas.</value>
+  </data>
+  <data name="Batch_Cancel" xml:space="preserve">
+    <value>Avbryt</value>
+  </data>
+  <data name="Batch_Upload" xml:space="preserve">
+    <value>Ladda upp {0} poster</value>
+  </data>
+  <data name="Batch_OfflineReason" xml:space="preserve">
+    <value>Datorn kan inte nås, så inget kan skickas än. Batchen är trygg – den väntar här tills ni är på samma nätverk igen.</value>
+  </data>
+  <data name="Batch_Empty" xml:space="preserve">
+    <value>Inget väntar på att skickas</value>
+  </data>
+  <data name="Batch_EmptyHint" xml:space="preserve">
+    <value>Skanna din första bok så dyker den upp här.</value>
+  </data>
+  <data name="Hub_BatchItems" xml:space="preserve">
+    <value>Batch · {0} poster</value>
+  </data>
+  <data name="Upload_Title" xml:space="preserve">
+    <value>Skickar</value>
+  </data>
+  <data name="Upload_Running" xml:space="preserve">
+    <value>Skickar {0} böcker…</value>
+  </data>
+  <data name="Upload_Completed" xml:space="preserve">
+    <value>Allt är skickat.</value>
+  </data>
+  <data name="Upload_Interrupted" xml:space="preserve">
+    <value>Anslutningen bröts på vägen. Inget gick förlorat – det som inte kom fram ligger kvar i batchen.</value>
+  </data>
+  <data name="Upload_Offline" xml:space="preserve">
+    <value>Datorn kan inte nås, så inget skickades. Batchen är orörd.</value>
+  </data>
+  <data name="Upload_NothingStaged" xml:space="preserve">
+    <value>Det fanns inget att skicka.</value>
+  </data>
+  <data name="Upload_Retry" xml:space="preserve">
+    <value>Försök igen</value>
+  </data>
+  <data name="Upload_Finish" xml:space="preserve">
+    <value>Klar</value>
+  </data>
+  <data name="Upload_State_Waiting" xml:space="preserve">
+    <value>Väntar</value>
+  </data>
+  <data name="Upload_State_Received" xml:space="preserve">
+    <value>Mottagen</value>
+  </data>
+  <data name="Upload_State_Saved" xml:space="preserve">
+    <value>Tillagd</value>
+  </data>
+  <data name="Upload_State_AddedToExisting" xml:space="preserve">
+    <value>Bilder tillagda i ”{0}”</value>
+  </data>
+  <data name="Upload_State_AddedToExistingUntitled" xml:space="preserve">
+    <value>Bilder tillagda i boken du redan hade</value>
+  </data>
+  <data name="Upload_State_AlreadyOwned" xml:space="preserve">
+    <value>Finns redan i ditt bibliotek: ”{0}”</value>
+  </data>
+  <data name="Upload_State_AlreadyOwnedUntitled" xml:space="preserve">
+    <value>Finns redan i ditt bibliotek</value>
+  </data>
+  <data name="Upload_State_Cataloguing" xml:space="preserve">
+    <value>Söker upp den…</value>
+  </data>
+  <data name="Upload_State_Done" xml:space="preserve">
+    <value>Tillagd – ”{0}”</value>
+  </data>
+  <data name="Upload_State_DoneUntitled" xml:space="preserve">
+    <value>Tillagd</value>
+  </data>
+  <data name="Upload_State_NeedsReview" xml:space="preserve">
+    <value>Tillagd, väntar på granskning i datorn</value>
+  </data>
+  <data name="Upload_Failure_Unknown" xml:space="preserve">
+    <value>Den kunde inte läggas till</value>
+  </data>
+  <data name="Upload_Failure_InvalidIsbn" xml:space="preserve">
+    <value>Numret godtogs inte</value>
+  </data>
+  <data name="Upload_Failure_ImageRejected" xml:space="preserve">
+    <value>En bild godtogs inte</value>
+  </data>
+  <data name="Upload_Failure_SaveFailed" xml:space="preserve">
+    <value>Den kunde inte sparas</value>
+  </data>
+  <data name="Upload_Failure_CatalogueFailed" xml:space="preserve">
+    <value>Sparad, men uppslagningen misslyckades</value>
+  </data>
+  <data name="Browse_SearchPlaceholder" xml:space="preserve">
+    <value>Sök titlar och författare</value>
+  </data>
+  <data name="Browse_Scan" xml:space="preserve">
+    <value>Skanna</value>
+  </data>
+  <data name="Browse_AllCollections" xml:space="preserve">
+    <value>Alla samlingar</value>
+  </data>
+  <data name="Browse_CollectionWithCount" xml:space="preserve">
+    <value>{0} ({1})</value>
+  </data>
+  <data name="Browse_AuthorsAndYear" xml:space="preserve">
+    <value>{0} · {1}</value>
+  </data>
+  <data name="Browse_Untitled" xml:space="preserve">
+    <value>Utan titel</value>
+  </data>
+  <data name="Browse_ResultCount" xml:space="preserve">
+    <value>{0} böcker</value>
+  </data>
+  <data name="Browse_Empty" xml:space="preserve">
+    <value>Inga böcker matchar</value>
+  </data>
+  <data name="Browse_EmptyHint" xml:space="preserve">
+    <value>Prova färre ord, eller en annan samling.</value>
+  </data>
+  <data name="Browse_Offline" xml:space="preserve">
+    <value>Att bläddra kräver din dator. Kontrollera att den är på och på samma nätverk.</value>
+  </data>
+  <data name="Browse_Retry" xml:space="preserve">
+    <value>Försök igen</value>
+  </data>
+  <data name="Browse_LoadMore" xml:space="preserve">
+    <value>Visa fler</value>
+  </data>
+  <data name="Browse_Owned" xml:space="preserve">
+    <value>Finns i ditt bibliotek</value>
+  </data>
+  <data name="Browse_NotOwned" xml:space="preserve">
+    <value>Finns inte i ditt bibliotek</value>
+  </data>
+  <data name="Browse_ScannedIsbn" xml:space="preserve">
+    <value>ISBN {0}</value>
+  </data>
+  <data name="Browse_ClearScan" xml:space="preserve">
+    <value>Tillbaka till bläddring</value>
+  </data>
+  <data name="Browse_NothingRead" xml:space="preserve">
+    <value>Ingen streckkod lästes.</value>
+  </data>
+  <data name="Browse_NotAnIsbn" xml:space="preserve">
+    <value>Den streckkoden är inte ett ISBN</value>
+  </data>
+  <data name="Detail_Field_Authors" xml:space="preserve">
+    <value>Upphovsmän</value>
+  </data>
+  <data name="Detail_Field_Series" xml:space="preserve">
+    <value>Serie</value>
+  </data>
+  <data name="Detail_Field_Publisher" xml:space="preserve">
+    <value>Förlag</value>
+  </data>
+  <data name="Detail_Field_Published" xml:space="preserve">
+    <value>Utgiven</value>
+  </data>
+  <data name="Detail_Field_Format" xml:space="preserve">
+    <value>Format</value>
+  </data>
+  <data name="Detail_Field_Language" xml:space="preserve">
+    <value>Språk</value>
+  </data>
+  <data name="Detail_Field_Pages" xml:space="preserve">
+    <value>Sidor</value>
+  </data>
+  <data name="Detail_Field_Isbn" xml:space="preserve">
+    <value>ISBN</value>
+  </data>
+  <data name="Detail_Field_Collection" xml:space="preserve">
+    <value>Samling</value>
+  </data>
+  <data name="Detail_Field_Comments" xml:space="preserve">
+    <value>Kommentarer</value>
+  </data>
+  <data name="Detail_Photos" xml:space="preserve">
+    <value>Foton</value>
+  </data>
+  <data name="Detail_Missing" xml:space="preserve">
+    <value>Den här boken finns inte längre i biblioteket.</value>
+  </data>
+  <data name="Detail_Offline" xml:space="preserve">
+    <value>Bokens detaljer kräver din dator. Kontrollera att den är på och på samma nätverk.</value>
+  </data>
+  <data name="Detail_Retry" xml:space="preserve">
+    <value>Försök igen</value>
+  </data>
+  <data name="Detail_Loading" xml:space="preserve">
+    <value>Läser in…</value>
+  </data>
+  <data name="Format_Audiobook" xml:space="preserve">
+    <value>Ljudbok</value>
+  </data>
+  <data name="Format_Comic" xml:space="preserve">
+    <value>Serietidning</value>
+  </data>
+  <data name="Format_Ebook" xml:space="preserve">
+    <value>E-bok</value>
+  </data>
+  <data name="Format_GraphicNovel" xml:space="preserve">
+    <value>Grafisk roman</value>
+  </data>
+  <data name="Format_Hardcover" xml:space="preserve">
+    <value>Inbunden</value>
+  </data>
+  <data name="Format_Magazine" xml:space="preserve">
+    <value>Tidskrift</value>
+  </data>
+  <data name="Format_MassMarketPaperback" xml:space="preserve">
+    <value>Pocket</value>
+  </data>
+  <data name="Format_Paperback" xml:space="preserve">
+    <value>Häftad</value>
+  </data>
+  <data name="Format_TradePaperback" xml:space="preserve">
+    <value>Trade paperback</value>
+  </data>
+  <data name="Language_Danish" xml:space="preserve">
+    <value>Danska</value>
+  </data>
+  <data name="Language_Finnish" xml:space="preserve">
+    <value>Finska</value>
+  </data>
+  <data name="Language_French" xml:space="preserve">
+    <value>Franska</value>
+  </data>
+  <data name="Language_German" xml:space="preserve">
+    <value>Tyska</value>
+  </data>
+  <data name="Language_Italian" xml:space="preserve">
+    <value>Italienska</value>
+  </data>
+  <data name="Language_Japanese" xml:space="preserve">
+    <value>Japanska</value>
+  </data>
+  <data name="Language_Norwegian" xml:space="preserve">
+    <value>Norska</value>
+  </data>
+  <data name="Language_Spanish" xml:space="preserve">
+    <value>Spanska</value>
+  </data>
+  <data name="Language_Swedish" xml:space="preserve">
+    <value>Svenska</value>
+  </data>
+  <data name="Camera_Rationale" xml:space="preserve">
+    <value>BookDB använder kameran för att läsa streckkoden på en bok. Ingenting fotograferas förrän du ber om ett omslag, och ingenting lämnar ditt lokala nätverk.</value>
+  </data>
+  <data name="Camera_PermissionDenied" xml:space="preserve">
+    <value>Kameran är avstängd för BookDB, så streckkoder kan inte läsas. Slå på den i enhetens inställningar — under tiden kan du skriva in ett ISBN.</value>
+  </data>
+  <data name="Camera_Unavailable" xml:space="preserve">
+    <value>Ingen kamera är tillgänglig just nu. Den kan användas av en annan app, eller så saknar den här enheten kamera.</value>
+  </data>
+  <data name="Camera_OpenSettings" xml:space="preserve">
+    <value>Öppna inställningar</value>
+  </data>
+</root>

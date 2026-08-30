@@ -1,0 +1,113 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:BookDB.Mobile.ViewModels"
+             xmlns:conv="using:BookDB.Mobile.Converters"
+             xmlns:res="using:BookDB.Mobile.Localization"
+             x:Class="BookDB.Mobile.Views.BookBuilderView"
+             x:DataType="vm:BookBuilderViewModel">
+
+  <UserControl.Resources>
+    <conv:JpegToImageConverter x:Key="Jpeg"/>
+  </UserControl.Resources>
+
+  <Grid>
+
+    <!-- The page's inset is on the rows rather than here, so the scrolling area reaches both edges — see
+         HubView for what a margin on the grid costs a thumb. -->
+    <Grid RowDefinitions="Auto,*,Auto">
+
+      <TextBlock Grid.Row="0" Text="{Binding IsbnLine}" FontSize="16" Opacity="0.8" Margin="24,16,24,0"/>
+
+      <ScrollViewer Grid.Row="1" Padding="24,16,24,0">
+        <StackPanel Spacing="12">
+
+          <ItemsControl ItemsSource="{Binding Slots}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="vm:CaptureSlotViewModel">
+                <Grid ColumnDefinitions="Auto,*,Auto" Margin="0,0,0,10">
+
+                  <Border Grid.Column="0" Width="48" Height="64" Margin="0,0,12,0"
+                          CornerRadius="4"
+                          Background="{DynamicResource SystemControlBackgroundListLowBrush}">
+                    <Image Source="{Binding Jpeg, Converter={StaticResource Jpeg}}" Stretch="UniformToFill"/>
+                  </Border>
+
+                  <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                    <TextBlock Text="{Binding Label}" FontSize="16"/>
+                    <TextBlock Text="{x:Static res:Resources.Builder_Optional}"
+                               IsVisible="{Binding IsOptional}"
+                               FontSize="12" Opacity="0.6"/>
+                  </StackPanel>
+
+                  <Button Grid.Column="2" VerticalAlignment="Center" Padding="14,10"
+                          Command="{Binding $parent[UserControl].((vm:BookBuilderViewModel)DataContext).CaptureCommand}"
+                          CommandParameter="{Binding}"
+                          Content="{x:Static res:Resources.Builder_AddPhoto}"
+                          IsVisible="{Binding !HasImage}"/>
+                  <Button Grid.Column="2" VerticalAlignment="Center" Padding="14,10"
+                          Command="{Binding $parent[UserControl].((vm:BookBuilderViewModel)DataContext).CaptureCommand}"
+                          CommandParameter="{Binding}"
+                          Content="{x:Static res:Resources.Builder_Retake}"
+                          IsVisible="{Binding HasImage}"/>
+                </Grid>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+
+          <!-- Photos are never required; say so rather than letting an empty checklist read as unfinished. -->
+          <TextBlock Text="{x:Static res:Resources.Builder_PhotosOptionalHint}"
+                     TextWrapping="Wrap" FontSize="12" Opacity="0.7"/>
+
+          <TextBlock Text="{Binding Message}"
+                     IsVisible="{Binding Message, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                     TextWrapping="Wrap" Opacity="0.9"/>
+
+          <Button Command="{Binding RetryCaptureCommand}"
+                  IsVisible="{Binding CanRetryCapture}"
+                  HorizontalAlignment="Left" Padding="14,10"
+                  Content="{x:Static res:Resources.Builder_Retry}"/>
+        </StackPanel>
+      </ScrollViewer>
+
+      <StackPanel Grid.Row="2" Spacing="10" Margin="24,16">
+        <Button Command="{Binding DoneCommand}"
+                Classes="accent"
+                HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                Padding="0,18" FontSize="18"
+                Content="{x:Static res:Resources.Builder_Done}"/>
+        <Grid ColumnDefinitions="*,12,*">
+          <Button Grid.Column="0" Command="{Binding SendNowCommand}"
+                  HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Padding="0,12"
+                  Content="{x:Static res:Resources.Builder_SendNow}"/>
+          <Button Grid.Column="2" Command="{Binding SaveToBatchCommand}"
+                  HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Padding="0,12"
+                  Content="{x:Static res:Resources.Builder_SaveToBatch}"/>
+        </Grid>
+      </StackPanel>
+    </Grid>
+
+    <!-- The review card: the scanner's crop, kept or thrown away before anything is staged. Backing out of
+         the re-take is also how a photo is abandoned altogether. -->
+    <Border IsVisible="{Binding HasReview}"
+            Background="{DynamicResource SystemControlBackgroundAltHighBrush}">
+      <Grid RowDefinitions="Auto,*,Auto" Margin="24,16">
+        <TextBlock Grid.Row="0" Text="{Binding ReviewLabel}" FontSize="18" FontWeight="SemiBold"/>
+
+        <Image Grid.Row="1" Margin="0,16"
+               Source="{Binding ReviewImage, Converter={StaticResource Jpeg}}"
+               Stretch="Uniform"/>
+
+        <Grid Grid.Row="2" ColumnDefinitions="*,12,*">
+          <Button Grid.Column="0" Command="{Binding RetakeCommand}"
+                  HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Padding="0,14"
+                  Content="{x:Static res:Resources.Builder_Retake}"/>
+          <Button Grid.Column="2" Command="{Binding AcceptCommand}"
+                  Classes="accent"
+                  HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Padding="0,14"
+                  Content="{x:Static res:Resources.Builder_UsePhoto}"/>
+        </Grid>
+      </Grid>
+    </Border>
+  </Grid>
+
+</UserControl>

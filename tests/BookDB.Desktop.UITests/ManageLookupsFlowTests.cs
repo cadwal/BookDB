@@ -28,7 +28,9 @@ public class ManageLookupsFlowTests : HeadlessTest
         var ct = TestContext.Current.CancellationToken;
 
         var windowService = Substitute.For<IWindowService>();
-        windowService.ShowDeleteConfirmationAsync(Arg.Any<string>()).Returns(true);
+        windowService
+            .ShowDeleteConfirmationAsync(Arg.Any<string>(), Arg.Any<string?>(), Arg.Any<string?>())
+            .Returns(true);
 
         await RunUi(async () =>
         {
@@ -144,7 +146,9 @@ public class ManageLookupsFlowTests : HeadlessTest
         var ct = TestContext.Current.CancellationToken;
 
         var windowService = Substitute.For<IWindowService>();
-        windowService.ShowDeleteConfirmationAsync(Arg.Any<string>()).Returns(true);
+        windowService
+            .ShowDeleteConfirmationAsync(Arg.Any<string>(), Arg.Any<string?>(), Arg.Any<string?>())
+            .Returns(true);
 
         await RunUi(async () =>
         {

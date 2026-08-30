@@ -15,9 +15,10 @@ using Xunit;
 namespace BookDB.Desktop.UITests;
 
 /// <summary>
-/// Contextual help on the two remote-database surfaces (Settings ▸ Database, Maintenance ▸ Move library):
-/// each carries a hyperlink-styled button that opens the Help window on the Remote Databases tab. Asserted
-/// through a real headless click so hit-testing is covered, not just the command wiring.
+/// Contextual help links: the two remote-database surfaces (Settings ▸ Database, Maintenance ▸ Move library)
+/// open the Help window on the Remote Databases tab, and the two companion surfaces (Settings ▸ Companion,
+/// Maintenance ▸ Devices) open it on the Companion tab. Asserted through a real headless click so hit-testing
+/// is covered, not just the command wiring.
 /// </summary>
 public class HelpLinkTests : HeadlessTest
 {
@@ -57,6 +58,45 @@ public class HelpLinkTests : HeadlessTest
         ClickLink(window, link);
 
         windowService.Received(1).OpenHelpWindow(HelpTab.RemoteDatabases);
+        window.Close();
+        return Task.CompletedTask;
+    });
+
+    [Fact]
+    public async Task CompanionSettingsTab_HelpLink_OpensHelpAtCompanion()
+    {
+        var windowService = Substitute.For<IWindowService>();
+
+        await RunUi(async () =>
+        {
+            using var host = TestHost.Create(s => s.AddSingleton(windowService));
+            var vm = host.Resolve<SettingsWindowViewModel>();
+            await vm.InitializeAsync();
+            var window = new SettingsWindow { DataContext = vm };
+            window.Show();
+            vm.SelectedTabIndex = 7; // Companion
+            Ui.Pump();
+
+            ClickLink(window, window.ButtonFor(vm.CompanionTab.OpenCompanionHelpCommand));
+
+            windowService.Received(1).OpenHelpWindow(HelpTab.Companion);
+            window.Close();
+        });
+    }
+
+    [Fact]
+    public Task DevicesPane_HelpLink_OpensHelpAtCompanion() => RunUi(() =>
+    {
+        var windowService = Substitute.For<IWindowService>();
+        using var host = TestHost.Create(s => s.AddSingleton(windowService));
+
+        var vm = host.Resolve<DevicesViewModel>();
+        var view = new DevicesView { DataContext = vm };
+        var window = view.Host();
+
+        ClickLink(window, view.ButtonFor(vm.OpenCompanionHelpCommand));
+
+        windowService.Received(1).OpenHelpWindow(HelpTab.Companion);
         window.Close();
         return Task.CompletedTask;
     });

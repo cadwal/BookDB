@@ -1,0 +1,62 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:BookDB.Mobile.ViewModels"
+             xmlns:conv="using:BookDB.Mobile.Converters"
+             xmlns:res="using:BookDB.Mobile.Localization"
+             x:Class="BookDB.Mobile.Views.UploadView"
+             x:DataType="vm:UploadViewModel">
+
+  <UserControl.Resources>
+    <conv:JpegToImageConverter x:Key="Jpeg"/>
+  </UserControl.Resources>
+
+  <!-- The page's inset is on the rows rather than here, so the scrolling area reaches both edges — see
+       HubView for what a margin on the grid costs a thumb. -->
+  <Grid RowDefinitions="Auto,*,Auto">
+
+    <TextBlock Grid.Row="0" Text="{Binding Summary}" TextWrapping="Wrap" FontSize="16" Margin="24,16,24,0"/>
+
+    <ScrollViewer Grid.Row="1" Padding="24,12,24,0">
+      <ItemsControl ItemsSource="{Binding Rows}">
+        <ItemsControl.ItemTemplate>
+          <DataTemplate x:DataType="vm:UploadRowViewModel">
+            <Grid ColumnDefinitions="Auto,*" Margin="0,0,0,12">
+              <Border Grid.Column="0" Width="40" Height="54" Margin="0,0,12,0"
+                      CornerRadius="4"
+                      Background="{DynamicResource SystemControlBackgroundListLowBrush}">
+                <Image Source="{Binding Thumbnail, Converter={StaticResource Jpeg}}" Stretch="UniformToFill"/>
+              </Border>
+
+              <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                <TextBlock Text="{Binding IsbnTail}" FontSize="14" Opacity="0.7"/>
+                <TextBlock Text="{Binding StateText}" FontSize="16" TextWrapping="Wrap"/>
+
+                <!-- The computer's own wording, in whatever language it speaks: an addendum under the
+                     translated line, never in place of it. -->
+                <TextBlock Text="{Binding Detail}"
+                           IsVisible="{Binding Detail, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                           FontSize="12" Opacity="0.6" TextWrapping="Wrap"/>
+              </StackPanel>
+            </Grid>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+    </ScrollViewer>
+
+    <StackPanel Grid.Row="2" Spacing="10" Margin="24,12,24,16">
+      <Button Command="{Binding RunCommand}"
+              IsVisible="{Binding CanRetry}"
+              HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+              Padding="0,14"
+              Content="{x:Static res:Resources.Upload_Retry}"/>
+
+      <Button Command="{Binding FinishCommand}"
+              IsEnabled="{Binding !IsRunning}"
+              Classes="accent"
+              HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+              Padding="0,16" FontSize="18"
+              Content="{x:Static res:Resources.Upload_Finish}"/>
+    </StackPanel>
+  </Grid>
+
+</UserControl>

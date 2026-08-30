@@ -1,0 +1,73 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:BookDB.Mobile.ViewModels"
+             xmlns:conv="using:BookDB.Mobile.Converters"
+             xmlns:res="using:BookDB.Mobile.Localization"
+             x:Class="BookDB.Mobile.Views.BookDetailView"
+             x:DataType="vm:BookDetailViewModel">
+
+  <UserControl.Resources>
+    <conv:JpegToImageConverter x:Key="Jpeg"/>
+  </UserControl.Resources>
+
+  <Grid>
+    <!-- Bottom padding gives the scroller slack: wrapping text can under-measure its own extent, and the
+         way that shows up is a last control that cannot be scrolled into view. -->
+    <ScrollViewer IsVisible="{Binding !IsUnreachable}">
+      <StackPanel Spacing="10" Margin="24,16,24,56">
+
+        <TextBlock Text="{Binding BookTitle}" FontSize="22" FontWeight="SemiBold" TextWrapping="Wrap"/>
+        <TextBlock Text="{Binding Subtitle}" FontSize="16" Opacity="0.8" TextWrapping="Wrap"
+                   IsVisible="{Binding HasSubtitle}"/>
+
+        <TextBlock Text="{x:Static res:Resources.Detail_Loading}" Opacity="0.7"
+                   IsVisible="{Binding IsBusy}"/>
+
+        <TextBlock Text="{x:Static res:Resources.Detail_Missing}" TextWrapping="Wrap"
+                   IsVisible="{Binding IsMissing}"/>
+
+        <ItemsControl ItemsSource="{Binding Fields}" Margin="0,6,0,0">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="vm:DetailFieldViewModel">
+              <Grid ColumnDefinitions="Auto,*" Margin="0,0,0,6">
+                <TextBlock Text="{Binding Label}" Opacity="0.7" Margin="0,0,12,0"/>
+                <TextBlock Grid.Column="1" Text="{Binding Value}"
+                           TextAlignment="Right" TextWrapping="Wrap"/>
+              </Grid>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <TextBlock Text="{x:Static res:Resources.Detail_Photos}"
+                   FontSize="12" FontWeight="SemiBold" Opacity="0.6" Margin="0,10,0,0"
+                   IsVisible="{Binding HasImages}"/>
+
+        <!-- Each photo appears named and empty, then fills in: they are fetched one after another. -->
+        <ItemsControl ItemsSource="{Binding Images}">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="vm:DetailImageViewModel">
+              <StackPanel Spacing="4" Margin="0,0,0,12">
+                <TextBlock Text="{Binding Label}" FontSize="12" Opacity="0.7"/>
+                <Border CornerRadius="6" MinHeight="120"
+                        Background="{DynamicResource SystemControlBackgroundAltHighBrush}">
+                  <Image Source="{Binding Jpeg, Converter={StaticResource Jpeg}}"
+                         Stretch="Uniform" MaxHeight="420"/>
+                </Border>
+              </StackPanel>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </StackPanel>
+    </ScrollViewer>
+
+    <StackPanel Spacing="12" VerticalAlignment="Center" Margin="24"
+                IsVisible="{Binding IsUnreachable}">
+      <TextBlock Text="{x:Static res:Resources.Detail_Offline}"
+                 HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap"/>
+      <Button Command="{Binding RetryCommand}"
+              HorizontalAlignment="Center" Padding="20,12"
+              Content="{x:Static res:Resources.Detail_Retry}"/>
+    </StackPanel>
+  </Grid>
+
+</UserControl>

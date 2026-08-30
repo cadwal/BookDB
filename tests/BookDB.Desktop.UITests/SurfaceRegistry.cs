@@ -251,6 +251,14 @@ public static class SurfaceRegistry
         new("Maintenance", host =>
             Task.FromResult<Control>(new MaintenanceDialog { DataContext = host.Resolve<MaintenanceViewModel>() })),
 
+        // A non-default Maintenance tab, so it never realizes in-situ — covered standalone via its child VM.
+        new("Devices", host => Pane(new DevicesView(), host.Resolve<MaintenanceViewModel>().Devices)),
+
+        // Rendered without starting the code: with the companion off it shows its explanation, which is
+        // the state that must render cleanly on a machine that has never enabled the companion.
+        new("PairingDialog", host =>
+            Task.FromResult<Control>(new PairingDialog { DataContext = host.Resolve<PairingDialogViewModel>() })),
+
         new("MessageDialog", _ => Task.FromResult<Control>(new MessageDialog
         {
             DataContext = new MessageDialogViewModel(new MessageDialogSpec(

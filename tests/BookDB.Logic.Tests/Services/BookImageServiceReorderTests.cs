@@ -52,7 +52,10 @@ public sealed class BookImageServiceReorderTests : IDisposable
     {
         GC.Collect();
         GC.WaitForPendingFinalizers();
-        Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools();
+        // This database's pool only — ClearAllPools() is process-wide and disposes the native
+        // handle of connections other test classes are using in parallel.
+        using (var poolKey = new Microsoft.Data.Sqlite.SqliteConnection(_connectionString))
+            Microsoft.Data.Sqlite.SqliteConnection.ClearPool(poolKey);
         try { File.Delete(_dbPath); } catch { /* best effort */ }
     }
 

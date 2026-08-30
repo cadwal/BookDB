@@ -2225,6 +2225,12 @@ Doublons potentiels : {3}  |  Avec couvertures : {4}</value>
   <data name="Help_RemoteDatabasesLink" xml:space="preserve">
     <value>Aide : bases de données distantes</value>
   </data>
+  <data name="Help_Tab_Companion" xml:space="preserve">
+    <value>Compagnon</value>
+  </data>
+  <data name="Help_CompanionLink" xml:space="preserve">
+    <value>Aide : compagnon</value>
+  </data>
   <data name="Menu_AboutBookDB" xml:space="preserve">
     <value>_À propos de BookDB…</value>
   </data>
@@ -2347,6 +2353,9 @@ Doublons potentiels : {3}  |  Avec couvertures : {4}</value>
   </data>
   <data name="RecatalogAll_Confirm" xml:space="preserve">
     <value>Re-cataloguer tous les {0} livres ? Cette opération peut prendre un certain temps.</value>
+  </data>
+  <data name="RecatalogAll_ConfirmTitle" xml:space="preserve">
+    <value>Re-cataloguer tout</value>
   </data>
   <data name="Backup_Saved" xml:space="preserve">
     <value>Sauvegarde enregistrée dans {0}</value>
@@ -2993,6 +3002,15 @@ Doublons potentiels : {3}  |  Avec couvertures : {4}</value>
   <data name="StatusBar_Storage_State_Label" xml:space="preserve">
     <value>Connexion</value>
   </data>
+  <data name="StatusBar_Companion_Running" xml:space="preserve">
+    <value>Compagnon · port {0}</value>
+  </data>
+  <data name="StatusBar_Companion_Failed" xml:space="preserve">
+    <value>Le compagnon n'a pas pu démarrer</value>
+  </data>
+  <data name="StatusBar_Companion_Devices" xml:space="preserve">
+    <value>Appareils appairés : {0}</value>
+  </data>
   <data name="StatusBar_Storage_State_Connected" xml:space="preserve">
     <value>Connectée</value>
   </data>
@@ -3247,5 +3265,161 @@ Doublons potentiels : {3}  |  Avec couvertures : {4}</value>
   </data>
   <data name="Update_OpenGitHub" xml:space="preserve">
     <value>Télécharger depuis GitHub</value>
+  </data>
+  <data name="Isbn_ChecksumValid" xml:space="preserve">
+    <value>Chiffre de contrôle ISBN valide</value>
+  </data>
+  <data name="Isbn_ChecksumWarning" xml:space="preserve">
+    <value>Le chiffre de contrôle de l'ISBN ne correspond pas — l'ISBN est peut-être mal saisi</value>
+  </data>
+  <data name="LookupWizard_ChecksumWarnings" xml:space="preserve">
+    <value>Avertissements de chiffre de contrôle : {0}</value>
+  </data>
+  <data name="BookList_ViewToggle_List" xml:space="preserve">
+    <value>Vue liste</value>
+  </data>
+  <data name="BookList_ViewToggle_Grid" xml:space="preserve">
+    <value>Vue grille</value>
+  </data>
+  <data name="Settings_Tab_Companion" xml:space="preserve">
+    <value>Compagnon</value>
+  </data>
+  <data name="Settings_Companion_Enable" xml:space="preserve">
+    <value>Activer le compagnon</value>
+  </data>
+  <data name="Settings_Companion_EnableHint" xml:space="preserve">
+    <value>Permettez à un téléphone ou une tablette associé de scanner des livres directement dans cette bibliothèque via votre réseau local.</value>
+  </data>
+  <data name="Settings_Companion_Status" xml:space="preserve">
+    <value>État</value>
+  </data>
+  <data name="Settings_Companion_StatusOff" xml:space="preserve">
+    <value>Désactivé</value>
+  </data>
+  <data name="Settings_Companion_StatusRunning" xml:space="preserve">
+    <value>En cours · port {0}</value>
+  </data>
+  <data name="Settings_Companion_StatusFailed" xml:space="preserve">
+    <value>Échec du démarrage : {0}</value>
+  </data>
+  <data name="Settings_Companion_Port" xml:space="preserve">
+    <value>Port</value>
+  </data>
+  <data name="Settings_Companion_FirewallHint" xml:space="preserve">
+    <value>Windows demandera d'autoriser BookDB à travers le pare-feu — autorisez-le sur les réseaux privés pour que votre appareil puisse se connecter.</value>
+  </data>
+  <data name="Settings_Companion_FirewallHintMac" xml:space="preserve">
+    <value>Si macOS demande s'il faut autoriser les connexions entrantes pour BookDB, autorisez-les, sinon votre appareil ne pourra pas se connecter. Son pare-feu est désactivé par défaut, la question peut donc ne jamais apparaître — vous pouvez vérifier dans Réglages Système › Réseau › Pare-feu.</value>
+  </data>
+  <data name="Settings_Companion_PortInvalid" xml:space="preserve">
+    <value>Le port doit être un nombre compris entre {0} et {1}.</value>
+  </data>
+  <data name="Settings_Companion_FirewallHintUfw" xml:space="preserve">
+    <value>ufw est actif et ne vous demandera rien — aucun appareil ne pourra se connecter tant que vous n'ouvrirez pas le port {0} :
+sudo ufw allow from {1} to any port {0} proto tcp
+sudo ufw allow from {1} to any port {0} proto udp
+Le trafic UDP permet à un appareil de retrouver cet ordinateur lorsque son adresse change.</value>
+  </data>
+  <data name="Settings_Companion_FirewallHintFirewalld" xml:space="preserve">
+    <value>firewalld est actif et ne vous demandera rien — aucun appareil ne pourra se connecter tant que vous n'ouvrirez pas le port {0} :
+sudo firewall-cmd --permanent --add-port={0}/tcp --add-port={0}/udp
+sudo firewall-cmd --reload
+Le trafic UDP permet à un appareil de retrouver cet ordinateur lorsque son adresse change.</value>
+  </data>
+  <data name="Settings_Companion_FirewallHintOpen" xml:space="preserve">
+    <value>{0} est actif, et le port {1} est déjà ouvert en TCP et en UDP. Rien à faire.</value>
+  </data>
+  <data name="Settings_Companion_FirewallHintUfwUnknown" xml:space="preserve">
+    <value>ufw est actif et ne vous demandera rien. Si un appareil ne parvient pas à se connecter, ouvrez le port {0} pour votre réseau local :
+sudo ufw allow from {1} to any port {0} proto tcp
+sudo ufw allow from {1} to any port {0} proto udp
+Le trafic UDP permet à un appareil de retrouver cet ordinateur lorsque son adresse change.</value>
+  </data>
+  <data name="Settings_Companion_FirewallHintFirewalldUnknown" xml:space="preserve">
+    <value>firewalld est actif et ne vous demandera rien. Si un appareil ne parvient pas à se connecter, ouvrez le port {0} pour votre réseau local :
+sudo firewall-cmd --permanent --add-port={0}/tcp --add-port={0}/udp
+sudo firewall-cmd --reload
+Le trafic UDP permet à un appareil de retrouver cet ordinateur lorsque son adresse change.</value>
+  </data>
+  <data name="Settings_Companion_CaptureSection" xml:space="preserve">
+    <value>Capture — appliquée à chaque appareil connecté</value>
+  </data>
+  <data name="Settings_Companion_MaxImageSize" xml:space="preserve">
+    <value>Taille d'image max. (px)</value>
+  </data>
+  <data name="Settings_Companion_JpegQuality" xml:space="preserve">
+    <value>Qualité JPEG (1–100)</value>
+  </data>
+  <data name="Maintenance_DevicesHeader" xml:space="preserve">
+    <value>Appareils</value>
+  </data>
+  <data name="Devices_Intro" xml:space="preserve">
+    <value>Téléphones et tablettes associés à cet ordinateur.</value>
+  </data>
+  <data name="Devices_CountOfMax" xml:space="preserve">
+    <value>{0} appareils sur {1} utilisés</value>
+  </data>
+  <data name="Devices_AtLimit" xml:space="preserve">
+    <value>Les {0} appareils sont utilisés. Retirez-en un ci-dessous avant d'en associer un autre.</value>
+  </data>
+  <data name="Devices_None" xml:space="preserve">
+    <value>Aucun appareil n'est encore associé.</value>
+  </data>
+  <data name="Devices_Column_Name" xml:space="preserve">
+    <value>Nom</value>
+  </data>
+  <data name="Devices_Column_Paired" xml:space="preserve">
+    <value>Associé</value>
+  </data>
+  <data name="Devices_Column_LastUsed" xml:space="preserve">
+    <value>Dernière utilisation</value>
+  </data>
+  <data name="Devices_Remove" xml:space="preserve">
+    <value>Retirer</value>
+  </data>
+  <data name="Devices_RemoveConfirm" xml:space="preserve">
+    <value>Retirer « {0} » ? L'appareil devra être associé de nouveau avant de pouvoir scanner dans cette bibliothèque.</value>
+  </data>
+  <data name="Devices_ShowPairingCode" xml:space="preserve">
+    <value>Afficher le code d'association…</value>
+  </data>
+  <data name="Devices_CompanionOff" xml:space="preserve">
+    <value>Le compagnon est désactivé. Activez-le dans Paramètres ▸ Compagnon avant d'associer un appareil.</value>
+  </data>
+  <data name="Devices_ManageButton" xml:space="preserve">
+    <value>Gérer les appareils associés…</value>
+  </data>
+  <data name="Devices_LastUsed_JustNow" xml:space="preserve">
+    <value>À l'instant</value>
+  </data>
+  <data name="Devices_LastUsed_MinutesAgo" xml:space="preserve">
+    <value>il y a {0} min</value>
+  </data>
+  <data name="Devices_LastUsed_HoursAgo" xml:space="preserve">
+    <value>il y a {0} h</value>
+  </data>
+  <data name="Pairing_Title" xml:space="preserve">
+    <value>Associer un appareil</value>
+  </data>
+  <data name="Pairing_Instruction" xml:space="preserve">
+    <value>Dans BookDB sur votre téléphone ou tablette, choisissez « Scanner le code d'association » et pointez la caméra ici.</value>
+  </data>
+  <data name="Pairing_Address" xml:space="preserve">
+    <value>Adresse</value>
+  </data>
+  <data name="Pairing_ExpiresIn" xml:space="preserve">
+    <value>Ce code expire dans {0}:{1:00}</value>
+  </data>
+  <data name="Pairing_Paired" xml:space="preserve">
+    <value>« {0} » est maintenant associé à cet ordinateur.</value>
+  </data>
+  <data name="Pairing_PairAnother" xml:space="preserve">
+    <value>Associer un autre appareil</value>
+  </data>
+  <data name="Pairing_NoNetwork" xml:space="preserve">
+    <value>Cet ordinateur n'a aucune adresse réseau permettant à un appareil de l'atteindre.</value>
+  </data>
+  <data name="Pairing_NotRunning" xml:space="preserve">
+    <value>Le compagnon n'est pas en cours d'exécution, il n'y a donc aucun code d'association à afficher.</value>
   </data>
 </root>

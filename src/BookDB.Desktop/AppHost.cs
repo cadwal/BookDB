@@ -216,7 +216,18 @@ public sealed class AppHost : IAsyncDisposable
         await batchQueueService.CleanupOldCompletedAsync();
         var pendingItems = await batchProcessor.ReloadPendingFromDatabaseAsync();
         if (pendingItems.Count > 0)
-            _ = batchProcessor.StartBatch(pendingItems);
+            _ = batchProcessor.EnqueueAsync(pendingItems);
+
+        // Bring the companion host up if the user left it enabled. A failure to bind is surfaced in
+        // Settings, never fatal to startup.
+        try
+        {
+            await _host.Services.GetRequiredService<CompanionHostManager>().StartupAsync();
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Companion host startup failed — continuing without it");
+        }
 
         progress.Report(StartupStage.Finishing);
         return _host.Services.GetRequiredService<MainWindow>();
@@ -277,6 +288,8 @@ public sealed class AppHost : IAsyncDisposable
         using var shutdownCts = new CancellationTokenSource(TimeSpan.FromSeconds(3));
         try
         {
+            // Close the companion listener first so its socket is released before the process exits.
+            await _host.Services.GetRequiredService<CompanionHostManager>().DisposeAsync();
             await batchProcessor.StopAsync(shutdownCts.Token);
             await _host.StopAsync(shutdownCts.Token);
         }

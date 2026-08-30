@@ -53,5 +53,6 @@
     <!-- Dark-safe role colours (lighter so they read on the dark surface). -->
     <sys:String x:Key="IconCssAccent">* { fill: #4a9eff; }</sys:String>
     <sys:String x:Key="IconCssSuccess">* { fill: #66bb6a; }</sys:String>
+    <sys:String x:Key="IconCssWarning">* { fill: #ffb300; }</sys:String>
     <sys:String x:Key="IconCssDanger">* { fill: #ef5350; }</sys:String>
 </ResourceDictionary>

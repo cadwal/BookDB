@@ -2225,6 +2225,12 @@ Mögliche Duplikate: {3}  |  Mit Cover: {4}</value>
   <data name="Help_RemoteDatabasesLink" xml:space="preserve">
     <value>Hilfe: entfernte Datenbanken</value>
   </data>
+  <data name="Help_Tab_Companion" xml:space="preserve">
+    <value>Begleiter</value>
+  </data>
+  <data name="Help_CompanionLink" xml:space="preserve">
+    <value>Hilfe: Begleiter</value>
+  </data>
   <data name="Menu_AboutBookDB" xml:space="preserve">
     <value>_Über BookDB…</value>
   </data>
@@ -2347,6 +2353,9 @@ Mögliche Duplikate: {3}  |  Mit Cover: {4}</value>
   </data>
   <data name="RecatalogAll_Confirm" xml:space="preserve">
     <value>Alle {0} Bücher neu katalogisieren? Dies kann eine Weile dauern.</value>
+  </data>
+  <data name="RecatalogAll_ConfirmTitle" xml:space="preserve">
+    <value>Alle neu katalogisieren</value>
   </data>
   <data name="Backup_Saved" xml:space="preserve">
     <value>Sicherung gespeichert unter {0}</value>
@@ -2993,6 +3002,15 @@ Mögliche Duplikate: {3}  |  Mit Cover: {4}</value>
   <data name="StatusBar_Storage_State_Label" xml:space="preserve">
     <value>Verbindung</value>
   </data>
+  <data name="StatusBar_Companion_Running" xml:space="preserve">
+    <value>Begleiter · Port {0}</value>
+  </data>
+  <data name="StatusBar_Companion_Failed" xml:space="preserve">
+    <value>Begleiter konnte nicht gestartet werden</value>
+  </data>
+  <data name="StatusBar_Companion_Devices" xml:space="preserve">
+    <value>Gekoppelte Geräte: {0}</value>
+  </data>
   <data name="StatusBar_Storage_State_Connected" xml:space="preserve">
     <value>Verbunden</value>
   </data>
@@ -3247,5 +3265,161 @@ Mögliche Duplikate: {3}  |  Mit Cover: {4}</value>
   </data>
   <data name="Update_OpenGitHub" xml:space="preserve">
     <value>Von GitHub herunterladen</value>
+  </data>
+  <data name="Isbn_ChecksumValid" xml:space="preserve">
+    <value>Gültige ISBN-Prüfziffer</value>
+  </data>
+  <data name="Isbn_ChecksumWarning" xml:space="preserve">
+    <value>ISBN-Prüfziffer stimmt nicht – die ISBN wurde möglicherweise falsch eingegeben</value>
+  </data>
+  <data name="LookupWizard_ChecksumWarnings" xml:space="preserve">
+    <value>Prüfziffer-Warnungen: {0}</value>
+  </data>
+  <data name="BookList_ViewToggle_List" xml:space="preserve">
+    <value>Listenansicht</value>
+  </data>
+  <data name="BookList_ViewToggle_Grid" xml:space="preserve">
+    <value>Rasteransicht</value>
+  </data>
+  <data name="Settings_Tab_Companion" xml:space="preserve">
+    <value>Begleiter</value>
+  </data>
+  <data name="Settings_Companion_Enable" xml:space="preserve">
+    <value>Begleiter aktivieren</value>
+  </data>
+  <data name="Settings_Companion_EnableHint" xml:space="preserve">
+    <value>Lassen Sie ein gekoppeltes Telefon oder Tablet Bücher über Ihr lokales Netzwerk direkt in diese Bibliothek scannen.</value>
+  </data>
+  <data name="Settings_Companion_Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Settings_Companion_StatusOff" xml:space="preserve">
+    <value>Aus</value>
+  </data>
+  <data name="Settings_Companion_StatusRunning" xml:space="preserve">
+    <value>Läuft · Port {0}</value>
+  </data>
+  <data name="Settings_Companion_StatusFailed" xml:space="preserve">
+    <value>Start fehlgeschlagen: {0}</value>
+  </data>
+  <data name="Settings_Companion_Port" xml:space="preserve">
+    <value>Port</value>
+  </data>
+  <data name="Settings_Companion_FirewallHint" xml:space="preserve">
+    <value>Windows fragt, ob BookDB durch die Firewall zugelassen werden soll — erlauben Sie es in privaten Netzwerken, damit Ihr Gerät eine Verbindung herstellen kann.</value>
+  </data>
+  <data name="Settings_Companion_FirewallHintMac" xml:space="preserve">
+    <value>Fragt macOS, ob eingehende Verbindungen für BookDB erlaubt werden sollen, erlauben Sie dies, sonst kann sich Ihr Gerät nicht verbinden. Die Firewall ist standardmäßig aus, sodass die Frage möglicherweise gar nicht erscheint — nachsehen können Sie unter Systemeinstellungen › Netzwerk › Firewall.</value>
+  </data>
+  <data name="Settings_Companion_PortInvalid" xml:space="preserve">
+    <value>Der Port muss eine Zahl zwischen {0} und {1} sein.</value>
+  </data>
+  <data name="Settings_Companion_FirewallHintUfw" xml:space="preserve">
+    <value>ufw läuft und fragt nicht nach — kein Gerät kann sich verbinden, bevor Sie Port {0} selbst freigeben:
+sudo ufw allow from {1} to any port {0} proto tcp
+sudo ufw allow from {1} to any port {0} proto udp
+Über UDP findet ein Gerät diesen Computer wieder, wenn sich dessen Adresse ändert.</value>
+  </data>
+  <data name="Settings_Companion_FirewallHintFirewalld" xml:space="preserve">
+    <value>firewalld läuft und fragt nicht nach — kein Gerät kann sich verbinden, bevor Sie Port {0} selbst freigeben:
+sudo firewall-cmd --permanent --add-port={0}/tcp --add-port={0}/udp
+sudo firewall-cmd --reload
+Über UDP findet ein Gerät diesen Computer wieder, wenn sich dessen Adresse ändert.</value>
+  </data>
+  <data name="Settings_Companion_FirewallHintOpen" xml:space="preserve">
+    <value>{0} läuft, und Port {1} ist bereits für TCP und UDP offen. Es ist nichts zu tun.</value>
+  </data>
+  <data name="Settings_Companion_FirewallHintUfwUnknown" xml:space="preserve">
+    <value>ufw läuft und fragt nicht nach. Kann sich ein Gerät nicht verbinden, geben Sie Port {0} für Ihr lokales Netzwerk frei:
+sudo ufw allow from {1} to any port {0} proto tcp
+sudo ufw allow from {1} to any port {0} proto udp
+Über UDP findet ein Gerät diesen Computer wieder, wenn sich dessen Adresse ändert.</value>
+  </data>
+  <data name="Settings_Companion_FirewallHintFirewalldUnknown" xml:space="preserve">
+    <value>firewalld läuft und fragt nicht nach. Kann sich ein Gerät nicht verbinden, geben Sie Port {0} für Ihr lokales Netzwerk frei:
+sudo firewall-cmd --permanent --add-port={0}/tcp --add-port={0}/udp
+sudo firewall-cmd --reload
+Über UDP findet ein Gerät diesen Computer wieder, wenn sich dessen Adresse ändert.</value>
+  </data>
+  <data name="Settings_Companion_CaptureSection" xml:space="preserve">
+    <value>Aufnahme — gilt für jedes verbundene Gerät</value>
+  </data>
+  <data name="Settings_Companion_MaxImageSize" xml:space="preserve">
+    <value>Maximale Bildgröße (px)</value>
+  </data>
+  <data name="Settings_Companion_JpegQuality" xml:space="preserve">
+    <value>JPEG-Qualität (1–100)</value>
+  </data>
+  <data name="Maintenance_DevicesHeader" xml:space="preserve">
+    <value>Geräte</value>
+  </data>
+  <data name="Devices_Intro" xml:space="preserve">
+    <value>Mit diesem Computer gekoppelte Telefone und Tablets.</value>
+  </data>
+  <data name="Devices_CountOfMax" xml:space="preserve">
+    <value>{0} von {1} Geräten belegt</value>
+  </data>
+  <data name="Devices_AtLimit" xml:space="preserve">
+    <value>Alle {0} Geräte sind belegt. Entfernen Sie unten eines, bevor Sie ein weiteres koppeln.</value>
+  </data>
+  <data name="Devices_None" xml:space="preserve">
+    <value>Es sind noch keine Geräte gekoppelt.</value>
+  </data>
+  <data name="Devices_Column_Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="Devices_Column_Paired" xml:space="preserve">
+    <value>Gekoppelt</value>
+  </data>
+  <data name="Devices_Column_LastUsed" xml:space="preserve">
+    <value>Zuletzt verwendet</value>
+  </data>
+  <data name="Devices_Remove" xml:space="preserve">
+    <value>Entfernen</value>
+  </data>
+  <data name="Devices_RemoveConfirm" xml:space="preserve">
+    <value>„{0}“ entfernen? Das Gerät muss erneut gekoppelt werden, bevor es in diese Bibliothek scannen kann.</value>
+  </data>
+  <data name="Devices_ShowPairingCode" xml:space="preserve">
+    <value>Kopplungscode anzeigen…</value>
+  </data>
+  <data name="Devices_CompanionOff" xml:space="preserve">
+    <value>Der Begleiter ist ausgeschaltet. Aktivieren Sie ihn unter Einstellungen ▸ Begleiter, bevor Sie ein Gerät koppeln.</value>
+  </data>
+  <data name="Devices_ManageButton" xml:space="preserve">
+    <value>Gekoppelte Geräte verwalten…</value>
+  </data>
+  <data name="Devices_LastUsed_JustNow" xml:space="preserve">
+    <value>Gerade eben</value>
+  </data>
+  <data name="Devices_LastUsed_MinutesAgo" xml:space="preserve">
+    <value>vor {0} Min.</value>
+  </data>
+  <data name="Devices_LastUsed_HoursAgo" xml:space="preserve">
+    <value>vor {0} Std.</value>
+  </data>
+  <data name="Pairing_Title" xml:space="preserve">
+    <value>Gerät koppeln</value>
+  </data>
+  <data name="Pairing_Instruction" xml:space="preserve">
+    <value>Wählen Sie in BookDB auf Ihrem Telefon oder Tablet „Kopplungscode scannen“ und richten Sie die Kamera hierher.</value>
+  </data>
+  <data name="Pairing_Address" xml:space="preserve">
+    <value>Adresse</value>
+  </data>
+  <data name="Pairing_ExpiresIn" xml:space="preserve">
+    <value>Dieser Code läuft in {0}:{1:00} ab</value>
+  </data>
+  <data name="Pairing_Paired" xml:space="preserve">
+    <value>„{0}“ ist jetzt mit diesem Computer gekoppelt.</value>
+  </data>
+  <data name="Pairing_PairAnother" xml:space="preserve">
+    <value>Weiteres Gerät koppeln</value>
+  </data>
+  <data name="Pairing_NoNetwork" xml:space="preserve">
+    <value>Dieser Computer hat keine Netzwerkadresse, unter der ihn ein Gerät erreichen könnte.</value>
+  </data>
+  <data name="Pairing_NotRunning" xml:space="preserve">
+    <value>Der Begleiter läuft nicht, daher gibt es keinen Kopplungscode anzuzeigen.</value>
   </data>
 </root>

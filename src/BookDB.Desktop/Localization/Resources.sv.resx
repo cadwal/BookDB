@@ -2225,6 +2225,12 @@ Möjliga dubletter: {3}  |  Med omslag: {4}</value>
   <data name="Help_RemoteDatabasesLink" xml:space="preserve">
     <value>Hjälp: fjärrdatabaser</value>
   </data>
+  <data name="Help_Tab_Companion" xml:space="preserve">
+    <value>Mobilskanner</value>
+  </data>
+  <data name="Help_CompanionLink" xml:space="preserve">
+    <value>Hjälp: mobilskanner</value>
+  </data>
   <data name="Menu_AboutBookDB" xml:space="preserve">
     <value>_Om BookDB…</value>
   </data>
@@ -2347,6 +2353,9 @@ Möjliga dubletter: {3}  |  Med omslag: {4}</value>
   </data>
   <data name="RecatalogAll_Confirm" xml:space="preserve">
     <value>Omkatalogisera alla {0} böcker? Det kan ta ett tag.</value>
+  </data>
+  <data name="RecatalogAll_ConfirmTitle" xml:space="preserve">
+    <value>Omkatalogisera alla</value>
   </data>
   <data name="Backup_Saved" xml:space="preserve">
     <value>Säkerhetskopia sparad till {0}</value>
@@ -2993,6 +3002,15 @@ Möjliga dubletter: {3}  |  Med omslag: {4}</value>
   <data name="StatusBar_Storage_State_Label" xml:space="preserve">
     <value>Anslutning</value>
   </data>
+  <data name="StatusBar_Companion_Running" xml:space="preserve">
+    <value>Mobilskanner · port {0}</value>
+  </data>
+  <data name="StatusBar_Companion_Failed" xml:space="preserve">
+    <value>Mobilskannern kunde inte starta</value>
+  </data>
+  <data name="StatusBar_Companion_Devices" xml:space="preserve">
+    <value>Parkopplade enheter: {0}</value>
+  </data>
   <data name="StatusBar_Storage_State_Connected" xml:space="preserve">
     <value>Ansluten</value>
   </data>
@@ -3247,5 +3265,161 @@ Möjliga dubletter: {3}  |  Med omslag: {4}</value>
   </data>
   <data name="Update_OpenGitHub" xml:space="preserve">
     <value>Ladda ner från GitHub</value>
+  </data>
+  <data name="Isbn_ChecksumValid" xml:space="preserve">
+    <value>Giltig ISBN-kontrollsiffra</value>
+  </data>
+  <data name="Isbn_ChecksumWarning" xml:space="preserve">
+    <value>ISBN-kontrollsiffran stämmer inte – ISBN kan vara felskrivet</value>
+  </data>
+  <data name="LookupWizard_ChecksumWarnings" xml:space="preserve">
+    <value>Kontrollsiffervarningar: {0}</value>
+  </data>
+  <data name="BookList_ViewToggle_List" xml:space="preserve">
+    <value>Listvy</value>
+  </data>
+  <data name="BookList_ViewToggle_Grid" xml:space="preserve">
+    <value>Rutnätsvy</value>
+  </data>
+  <data name="Settings_Tab_Companion" xml:space="preserve">
+    <value>Mobilskanner</value>
+  </data>
+  <data name="Settings_Companion_Enable" xml:space="preserve">
+    <value>Aktivera mobilskanner</value>
+  </data>
+  <data name="Settings_Companion_EnableHint" xml:space="preserve">
+    <value>Låt en ansluten telefon eller surfplatta skanna böcker direkt in i det här biblioteket via ditt lokala nätverk.</value>
+  </data>
+  <data name="Settings_Companion_Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Settings_Companion_StatusOff" xml:space="preserve">
+    <value>Av</value>
+  </data>
+  <data name="Settings_Companion_StatusRunning" xml:space="preserve">
+    <value>Igång · port {0}</value>
+  </data>
+  <data name="Settings_Companion_StatusFailed" xml:space="preserve">
+    <value>Kunde inte starta: {0}</value>
+  </data>
+  <data name="Settings_Companion_Port" xml:space="preserve">
+    <value>Port</value>
+  </data>
+  <data name="Settings_Companion_FirewallHint" xml:space="preserve">
+    <value>Windows frågar om BookDB ska släppas igenom brandväggen — tillåt det på privata nätverk så att din enhet kan ansluta.</value>
+  </data>
+  <data name="Settings_Companion_FirewallHintMac" xml:space="preserve">
+    <value>Om macOS frågar om BookDB ska få ta emot inkommande anslutningar, tillåt det — annars kan din enhet inte ansluta. Brandväggen är avstängd som standard, så du kanske inte får någon fråga alls; du kan kontrollera det under Systeminställningar › Nätverk › Brandvägg.</value>
+  </data>
+  <data name="Settings_Companion_PortInvalid" xml:space="preserve">
+    <value>Porten måste vara ett tal mellan {0} och {1}.</value>
+  </data>
+  <data name="Settings_Companion_FirewallHintUfw" xml:space="preserve">
+    <value>ufw är igång och frågar dig inte — ingen enhet kan ansluta förrän du öppnar port {0} själv:
+sudo ufw allow from {1} to any port {0} proto tcp
+sudo ufw allow from {1} to any port {0} proto udp
+Via UDP hittar en enhet den här datorn igen när dess adress ändras.</value>
+  </data>
+  <data name="Settings_Companion_FirewallHintFirewalld" xml:space="preserve">
+    <value>firewalld är igång och frågar dig inte — ingen enhet kan ansluta förrän du öppnar port {0} själv:
+sudo firewall-cmd --permanent --add-port={0}/tcp --add-port={0}/udp
+sudo firewall-cmd --reload
+Via UDP hittar en enhet den här datorn igen när dess adress ändras.</value>
+  </data>
+  <data name="Settings_Companion_FirewallHintOpen" xml:space="preserve">
+    <value>{0} är igång, och port {1} är redan öppen för både TCP och UDP. Inget behöver göras.</value>
+  </data>
+  <data name="Settings_Companion_FirewallHintUfwUnknown" xml:space="preserve">
+    <value>ufw är igång och frågar dig inte. Om en enhet inte kan ansluta, öppna port {0} för ditt lokala nätverk:
+sudo ufw allow from {1} to any port {0} proto tcp
+sudo ufw allow from {1} to any port {0} proto udp
+Via UDP hittar en enhet den här datorn igen när dess adress ändras.</value>
+  </data>
+  <data name="Settings_Companion_FirewallHintFirewalldUnknown" xml:space="preserve">
+    <value>firewalld är igång och frågar dig inte. Om en enhet inte kan ansluta, öppna port {0} för ditt lokala nätverk:
+sudo firewall-cmd --permanent --add-port={0}/tcp --add-port={0}/udp
+sudo firewall-cmd --reload
+Via UDP hittar en enhet den här datorn igen när dess adress ändras.</value>
+  </data>
+  <data name="Settings_Companion_CaptureSection" xml:space="preserve">
+    <value>Bildtagning — tillämpas på alla anslutna enheter</value>
+  </data>
+  <data name="Settings_Companion_MaxImageSize" xml:space="preserve">
+    <value>Största bildstorlek (px)</value>
+  </data>
+  <data name="Settings_Companion_JpegQuality" xml:space="preserve">
+    <value>JPEG-kvalitet (1–100)</value>
+  </data>
+  <data name="Maintenance_DevicesHeader" xml:space="preserve">
+    <value>Enheter</value>
+  </data>
+  <data name="Devices_Intro" xml:space="preserve">
+    <value>Telefoner och surfplattor som är kopplade till den här datorn.</value>
+  </data>
+  <data name="Devices_CountOfMax" xml:space="preserve">
+    <value>{0} av {1} enheter används</value>
+  </data>
+  <data name="Devices_AtLimit" xml:space="preserve">
+    <value>Alla {0} enheter används. Ta bort en nedan innan du kopplar en till.</value>
+  </data>
+  <data name="Devices_None" xml:space="preserve">
+    <value>Inga enheter är kopplade ännu.</value>
+  </data>
+  <data name="Devices_Column_Name" xml:space="preserve">
+    <value>Namn</value>
+  </data>
+  <data name="Devices_Column_Paired" xml:space="preserve">
+    <value>Kopplad</value>
+  </data>
+  <data name="Devices_Column_LastUsed" xml:space="preserve">
+    <value>Senast använd</value>
+  </data>
+  <data name="Devices_Remove" xml:space="preserve">
+    <value>Ta bort</value>
+  </data>
+  <data name="Devices_RemoveConfirm" xml:space="preserve">
+    <value>Ta bort ”{0}”? Den måste kopplas igen innan den kan skanna in i det här biblioteket.</value>
+  </data>
+  <data name="Devices_ShowPairingCode" xml:space="preserve">
+    <value>Visa kopplingskod…</value>
+  </data>
+  <data name="Devices_CompanionOff" xml:space="preserve">
+    <value>Mobilskannern är avstängd. Slå på den under Inställningar ▸ Mobilskanner innan du kopplar en enhet.</value>
+  </data>
+  <data name="Devices_ManageButton" xml:space="preserve">
+    <value>Hantera kopplade enheter…</value>
+  </data>
+  <data name="Devices_LastUsed_JustNow" xml:space="preserve">
+    <value>Nyss</value>
+  </data>
+  <data name="Devices_LastUsed_MinutesAgo" xml:space="preserve">
+    <value>{0} min sedan</value>
+  </data>
+  <data name="Devices_LastUsed_HoursAgo" xml:space="preserve">
+    <value>{0} tim sedan</value>
+  </data>
+  <data name="Pairing_Title" xml:space="preserve">
+    <value>Koppla en enhet</value>
+  </data>
+  <data name="Pairing_Instruction" xml:space="preserve">
+    <value>Välj ”Skanna kopplingskod” i BookDB på din telefon eller surfplatta och rikta kameran hit.</value>
+  </data>
+  <data name="Pairing_Address" xml:space="preserve">
+    <value>Adress</value>
+  </data>
+  <data name="Pairing_ExpiresIn" xml:space="preserve">
+    <value>Koden slutar gälla om {0}:{1:00}</value>
+  </data>
+  <data name="Pairing_Paired" xml:space="preserve">
+    <value>”{0}” är nu kopplad till den här datorn.</value>
+  </data>
+  <data name="Pairing_PairAnother" xml:space="preserve">
+    <value>Koppla en enhet till</value>
+  </data>
+  <data name="Pairing_NoNetwork" xml:space="preserve">
+    <value>Den här datorn har ingen nätverksadress som en enhet kan nå den på.</value>
+  </data>
+  <data name="Pairing_NotRunning" xml:space="preserve">
+    <value>Mobilskannern körs inte, så det finns ingen kopplingskod att visa.</value>
   </data>
 </root>

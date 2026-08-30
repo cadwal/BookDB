@@ -55,7 +55,10 @@ public sealed class BookServiceImageCountTests : IDisposable
     {
         GC.Collect();
         GC.WaitForPendingFinalizers();
-        SqliteConnection.ClearAllPools();
+        // This database's pool only — ClearAllPools() is process-wide and disposes the native
+        // handle of connections other test classes are using in parallel.
+        using (var poolKey = new SqliteConnection(_connectionString))
+            SqliteConnection.ClearPool(poolKey);
         try { File.Delete(_dbPath); } catch { /* best effort */ }
     }
 

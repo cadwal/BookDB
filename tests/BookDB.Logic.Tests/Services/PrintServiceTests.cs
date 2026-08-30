@@ -54,8 +54,10 @@ public sealed class PrintServiceTests : IDisposable
 
     public void Dispose()
     {
-        // Release pooled SQLite connections so the temp DB file handle is freed before deletion.
-        Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools();
+        // This database's pool only — ClearAllPools() is process-wide and disposes the native
+        // handle of connections other test classes are using in parallel.
+        using (var poolKey = new Microsoft.Data.Sqlite.SqliteConnection($"Data Source={_dbPath}"))
+            Microsoft.Data.Sqlite.SqliteConnection.ClearPool(poolKey);
         GC.Collect();
         GC.WaitForPendingFinalizers();
         try { File.Delete(_dbPath); } catch (Exception ex) { Console.Error.WriteLine($"[Dispose] Could not delete {_dbPath}: {ex.Message}"); }

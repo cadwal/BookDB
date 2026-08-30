@@ -27,7 +27,7 @@ public class TabOrderKeyboardTests : HeadlessTest
             var window = new SettingsWindow { DataContext = vm };
             window.Show();
             Ui.Pump();
-            vm.SelectedTabIndex = 7; // Database
+            vm.SelectedTabIndex = 8; // Database
             Ui.Pump();
 
             var dbView = window.Find<DatabaseSettingsView>();

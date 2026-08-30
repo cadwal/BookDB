@@ -70,14 +70,21 @@ public sealed partial class PrintDialogViewModel : ObservableObject
             ? Resources.Print_StandardPresetDisplayName
             : SelectedPreset?.Name ?? string.Empty;
 
+    // Bounds for the three numeric fields. They live here rather than on the NumericUpDowns because the
+    // control does not clamp a typed number to its Minimum/Maximum — it discards it, leaving the box showing
+    // one figure and the view model holding another. Settled in BuildCurrentPreset instead.
+    private const decimal DefaultFontSize = 10, MinFontSize = 7, MaxFontSize = 14;
+    private const decimal DefaultMarginH = 15, DefaultMarginV = 20, MinMargin = 5, MaxMargin = 40;
+
     // --- Live-edit fields (bound to Zone 4 form controls) ---
     [ObservableProperty] private bool _isPortrait = true;
     [ObservableProperty] private bool _isLandscape;
-    [ObservableProperty] private decimal _fontSize = 10;
+    // Nullable because an emptied box is NumericUpDown.Value = null; binding that into a decimal threw.
+    [ObservableProperty] private decimal? _fontSize = DefaultFontSize;
     [ObservableProperty] private string _headerText = string.Empty;
     [ObservableProperty] private string _footerText = string.Empty;
-    [ObservableProperty] private decimal _marginHorizontalMm = 15;
-    [ObservableProperty] private decimal _marginVerticalMm = 20;
+    [ObservableProperty] private decimal? _marginHorizontalMm = DefaultMarginH;
+    [ObservableProperty] private decimal? _marginVerticalMm = DefaultMarginV;
 
     // --- Column list ---
     public ObservableCollection<PrintColumnItem> Columns { get; } = [];
@@ -239,8 +246,22 @@ public sealed partial class PrintDialogViewModel : ObservableObject
     [RelayCommand]
     private void Cancel() => CloseDialog?.Invoke(null);
 
+    /// <summary>
+    /// Brings the three numeric fields back inside their bounds and writes them into the box, so an emptied or
+    /// out-of-range entry shows what will actually be printed. Unlike the companion port, an out-of-range page
+    /// setting is clamped rather than refused: 7 pt instead of 3 changes how the page looks and nothing else.
+    /// </summary>
+    private void SettleNumericFields()
+    {
+        FontSize = Math.Clamp(FontSize ?? DefaultFontSize, MinFontSize, MaxFontSize);
+        MarginHorizontalMm = Math.Clamp(MarginHorizontalMm ?? DefaultMarginH, MinMargin, MaxMargin);
+        MarginVerticalMm = Math.Clamp(MarginVerticalMm ?? DefaultMarginV, MinMargin, MaxMargin);
+    }
+
     private PrintPreset BuildCurrentPreset(string name)
     {
+        SettleNumericFields();
+
         var selectedColumns = Columns
             .Where(c => c.IsSelected)
             .Select(c => c.Key)
@@ -250,9 +271,9 @@ public sealed partial class PrintDialogViewModel : ObservableObject
             Name: name,
             Columns: selectedColumns.Count > 0 ? selectedColumns : _printService.DefaultColumnNames,
             Orientation: IsPortrait ? PageOrientation.Portrait : PageOrientation.Landscape,
-            FontSize: (float)FontSize,
-            MarginHorizontalMm: (float)MarginHorizontalMm,
-            MarginVerticalMm: (float)MarginVerticalMm,
+            FontSize: (float)FontSize!.Value,
+            MarginHorizontalMm: (float)MarginHorizontalMm!.Value,
+            MarginVerticalMm: (float)MarginVerticalMm!.Value,
             HeaderText: HeaderText,
             FooterText: FooterText);
     }

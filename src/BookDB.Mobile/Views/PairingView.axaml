@@ -1,0 +1,46 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:BookDB.Mobile.ViewModels"
+             xmlns:res="using:BookDB.Mobile.Localization"
+             xmlns:views="using:BookDB.Mobile.Views"
+             x:Class="BookDB.Mobile.Views.PairingView"
+             x:DataType="vm:PairingViewModel">
+
+  <ScrollViewer>
+    <StackPanel Spacing="16" Margin="24" MaxWidth="420" HorizontalAlignment="Stretch">
+
+      <!-- Reserved for the same reason as the status message below, but sized tight: three lines is what the
+           longest translation of this one needs, and anything beyond that shows up as a gap before the button
+           in the languages that need fewer. -->
+      <TextBlock Text="{x:Static res:Resources.Pairing_Intro}"
+                 TextWrapping="Wrap" Opacity="0.8" MinHeight="52"/>
+
+      <Button Command="{Binding ScanCommand}"
+              HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+              Padding="0,16"
+              Content="{x:Static res:Resources.Pairing_ScanButton}"/>
+
+      <views:CameraAccessNotice DataContext="{Binding CameraAccess}"/>
+
+      <StackPanel Spacing="6">
+        <TextBlock Text="{x:Static res:Resources.Pairing_DeviceNameLabel}" FontSize="12" Opacity="0.7"/>
+        <TextBox Text="{Binding DeviceName}"/>
+      </StackPanel>
+
+      <Button Command="{Binding PairCommand}"
+              Classes="accent"
+              HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+              Padding="0,16"
+              Content="{x:Static res:Resources.Pairing_PairButton}"/>
+
+      <!-- MinHeight, not a tidier layout: on Android a wrapped block is sometimes arranged one line tall and
+           paints only its first line, and the screen then stays wrong until some later pass comes out clean.
+           It is the message that changes length as you go, so reserving its height is what keeps the pass
+           honest; the reserve costs nothing visible here because nothing follows it. -->
+      <TextBlock Text="{Binding StatusMessage}"
+                 IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                 TextWrapping="Wrap" Opacity="0.9" MinHeight="96"/>
+    </StackPanel>
+  </ScrollViewer>
+
+</UserControl>

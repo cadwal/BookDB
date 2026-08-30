@@ -876,6 +876,31 @@ namespace BookDB.Desktop.Localization
             get { return ResourceManager.GetString("AddBookIdentify_LookUp", resourceCulture) ?? "Look up"; }
         }
 
+        public static string Isbn_ChecksumValid
+        {
+            get { return ResourceManager.GetString("Isbn_ChecksumValid", resourceCulture) ?? "Valid ISBN check digit"; }
+        }
+
+        public static string Isbn_ChecksumWarning
+        {
+            get { return ResourceManager.GetString("Isbn_ChecksumWarning", resourceCulture) ?? "ISBN check digit doesn't match — the ISBN may be mistyped"; }
+        }
+
+        public static string LookupWizard_ChecksumWarnings
+        {
+            get { return ResourceManager.GetString("LookupWizard_ChecksumWarnings", resourceCulture) ?? "Check-digit warnings: {0}"; }
+        }
+
+        public static string BookList_ViewToggle_List
+        {
+            get { return ResourceManager.GetString("BookList_ViewToggle_List", resourceCulture) ?? "List view"; }
+        }
+
+        public static string BookList_ViewToggle_Grid
+        {
+            get { return ResourceManager.GetString("BookList_ViewToggle_Grid", resourceCulture) ?? "Grid view"; }
+        }
+
         public static string AddBookIdentify_ManualEntry
         {
             get { return ResourceManager.GetString("AddBookIdentify_ManualEntry", resourceCulture) ?? "Enter details manually"; }
@@ -4011,6 +4036,16 @@ namespace BookDB.Desktop.Localization
             get { return ResourceManager.GetString("Help_RemoteDatabasesLink", resourceCulture) ?? "Help: remote databases"; }
         }
 
+        public static string Help_Tab_Companion
+        {
+            get { return ResourceManager.GetString("Help_Tab_Companion", resourceCulture) ?? "Companion"; }
+        }
+
+        public static string Help_CompanionLink
+        {
+            get { return ResourceManager.GetString("Help_CompanionLink", resourceCulture) ?? "Help: companion"; }
+        }
+
         public static string Menu_AboutBookDB
         {
             get { return ResourceManager.GetString("Menu_AboutBookDB", resourceCulture) ?? "_About BookDB…"; }
@@ -4364,6 +4399,11 @@ namespace BookDB.Desktop.Localization
         public static string RecatalogAll_Confirm
         {
             get { return ResourceManager.GetString("RecatalogAll_Confirm", resourceCulture) ?? "Re-catalog all {0} books? This may take a while."; }
+        }
+
+        public static string RecatalogAll_ConfirmTitle
+        {
+            get { return ResourceManager.GetString("RecatalogAll_ConfirmTitle", resourceCulture) ?? "Re-catalog All"; }
         }
 
         public static string Backup_Saved
@@ -5186,6 +5226,21 @@ namespace BookDB.Desktop.Localization
             get { return ResourceManager.GetString("StatusBar_Storage_State_Connected", resourceCulture) ?? "Connected"; }
         }
 
+        public static string StatusBar_Companion_Running
+        {
+            get { return ResourceManager.GetString("StatusBar_Companion_Running", resourceCulture) ?? "Companion · port {0}"; }
+        }
+
+        public static string StatusBar_Companion_Failed
+        {
+            get { return ResourceManager.GetString("StatusBar_Companion_Failed", resourceCulture) ?? "Companion couldn't start"; }
+        }
+
+        public static string StatusBar_Companion_Devices
+        {
+            get { return ResourceManager.GetString("StatusBar_Companion_Devices", resourceCulture) ?? "Paired devices: {0}"; }
+        }
+
         public static string MoveLibrary_Header
         {
             get { return ResourceManager.GetString("MoveLibrary_Header", resourceCulture) ?? "Move library"; }
@@ -5443,6 +5498,178 @@ namespace BookDB.Desktop.Localization
         public static string Update_OpenGitHub
         {
             get { return ResourceManager.GetString("Update_OpenGitHub", resourceCulture) ?? "Download from GitHub"; }
+        }
+
+        public static string Settings_Tab_Companion {
+            get { return ResourceManager.GetString("Settings_Tab_Companion", resourceCulture) ?? "Companion"; }
+        }
+
+        public static string Settings_Companion_Enable {
+            get { return ResourceManager.GetString("Settings_Companion_Enable", resourceCulture) ?? "Enable companion"; }
+        }
+
+        public static string Settings_Companion_EnableHint {
+            get { return ResourceManager.GetString("Settings_Companion_EnableHint", resourceCulture) ?? "Let a paired phone or tablet scan books straight into this library over your local network."; }
+        }
+
+        public static string Settings_Companion_Status {
+            get { return ResourceManager.GetString("Settings_Companion_Status", resourceCulture) ?? "Status"; }
+        }
+
+        public static string Settings_Companion_StatusOff {
+            get { return ResourceManager.GetString("Settings_Companion_StatusOff", resourceCulture) ?? "Off"; }
+        }
+
+        public static string Settings_Companion_StatusRunning {
+            get { return ResourceManager.GetString("Settings_Companion_StatusRunning", resourceCulture) ?? "Running · port {0}"; }
+        }
+
+        public static string Settings_Companion_StatusFailed {
+            get { return ResourceManager.GetString("Settings_Companion_StatusFailed", resourceCulture) ?? "Couldn't start: {0}"; }
+        }
+
+        public static string Settings_Companion_Port {
+            get { return ResourceManager.GetString("Settings_Companion_Port", resourceCulture) ?? "Port"; }
+        }
+
+        public static string Settings_Companion_PortInvalid {
+            get { return ResourceManager.GetString("Settings_Companion_PortInvalid", resourceCulture) ?? "The port must be a number between {0} and {1}."; }
+        }
+
+        public static string Settings_Companion_FirewallHint {
+            get { return ResourceManager.GetString("Settings_Companion_FirewallHint", resourceCulture) ?? "Windows will ask to allow BookDB through the firewall — allow it on Private networks so your device can connect."; }
+        }
+
+        public static string Settings_Companion_FirewallHintMac {
+            get { return ResourceManager.GetString("Settings_Companion_FirewallHintMac", resourceCulture) ?? "If macOS asks whether to allow incoming connections for BookDB, allow it, or your device will not be able to connect. Its firewall is off by default, so you may not be asked at all — you can check under System Settings › Network › Firewall."; }
+        }
+
+        public static string Settings_Companion_FirewallHintOpen {
+            get { return ResourceManager.GetString("Settings_Companion_FirewallHintOpen", resourceCulture) ?? "{0} is running, and ports {1} (TCP) and {2} (UDP) are already open. Nothing to do."; }
+        }
+
+        public static string Settings_Companion_FirewallHintUfwUnknown {
+            get { return ResourceManager.GetString("Settings_Companion_FirewallHintUfwUnknown", resourceCulture) ?? "ufw is running and will not ask you. If a device cannot connect, open both ports for your local network:\nsudo ufw allow {0}/tcp\nsudo ufw allow {1}/udp\nUDP {1} is how a device finds this computer again when its address changes."; }
+        }
+
+        public static string Settings_Companion_FirewallHintFirewalldUnknown {
+            get { return ResourceManager.GetString("Settings_Companion_FirewallHintFirewalldUnknown", resourceCulture) ?? "firewalld is running and will not ask you. If a device cannot connect, open both ports for your local network:\nsudo firewall-cmd --permanent --add-port={0}/tcp --add-port={1}/udp\nsudo firewall-cmd --reload\nUDP {1} is how a device finds this computer again when its address changes."; }
+        }
+
+        public static string Settings_Companion_FirewallHintUfw {
+            get { return ResourceManager.GetString("Settings_Companion_FirewallHintUfw", resourceCulture) ?? "ufw is running and will not ask you — no device can connect until you open both ports yourself:\nsudo ufw allow {0}/tcp\nsudo ufw allow {1}/udp\nUDP {1} is how a device finds this computer again when its address changes."; }
+        }
+
+        public static string Settings_Companion_FirewallHintFirewalld {
+            get { return ResourceManager.GetString("Settings_Companion_FirewallHintFirewalld", resourceCulture) ?? "firewalld is running and will not ask you — no device can connect until you open both ports yourself:\nsudo firewall-cmd --permanent --add-port={0}/tcp --add-port={1}/udp\nsudo firewall-cmd --reload\nUDP {1} is how a device finds this computer again when its address changes."; }
+        }
+
+        public static string Settings_Companion_CaptureSection {
+            get { return ResourceManager.GetString("Settings_Companion_CaptureSection", resourceCulture) ?? "Capture — applied to every connected device"; }
+        }
+
+        public static string Settings_Companion_MaxImageSize {
+            get { return ResourceManager.GetString("Settings_Companion_MaxImageSize", resourceCulture) ?? "Max image size (px)"; }
+        }
+
+        public static string Settings_Companion_JpegQuality {
+            get { return ResourceManager.GetString("Settings_Companion_JpegQuality", resourceCulture) ?? "JPEG quality (1–100)"; }
+        }
+
+        public static string Maintenance_DevicesHeader {
+            get { return ResourceManager.GetString("Maintenance_DevicesHeader", resourceCulture) ?? "Devices"; }
+        }
+
+        public static string Devices_Intro {
+            get { return ResourceManager.GetString("Devices_Intro", resourceCulture) ?? "Phones and tablets paired with this computer."; }
+        }
+
+        public static string Devices_CountOfMax {
+            get { return ResourceManager.GetString("Devices_CountOfMax", resourceCulture) ?? "{0} of {1} devices in use"; }
+        }
+
+        public static string Devices_AtLimit {
+            get { return ResourceManager.GetString("Devices_AtLimit", resourceCulture) ?? "All {0} devices are in use. Remove one below before pairing another."; }
+        }
+
+        public static string Devices_None {
+            get { return ResourceManager.GetString("Devices_None", resourceCulture) ?? "No devices are paired yet."; }
+        }
+
+        public static string Devices_Column_Name {
+            get { return ResourceManager.GetString("Devices_Column_Name", resourceCulture) ?? "Name"; }
+        }
+
+        public static string Devices_Column_Paired {
+            get { return ResourceManager.GetString("Devices_Column_Paired", resourceCulture) ?? "Paired"; }
+        }
+
+        public static string Devices_Column_LastUsed {
+            get { return ResourceManager.GetString("Devices_Column_LastUsed", resourceCulture) ?? "Last used"; }
+        }
+
+        public static string Devices_Remove {
+            get { return ResourceManager.GetString("Devices_Remove", resourceCulture) ?? "Remove"; }
+        }
+
+        public static string Devices_RemoveConfirm {
+            get { return ResourceManager.GetString("Devices_RemoveConfirm", resourceCulture) ?? "Remove “{0}”? It will have to be paired again before it can scan into this library."; }
+        }
+
+        public static string Devices_ShowPairingCode {
+            get { return ResourceManager.GetString("Devices_ShowPairingCode", resourceCulture) ?? "Show pairing code…"; }
+        }
+
+        public static string Devices_CompanionOff {
+            get { return ResourceManager.GetString("Devices_CompanionOff", resourceCulture) ?? "The companion is switched off. Turn it on in Settings ▸ Companion before pairing a device."; }
+        }
+
+        public static string Devices_ManageButton {
+            get { return ResourceManager.GetString("Devices_ManageButton", resourceCulture) ?? "Manage paired devices…"; }
+        }
+
+        public static string Devices_LastUsed_JustNow {
+            get { return ResourceManager.GetString("Devices_LastUsed_JustNow", resourceCulture) ?? "Just now"; }
+        }
+
+        public static string Devices_LastUsed_MinutesAgo {
+            get { return ResourceManager.GetString("Devices_LastUsed_MinutesAgo", resourceCulture) ?? "{0} min ago"; }
+        }
+
+        public static string Devices_LastUsed_HoursAgo {
+            get { return ResourceManager.GetString("Devices_LastUsed_HoursAgo", resourceCulture) ?? "{0} h ago"; }
+        }
+
+        public static string Pairing_Title {
+            get { return ResourceManager.GetString("Pairing_Title", resourceCulture) ?? "Pair a device"; }
+        }
+
+        public static string Pairing_Instruction {
+            get { return ResourceManager.GetString("Pairing_Instruction", resourceCulture) ?? "In BookDB on your phone or tablet, choose “Scan pairing code” and point the camera here."; }
+        }
+
+        public static string Pairing_Address {
+            get { return ResourceManager.GetString("Pairing_Address", resourceCulture) ?? "Address"; }
+        }
+
+        public static string Pairing_ExpiresIn {
+            get { return ResourceManager.GetString("Pairing_ExpiresIn", resourceCulture) ?? "This code expires in {0}:{1:00}"; }
+        }
+
+        public static string Pairing_Paired {
+            get { return ResourceManager.GetString("Pairing_Paired", resourceCulture) ?? "“{0}” is now paired with this computer."; }
+        }
+
+        public static string Pairing_PairAnother {
+            get { return ResourceManager.GetString("Pairing_PairAnother", resourceCulture) ?? "Pair another device"; }
+        }
+
+        public static string Pairing_NoNetwork {
+            get { return ResourceManager.GetString("Pairing_NoNetwork", resourceCulture) ?? "This computer has no network address a device could reach it on."; }
+        }
+
+        public static string Pairing_NotRunning {
+            get { return ResourceManager.GetString("Pairing_NotRunning", resourceCulture) ?? "The companion is not running, so there is no pairing code to show."; }
         }
 
     }

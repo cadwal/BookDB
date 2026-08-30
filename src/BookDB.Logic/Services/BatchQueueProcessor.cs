@@ -32,14 +32,21 @@ public sealed class BatchQueueProcessor : IBatchQueueProcessor, IDisposable
     private readonly TimeSpan _itemTimeout;
 
     private readonly SemaphoreSlim _pauseGate = new(1, 1);
+    private readonly object _lock = new();
+    private readonly LinkedList<PendingWork> _pending = new();
     private bool _isPaused;
+
+    // Guarded by _lock: true while a drain loop is live, so an append joins the running session
+    // (growing its running totals) instead of spinning up a second loop.
+    private bool _draining;
+
     private int _processedCount;
     private int _totalCount;
     private int _toReviewCount;
     private int _failedCount;
 
-    private CancellationTokenSource? _batchCts;
-    private Task? _batchTask;
+    private CancellationTokenSource? _sessionCts;
+    private Task? _drainTask;
 
     public bool IsPaused => _isPaused;
     public int ProcessedCount => _processedCount;
@@ -84,70 +91,111 @@ public sealed class BatchQueueProcessor : IBatchQueueProcessor, IDisposable
     }
 
     /// <summary>
-    /// Starts processing a batch of items in the background.
-    /// Any currently running batch is cancelled first.
-    /// Returns a Task that completes when all items are processed or the batch is cancelled.
+    /// Appends items to the single continuous drain loop, starting the loop if it is idle. Items are
+    /// already persisted <see cref="BatchQueueItem"/> rows; duplicates within the call are dropped.
+    /// When <paramref name="priority"/> is set the items jump ahead of the pending backlog (the
+    /// in-flight item still finishes first) — the interactive single-book add uses this so it isn't
+    /// stuck behind a long bulk scan. The returned task completes when these specific items have
+    /// drained (or the session is cancelled), so a producer can await its own submission without
+    /// waiting on the rest of the loop.
     /// </summary>
-    public async Task StartBatch(IReadOnlyList<BatchQueueItem> items)
+    public Task EnqueueAsync(IReadOnlyList<BatchQueueItem> items, bool priority = false)
     {
-        // Cancel any existing batch and wait for it to stop
-        if (_batchCts is not null)
+        var deduped = items.DistinctBy(x => x.BatchQueueItemId).ToList();
+        if (deduped.Count == 0)
+            return Task.CompletedTask;
+
+        var ticket = new EnqueueTicket(deduped.Select(x => x.BatchQueueItemId));
+        lock (_lock)
         {
-            _batchCts.Cancel();
-            if (_batchTask is not null)
+            bool newSession = !_draining;
+            if (newSession)
             {
-                try { await _batchTask.ConfigureAwait(false); }
-                catch (OperationCanceledException) { }
+                _processedCount = 0;
+                _totalCount = 0;
+                _toReviewCount = 0;
+                _failedCount = 0;
+                _sessionCts?.Dispose();
+                _sessionCts = new CancellationTokenSource();
+                _draining = true;
             }
-            _batchCts.Dispose();
+
+            _totalCount += deduped.Count;
+
+            // Priority items insert ahead of the existing backlog in their given order; a null anchor
+            // (empty queue) falls through to a plain append.
+            var anchor = priority ? _pending.First : null;
+            foreach (var item in deduped)
+            {
+                if (anchor is not null)
+                    _pending.AddBefore(anchor, new PendingWork(item, ticket));
+                else
+                    _pending.AddLast(new PendingWork(item, ticket));
+            }
+
+            if (newSession)
+            {
+                var token = _sessionCts!.Token;
+                _drainTask = Task.Run(() => DrainLoopAsync(token));
+            }
         }
 
-        _processedCount = 0;
-        _totalCount = items.Count;
-        _toReviewCount = 0;
-        _failedCount = 0;
-
-        _batchCts = new CancellationTokenSource();
-
-        var token = _batchCts.Token;
-        // Deduplicate by item ID to prevent double-processing if the same row is passed twice
-        var deduped = items.DistinctBy(x => x.BatchQueueItemId).ToList();
-        _batchTask = ProcessBatchInternalAsync(deduped, token);
-
-        await _batchTask.ConfigureAwait(false);
+        return ticket.Tcs.Task;
     }
 
     /// <summary>
-    /// Cancels the current batch and waits for it to stop cleanly.
+    /// Cancels the whole draining session and waits for it to stop cleanly. Items that never got to
+    /// run stay Pending in the DB and resume on a later session; their awaiters are released here.
     /// </summary>
     public async Task CancelBatchAsync()
     {
         Resume(); // ensure not paused before cancelling
-        _batchCts?.Cancel();
-        if (_batchTask is not null)
+        Task? drain;
+        lock (_lock)
         {
-            try { await _batchTask.ConfigureAwait(false); }
-            catch (OperationCanceledException) { /* expected — batch was cancelled */ }
+            _sessionCts?.Cancel();
+            drain = _drainTask;
+        }
+        if (drain is not null)
+        {
+            try { await drain.ConfigureAwait(false); }
+            catch (OperationCanceledException) { /* expected — session was cancelled */ }
+        }
+        ReleasePendingTickets();
+    }
+
+    /// <summary>Clears the pending backlog and releases each cleared item's awaiter.</summary>
+    private void ReleasePendingTickets()
+    {
+        lock (_lock)
+        {
+            foreach (var work in _pending)
+                work.Ticket.MarkDone(work.Item.BatchQueueItemId);
+            _pending.Clear();
         }
     }
 
     /// <summary>
-    /// Graceful shutdown — cancels current batch and waits up to ct timeout.
-    /// Called on application exit.
+    /// Graceful shutdown — cancels the session and waits up to the ct timeout. Called on app exit.
     /// </summary>
     public async Task StopAsync(CancellationToken ct)
     {
         Resume();
-        _batchCts?.Cancel();
-        if (_batchTask is not null)
+        Task? drain;
+        lock (_lock)
+        {
+            _sessionCts?.Cancel();
+            drain = _drainTask;
+        }
+        if (drain is not null)
         {
             try
             {
-                await Task.WhenAny(_batchTask, Task.Delay(Timeout.Infinite, ct))
-                          .ConfigureAwait(false);
+                await Task.WhenAny(drain, Task.Delay(Timeout.Infinite, ct)).ConfigureAwait(false);
             }
             catch { }
         }
+        ReleasePendingTickets();
     }
 
     /// <summary>Single funnel for progress messages so every send carries the running outcome counts.</summary>
@@ -166,61 +214,88 @@ public sealed class BatchQueueProcessor : IBatchQueueProcessor, IDisposable
             FailedCount = _failedCount
         });
 
-    private async Task ProcessBatchInternalAsync(
-        IReadOnlyList<BatchQueueItem> items, CancellationToken ct)
+    private async Task DrainLoopAsync(CancellationToken ct)
     {
+        bool cancelled = false;
         try
         {
-            foreach (var item in items)
+            while (true)
             {
-                if (ct.IsCancellationRequested) break;
+                PendingWork work;
+                lock (_lock)
+                {
+                    // _draining stays true here even when the queue is empty; the finally re-checks
+                    // under the lock so an append racing the exit is never stranded.
+                    if (ct.IsCancellationRequested || _pending.First is null)
+                        break;
+                    work = _pending.First.Value;
+                    _pending.RemoveFirst();
+                }
 
-                // Blocking pause: wait until gate is available then release immediately.
-                // When paused, Pause() holds the gate; processor blocks here until Resume() releases it.
+                // Blocking pause: wait until the gate is available then release immediately. When
+                // paused, Pause() holds the gate; the loop blocks here until Resume() releases it.
                 await _pauseGate.WaitAsync(ct).ConfigureAwait(false);
                 _pauseGate.Release();
 
-                // Send pre-processing status (1-indexed so UI shows "N/Total" while Nth item fetches)
-                SendProgress(_processedCount + 1, item.Isbn, isRunning: true,
+                // 1-indexed so the UI shows "N/Total" while the Nth item fetches.
+                SendProgress(_processedCount + 1, work.Item.Isbn, isRunning: true,
                     BatchProgressStatus.QueryingSources);
 
                 try
                 {
-                    await ProcessItemAsync(item, ct).ConfigureAwait(false);
+                    await ProcessItemAsync(work.Item, ct).ConfigureAwait(false);
                 }
                 catch (OperationCanceledException) when (ct.IsCancellationRequested)
                 {
+                    work.Ticket.MarkDone(work.Item.BatchQueueItemId);
                     throw;
                 }
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "Failed to process batch item {ItemId} ISBN {Isbn}",
-                        item.BatchQueueItemId, item.Isbn);
+                        work.Item.BatchQueueItemId, work.Item.Isbn);
                     await _queueService.UpdateStatusAsync(
-                        item.BatchQueueItemId, BatchStatus.Failed, null,
+                        work.Item.BatchQueueItemId, BatchStatus.Failed, null,
                         BatchFailureReason.Unexpected.ToString(), ct).ConfigureAwait(false);
                     _failedCount++;
                 }
 
                 _processedCount++;
+                work.Ticket.MarkDone(work.Item.BatchQueueItemId);
 
-                bool batchComplete = _totalCount > 0 && _processedCount >= _totalCount;
+                SendProgress(_processedCount, work.Item.Isbn, isRunning: true);
 
-                SendProgress(_processedCount, item.Isbn, isRunning: !batchComplete,
-                    batchComplete ? BatchProgressStatus.Complete : BatchProgressStatus.None);
-
-                if (!batchComplete && !ct.IsCancellationRequested)
+                bool moreQueued;
+                lock (_lock) moreQueued = _pending.First is not null;
+                if (moreQueued && !ct.IsCancellationRequested)
                     await Task.Delay(_itemDelay, ct).ConfigureAwait(false);
             }
         }
         catch (OperationCanceledException)
         {
-            // Normal cancellation — send final message below
+            cancelled = true;
         }
         finally
         {
-            // Always send IsRunning=false on exit so UI updates correctly
-            SendProgress(_processedCount, null, isRunning: false);
+            bool relaunched = false;
+            lock (_lock)
+            {
+                // An append that arrived as the loop was exiting keeps the session alive rather than
+                // being stranded; on cancellation the session ends (Cancel clears the backlog).
+                if (!cancelled && !ct.IsCancellationRequested && _pending.First is not null)
+                {
+                    _drainTask = Task.Run(() => DrainLoopAsync(ct));
+                    relaunched = true;
+                }
+                else
+                {
+                    _draining = false;
+                }
+            }
+
+            if (!relaunched)
+                SendProgress(_processedCount, null, isRunning: false,
+                    cancelled ? BatchProgressStatus.None : BatchProgressStatus.Complete);
         }
     }
 
@@ -519,8 +594,34 @@ public sealed class BatchQueueProcessor : IBatchQueueProcessor, IDisposable
 
     public void Dispose()
     {
-        _batchCts?.Dispose();
+        _sessionCts?.Dispose();
         _pauseGate.Dispose();
+    }
+
+    private readonly record struct PendingWork(BatchQueueItem Item, EnqueueTicket Ticket);
+
+    /// <summary>
+    /// Tracks one <see cref="EnqueueAsync"/> call's items so its returned task completes exactly when
+    /// those items have drained — letting one producer await its own submission without waiting on the
+    /// rest of the shared loop.
+    /// </summary>
+    private sealed class EnqueueTicket
+    {
+        private readonly HashSet<int> _remaining;
+        private readonly object _gate = new();
+
+        public EnqueueTicket(IEnumerable<int> itemIds) => _remaining = [.. itemIds];
+
+        public TaskCompletionSource Tcs { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        public void MarkDone(int itemId)
+        {
+            lock (_gate)
+            {
+                if (_remaining.Remove(itemId) && _remaining.Count == 0)
+                    Tcs.TrySetResult();
+            }
+        }
     }
 }
 

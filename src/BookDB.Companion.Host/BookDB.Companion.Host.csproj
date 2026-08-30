@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <!-- Owns an in-process Kestrel/gRPC listener, so it needs the ASP.NET Core shared framework. This is the
+       only project that does — nothing ASP.NET reaches BookDB.Desktop. -->
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="BookDB.Companion.Host.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Grpc.AspNetCore" />
+    <PackageReference Include="Net.Codecrete.QrCodeGenerator" />
+    <PackageReference Include="protobuf-net.Grpc.AspNetCore" />
+    <!-- Server-side downscaling of covers. Skia already ships with the desktop app via Avalonia. -->
+    <PackageReference Include="SkiaSharp" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BookDB.Contracts\BookDB.Contracts.csproj" />
+    <ProjectReference Include="..\BookDB.Logic\BookDB.Logic.csproj" />
+  </ItemGroup>
+
+</Project>

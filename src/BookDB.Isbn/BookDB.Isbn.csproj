@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- The ISBN rule is a domain fact, not a wire format and not an entity: it belongs to neither Contracts
+         nor Models. It lives alone, with no dependencies, so every consumer can have it — including the
+         mobile heads, which is why the target framework is netstandard2.0. -->
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+</Project>

@@ -2285,6 +2285,12 @@ Potential duplicates: {3}  |  With covers: {4}</value>
   <data name="Help_RemoteDatabasesLink" xml:space="preserve">
     <value>Help: remote databases</value>
   </data>
+  <data name="Help_Tab_Companion" xml:space="preserve">
+    <value>Companion</value>
+  </data>
+  <data name="Help_CompanionLink" xml:space="preserve">
+    <value>Help: companion</value>
+  </data>
   <data name="Menu_AboutBookDB" xml:space="preserve">
     <value>_About BookDB…</value>
   </data>
@@ -2377,6 +2383,9 @@ Potential duplicates: {3}  |  With covers: {4}</value>
   </data>
   <data name="RecatalogAll_Confirm" xml:space="preserve">
     <value>Re-catalog all {0} books? This may take a while.</value>
+  </data>
+  <data name="RecatalogAll_ConfirmTitle" xml:space="preserve">
+    <value>Re-catalog All</value>
   </data>
   <data name="Backup_Saved" xml:space="preserve">
     <value>Backup saved to {0}</value>
@@ -3023,6 +3032,15 @@ Potential duplicates: {3}  |  With covers: {4}</value>
   <data name="StatusBar_Storage_State_Label" xml:space="preserve">
     <value>Connection</value>
   </data>
+  <data name="StatusBar_Companion_Running" xml:space="preserve">
+    <value>Companion · port {0}</value>
+  </data>
+  <data name="StatusBar_Companion_Failed" xml:space="preserve">
+    <value>Companion couldn't start</value>
+  </data>
+  <data name="StatusBar_Companion_Devices" xml:space="preserve">
+    <value>Paired devices: {0}</value>
+  </data>
   <data name="StatusBar_Storage_State_Connected" xml:space="preserve">
     <value>Connected</value>
   </data>
@@ -3250,5 +3268,161 @@ Potential duplicates: {3}  |  With covers: {4}</value>
   </data>
   <data name="Update_OpenGitHub" xml:space="preserve">
     <value>Download from GitHub</value>
+  </data>
+  <data name="Isbn_ChecksumValid" xml:space="preserve">
+    <value>Valid ISBN check digit</value>
+  </data>
+  <data name="Isbn_ChecksumWarning" xml:space="preserve">
+    <value>ISBN check digit doesn't match — the ISBN may be mistyped</value>
+  </data>
+  <data name="LookupWizard_ChecksumWarnings" xml:space="preserve">
+    <value>Check-digit warnings: {0}</value>
+  </data>
+  <data name="BookList_ViewToggle_List" xml:space="preserve">
+    <value>List view</value>
+  </data>
+  <data name="BookList_ViewToggle_Grid" xml:space="preserve">
+    <value>Grid view</value>
+  </data>
+  <data name="Settings_Tab_Companion" xml:space="preserve">
+    <value>Companion</value>
+  </data>
+  <data name="Settings_Companion_Enable" xml:space="preserve">
+    <value>Enable companion</value>
+  </data>
+  <data name="Settings_Companion_EnableHint" xml:space="preserve">
+    <value>Let a paired phone or tablet scan books straight into this library over your local network.</value>
+  </data>
+  <data name="Settings_Companion_Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Settings_Companion_StatusOff" xml:space="preserve">
+    <value>Off</value>
+  </data>
+  <data name="Settings_Companion_StatusRunning" xml:space="preserve">
+    <value>Running · port {0}</value>
+  </data>
+  <data name="Settings_Companion_StatusFailed" xml:space="preserve">
+    <value>Couldn't start: {0}</value>
+  </data>
+  <data name="Settings_Companion_Port" xml:space="preserve">
+    <value>Port</value>
+  </data>
+  <data name="Settings_Companion_FirewallHint" xml:space="preserve">
+    <value>Windows will ask to allow BookDB through the firewall — allow it on Private networks so your device can connect.</value>
+  </data>
+  <data name="Settings_Companion_FirewallHintMac" xml:space="preserve">
+    <value>If macOS asks whether to allow incoming connections for BookDB, allow it, or your device will not be able to connect. Its firewall is off by default, so you may not be asked at all — you can check under System Settings › Network › Firewall.</value>
+  </data>
+  <data name="Settings_Companion_PortInvalid" xml:space="preserve">
+    <value>The port must be a number between {0} and {1}.</value>
+  </data>
+  <data name="Settings_Companion_FirewallHintUfw" xml:space="preserve">
+    <value>ufw is running and will not ask you — no device can connect until you open port {0} yourself:
+sudo ufw allow from {1} to any port {0} proto tcp
+sudo ufw allow from {1} to any port {0} proto udp
+UDP is how a device finds this computer again when its address changes.</value>
+  </data>
+  <data name="Settings_Companion_FirewallHintFirewalld" xml:space="preserve">
+    <value>firewalld is running and will not ask you — no device can connect until you open port {0} yourself:
+sudo firewall-cmd --permanent --add-port={0}/tcp --add-port={0}/udp
+sudo firewall-cmd --reload
+UDP is how a device finds this computer again when its address changes.</value>
+  </data>
+  <data name="Settings_Companion_FirewallHintOpen" xml:space="preserve">
+    <value>{0} is running, and port {1} is already open for TCP and UDP. Nothing to do.</value>
+  </data>
+  <data name="Settings_Companion_FirewallHintUfwUnknown" xml:space="preserve">
+    <value>ufw is running and will not ask you. If a device cannot connect, open port {0} for your local network:
+sudo ufw allow from {1} to any port {0} proto tcp
+sudo ufw allow from {1} to any port {0} proto udp
+UDP is how a device finds this computer again when its address changes.</value>
+  </data>
+  <data name="Settings_Companion_FirewallHintFirewalldUnknown" xml:space="preserve">
+    <value>firewalld is running and will not ask you. If a device cannot connect, open port {0} for your local network:
+sudo firewall-cmd --permanent --add-port={0}/tcp --add-port={0}/udp
+sudo firewall-cmd --reload
+UDP is how a device finds this computer again when its address changes.</value>
+  </data>
+  <data name="Settings_Companion_CaptureSection" xml:space="preserve">
+    <value>Capture — applied to every connected device</value>
+  </data>
+  <data name="Settings_Companion_MaxImageSize" xml:space="preserve">
+    <value>Max image size (px)</value>
+  </data>
+  <data name="Settings_Companion_JpegQuality" xml:space="preserve">
+    <value>JPEG quality (1–100)</value>
+  </data>
+  <data name="Maintenance_DevicesHeader" xml:space="preserve">
+    <value>Devices</value>
+  </data>
+  <data name="Devices_Intro" xml:space="preserve">
+    <value>Phones and tablets paired with this computer.</value>
+  </data>
+  <data name="Devices_CountOfMax" xml:space="preserve">
+    <value>{0} of {1} devices in use</value>
+  </data>
+  <data name="Devices_AtLimit" xml:space="preserve">
+    <value>All {0} devices are in use. Remove one below before pairing another.</value>
+  </data>
+  <data name="Devices_None" xml:space="preserve">
+    <value>No devices are paired yet.</value>
+  </data>
+  <data name="Devices_Column_Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="Devices_Column_Paired" xml:space="preserve">
+    <value>Paired</value>
+  </data>
+  <data name="Devices_Column_LastUsed" xml:space="preserve">
+    <value>Last used</value>
+  </data>
+  <data name="Devices_Remove" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="Devices_RemoveConfirm" xml:space="preserve">
+    <value>Remove “{0}”? It will have to be paired again before it can scan into this library.</value>
+  </data>
+  <data name="Devices_ShowPairingCode" xml:space="preserve">
+    <value>Show pairing code…</value>
+  </data>
+  <data name="Devices_CompanionOff" xml:space="preserve">
+    <value>The companion is switched off. Turn it on in Settings ▸ Companion before pairing a device.</value>
+  </data>
+  <data name="Devices_ManageButton" xml:space="preserve">
+    <value>Manage paired devices…</value>
+  </data>
+  <data name="Devices_LastUsed_JustNow" xml:space="preserve">
+    <value>Just now</value>
+  </data>
+  <data name="Devices_LastUsed_MinutesAgo" xml:space="preserve">
+    <value>{0} min ago</value>
+  </data>
+  <data name="Devices_LastUsed_HoursAgo" xml:space="preserve">
+    <value>{0} h ago</value>
+  </data>
+  <data name="Pairing_Title" xml:space="preserve">
+    <value>Pair a device</value>
+  </data>
+  <data name="Pairing_Instruction" xml:space="preserve">
+    <value>In BookDB on your phone or tablet, choose “Scan pairing code” and point the camera here.</value>
+  </data>
+  <data name="Pairing_Address" xml:space="preserve">
+    <value>Address</value>
+  </data>
+  <data name="Pairing_ExpiresIn" xml:space="preserve">
+    <value>This code expires in {0}:{1:00}</value>
+  </data>
+  <data name="Pairing_Paired" xml:space="preserve">
+    <value>“{0}” is now paired with this computer.</value>
+  </data>
+  <data name="Pairing_PairAnother" xml:space="preserve">
+    <value>Pair another device</value>
+  </data>
+  <data name="Pairing_NoNetwork" xml:space="preserve">
+    <value>This computer has no network address a device could reach it on.</value>
+  </data>
+  <data name="Pairing_NotRunning" xml:space="preserve">
+    <value>The companion is not running, so there is no pairing code to show.</value>
   </data>
 </root>

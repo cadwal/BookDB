@@ -7,12 +7,16 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using BookDB.Companion.Host;
+using BookDB.Contracts;
 using BookDB.Data.Interfaces;
+using BookDB.Help;
 using BookDB.Desktop.Messages;
 using BookDB.Desktop.Localization;
 using BookDB.Desktop.Services;
 using BookDB.Desktop.Theming;
 using BookDB.Logic.Services;
+using BookDB.Models;
 using BookDB.Models.Entities;
 using BookDB.Models.Interfaces;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -46,6 +50,7 @@ public sealed partial class SettingsWindowViewModel : ObservableObject
     public SettingsAdvancedTabViewModel AdvancedTab { get; }
     public SettingsApplicationAccessTabViewModel ApplicationAccessTab { get; }
     public SettingsAppearanceTabViewModel AppearanceTab { get; }
+    public SettingsCompanionTabViewModel CompanionTab { get; }
     public DatabaseSettingsViewModel DatabaseTab { get; }
 
     public SettingsWindowViewModel(
@@ -61,7 +66,8 @@ public sealed partial class SettingsWindowViewModel : ObservableObject
         IApplicationRestartService restartService,
         IBackupStrategy backupStrategy,
         IMessenger messenger,
-        IWindowService windowService)
+        IWindowService windowService,
+        CompanionHostManager companionHostManager)
     {
         _settingsService = settingsService;
         _lookupService   = lookupService;
@@ -77,6 +83,7 @@ public sealed partial class SettingsWindowViewModel : ObservableObject
             supportsFileBackup: backupStrategy.SupportsFileBackup);
         ApplicationAccessTab = new SettingsApplicationAccessTabViewModel(shortcutService);
         AppearanceTab = new SettingsAppearanceTabViewModel(bootstrapConfig);
+        CompanionTab = new SettingsCompanionTabViewModel(companionHostManager, windowService);
         DatabaseTab = new DatabaseSettingsViewModel(
             bootstrapConfig, secretStoreAvailability, connectionProber, mySqlConnectionProber, secretStore,
             windowService);
@@ -93,6 +100,7 @@ public sealed partial class SettingsWindowViewModel : ObservableObject
             await AdvancedTab.LoadAsync(ct);
             await ApplicationAccessTab.LoadAsync(ct);
             await AppearanceTab.LoadAsync(ct);
+            CompanionTab.Load();
             await DatabaseTab.LoadAsync(ct);
         }
         catch (Exception ex)
@@ -101,8 +109,9 @@ public sealed partial class SettingsWindowViewModel : ObservableObject
         }
     }
 
-    // The Database tab is the last TabItem in SettingsWindow.axaml; Save focuses it to surface a blocking error.
-    private const int DatabaseTabIndex = 7;
+    // Tab order in SettingsWindow.axaml; Save focuses one of these to surface a blocking error.
+    private const int CompanionTabIndex = 7;
+    private const int DatabaseTabIndex = 8;
 
     /// <summary>Pre-selects the Database tab (e.g. when Settings is opened from the empty-state "Connect to a database" action).</summary>
     public void ShowDatabaseTab() => SelectedTabIndex = DatabaseTabIndex;
@@ -140,6 +149,12 @@ public sealed partial class SettingsWindowViewModel : ObservableObject
             return;
         }
 
+        if (!CompanionTab.ValidateForSave())
+        {
+            SelectedTabIndex = CompanionTabIndex;
+            return;
+        }
+
         try
         {
             await GeneralTab.SaveAsync();
@@ -149,7 +164,16 @@ public sealed partial class SettingsWindowViewModel : ObservableObject
             await AdvancedTab.SaveAsync();
             await ApplicationAccessTab.SaveAsync();
             await AppearanceTab.SaveAsync();
+            await CompanionTab.SaveAsync();
             _messenger.Send(new SettingsSavedMessage());
+
+            // A companion that was asked to start but couldn't (almost always the port in use) keeps the dialog
+            // open on its tab so the inline error is seen — the toggle stays on so the user can change the port.
+            if (CompanionTab.StartFailed)
+            {
+                SelectedTabIndex = CompanionTabIndex;
+                return;
+            }
 
             // Language and log level are read once at startup, so each only takes effect after a restart. Theme is
             // no longer here: AppearanceTab.SaveAsync applies the flavour to the running app immediately.
@@ -666,6 +690,212 @@ public sealed partial class SettingsApplicationAccessTabViewModel : ObservableOb
         ShortcutState.Mismatch => Resources.Settings_AppAccess_State_Mismatch,
         ShortcutState.Missing => Resources.Settings_AppAccess_State_Missing,
         _ => string.Empty,
+    };
+}
+
+// ============================================================
+// Companion Tab
+// ============================================================
+
+public sealed partial class SettingsCompanionTabViewModel : ObservableObject
+{
+    private const int MinPort = 1025;
+    private const int MaxPort = 65535;
+
+    private readonly CompanionHostManager _manager;
+    private readonly IWindowService _windowService;
+    private readonly IFirewallProbe _firewallProbe;
+    private readonly FirewallKind _firewall;
+
+    public SettingsCompanionTabViewModel(
+        CompanionHostManager manager, IWindowService windowService, IFirewallProbe? firewallProbe = null)
+    {
+        _manager = manager;
+        _windowService = windowService;
+        _firewallProbe = firewallProbe ?? new SystemFirewallProbe();
+        _firewall = _firewallProbe.Detect();
+    }
+
+    /// <summary>The paired-device list lives in Maintenance; this is just a way in from where it is configured.</summary>
+    [RelayCommand]
+    private Task ManageDevicesAsync() => _windowService.ShowMaintenanceDialogAsync();
+
+    [RelayCommand]
+    private void OpenCompanionHelp() => _windowService.OpenHelpWindow(HelpTab.Companion);
+
+    /// <summary>
+    /// What to say about the firewall, or null when there is nothing to say. Windows gets the prompt it is
+    /// about to show; a Linux box running ufw or firewalld gets the ports and the command, because nothing
+    /// there will ask and a blocked port is otherwise indistinguishable from a phone that simply will not pair.
+    /// </summary>
+    // An emptied box is mid-edit, not a request for a portless command: fall back to what is actually saved
+    // so the hint keeps naming a real port instead of blinking out while the user retypes.
+    public string? FirewallHintText
+    {
+        get
+        {
+            int port = Port ?? _manager.Current.Port;
+            return DescribeFirewallHint(
+                _firewall, _firewallProbe.InspectPort(port), port, LocalAddresses.LocalSubnet());
+        }
+    }
+
+    public bool HasFirewallHint => FirewallHintText is not null;
+
+    /// <summary>True after a Save where the host was asked to start but couldn't, so the dialog stays open.</summary>
+    public bool StartFailed { get; private set; }
+
+    [ObservableProperty]
+    private bool _isEnabled;
+
+    // Nullable because the control's Value is decimal? and an emptied box is null. Binding that into a
+    // non-nullable int threw on the way through, so clearing a field to retype it crashed the dialog.
+    // The firewall hint quotes the port, so editing it has to rewrite the command the hint tells you to run.
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(FirewallHintText))]
+    [NotifyPropertyChangedFor(nameof(HasFirewallHint))]
+    private int? _port = 7443;
+
+    [ObservableProperty]
+    private int? _maxLongEdgePx = 1600;
+
+    [ObservableProperty]
+    private int? _jpegQuality = 80;
+
+    [ObservableProperty]
+    private string _statusText = Resources.Settings_Companion_StatusOff;
+
+    [ObservableProperty]
+    private string? _validationError;
+
+    /// <summary>True when Save has a blocking message to show inline, gating its display.</summary>
+    public bool HasValidationError => !string.IsNullOrEmpty(ValidationError);
+
+    /// <summary>The refusal, carrying the bounds it is refusing against so the range lives in one place.</summary>
+    public static string PortInvalidMessage => string.Format(
+        CultureInfo.CurrentCulture, Resources.Settings_Companion_PortInvalid, MinPort, MaxPort);
+
+    partial void OnValidationErrorChanged(string? value) => OnPropertyChanged(nameof(HasValidationError));
+
+    /// <summary>
+    /// Gates <see cref="SaveAsync"/>, mirroring the Database tab. Only the port refuses: it is the one value
+    /// the host must actually bind, and clamping a port the user typed hands back one they never chose — the
+    /// phone then cannot reach a door they believe they opened. The two capture knobs keep their clamp, where
+    /// a bound of 4000 px instead of 9000 is invisible and harmless.
+    /// </summary>
+    public bool ValidateForSave()
+    {
+        ValidationError = null;
+        if (Port is { } port && port is < MinPort or > MaxPort)
+        {
+            ValidationError = PortInvalidMessage;
+            return false;
+        }
+        return true;
+    }
+
+    public void Load()
+    {
+        var options = _manager.Current;
+        IsEnabled = options.Enabled;
+        Port = options.Port;
+        MaxLongEdgePx = options.MaxLongEdgePx;
+        JpegQuality = options.JpegQuality;
+        StatusText = DescribeStatus(_manager.Status);
+    }
+
+    public async Task SaveAsync(CancellationToken ct = default)
+    {
+        StartFailed = false;
+
+        // Settle the fields first, so the box always shows what was attempted even if starting the host throws.
+        // A blank field is not a value: it falls back to the one in effect, and the refill is what tells the
+        // user an empty field changed nothing.
+        var current = _manager.Current;
+        Port = Port ?? current.Port;
+        MaxLongEdgePx = Math.Clamp(MaxLongEdgePx ?? current.MaxLongEdgePx, 200, 4000);
+        JpegQuality = Math.Clamp(JpegQuality ?? current.JpegQuality, 1, 100);
+
+        try
+        {
+            var status = await _manager.ApplyAsync(
+                new CompanionOptions
+                {
+                    Enabled = IsEnabled,
+                    Port = Port.Value,
+                    MaxLongEdgePx = MaxLongEdgePx.Value,
+                    JpegQuality = JpegQuality.Value,
+                    InstanceId = current.InstanceId,
+                },
+                ct);
+
+            StartFailed = status.State == CompanionHostState.Failed;
+            StatusText = DescribeStatus(status);
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "SettingsCompanionTabViewModel: SaveAsync failed");
+        }
+    }
+
+    /// <summary>
+    /// Null means say nothing — the common Linux desktop with no firewall running. Both Linux hints ask for
+    /// UDP as well as TCP on the one port: opening only TCP leaves pairing and browsing working and
+    /// rediscovery quietly dead, which surfaces much later as an intermittent fault.
+    ///
+    /// The wording tracks what we can actually see. Telling someone no device can connect while their rules
+    /// plainly allow the port is worse than saying nothing: it is the sort of wrong that teaches people to
+    /// stop reading the hint. So a firewall whose rules we can read and that already allows both protocols
+    /// says so and asks for nothing; one we cannot read offers the commands as something to try, not as a
+    /// diagnosis.
+    /// </summary>
+    public static string? DescribeFirewallHint(
+        FirewallKind firewall, FirewallPortState ports, int port, string? subnet)
+    {
+        // The rule is scoped to the network the phone is on rather than opening the port to everyone, which
+        // is also what the Help topic tells people to do. A machine we cannot read a subnet from has no
+        // usable address at all, so the companion is not running on it either; the documented example keeps
+        // the command copyable in that case rather than leaving a hole in the middle of it.
+        string network = subnet ?? "192.168.1.0/24";
+
+        if (firewall is FirewallKind.Ufw or FirewallKind.Firewalld && ports == FirewallPortState.Open)
+        {
+            return string.Format(
+                CultureInfo.CurrentCulture, Resources.Settings_Companion_FirewallHintOpen,
+                FirewallName(firewall), port);
+        }
+
+        return firewall switch
+        {
+            FirewallKind.WindowsPrompt => Resources.Settings_Companion_FirewallHint,
+            FirewallKind.MacPrompt => Resources.Settings_Companion_FirewallHintMac,
+            FirewallKind.Ufw => string.Format(
+                CultureInfo.CurrentCulture,
+                ports == FirewallPortState.Closed
+                    ? Resources.Settings_Companion_FirewallHintUfw
+                    : Resources.Settings_Companion_FirewallHintUfwUnknown,
+                port, network),
+            FirewallKind.Firewalld => string.Format(
+                CultureInfo.CurrentCulture,
+                ports == FirewallPortState.Closed
+                    ? Resources.Settings_Companion_FirewallHintFirewalld
+                    : Resources.Settings_Companion_FirewallHintFirewalldUnknown,
+                port),
+            _ => null,
+        };
+    }
+
+    /// <summary>The name the user types, so it is never translated.</summary>
+    private static string FirewallName(FirewallKind firewall) =>
+        firewall == FirewallKind.Ufw ? "ufw" : "firewalld";
+
+    public static string DescribeStatus(CompanionHostStatus status) => status.State switch
+    {
+        CompanionHostState.Running => string.Format(
+            CultureInfo.CurrentCulture, Resources.Settings_Companion_StatusRunning, status.Endpoint),
+        CompanionHostState.Failed => string.Format(
+            CultureInfo.CurrentCulture, Resources.Settings_Companion_StatusFailed, status.Error),
+        _ => Resources.Settings_Companion_StatusOff,
     };
 }
 

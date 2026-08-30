@@ -44,6 +44,7 @@ public partial class MainWindowViewModel : ObservableObject
     private readonly ISecretStore _secretStore;
     private readonly IReleaseNotesService _releaseNotesService;
     private readonly IUpdateCheckService _updateCheckService;
+    private readonly ICompanionStatusReporter _companionStatus;
 
     private const string LastSeenReleaseNotesVersionKey = "ReleaseNotes.LastSeenVersion";
 
@@ -98,6 +99,44 @@ public partial class MainWindowViewModel : ObservableObject
 
     public bool ShowConnectionStatus => !string.IsNullOrEmpty(ConnectionStatusText);
 
+    // Status-bar companion indicator. The companion is a listener with no window, so the status bar is the
+    // only place its state is visible while working; a row in Settings is somewhere you have to go and look.
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ShowCompanionStatus))]
+    [NotifyPropertyChangedFor(nameof(CompanionStatusText))]
+    private bool _isCompanionRunning;
+
+    /// <summary>Enabled but unable to take its port — worth showing precisely because it looks like "on".</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ShowCompanionStatus))]
+    [NotifyPropertyChangedFor(nameof(CompanionStatusText))]
+    private bool _isCompanionFailed;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CompanionDeviceText))]
+    private int _companionDeviceCount;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CompanionStatusText))]
+    private string _companionPort = string.Empty;
+
+    /// <summary>A companion nobody has turned on is not news, so the indicator is absent rather than off.</summary>
+    public bool ShowCompanionStatus => IsCompanionRunning || IsCompanionFailed;
+
+    public string CompanionStatusText => IsCompanionFailed
+        ? Localization.Resources.StatusBar_Companion_Failed
+        : string.Format(
+            System.Globalization.CultureInfo.CurrentCulture,
+            Localization.Resources.StatusBar_Companion_Running,
+            CompanionPort);
+
+    /// <summary>Zero is worth showing: a running companion with nothing paired is the state a first phone
+    /// has to be walked through, and the number is how you tell that from a device that has gone missing.</summary>
+    public string CompanionDeviceText => string.Format(
+        System.Globalization.CultureInfo.CurrentCulture,
+        Localization.Resources.StatusBar_Companion_Devices,
+        CompanionDeviceCount);
+
     // Status-bar storage-kind indicator (fixed for the app's lifetime — changing backend restarts the app).
     // The popup shows connection facts from the bootstrap config; credentials never appear.
     public bool IsRemoteStorage { get; }
@@ -128,6 +167,16 @@ public partial class MainWindowViewModel : ObservableObject
             ConnectionHealth.Lost => Localization.Resources.StatusBar_Connection_Lost,
             _ => Localization.Resources.StatusBar_Storage_State_Connected,
         };
+    }
+
+    private void UpdateCompanionStatus()
+    {
+        // Never null in production; substituted test doubles answer null, as with the bootstrap config above.
+        var status = _companionStatus.Status ?? CompanionHostStatus.Stopped;
+        IsCompanionRunning = status.State == CompanionHostState.Running;
+        IsCompanionFailed = status.State == CompanionHostState.Failed;
+        CompanionDeviceCount = _companionStatus.PairedDeviceCount;
+        CompanionPort = status.Endpoint ?? string.Empty;
     }
 
     private async Task HandleConnectionEscalationAsync()
@@ -245,7 +294,8 @@ public partial class MainWindowViewModel : ObservableObject
         IMigrationTargetBuilder targetBuilder,
         ISecretStore secretStore,
         IReleaseNotesService releaseNotesService,
-        IUpdateCheckService updateCheckService)
+        IUpdateCheckService updateCheckService,
+        ICompanionStatusReporter companionStatus)
     {
         OpenWindowEntries.Add(_noWindowsSentinel);
         FilterPanel = filterPanel;
@@ -269,6 +319,7 @@ public partial class MainWindowViewModel : ObservableObject
         _secretStore = secretStore;
         _releaseNotesService = releaseNotesService;
         _updateCheckService = updateCheckService;
+        _companionStatus = companionStatus;
 
         IsRemoteStorage = _appSettings.Backend.IsRemote();
         // Load() never returns null in production; substituted test doubles may, so fall back to defaults.
@@ -296,6 +347,10 @@ public partial class MainWindowViewModel : ObservableObject
                 break;
         }
         UpdateConnectionStatus();
+        UpdateCompanionStatus();
+
+        // Raised from whatever thread started the host or paired a device, which is not the UI one.
+        _companionStatus.StatusChanged += (_, _) => Dispatcher.UIThread.Post(UpdateCompanionStatus);
 
         _connectionMonitor.StateChanged += (_, _) => Dispatcher.UIThread.Post(UpdateConnectionStatus);
         _connectionMonitor.Reconnected += (_, _) => Dispatcher.UIThread.Post(() => _ = BookList.LoadBooksAsync());
@@ -314,6 +369,14 @@ public partial class MainWindowViewModel : ObservableObject
                 msg.IsRunning, IsBatchWindowMinimized, msg.Current, msg.Total,
                 msg.ToReviewCount, msg.FailedCount);
             OnPropertyChanged(nameof(ShowBatchStatusBar));
+
+            // A run that ends with reviews waiting and no window watching it came from somewhere with no
+            // screen of its own — a phone. Posted, because a window has to be opened on the UI thread and
+            // the processor's progress arrives on its own.
+            if (!msg.IsRunning && msg.ToReviewCount > 0)
+            {
+                Dispatcher.UIThread.Post(() => _ = _windowService.ReviewPendingBatchItemsAsync());
+            }
         });
 
         // Collections were added/renamed/deleted/reordered in Manage Lookups — refresh the selector.
@@ -577,7 +640,10 @@ public partial class MainWindowViewModel : ObservableObject
             var allBooks = BookList.Books.Select(b => b.BookId).ToList();
             if (allBooks.Count == 0) return;
 
-            var confirmed = await _windowService.ShowDeleteConfirmationAsync(
+            // Re-cataloguing deletes nothing, so it asks with a plain confirmation: the delete dialog put a
+            // red "Delete" against "Keep book" on an action that only looks metadata up again.
+            var confirmed = await _windowService.ShowConfirmAsync(
+                Localization.Resources.RecatalogAll_ConfirmTitle,
                 string.Format(Localization.Resources.RecatalogAll_Confirm, allBooks.Count));
             if (confirmed != true) return;
 

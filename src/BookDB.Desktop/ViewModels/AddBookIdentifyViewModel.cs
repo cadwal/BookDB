@@ -1,8 +1,10 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using BookDB.Desktop.Localization;
 using BookDB.Desktop.Messages;
 using BookDB.Desktop.Services;
+using BookDB.Isbn;
 using BookDB.Logic.Messages;
 using BookDB.Logic.Services;
 using BookDB.Models;
@@ -33,6 +35,9 @@ public sealed partial class AddBookIdentifyViewModel :
     private readonly IMessenger _messenger;
 
     private int? _collectionId;
+
+    // Cancels only this dialog's wait on its queued item (see LookUpAsync) — never the shared session.
+    private CancellationTokenSource? _lookupCts;
 
     /// <summary>Set by WindowService to close the dialog with a result.</summary>
     public Action<bool?>? CloseDialog { get; set; }
@@ -103,7 +108,10 @@ public sealed partial class AddBookIdentifyViewModel :
 
             var item = await _queueService.EnqueueAsync(isbn, bookId, forceReview: true);
             IsRunning = true;
-            await _processor.StartBatch([item]);
+            // Priority so the single add isn't stuck behind a running bulk scan, and awaited through a
+            // local token so closing the dialog abandons this wait without cancelling a shared batch.
+            _lookupCts = new CancellationTokenSource();
+            await _processor.EnqueueAsync([item], priority: true).WaitAsync(_lookupCts.Token);
 
             // The in-memory item is pre-processing state — re-read for status and payload.
             var processed = await _queueService.GetItemAsync(item.BatchQueueItemId);
@@ -128,6 +136,11 @@ public sealed partial class AddBookIdentifyViewModel :
                 CloseDialog?.Invoke(true);
             }
             // Pending/Processing: the lookup was cancelled (close guard) — the dialog is closing.
+        }
+        catch (OperationCanceledException)
+        {
+            // The dialog was closed mid-lookup; the item stays queued and is reviewed later. The
+            // shared batch keeps running — only this wait was abandoned.
         }
         catch (Exception ex)
         {
@@ -188,7 +201,8 @@ public sealed partial class AddBookIdentifyViewModel :
             Resources.AddBookIdentify_CancelLookup_Body);
         if (confirmed != true) return false;
 
-        await _processor.CancelBatchAsync();
+        // Abandon this dialog's wait only; a concurrent bulk batch on the shared processor is untouched.
+        _lookupCts?.Cancel();
         return true;
     }
 }

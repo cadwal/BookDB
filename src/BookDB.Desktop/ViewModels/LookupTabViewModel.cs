@@ -258,7 +258,8 @@ public partial class LookupTabViewModel : ObservableObject
     {
         if (SelectedEntry is null || SelectedEntry.Id == 0) return;
         var confirmMessage = string.Format(Resources.ManageLookups_DeleteConfirm, SelectedEntry.Name);
-        var confirmed = await WindowService.ShowDeleteConfirmationAsync(confirmMessage);
+        var confirmed = await WindowService.ShowDeleteConfirmationAsync(
+            confirmMessage, cancelLabel: Resources.Common_Cancel);
         if (confirmed != true) return;
         try
         {

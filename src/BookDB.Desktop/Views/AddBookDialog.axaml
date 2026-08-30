@@ -47,7 +47,15 @@
                     FontSize="13" />
 
             <TextBlock Text="{x:Static res:Resources.AddBook_Label_Isbn}" FontSize="12"/>
-            <TextBox Text="{Binding Isbn}" FontSize="13"/>
+            <DockPanel LastChildFill="True">
+                <Image DockPanel.Dock="Right" Width="16" Height="16" Margin="6,0,0,0"
+                       VerticalAlignment="Center" IsVisible="False">
+                    <i:Interaction.Behaviors>
+                        <behaviors:IsbnChecksumIndicatorBehavior Isbn="{Binding Isbn}" />
+                    </i:Interaction.Behaviors>
+                </Image>
+                <TextBox Text="{Binding Isbn}" FontSize="13"/>
+            </DockPanel>
 
             <TextBlock Text="{x:Static res:Resources.AddBook_Label_Year}" FontSize="12"/>
             <TextBox Text="{Binding Year}" FontSize="13"/>

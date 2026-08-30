@@ -44,3 +44,31 @@ jobs:
 
       - name: Test
         run: dotnet test BookDB.slnx -c Release --no-build --verbosity normal
+
+  # Builds the Android companion app's debug APK. The Android head is deliberately NOT in BookDB.slnx, so
+  # the desktop matrix above never needs the Android workload; this job installs it and builds the head on
+  # its own. It runs ONLY on the public mirror — the internal repo has no CI, and this guard keeps the job
+  # from ever running there even if Actions were enabled. Locally, scripts/build-mobile.ps1 does the same.
+  android-apk:
+    name: android-apk
+    if: github.repository == 'cadwal/BookDB'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10  # v6.0.3
+
+      - uses: actions/setup-dotnet@9a946fdbd5fb07b82b2f5a4466058b876ab72bb2  # v5.3.0
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Install Android workload
+        run: dotnet workload install android
+
+      - name: Build debug APK
+        run: dotnet build src/BookDB.Mobile.Android/BookDB.Mobile.Android.csproj -c Debug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+        with:
+          name: bookdb-companion-debug-apk
+          path: src/BookDB.Mobile.Android/bin/Debug/net10.0-android36.0/*-Signed.apk
+          if-no-files-found: error

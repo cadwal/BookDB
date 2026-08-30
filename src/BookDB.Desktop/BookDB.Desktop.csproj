@@ -36,6 +36,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BookDB.Logic\BookDB.Logic.csproj" />
+    <ProjectReference Include="..\BookDB.Companion.Host\BookDB.Companion.Host.csproj" />
     <ProjectReference Include="..\BookDB.Data.Sqlite\BookDB.Data.Sqlite.csproj" />
     <ProjectReference Include="..\BookDB.Data.PostgreSQL\BookDB.Data.PostgreSQL.csproj" />
     <ProjectReference Include="..\BookDB.Data.MySql\BookDB.Data.MySql.csproj" />

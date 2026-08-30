@@ -38,7 +38,7 @@ public class SettingsFlowTests : HeadlessTest
             Ui.Pump();
 
             var tabCount = window.Descendants<TabItem>().Count;
-            Assert.Equal(8, tabCount);
+            Assert.Equal(9, tabCount);
 
             for (var i = 0; i < tabCount; i++)
             {
@@ -48,7 +48,7 @@ public class SettingsFlowTests : HeadlessTest
             }
 
             // The Database tab (last) is the motivating case — its view realizes when selected.
-            vm.SelectedTabIndex = 7;
+            vm.SelectedTabIndex = 8; // Database (Companion is 7)
             Ui.Pump();
             Assert.NotEmpty(window.Descendants<DatabaseSettingsView>());
             Assert.False(vm.DatabaseTab.IsDirty); // navigation alone must not mark the backend switch dirty
@@ -143,7 +143,7 @@ public class SettingsFlowTests : HeadlessTest
             await ((IAsyncRelayCommand)window.ButtonFor(vm.SaveCommand).Command!).ExecuteAsync(null);
             Ui.Pump();
 
-            Assert.Equal(7, vm.SelectedTabIndex); // Save focused the Database tab to surface the blocking error
+            Assert.Equal(8, vm.SelectedTabIndex); // Save focused the Database tab to surface the blocking error
             Assert.True(vm.DatabaseTab.HasApplyError);
             var view = window.Find<DatabaseSettingsView>();
             Assert.Contains(view.Descendants<TextBlock>(),
@@ -265,7 +265,7 @@ public class SettingsFlowTests : HeadlessTest
                 new PostgresOptions { Host = "db.test.local", Username = "bookuser" }.AccountKey, "s3cret!");
 
             var (vm, window) = await OpenSettingsAsync(host);
-            vm.SelectedTabIndex = 7;
+            vm.SelectedTabIndex = 8; // Database (Companion is 7)
             Ui.Pump();
             var view = window.Find<DatabaseSettingsView>();
             view.Descendants<RadioButton>()[1].IsChecked = true; // PostgreSQL
@@ -326,7 +326,7 @@ public class SettingsFlowTests : HeadlessTest
             using var host = TestHost.Create(s =>
                 s.AddSingleton(SecretStoreAvailability.Unavailable("no keyring")));
             var (vm, window) = await OpenSettingsAsync(host);
-            vm.SelectedTabIndex = 7;
+            vm.SelectedTabIndex = 8; // Database (Companion is 7)
             Ui.Pump();
 
             var view = window.Find<DatabaseSettingsView>();
@@ -366,7 +366,7 @@ public class SettingsFlowTests : HeadlessTest
     private static DatabaseSettingsView EnterPostgresConnection(
         SettingsWindow window, SettingsWindowViewModel vm, string host, string username)
     {
-        vm.SelectedTabIndex = 7;
+        vm.SelectedTabIndex = 8; // Database (Companion is 7)
         Ui.Pump();
         var view = window.Find<DatabaseSettingsView>();
         view.Descendants<RadioButton>()[1].IsChecked = true; // SQLite, PostgreSQL, MySQL — in tree order

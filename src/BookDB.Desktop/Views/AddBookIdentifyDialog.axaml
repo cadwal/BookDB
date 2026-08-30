@@ -26,6 +26,13 @@
                     Classes="accent"
                     FontSize="13"
                     Margin="8,0,0,0" />
+            <Image Name="IsbnChecksumIndicator"
+                   DockPanel.Dock="Right" Width="16" Height="16" Margin="8,0,0,0"
+                   VerticalAlignment="Center" IsVisible="False">
+                <i:Interaction.Behaviors>
+                    <behaviors:IsbnChecksumIndicatorBehavior Isbn="{Binding IsbnText}" />
+                </i:Interaction.Behaviors>
+            </Image>
             <TextBox Text="{Binding IsbnText}" FontSize="13">
                 <i:Interaction.Behaviors>
                     <behaviors:FocusOnLoadedBehavior />

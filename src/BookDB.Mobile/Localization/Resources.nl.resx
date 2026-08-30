@@ -1,0 +1,607 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="App_Title" xml:space="preserve">
+    <value>BookDB</value>
+  </data>
+  <data name="Nav_Back" xml:space="preserve">
+    <value>Terug</value>
+  </data>
+  <data name="Hub_ScanBooks" xml:space="preserve">
+    <value>Boeken scannen</value>
+  </data>
+  <data name="Hub_Browse" xml:space="preserve">
+    <value>Bladeren</value>
+  </data>
+  <data name="Hub_Settings" xml:space="preserve">
+    <value>Instellingen</value>
+  </data>
+  <data name="Status_Connected" xml:space="preserve">
+    <value>Verbonden</value>
+  </data>
+  <data name="Status_Reconnecting" xml:space="preserve">
+    <value>Opnieuw verbinden…</value>
+  </data>
+  <data name="Status_Offline" xml:space="preserve">
+    <value>Offline</value>
+  </data>
+  <data name="Status_Revoked" xml:space="preserve">
+    <value>Verwijderd</value>
+  </data>
+  <data name="Status_RevokedExplanation" xml:space="preserve">
+    <value>De computer accepteert dit apparaat niet meer. Hef de koppeling op bij Instellingen en koppel het opnieuw met een nieuwe code.</value>
+  </data>
+  <data name="Scan_Title" xml:space="preserve">
+    <value>Boeken scannen</value>
+  </data>
+  <data name="Browse_Title" xml:space="preserve">
+    <value>Bladeren</value>
+  </data>
+  <data name="Settings_Title" xml:space="preserve">
+    <value>Instellingen</value>
+  </data>
+  <data name="Pairing_Title" xml:space="preserve">
+    <value>Koppelen met een computer</value>
+  </data>
+  <data name="Pairing_Intro" xml:space="preserve">
+    <value>Scan de koppelingscode die op je computer wordt getoond en geef dit apparaat vervolgens een naam.</value>
+  </data>
+  <data name="Pairing_ScanButton" xml:space="preserve">
+    <value>Koppelingscode scannen</value>
+  </data>
+  <data name="Pairing_DeviceNameLabel" xml:space="preserve">
+    <value>Apparaatnaam</value>
+  </data>
+  <data name="Pairing_PairButton" xml:space="preserve">
+    <value>Koppelen</value>
+  </data>
+  <data name="Pairing_Scanned" xml:space="preserve">
+    <value>Code gescand. Geef het apparaat een naam en tik op Koppelen.</value>
+  </data>
+  <data name="Pairing_ScanCancelled" xml:space="preserve">
+    <value>Er is geen code gescand.</value>
+  </data>
+  <data name="Pairing_Busy" xml:space="preserve">
+    <value>Bezig met koppelen…</value>
+  </data>
+  <data name="Pairing_Result_Paired" xml:space="preserve">
+    <value>Gekoppeld. Je bent klaar.</value>
+  </data>
+  <data name="Pairing_Result_InvalidCode" xml:space="preserve">
+    <value>Dat is geen BookDB-koppelingscode.</value>
+  </data>
+  <data name="Pairing_Result_CodeExpired" xml:space="preserve">
+    <value>Die code is verlopen of is al gebruikt. Toon een nieuwe op je computer en scan opnieuw.</value>
+  </data>
+  <data name="Pairing_Result_DeviceLimitReached" xml:space="preserve">
+    <value>Deze computer heeft al het maximale aantal gekoppelde apparaten. Verwijder er een en probeer het opnieuw.</value>
+  </data>
+  <data name="Pairing_Result_IncompatibleVersion" xml:space="preserve">
+    <value>Deze app en de BookDB op de computer hebben verschillende versies. Werk beide bij naar de nieuwste.</value>
+  </data>
+  <data name="Pairing_Result_CannotConnect" xml:space="preserve">
+    <value>Kan de computer niet bereiken. Controleer of beide op hetzelfde netwerk zitten en of de metgezel actief is.</value>
+  </data>
+  <data name="Pairing_Result_Failed" xml:space="preserve">
+    <value>Koppelen is mislukt. Probeer het opnieuw.</value>
+  </data>
+  <data name="Settings_Group_Computer" xml:space="preserve">
+    <value>Computer</value>
+  </data>
+  <data name="Settings_Group_Capture" xml:space="preserve">
+    <value>Vastleggen</value>
+  </data>
+  <data name="Settings_Group_ThisDevice" xml:space="preserve">
+    <value>Dit apparaat</value>
+  </data>
+  <data name="Settings_CaptureCaption" xml:space="preserve">
+    <value>Ingesteld op de computer.</value>
+  </data>
+  <data name="Settings_Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Settings_Library" xml:space="preserve">
+    <value>Bibliotheek</value>
+  </data>
+  <data name="Settings_ComputerApp" xml:space="preserve">
+    <value>App op de computer</value>
+  </data>
+  <data name="Settings_LongEdge" xml:space="preserve">
+    <value>Lange zijde</value>
+  </data>
+  <data name="Settings_JpegQuality" xml:space="preserve">
+    <value>JPEG-kwaliteit</value>
+  </data>
+  <data name="Settings_PixelsValue" xml:space="preserve">
+    <value>{0} px</value>
+  </data>
+  <data name="Settings_DeviceNameLabel" xml:space="preserve">
+    <value>Naam</value>
+  </data>
+  <data name="Settings_AppVersion" xml:space="preserve">
+    <value>App-versie</value>
+  </data>
+  <data name="Settings_CheckConnection" xml:space="preserve">
+    <value>Verbinding controleren</value>
+  </data>
+  <data name="Settings_Unpair" xml:space="preserve">
+    <value>Koppeling van dit apparaat opheffen</value>
+  </data>
+  <data name="Settings_UnpairWarning" xml:space="preserve">
+    <value>Dit apparaat heeft dan een nieuwe koppelcode van de computer nodig.</value>
+  </data>
+  <data name="Settings_UnpairConfirm" xml:space="preserve">
+    <value>Ontkoppelen</value>
+  </data>
+  <data name="Settings_Cancel" xml:space="preserve">
+    <value>Annuleren</value>
+  </data>
+  <data name="Settings_NotAvailable" xml:space="preserve">
+    <value>—</value>
+  </data>
+  <data name="Settings_OfflineHint" xml:space="preserve">
+    <value>De computer is niet bereikbaar. Controleer of hij aanstaat, of de metgezel is ingeschakeld en of beide op hetzelfde netwerk zitten — controleer daarna opnieuw.</value>
+  </data>
+  <data name="Scan_ScanButton" xml:space="preserve">
+    <value>Streepjescode scannen</value>
+  </data>
+  <data name="Scan_Or" xml:space="preserve">
+    <value>of typ hem in</value>
+  </data>
+  <data name="Scan_ManualWatermark" xml:space="preserve">
+    <value>ISBN</value>
+  </data>
+  <data name="Scan_UseManual" xml:space="preserve">
+    <value>Deze ISBN gebruiken</value>
+  </data>
+  <data name="Scan_ChecksumOkMark" xml:space="preserve">
+    <value>✓</value>
+  </data>
+  <data name="Scan_ChecksumWarningMark" xml:space="preserve">
+    <value>⚠</value>
+  </data>
+  <data name="Scan_ChecksumWarning" xml:space="preserve">
+    <value>Het controlecijfer klopt niet. Je kunt hem toch gebruiken — verkeerd gedrukte ISBN's bestaan.</value>
+  </data>
+  <data name="Scan_NothingRead" xml:space="preserve">
+    <value>Er is geen streepjescode gelezen.</value>
+  </data>
+  <data name="Scan_Continuing" xml:space="preserve">
+    <value>Verder…</value>
+  </data>
+  <data name="Scan_Undo" xml:space="preserve">
+    <value>Ongedaan maken</value>
+  </data>
+  <data name="Scan_AlreadyInLibrary" xml:space="preserve">
+    <value>Staat al in je bibliotheek — foto's worden toegevoegd aan ‘{0}’.</value>
+  </data>
+  <data name="Scan_TitleAndAuthors" xml:space="preserve">
+    <value>{0} · {1}</value>
+  </data>
+  <data name="Scan_AlreadyInBatch" xml:space="preserve">
+    <value>Staat al in de batch — nog een keer scannen zet er een tweede exemplaar bij.</value>
+  </data>
+  <data name="Scan_NotChecked" xml:space="preserve">
+    <value>Niet gecontroleerd — geen computer om het aan te vragen.</value>
+  </data>
+  <data name="Scan_UntitledBook" xml:space="preserve">
+    <value>dit boek</value>
+  </data>
+  <data name="Builder_Title" xml:space="preserve">
+    <value>Boek</value>
+  </data>
+  <data name="Camera_Instruction" xml:space="preserve">
+    <value>Richt de camera op de streepjescode</value>
+  </data>
+  <data name="Camera_PairingInstruction" xml:space="preserve">
+    <value>Richt de camera op de koppelcode op uw computer</value>
+  </data>
+  <data name="Camera_PairingRationale" xml:space="preserve">
+    <value>BookDB gebruikt de camera om de koppelcode op uw computer te lezen. Er wordt niets gefotografeerd en niets verlaat uw lokale netwerk.</value>
+  </data>
+  <data name="Camera_Close" xml:space="preserve">
+    <value>Sluiten</value>
+  </data>
+  <data name="Camera_Torch" xml:space="preserve">
+    <value>Flits</value>
+  </data>
+  <data name="Camera_PermissionRationale" xml:space="preserve">
+    <value>BookDB heeft de camera nodig om streepjescodes te lezen.</value>
+  </data>
+  <data name="Builder_IsbnLabel" xml:space="preserve">
+    <value>ISBN {0}</value>
+  </data>
+  <data name="Builder_SlotFrontCover" xml:space="preserve">
+    <value>Voorkant</value>
+  </data>
+  <data name="Builder_SlotBackCover" xml:space="preserve">
+    <value>Achterkant</value>
+  </data>
+  <data name="Builder_SlotSpine" xml:space="preserve">
+    <value>Rug</value>
+  </data>
+  <data name="Builder_SlotDustJacket" xml:space="preserve">
+    <value>Stofomslag</value>
+  </data>
+  <data name="Builder_Optional" xml:space="preserve">
+    <value>optioneel</value>
+  </data>
+  <data name="Builder_AddPhoto" xml:space="preserve">
+    <value>Foto toevoegen</value>
+  </data>
+  <data name="Builder_Retake" xml:space="preserve">
+    <value>Opnieuw</value>
+  </data>
+  <data name="Builder_UsePhoto" xml:space="preserve">
+    <value>Foto gebruiken</value>
+  </data>
+  <data name="Builder_Done" xml:space="preserve">
+    <value>Klaar — volgend boek</value>
+  </data>
+  <data name="Builder_SendNow" xml:space="preserve">
+    <value>Nu versturen</value>
+  </data>
+  <data name="Builder_SaveToBatch" xml:space="preserve">
+    <value>In de batch bewaren</value>
+  </data>
+  <data name="Builder_PhotosOptionalHint" xml:space="preserve">
+    <value>Foto's zijn optioneel — een boek kan met alleen zijn ISBN worden bewaard.</value>
+  </data>
+  <data name="Builder_PlayServicesMissing" xml:space="preserve">
+    <value>Voor het vastleggen van omslagen zijn Google Play-services nodig, die dit apparaat niet heeft. Je kunt boeken nog steeds op ISBN bewaren.</value>
+  </data>
+  <data name="Builder_PlayServicesOutdated" xml:space="preserve">
+    <value>Voor het vastleggen van omslagen zijn nieuwere Google Play-services nodig. Werk ze bij en probeer het opnieuw.</value>
+  </data>
+  <data name="Builder_ModuleUnavailable" xml:space="preserve">
+    <value>De omslagscanner moet eerst worden gedownload van Google Play-services. Maak verbinding met internet en probeer het opnieuw.</value>
+  </data>
+  <data name="Builder_CaptureFailed" xml:space="preserve">
+    <value>De foto kon niet worden gemaakt.</value>
+  </data>
+  <data name="Builder_Retry" xml:space="preserve">
+    <value>Opnieuw proberen</value>
+  </data>
+  <data name="Batch_Title" xml:space="preserve">
+    <value>Batch</value>
+  </data>
+  <data name="Batch_CountLine" xml:space="preserve">
+    <value>Batch ({0})</value>
+  </data>
+  <data name="Batch_IsbnTail" xml:space="preserve">
+    <value>…{0}</value>
+  </data>
+  <data name="Batch_PhotoCount" xml:space="preserve">
+    <value>{0} foto's</value>
+  </data>
+  <data name="Batch_PhotoCountOne" xml:space="preserve">
+    <value>1 foto</value>
+  </data>
+  <data name="Batch_NoPhotos" xml:space="preserve">
+    <value>Geen foto's</value>
+  </data>
+  <data name="Batch_Edit" xml:space="preserve">
+    <value>Bewerken</value>
+  </data>
+  <data name="Batch_Remove" xml:space="preserve">
+    <value>Verwijderen</value>
+  </data>
+  <data name="Batch_RemoveConfirm" xml:space="preserve">
+    <value>Verwijderen</value>
+  </data>
+  <data name="Batch_RemoveWarning" xml:space="preserve">
+    <value>Dit boek en zijn foto's worden weggegooid.</value>
+  </data>
+  <data name="Batch_Cancel" xml:space="preserve">
+    <value>Annuleren</value>
+  </data>
+  <data name="Batch_Upload" xml:space="preserve">
+    <value>{0} items uploaden</value>
+  </data>
+  <data name="Batch_OfflineReason" xml:space="preserve">
+    <value>De computer is niet bereikbaar, dus er kan nog niets worden verstuurd. De batch is veilig — die wacht hier tot je weer op hetzelfde netwerk zit.</value>
+  </data>
+  <data name="Batch_Empty" xml:space="preserve">
+    <value>Er wacht niets op verzending</value>
+  </data>
+  <data name="Batch_EmptyHint" xml:space="preserve">
+    <value>Scan je eerste boek, dan verschijnt het hier.</value>
+  </data>
+  <data name="Hub_BatchItems" xml:space="preserve">
+    <value>Batch · {0} items</value>
+  </data>
+  <data name="Upload_Title" xml:space="preserve">
+    <value>Versturen</value>
+  </data>
+  <data name="Upload_Running" xml:space="preserve">
+    <value>{0} boeken worden verstuurd…</value>
+  </data>
+  <data name="Upload_Completed" xml:space="preserve">
+    <value>Alles verstuurd.</value>
+  </data>
+  <data name="Upload_Interrupted" xml:space="preserve">
+    <value>De verbinding viel halverwege weg. Er is niets verloren — wat niet is aangekomen, staat nog in de batch.</value>
+  </data>
+  <data name="Upload_Offline" xml:space="preserve">
+    <value>De computer is niet bereikbaar, dus er is niets verstuurd. De batch is onaangeroerd.</value>
+  </data>
+  <data name="Upload_NothingStaged" xml:space="preserve">
+    <value>Er was niets te versturen.</value>
+  </data>
+  <data name="Upload_Retry" xml:space="preserve">
+    <value>Opnieuw proberen</value>
+  </data>
+  <data name="Upload_Finish" xml:space="preserve">
+    <value>Klaar</value>
+  </data>
+  <data name="Upload_State_Waiting" xml:space="preserve">
+    <value>Wacht</value>
+  </data>
+  <data name="Upload_State_Received" xml:space="preserve">
+    <value>Ontvangen</value>
+  </data>
+  <data name="Upload_State_Saved" xml:space="preserve">
+    <value>Toegevoegd</value>
+  </data>
+  <data name="Upload_State_AddedToExisting" xml:space="preserve">
+    <value>Foto's toegevoegd aan ‘{0}’</value>
+  </data>
+  <data name="Upload_State_AddedToExistingUntitled" xml:space="preserve">
+    <value>Foto's toegevoegd aan het boek dat je al had</value>
+  </data>
+  <data name="Upload_State_AlreadyOwned" xml:space="preserve">
+    <value>Staat al in je bibliotheek: ‘{0}’</value>
+  </data>
+  <data name="Upload_State_AlreadyOwnedUntitled" xml:space="preserve">
+    <value>Staat al in je bibliotheek</value>
+  </data>
+  <data name="Upload_State_Cataloguing" xml:space="preserve">
+    <value>Wordt opgezocht…</value>
+  </data>
+  <data name="Upload_State_Done" xml:space="preserve">
+    <value>Toegevoegd — ‘{0}’</value>
+  </data>
+  <data name="Upload_State_DoneUntitled" xml:space="preserve">
+    <value>Toegevoegd</value>
+  </data>
+  <data name="Upload_State_NeedsReview" xml:space="preserve">
+    <value>Toegevoegd, wacht op controle op de computer</value>
+  </data>
+  <data name="Upload_Failure_Unknown" xml:space="preserve">
+    <value>Het kon niet worden toegevoegd</value>
+  </data>
+  <data name="Upload_Failure_InvalidIsbn" xml:space="preserve">
+    <value>Dat nummer is niet geaccepteerd</value>
+  </data>
+  <data name="Upload_Failure_ImageRejected" xml:space="preserve">
+    <value>Een foto is niet geaccepteerd</value>
+  </data>
+  <data name="Upload_Failure_SaveFailed" xml:space="preserve">
+    <value>Het kon niet worden bewaard</value>
+  </data>
+  <data name="Upload_Failure_CatalogueFailed" xml:space="preserve">
+    <value>Bewaard, maar het opzoeken mislukte</value>
+  </data>
+  <data name="Browse_SearchPlaceholder" xml:space="preserve">
+    <value>Zoek titels en auteurs</value>
+  </data>
+  <data name="Browse_Scan" xml:space="preserve">
+    <value>Scannen</value>
+  </data>
+  <data name="Browse_AllCollections" xml:space="preserve">
+    <value>Alle collecties</value>
+  </data>
+  <data name="Browse_CollectionWithCount" xml:space="preserve">
+    <value>{0} ({1})</value>
+  </data>
+  <data name="Browse_AuthorsAndYear" xml:space="preserve">
+    <value>{0} · {1}</value>
+  </data>
+  <data name="Browse_Untitled" xml:space="preserve">
+    <value>Zonder titel</value>
+  </data>
+  <data name="Browse_ResultCount" xml:space="preserve">
+    <value>{0} boeken</value>
+  </data>
+  <data name="Browse_Empty" xml:space="preserve">
+    <value>Geen boeken gevonden</value>
+  </data>
+  <data name="Browse_EmptyHint" xml:space="preserve">
+    <value>Probeer minder woorden, of een andere collectie.</value>
+  </data>
+  <data name="Browse_Offline" xml:space="preserve">
+    <value>Bladeren vereist je computer. Controleer of die aan staat en op hetzelfde netwerk zit.</value>
+  </data>
+  <data name="Browse_Retry" xml:space="preserve">
+    <value>Opnieuw proberen</value>
+  </data>
+  <data name="Browse_LoadMore" xml:space="preserve">
+    <value>Meer tonen</value>
+  </data>
+  <data name="Browse_Owned" xml:space="preserve">
+    <value>In je bibliotheek</value>
+  </data>
+  <data name="Browse_NotOwned" xml:space="preserve">
+    <value>Niet in je bibliotheek</value>
+  </data>
+  <data name="Browse_ScannedIsbn" xml:space="preserve">
+    <value>ISBN {0}</value>
+  </data>
+  <data name="Browse_ClearScan" xml:space="preserve">
+    <value>Terug naar bladeren</value>
+  </data>
+  <data name="Browse_NothingRead" xml:space="preserve">
+    <value>Er is geen streepjescode gelezen.</value>
+  </data>
+  <data name="Browse_NotAnIsbn" xml:space="preserve">
+    <value>Die streepjescode is geen ISBN</value>
+  </data>
+  <data name="Detail_Field_Authors" xml:space="preserve">
+    <value>Auteurs</value>
+  </data>
+  <data name="Detail_Field_Series" xml:space="preserve">
+    <value>Reeks</value>
+  </data>
+  <data name="Detail_Field_Publisher" xml:space="preserve">
+    <value>Uitgever</value>
+  </data>
+  <data name="Detail_Field_Published" xml:space="preserve">
+    <value>Gepubliceerd</value>
+  </data>
+  <data name="Detail_Field_Format" xml:space="preserve">
+    <value>Formaat</value>
+  </data>
+  <data name="Detail_Field_Language" xml:space="preserve">
+    <value>Taal</value>
+  </data>
+  <data name="Detail_Field_Pages" xml:space="preserve">
+    <value>Pagina's</value>
+  </data>
+  <data name="Detail_Field_Isbn" xml:space="preserve">
+    <value>ISBN</value>
+  </data>
+  <data name="Detail_Field_Collection" xml:space="preserve">
+    <value>Collectie</value>
+  </data>
+  <data name="Detail_Field_Comments" xml:space="preserve">
+    <value>Opmerkingen</value>
+  </data>
+  <data name="Detail_Photos" xml:space="preserve">
+    <value>Foto's</value>
+  </data>
+  <data name="Detail_Missing" xml:space="preserve">
+    <value>Dit boek staat niet meer in de bibliotheek.</value>
+  </data>
+  <data name="Detail_Offline" xml:space="preserve">
+    <value>De details van het boek vereisen je computer. Controleer of die aan staat en op hetzelfde netwerk zit.</value>
+  </data>
+  <data name="Detail_Retry" xml:space="preserve">
+    <value>Opnieuw proberen</value>
+  </data>
+  <data name="Detail_Loading" xml:space="preserve">
+    <value>Laden…</value>
+  </data>
+  <data name="Format_Audiobook" xml:space="preserve">
+    <value>Luisterboek</value>
+  </data>
+  <data name="Format_Comic" xml:space="preserve">
+    <value>Strip</value>
+  </data>
+  <data name="Format_Ebook" xml:space="preserve">
+    <value>E-boek</value>
+  </data>
+  <data name="Format_GraphicNovel" xml:space="preserve">
+    <value>Graphic novel</value>
+  </data>
+  <data name="Format_Hardcover" xml:space="preserve">
+    <value>Hardcover</value>
+  </data>
+  <data name="Format_Magazine" xml:space="preserve">
+    <value>Tijdschrift</value>
+  </data>
+  <data name="Format_MassMarketPaperback" xml:space="preserve">
+    <value>Pocket</value>
+  </data>
+  <data name="Format_Paperback" xml:space="preserve">
+    <value>Paperback</value>
+  </data>
+  <data name="Format_TradePaperback" xml:space="preserve">
+    <value>Trade Paperback</value>
+  </data>
+  <data name="Language_Danish" xml:space="preserve">
+    <value>Deens</value>
+  </data>
+  <data name="Language_Finnish" xml:space="preserve">
+    <value>Fins</value>
+  </data>
+  <data name="Language_French" xml:space="preserve">
+    <value>Frans</value>
+  </data>
+  <data name="Language_German" xml:space="preserve">
+    <value>Duits</value>
+  </data>
+  <data name="Language_Italian" xml:space="preserve">
+    <value>Italiaans</value>
+  </data>
+  <data name="Language_Japanese" xml:space="preserve">
+    <value>Japans</value>
+  </data>
+  <data name="Language_Norwegian" xml:space="preserve">
+    <value>Noors</value>
+  </data>
+  <data name="Language_Spanish" xml:space="preserve">
+    <value>Spaans</value>
+  </data>
+  <data name="Language_Swedish" xml:space="preserve">
+    <value>Zweeds</value>
+  </data>
+  <data name="Camera_Rationale" xml:space="preserve">
+    <value>BookDB gebruikt de camera om de streepjescode op een boek te lezen. Er wordt niets gefotografeerd totdat je om een omslag vraagt, en niets verlaat je lokale netwerk.</value>
+  </data>
+  <data name="Camera_PermissionDenied" xml:space="preserve">
+    <value>De camera is uitgeschakeld voor BookDB, dus streepjescodes kunnen niet worden gelezen. Schakel hem in bij de apparaatinstellingen — ondertussen kun je een ISBN typen.</value>
+  </data>
+  <data name="Camera_Unavailable" xml:space="preserve">
+    <value>Er is nu geen camera beschikbaar. Mogelijk wordt hij door een andere app gebruikt, of heeft dit apparaat er geen.</value>
+  </data>
+  <data name="Camera_OpenSettings" xml:space="preserve">
+    <value>Instellingen openen</value>
+  </data>
+</root>

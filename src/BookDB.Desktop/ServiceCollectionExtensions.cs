@@ -5,6 +5,7 @@ using BookDB.Data.Interfaces;
 using BookDB.Data.MySql;
 using BookDB.Data.PostgreSQL;
 using BookDB.Data.Sqlite;
+using BookDB.Companion.Host;
 using BookDB.Security;
 using BookDB.Desktop.Services;
 using BookDB.Desktop.Services.UpdateCheck;
@@ -15,6 +16,7 @@ using BookDB.Models;
 using BookDB.Models.Interfaces;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Serilog;
 
@@ -140,7 +142,33 @@ public static class ServiceCollectionExtensions
         });
         services.AddSingleton<ICoverFetcher>(sp =>
             sp.GetRequiredService<CoverFetchService>());
+
+        AddCompanion(services);
         return services;
+    }
+
+    private static void AddCompanion(IServiceCollection services)
+    {
+        services.TryAddSingleton(TimeProvider.System);
+
+        services.AddSingleton<IDeviceRegistry>(sp =>
+        {
+            var appSettings = sp.GetRequiredService<AppSettings>();
+            var directory = CompanionPaths.CompanionDirectory(appSettings.ConfigPath ?? AppHost.GetAppDataPath());
+            return new DeviceRegistry(directory, sp.GetRequiredService<TimeProvider>());
+        });
+        services.AddSingleton<IPairingService>(sp =>
+            new PairingService(sp.GetRequiredService<IDeviceRegistry>(), sp.GetRequiredService<TimeProvider>()));
+
+        services.AddSingleton(sp => new CompanionLibrary(
+            sp.GetRequiredService<ICompanionPreviewService>(),
+            sp.GetRequiredService<ICompanionBrowseService>(),
+            sp.GetRequiredService<ICompanionIntakeService>(),
+            sp.GetRequiredService<ICompanionQueueStatusService>()));
+
+        services.AddSingleton<CompanionHostManager>();
+        services.AddSingleton<ICompanionConfig>(sp => sp.GetRequiredService<CompanionHostManager>());
+        services.AddSingleton<ICompanionStatusReporter>(sp => sp.GetRequiredService<CompanionHostManager>());
     }
 
     public static IServiceCollection AddBookDbViewModels(this IServiceCollection services)
@@ -151,6 +179,8 @@ public static class ServiceCollectionExtensions
         services.AddTransient<SettingsWindowViewModel>();
         services.AddTransient<MaintenanceViewModel>();
         services.AddTransient<MoveLibraryViewModel>();
+        services.AddTransient<DevicesViewModel>();
+        services.AddTransient<PairingDialogViewModel>();
         services.AddTransient<StatisticsWindowViewModel>();
         services.AddTransient<HelpWindowViewModel>();
         services.AddTransient<CsvColumnPickerViewModel>();

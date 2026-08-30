@@ -46,7 +46,13 @@ public interface IWindowService
     Task<bool?> ShowBulkEditDialogAsync(IReadOnlyList<int> bookIds);
     Task<bool?> ShowAdvancedSearchDialogAsync(SavedSearch? searchToEdit = null);
     Task<UnsavedChangesResult> ShowUnsavedChangesDialogAsync(string bookTitle);
-    Task<bool?> ShowDeleteConfirmationAsync(string message);
+    /// <summary>
+    /// The destructive-confirmation dialog. Its buttons default to the book wording — "Delete" against
+    /// "Keep book" — because deleting a book is what it was written for; anything else deleted through it
+    /// has to bring its own words, or it ends up offering to keep a book that was never in question.
+    /// </summary>
+    Task<bool?> ShowDeleteConfirmationAsync(
+        string message, string? confirmLabel = null, string? cancelLabel = null);
     Task OpenFullDetailsWindowAsync(int bookId);
     Task<bool?> ShowLookupWizardDialogAsync();
     Task<bool?> ShowMergeReviewDialogAsync(
@@ -71,6 +77,14 @@ public interface IWindowService
     /// </summary>
     Task<BackupConflictChoice> ShowBackupConflictAsync(string existingPath);
     void OpenBatchQueueWindow();
+
+    /// <summary>
+    /// Brings up the merge review for items left waiting by a batch nobody was watching — a book sent from
+    /// the phone, whose person is standing at the phone and will not think to go looking on the computer.
+    /// Does nothing while a batch-queue window is open, since that window offers the review itself.
+    /// </summary>
+    Task ReviewPendingBatchItemsAsync();
+
     Task StartBatchAsync(IReadOnlyList<string> isbns);
     Task StartBatchRecatalogAsync(IReadOnlyList<int> bookIds);
 
@@ -91,6 +105,9 @@ public interface IWindowService
     Task ShowManageLookupsAsync(string? initialTab = null);
     Task ShowSettingsAsync(Window? owner = null, SettingsSection? section = null);
     Task ShowMaintenanceDialogAsync();
+
+    /// <summary>Shows the rotating pairing code so a phone or tablet can join this library.</summary>
+    Task ShowPairingDialogAsync();
     Task OpenStatisticsWindowAsync();
     void OpenHelpWindow(HelpTab tab);
     Task<IReadOnlyList<string>?> ShowCsvColumnPickerAsync(

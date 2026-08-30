@@ -26,6 +26,12 @@ public sealed class BootstrapConfig
     public string? UiTheme { get; set; }
     public string? LogLevel { get; set; }
 
+    /// <summary>
+    /// Mobile-scanner companion settings. Machine-scoped like the backend choice above — the companion
+    /// belongs to this desktop install, not to whichever library it happens to have open.
+    /// </summary>
+    public CompanionOptions Companion { get; set; } = new();
+
     private static readonly JsonSerializerOptions SerializerOptions =
         new(JsonSerializerDefaults.Web) { WriteIndented = true };
 
@@ -69,6 +75,27 @@ public sealed class BootstrapConfig
         File.WriteAllText(tempPath, JsonSerializer.Serialize(this, SerializerOptions));
         File.Move(tempPath, path, overwrite: true);
     }
+}
+
+public sealed class CompanionOptions
+{
+    /// <summary>Off by default: the listener never opens, and there is no firewall prompt, until asked for.</summary>
+    public bool Enabled { get; set; }
+
+    /// <summary>High port so binding never needs elevation. See <c>docs</c>/the companion help topic.</summary>
+    public int Port { get; set; } = 7443;
+
+    /// <summary>Longest edge, in pixels, the phone downscales every captured photo to before sending.</summary>
+    public int MaxLongEdgePx { get; set; } = 1600;
+
+    /// <summary>JPEG quality (1–100) the phone encodes at.</summary>
+    public int JpegQuality { get; set; } = 80;
+
+    /// <summary>
+    /// Identifies this desktop install across LAN-address changes, so a paired phone can tell "same
+    /// desktop, new IP" from "a different desktop". Minted once, the first time the companion is enabled.
+    /// </summary>
+    public string? InstanceId { get; set; }
 }
 
 public sealed class PostgresOptions

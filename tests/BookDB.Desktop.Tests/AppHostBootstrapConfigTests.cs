@@ -60,7 +60,10 @@ public sealed class AppHostBootstrapConfigTests
         }
         finally
         {
-            SqliteConnection.ClearAllPools();
+            // This database's pool only — ClearAllPools() is process-wide and disposes the native
+            // handle of connections other test classes are using in parallel.
+            using (var poolKey = new SqliteConnection($"Data Source={dbPath}"))
+                SqliteConnection.ClearPool(poolKey);
             if (File.Exists(configPath)) File.Delete(configPath);
             if (File.Exists(dbPath)) File.Delete(dbPath);
         }
@@ -103,7 +106,10 @@ public sealed class AppHostBootstrapConfigTests
         }
         finally
         {
-            SqliteConnection.ClearAllPools();
+            // This database's pool only — ClearAllPools() is process-wide and disposes the native
+            // handle of connections other test classes are using in parallel.
+            using (var poolKey = new SqliteConnection($"Data Source={dbPath}"))
+                SqliteConnection.ClearPool(poolKey);
             if (File.Exists(configPath)) File.Delete(configPath);
             if (File.Exists(dbPath)) File.Delete(dbPath);
         }

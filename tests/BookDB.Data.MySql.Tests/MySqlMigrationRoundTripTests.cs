@@ -102,7 +102,12 @@ public abstract class MySqlMigrationRoundTripTests : IDisposable
 
     public void Dispose()
     {
-        Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools();
+        // This database's pool only — ClearAllPools() is process-wide and disposes the native
+        // handle of connections other test classes are using in parallel.
+        using (var poolKey = new Microsoft.Data.Sqlite.SqliteConnection($"Data Source={_sqliteSourcePath}"))
+            Microsoft.Data.Sqlite.SqliteConnection.ClearPool(poolKey);
+        using (var poolKey = new Microsoft.Data.Sqlite.SqliteConnection($"Data Source={_sqliteTargetPath}"))
+            Microsoft.Data.Sqlite.SqliteConnection.ClearPool(poolKey);
         GC.Collect();
         GC.WaitForPendingFinalizers();
         try { File.Delete(_sqliteSourcePath); } catch { /* best effort */ }

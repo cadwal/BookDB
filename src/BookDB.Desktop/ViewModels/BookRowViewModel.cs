@@ -53,6 +53,10 @@ public partial class BookRowViewModel : ObservableObject, IHoverImageLoader
     [ObservableProperty]
     private Bitmap? _coverThumbnail;
 
+    // Tile-width cover for the grid view — a separate, larger decode than the list's row thumbnail.
+    [ObservableProperty]
+    private Bitmap? _gridThumbnail;
+
     [ObservableProperty]
     private Bitmap? _tooltipBitmap;
 

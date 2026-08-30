@@ -126,6 +126,29 @@ public partial class BatchQueueWindowViewModel :
     }
 
     /// <summary>
+    /// Shows the queue as the database has it, for a window opened when nothing is running. Without this an
+    /// opened window says "no batch in progress" even with items waiting to be reviewed — which is how a book
+    /// sent from the phone ended up with a review nobody could reach.
+    /// </summary>
+    public async Task ShowStoredSummaryAsync()
+    {
+        if (IsRunning) return;
+
+        await LoadSummaryAsync();
+        IsComplete = PendingReviewCount > 0;
+    }
+
+    /// <summary>Runs the merge review for everything waiting, whoever queued it.</summary>
+    public async Task ReviewPendingAsync()
+    {
+        await ShowStoredSummaryAsync();
+        if (PendingReviewCount > 0)
+        {
+            await StartReviewCommand.ExecuteAsync(null);
+        }
+    }
+
+    /// <summary>
     /// Resets all stats counters to zero. Called when the window is opened after a completed or idle run.
     /// Only blocked when a batch is actively running to avoid clearing live progress.
     /// </summary>
@@ -342,22 +365,24 @@ public partial class BatchQueueWindowViewModel :
     {
         try
         {
-            await _processor.CancelBatchAsync(); // cancel any running batch first
-            ResetState();
             var items = await _queueService.EnqueueBatchAsync(isbns);
             if (items.Count == 0)
             {
-                // All ISBNs were deduplicated (recently completed or already active).
-                // Show the summary from the DB immediately — no processing to do.
-                IsComplete = true;
-                await LoadSummaryAsync();
+                // All ISBNs were deduplicated (recently completed or already active). Only show the
+                // summary when nothing is in flight, so an append onto a live batch doesn't read complete.
+                if (!IsRunning)
+                {
+                    IsComplete = true;
+                    await LoadSummaryAsync();
+                }
                 return;
             }
+            // Append onto the shared drain loop; a fresh start resets the display, an append leaves the
+            // running totals for the progress messages to carry.
+            if (!IsRunning) ResetState();
             IsRunning = true;
             IsComplete = false;
-            ProcessedCount = 0;
-            TotalCount = items.Count;
-            _ = _processor.StartBatch(items); // fire-and-forget; progress via IMessenger
+            _ = _processor.EnqueueAsync(items); // fire-and-forget; progress via IMessenger
         }
         catch (Exception ex)
         {
@@ -379,22 +404,22 @@ public partial class BatchQueueWindowViewModel :
     {
         try
         {
-            await _processor.CancelBatchAsync();
-            ResetState();
             var items = await enqueue();
             if (items.Count == 0)
             {
-                // All books already have an active Pending/Processing item in the queue.
-                // Show the current summary — nothing new to enqueue.
-                IsComplete = true;
-                await LoadSummaryAsync();
+                // All books already have an active Pending/Processing item in the queue. Only show the
+                // summary when nothing is in flight, so an append onto a live batch doesn't read complete.
+                if (!IsRunning)
+                {
+                    IsComplete = true;
+                    await LoadSummaryAsync();
+                }
                 return;
             }
+            if (!IsRunning) ResetState();
             IsRunning = true;
             IsComplete = false;
-            ProcessedCount = 0;
-            TotalCount = items.Count;
-            _ = _processor.StartBatch(items); // fire-and-forget; progress via IMessenger
+            _ = _processor.EnqueueAsync(items); // fire-and-forget; progress via IMessenger
         }
         catch (Exception ex)
         {

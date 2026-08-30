@@ -1,0 +1,106 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:BookDB.Mobile.ViewModels"
+             xmlns:res="using:BookDB.Mobile.Localization"
+             x:Class="BookDB.Mobile.Views.SettingsView"
+             x:DataType="vm:SettingsViewModel">
+
+  <UserControl.Styles>
+    <Style Selector="TextBlock.groupHeading">
+      <Setter Property="FontSize" Value="12"/>
+      <Setter Property="FontWeight" Value="SemiBold"/>
+      <Setter Property="Opacity" Value="0.6"/>
+      <Setter Property="Margin" Value="0,8,0,0"/>
+    </Style>
+    <Style Selector="TextBlock.label">
+      <Setter Property="Opacity" Value="0.7"/>
+    </Style>
+    <Style Selector="TextBlock.value">
+      <Setter Property="TextAlignment" Value="Right"/>
+      <Setter Property="TextWrapping" Value="Wrap"/>
+    </Style>
+  </UserControl.Styles>
+
+  <ScrollViewer>
+    <!-- Bottom padding gives the scroller slack: wrapping text can under-measure its own extent, and the
+         way that shows up is a last control that cannot be scrolled into view. -->
+    <StackPanel Spacing="10" Margin="24,24,24,56">
+
+      <TextBlock Classes="groupHeading" Text="{x:Static res:Resources.Settings_Group_Computer}"/>
+
+      <TextBlock Text="{Binding Endpoint}" FontSize="18" TextWrapping="Wrap"/>
+
+      <Grid ColumnDefinitions="Auto,*">
+        <TextBlock Classes="label" Text="{x:Static res:Resources.Settings_Status}"/>
+        <TextBlock Grid.Column="1" Classes="value" Text="{Binding StatusText}"/>
+      </Grid>
+      <Grid ColumnDefinitions="Auto,*">
+        <TextBlock Classes="label" Text="{x:Static res:Resources.Settings_Library}"/>
+        <TextBlock Grid.Column="1" Classes="value" Text="{Binding LibraryName}"/>
+      </Grid>
+      <Grid ColumnDefinitions="Auto,*">
+        <TextBlock Classes="label" Text="{x:Static res:Resources.Settings_ComputerApp}"/>
+        <TextBlock Grid.Column="1" Classes="value" Text="{Binding ComputerAppVersion}"/>
+      </Grid>
+
+      <!-- Offline is a recoverable state, not a dead end: say what to check, and Unpair below is the way
+           back to a fresh pairing code. -->
+      <TextBlock Text="{x:Static res:Resources.Settings_OfflineHint}"
+                 IsVisible="{Binding IsOffline}"
+                 TextWrapping="Wrap" Opacity="0.8"/>
+
+      <!-- Removed on the computer: nothing to check, and Unpair below is the whole way back. -->
+      <TextBlock Text="{x:Static res:Resources.Status_RevokedExplanation}"
+                 IsVisible="{Binding IsRevoked}"
+                 TextWrapping="Wrap" Opacity="0.8"/>
+
+      <Button Command="{Binding CheckConnectionCommand}"
+              HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+              Padding="0,12"
+              Content="{x:Static res:Resources.Settings_CheckConnection}"/>
+
+      <TextBlock Classes="groupHeading" Text="{x:Static res:Resources.Settings_Group_Capture}"/>
+      <TextBlock Text="{x:Static res:Resources.Settings_CaptureCaption}"
+                 FontSize="12" Opacity="0.6" TextWrapping="Wrap"/>
+
+      <Grid ColumnDefinitions="Auto,*">
+        <TextBlock Classes="label" Text="{x:Static res:Resources.Settings_LongEdge}"/>
+        <TextBlock Grid.Column="1" Classes="value" Text="{Binding LongEdge}"/>
+      </Grid>
+      <Grid ColumnDefinitions="Auto,*">
+        <TextBlock Classes="label" Text="{x:Static res:Resources.Settings_JpegQuality}"/>
+        <TextBlock Grid.Column="1" Classes="value" Text="{Binding JpegQuality}"/>
+      </Grid>
+
+      <TextBlock Classes="groupHeading" Text="{x:Static res:Resources.Settings_Group_ThisDevice}"/>
+
+      <Grid ColumnDefinitions="Auto,*">
+        <TextBlock Classes="label" Text="{x:Static res:Resources.Settings_DeviceNameLabel}"/>
+        <TextBlock Grid.Column="1" Classes="value" Text="{Binding DeviceName}"/>
+      </Grid>
+      <Grid ColumnDefinitions="Auto,*">
+        <TextBlock Classes="label" Text="{x:Static res:Resources.Settings_AppVersion}"/>
+        <TextBlock Grid.Column="1" Classes="value" Text="{Binding AppVersion}"/>
+      </Grid>
+
+      <Button Command="{Binding UnpairCommand}"
+              IsVisible="{Binding !IsConfirmingUnpair}"
+              HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+              Margin="0,16,0,0" Padding="0,12"
+              Content="{x:Static res:Resources.Settings_Unpair}"/>
+
+      <StackPanel Spacing="10" Margin="0,16,0,0" IsVisible="{Binding IsConfirmingUnpair}">
+        <TextBlock Text="{x:Static res:Resources.Settings_UnpairWarning}" TextWrapping="Wrap"/>
+        <Grid ColumnDefinitions="*,12,*">
+          <Button Grid.Column="0" Command="{Binding ConfirmUnpairCommand}"
+                  HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Padding="0,12"
+                  Content="{x:Static res:Resources.Settings_UnpairConfirm}"/>
+          <Button Grid.Column="2" Command="{Binding CancelUnpairCommand}"
+                  HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Padding="0,12"
+                  Content="{x:Static res:Resources.Settings_Cancel}"/>
+        </Grid>
+      </StackPanel>
+    </StackPanel>
+  </ScrollViewer>
+
+</UserControl>
