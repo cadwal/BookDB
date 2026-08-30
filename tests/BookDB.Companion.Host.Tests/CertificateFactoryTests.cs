@@ -45,6 +45,33 @@ public sealed class CertificateFactoryTests
         Assert.Contains("localhost", san!.Format(false));
     }
 
+    [Theory]
+    // An empty Environment.MachineName leaves the subject a bare "BookDB-", and a DNS label may not end
+    // in a hyphen; a long machine name passes the 63-character label limit. Both were refused as invalid
+    // IDN names, and the throw came out of host startup rather than anywhere near the certificate.
+    [InlineData("BookDB-")]
+    [InlineData("BookDB-----")]
+    [InlineData("BookDB-verylongmachinenamethatgoeswellpastthesixtythreecharacterlabellimitforadnsname")]
+    [InlineData("BookDB-host..local")]
+    [InlineData("-")]
+    [InlineData(".")]
+    public void ServerCertificateIsMintedWhateverTheMachineIsCalled(string subjectName)
+    {
+        using var certificate = CertificateFactory.CreateServerCertificate(subjectName);
+
+        var san = certificate.Extensions.FirstOrDefault(e => e.Oid?.Value == "2.5.29.17");
+        Assert.NotNull(san);
+        Assert.Contains("localhost", san!.Format(false));
+    }
+
+    [Fact]
+    public void ServerCertificateKeepsTheMachineNameInItsSubjectEvenWhenTheDnsNameIsCleanedUp()
+    {
+        using var certificate = CertificateFactory.CreateServerCertificate("BookDB-");
+
+        Assert.Contains("BookDB-", certificate.Subject);
+    }
+
     [Fact]
     public void ServerCertificateIsValidNowAndBackdated()
     {

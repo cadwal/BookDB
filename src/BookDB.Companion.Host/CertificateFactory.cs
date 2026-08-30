@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Net;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
@@ -13,6 +14,8 @@ namespace BookDB.Companion.Host;
 public static class CertificateFactory
 {
     private const int LifetimeYears = 5;
+    private const int MaxDnsLabelLength = 63;
+    private const string FallbackDnsName = "bookdb-host";
 
     private static readonly Oid ServerAuthentication = new("1.3.6.1.5.5.7.3.1");
     private static readonly Oid ClientAuthentication = new("1.3.6.1.5.5.7.3.2");
@@ -35,7 +38,7 @@ public static class CertificateFactory
         // The phone pins the thumbprint rather than validating the name, but a SAN is still required for
         // the TLS stacks on both ends to complete an HTTP/2 handshake at all.
         var san = new SubjectAlternativeNameBuilder();
-        san.AddDnsName(subjectName);
+        san.AddDnsName(DnsNameFor(subjectName));
         san.AddDnsName("localhost");
         san.AddIpAddress(IPAddress.Loopback);
         request.CertificateExtensions.Add(san.Build());
@@ -62,6 +65,24 @@ public static class CertificateFactory
     /// <summary>Strips the private key, for anything that only needs to recognise the certificate.</summary>
     public static X509Certificate2 PublicOnly(X509Certificate2 certificate)
         => X509CertificateLoader.LoadCertificate(certificate.Export(X509ContentType.Cert));
+
+    /// <summary>
+    /// A DNS name the SAN builder will accept, whatever the machine happens to be called. The subject is
+    /// built from <see cref="Environment.MachineName"/>, which can come back empty — leaving a bare
+    /// "BookDB-", and a label may not end in a hyphen — or long enough to pass the 63-character label
+    /// limit. Both are rejected as invalid IDN names, and the throw took the whole host down at startup.
+    /// The name is decorative: the phone pins the thumbprint instead of validating it.
+    /// </summary>
+    private static string DnsNameFor(string subjectName)
+    {
+        var labels = subjectName
+            .Split('.', StringSplitOptions.RemoveEmptyEntries)
+            .Select(label => (label.Length > MaxDnsLabelLength ? label[..MaxDnsLabelLength] : label).Trim('-'))
+            .Where(label => label.Length > 0);
+
+        var name = string.Join('.', labels);
+        return name.Length > 0 ? name : FallbackDnsName;
+    }
 
     private static void AddCommonExtensions(CertificateRequest request, Oid enhancedKeyUsage)
     {
