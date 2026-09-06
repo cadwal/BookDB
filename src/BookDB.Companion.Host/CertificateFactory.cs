@@ -68,9 +68,10 @@ public static class CertificateFactory
 
     /// <summary>
     /// A DNS name the SAN builder will accept, whatever the machine happens to be called. The subject is
-    /// built from <see cref="Environment.MachineName"/>, which can come back empty — leaving a bare
-    /// "BookDB-", and a label may not end in a hyphen — or long enough to pass the 63-character label
-    /// limit. Both are rejected as invalid IDN names, and the throw took the whole host down at startup.
+    /// built from <see cref="Environment.MachineName"/>: a GitHub macOS runner's is 61 characters, which
+    /// puts the label past the 63-character limit, and a name that comes back empty leaves a bare
+    /// "BookDB-", which a label may not end in. Both are rejected as invalid IDN names, and the throw took
+    /// the whole host down at startup — the length rule is the one that actually bit.
     /// The name is decorative: the phone pins the thumbprint instead of validating it.
     /// </summary>
     private static string DnsNameFor(string subjectName)

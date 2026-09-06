@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/semver-spec
 
 ## [Unreleased]
 
+## [4.0.1] - 2026-09-06
+
+**Twelve testers wanted — to get the BookDB companion app onto Google Play.** Google will not let a personal developer account list an app until twelve people have been opted into a closed test for fourteen straight days. If you have an Android phone and already run BookDB on a computer, helping is about ten minutes of work and then two weeks of forgetting about it. The app is already released and installable as an APK, and will stay that way — this is a distribution formality, not a beta of something unfinished. What it involves, and how to volunteer: [https://github.com/cadwal/BookDB/issues/1](https://github.com/cadwal/BookDB/issues/1)
+
+### Fixed
+- **Installing on Windows now brings the whole runtime BookDB needs.** 4.0 added the companion service, which needs the ASP.NET Core runtime alongside the base .NET runtime, but the winget package asked for only the base one — so a machine without the rest was left to be prompted for it on first launch. Nothing about the app itself has changed: if BookDB already starts for you, there is nothing here you need.
+
 ## [4.0.0] - 2026-08-30
 
 ### Added
@@ -167,7 +174,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/semver-spec
 - Multi-language UI: EN, SV, DE, ES, FR, NL, IT, PT-BR, PT-PT
 - Help system with per-screen contextual help
 
-[Unreleased]: https://github.com/cadwal/BookDB/compare/v4.0.0...HEAD
+[Unreleased]: https://github.com/cadwal/BookDB/compare/v4.0.1...HEAD
 [2.1.0]: https://github.com/cadwal/BookDB/releases/tag/v2.1.0
 [1.1.0]: https://github.com/cadwal/BookDB/releases/tag/v1.1.0
 [1.0.0]: https://github.com/cadwal/BookDB/releases/tag/v1.0.0
@@ -179,3 +186,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/semver-spec
 [3.0.0]: https://github.com/cadwal/BookDB/releases/tag/v3.0.0
 [3.1.0]: https://github.com/cadwal/BookDB/releases/tag/v3.1.0
 [4.0.0]: https://github.com/cadwal/BookDB/releases/tag/v4.0.0
+[4.0.1]: https://github.com/cadwal/BookDB/releases/tag/v4.0.1

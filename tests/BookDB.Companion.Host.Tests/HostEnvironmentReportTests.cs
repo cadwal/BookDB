@@ -9,10 +9,10 @@ namespace BookDB.Companion.Host.Tests;
 
 /// <summary>
 /// Mints the server certificate for the machine the suite is actually running on, and records what that
-/// machine is called. A GitHub macOS runner reports an empty <see cref="Environment.MachineName"/>, which
-/// used to make the certificate unmintable and every companion test fail with a stack trace that named
-/// neither the machine nor the name — this reports both, so the next environment-shaped failure can be
-/// read off the log without reproducing it.
+/// machine is called. A GitHub macOS runner is named with a 61-character string, which put the certificate's
+/// DNS label past the 63-character limit and made the certificate unmintable — every companion test then
+/// failed with a stack trace that named neither the machine nor the name. This reports both, so the next
+/// environment-shaped failure can be read off the log without reproducing it.
 /// </summary>
 public sealed class HostEnvironmentReportTests
 {
